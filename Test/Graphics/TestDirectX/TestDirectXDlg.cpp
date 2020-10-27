@@ -26,7 +26,7 @@ void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestDirectXDlg::CTestDirectXDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestDirectXDlg::IDD, pParent) {
+CTestDirectXDlg::CTestDirectXDlg(CWnd *pParent /*=nullptr*/) : CDialog(CTestDirectXDlg::IDD, pParent) {
   m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
@@ -50,7 +50,7 @@ BOOL CTestDirectXDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if (pSysMenu != NULL) {
+  if (pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if (!strAboutMenu.IsEmpty()) {

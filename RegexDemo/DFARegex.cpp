@@ -26,7 +26,7 @@ DFARegex::DFARegex(const TCHAR *pattern, const TCHAR *translateTable) : m_fastMa
 #define DBG_setCodeText(s)      setCodeText(s)
 #define DBG_setMode(mode, dfa)  { m_currentMode = mode; m_currentDFA = dfa; DFAPainter::stopBlinking(); }
 #define DBG_saveMode(tmp)       const DFARegexMode savedMode_##tmp = m_currentMode
-#define DBG_restoreMode(tmp)    DBG_setMode(savedMode_##tmp, NULL)
+#define DBG_restoreMode(tmp)    DBG_setMode(savedMode_##tmp, nullptr)
 
 #else
 
@@ -38,7 +38,7 @@ DFARegex::DFARegex(const TCHAR *pattern, const TCHAR *translateTable) : m_fastMa
 #endif
 
 void DFARegex::init() {
-  m_translateTable  = NULL;
+  m_translateTable  = nullptr;
   m_hasCompiled     = false;
   m_currentState    = -1;
   m_lastAcceptState = -1;
@@ -48,9 +48,9 @@ void DFARegex::init() {
 #if defined(_DEBUG)
   m_codeDirty       = false;
   m_cycleCount      = 0;
-  m_stepHandler     = NULL;
-  DBG_setMode(DFA_IDLE, NULL);
-  m_currentDFA      = NULL;
+  m_stepHandler     = nullptr;
+  DBG_setMode(DFA_IDLE, nullptr);
+  m_currentDFA      = nullptr;
 #endif
 }
 
@@ -74,7 +74,7 @@ void DFARegex::compilePattern(const String &pattern, const TCHAR *translateTable
     m_translateTable = translateTable;
     m_hasCompiled    = false;
     m_patternFound   = false;
-    DBG_setMode(DFA_PARSING, NULL);
+    DBG_setMode(DFA_PARSING, nullptr);
     PatternParser parser(pattern, nfa, translateTable);
 
     DFA dfa(nfa);
@@ -96,11 +96,11 @@ void DFARegex::compilePattern(const String &pattern, const TCHAR *translateTable
 
     nfa.clear();
     NFAState::releaseAll();
-    DBG_setMode(DFA_IDLE, NULL);
+    DBG_setMode(DFA_IDLE, nullptr);
   } catch(...) {
     nfa.clear();
     NFAState::releaseAll();
-    DBG_setMode(DFA_IDLE, NULL);
+    DBG_setMode(DFA_IDLE, nullptr);
     throw;
   }
 }
@@ -163,7 +163,7 @@ intptr_t DFARegex::search(const TCHAR *string
                          ,intptr_t     startPos
                          ,intptr_t     range
                          ) const {
-  DBG_setMode(DFA_SEARCHING, NULL);
+  DBG_setMode(DFA_SEARCHING, nullptr);
   for(;;) {
     // skip quickly over characters that cannot possibly be the start of a match.
     // Note, however, that if the pattern can possibly match
@@ -254,7 +254,7 @@ intptr_t DFARegex::match(const TCHAR *string, size_t size, intptr_t pos) const {
   const _TUCHAR *matchEndp = (const _TUCHAR*)string + pos;
 
   DBG_saveMode(oldMode);
-  DBG_setMode(DFA_MATCHING, NULL);
+  DBG_setMode(DFA_MATCHING, nullptr);
 
   m_currentState    = 0;
   m_lastAcceptState = m_tables.m_acceptTable[0] ? 0 : -1;  // Most recently seen accept state
@@ -354,7 +354,7 @@ String DFARegex::tableToString() const {
 
 const _DFADbgStateInfo *DFARegex::getDBGStateInfo(size_t state) const {
   if(state >= m_DBGInfo.size()) {
-    return NULL;
+    return nullptr;
   }
   return &m_DBGInfo[state];
 }
@@ -378,10 +378,10 @@ BitSet DFARegex::getPossibleBreakPointLines() const {
 }
 
 int DFARegex::getCurrentCodeLine() const {
-  const _DFADbgStateInfo *info = NULL;
+  const _DFADbgStateInfo *info = nullptr;
   switch(m_currentMode) {
   case DFA_SEARCHING:
-    info = m_patternFound ? getDBGStateInfo(m_lastAcceptState) : NULL;
+    info = m_patternFound ? getDBGStateInfo(m_lastAcceptState) : nullptr;
     break;
   case DFA_MATCHING:
     info = getDBGStateInfo(m_currentState);
@@ -457,7 +457,7 @@ UINT _DFARegexMatchState::getDBGLastAcceptLine() const {
 
 const BitSet *_DFARegexMatchState::getDBGPatternIndexSet() const {
   const _DFADbgStateInfo *info = m_regex.getDBGStateInfo(m_state);
-  return info ? &info->m_patternIndexSet : NULL;
+  return info ? &info->m_patternIndexSet : nullptr;
 }
 
 intptr_t _DFARegexMatchState::getDBGTextCharIndex() const {

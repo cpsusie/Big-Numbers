@@ -19,7 +19,7 @@ Scanner::Scanner(const String &fname) {
   m_next           = m_line;
 
   m_input = fopen(m_inputfname,_T("r"));
-  if(m_input == NULL) {
+  if(m_input == nullptr) {
     error(SQL_FILE_OPEN_ERROR,_T("cannot open %s"),m_inputfname.cstr());
     return;
   }
@@ -28,13 +28,13 @@ Scanner::Scanner(const String &fname) {
 }
 
 Scanner::~Scanner() {
-  if(m_input != NULL) {
+  if(m_input != nullptr) {
     fclose(m_input);
   }
 }
 
 void Scanner::readLine() {
-  if(_fgetts(m_line, ARRAYSIZE(m_line), m_input) == NULL) {
+  if(_fgetts(m_line, ARRAYSIZE(m_line), m_input) == nullptr) {
     m_line[0] = '\0';
   } else {
     m_yypos.m_column = 0;

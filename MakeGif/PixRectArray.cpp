@@ -15,7 +15,7 @@ PixRectArray::PixRectArray(const StringArray &fileNames, StringArray &errors) {
         int error;
         const char *namea = T2A(name.cstr());
         GifFileType *gifFile = DGifOpenFileName(namea, &error);
-        if(gifFile == NULL) {
+        if(gifFile == nullptr) {
           const String msg = GifErrorString(error);
           throwException(_T("%s"), msg.cstr());
         }
@@ -112,7 +112,7 @@ PixRectArray &PixRectArray::quantize(int maxColorCount) {
   SavedImageArray tmp(*this, maxColorCount);
   clear();
   for(size_t i = 0; i < tmp.size(); i++) {
-    GifPixRect *gp = new GifPixRect(tmp[i], NULL); TRACE_NEW(gp);
+    GifPixRect *gp = new GifPixRect(tmp[i], nullptr); TRACE_NEW(gp);
     add(gp);
   }
   incrUpdateCount();

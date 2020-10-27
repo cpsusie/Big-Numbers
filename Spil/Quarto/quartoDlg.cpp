@@ -87,7 +87,7 @@ BOOL CQuartoDlg::OnInitDialog() {
   ASSERT( IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if (pSysMenu != NULL) {
+  if (pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -238,7 +238,7 @@ void CQuartoDlg::startTimer(DialogState state, int msec) {
 
 void CQuartoDlg::startTimer(int msec) {
   if(!m_timerRunning) {
-    if(SetTimer(1, msec, NULL) == 1) {
+    if(SetTimer(1, msec, nullptr) == 1) {
       m_timerRunning = true;
     }
   }
@@ -284,7 +284,7 @@ void CQuartoDlg::OnTimer(UINT_PTR nIDEvent) {
 
 BOOL CQuartoDlg::PreTranslateMessage(MSG *pMsg) {
   D3Camera *cam;
-  if((pMsg->message == WM_MOUSEMOVE) && ((cam = m_scene.getPickedCamera(pMsg->pt)) != NULL)) {
+  if((pMsg->message == WM_MOUSEMOVE) && ((cam = m_scene.getPickedCamera(pMsg->pt)) != nullptr)) {
 //    m_wndStatusBar.SetPaneText(0, toString(cam->screenToWin(pMsg->pt)).cstr());
   }
   const bool levelIncremented = pMsg->message != ID_MSG_RENDER;
@@ -410,15 +410,15 @@ void CQuartoDlg::OnFileOpen() {
   if(_tcsclen(dlg.m_ofn.lpstrFile) == 0) {
     return;
   }
-  FILE *f = NULL;
+  FILE *f = nullptr;
   try {
     f = FOPEN(dlg.m_ofn.lpstrFile, _T("r"));
     m_game = Game(readTextFile(f));
-    fclose(f); f = NULL;
+    fclose(f); f = nullptr;
     resetScene();
     setGameName(dlg.m_ofn.lpstrFile);
   } catch(Exception e) {
-    if(f != NULL) {
+    if(f != nullptr) {
       fclose(f);
     }
     showException(e);
@@ -448,14 +448,14 @@ void CQuartoDlg::OnFileSaveAs() {
 }
 
 void CQuartoDlg::save(const String &name) {
-  FILE *f = NULL;
+  FILE *f = nullptr;
   try {
     f = FOPEN(name, _T("w"));
     _ftprintf(f,_T("%s\n"), m_game.toString().cstr());
-    fclose(f); f = NULL;
+    fclose(f); f = nullptr;
     setGameName(name);
   } catch(Exception e) {
-    if(f != NULL) {
+    if(f != nullptr) {
       fclose(f);
     }
     showException(e);

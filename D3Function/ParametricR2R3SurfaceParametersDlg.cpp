@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ParametricR2R3SurfaceParametersDlg.h"
 
-CParametricR2R3SurfaceParametersDlg::CParametricR2R3SurfaceParametersDlg(const ExprParametricR2R3SurfaceParameters &param, AbstractTextureFactory &atf, CWnd *pParent /*=NULL*/)
+CParametricR2R3SurfaceParametersDlg::CParametricR2R3SurfaceParametersDlg(const ExprParametricR2R3SurfaceParameters &param, AbstractTextureFactory &atf, CWnd *pParent /*=nullptr*/)
 : SaveLoadExprWithCommonParametersDlg(IDD, pParent, param, atf, _T("Parametric Surface"), _T("par"))
 , m_sStepCount(0)
 , m_tStepCount(0)

@@ -2,7 +2,7 @@
 
 class CPasswordDlg : public CDialog {
 public:
-    CPasswordDlg(CWnd *pParent = NULL);
+    CPasswordDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_PASSWORDDIALOG };
     CString m_password;

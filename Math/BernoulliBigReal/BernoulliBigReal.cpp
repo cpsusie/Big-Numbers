@@ -47,7 +47,7 @@ static inline int binomialKeyCmp(const BinomialKey &key1, const BinomialKey &key
 const BigInt &factorial(UINT n) {
   static IntHashMap<BigInt> map;
   const BigInt *result = map.get(n);
-  if(result == NULL) {
+  if(result == nullptr) {
     if(n <= 1) {
       map.put(n,1);
     } else {
@@ -63,7 +63,7 @@ const BigInt &binomial(UINT n, UINT k) {
 
   const BinomialKey key(n,k);
   const BigInt *result = map.get(key);
-  if(result == NULL) {
+  if(result == nullptr) {
     map.put(key, factorial(n)/(factorial(k)*factorial(n-k)));
     result = map.get(key);
   }
@@ -73,7 +73,7 @@ const BigInt &binomial(UINT n, UINT k) {
 const BigRational &bernoulli0(UINT m) {
   static IntHashMap<BigRational> map;
   const BigRational *result = map.get(m);
-  if(result == NULL) {
+  if(result == nullptr) {
     if(m == 0) {
       map.put(m,1);
     } else {
@@ -95,7 +95,7 @@ const BigRational &bernoulli0(UINT m) {
 const BigRational &bernoulli1(UINT m) {
   static IntHashMap<BigRational> map;
   const BigRational *result = map.get(m);
-  if(result == NULL) {
+  if(result == nullptr) {
     if(m == 0) {
       map.put(m,1);
     } else {

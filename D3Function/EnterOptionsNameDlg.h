@@ -4,7 +4,7 @@ class CEnterOptionsNameDlg : public CDialog {
 private:
     CComboBox *getNameCombo();
 public:
-    CEnterOptionsNameDlg(const String &currentName, CWnd *pParent = NULL);
+    CEnterOptionsNameDlg(const String &currentName, CWnd *pParent = nullptr);
 
     enum { IDD = IDD_DIALOGENTEROPTIONSNAME };
     CString m_name;

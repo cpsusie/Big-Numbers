@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     for(size_t i = 0; i < clientsockets.size(); i++) {
       FD_SET(clientsockets[i], &readfds );
     }
-    if( select( 2, &readfds, NULL, NULL, NULL ) == SOCKET_ERROR ) {
+    if( select( 2, &readfds, nullptr, nullptr, nullptr ) == SOCKET_ERROR ) {
       _tprintf(_T("select failed. error:%s\n"),getLastWSAErrorText().cstr());
       break;
     }

@@ -2,9 +2,9 @@
 #include "SqlAPI.h"
 
 void varchar::clear() {
-  if(m_data != NULL) {
+  if(m_data != nullptr) {
     delete[] m_data;
-    m_data = NULL;
+    m_data = nullptr;
   }
 }
 

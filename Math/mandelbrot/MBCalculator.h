@@ -131,7 +131,7 @@ protected:
     return m_orbitPoints;
   }
   inline bool isWithOrbit() const {
-    return m_orbitPoints != NULL;
+    return m_orbitPoints != nullptr;
   }
   bool enterFollowBlackEdge(const CPoint &p, CellCountAccessor *cca);
   void leaveFollowBlackEdge();

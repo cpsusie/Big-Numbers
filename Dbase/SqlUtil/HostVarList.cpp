@@ -32,18 +32,18 @@ String HostVarDescription::toString() const {
 
 HostVarList::HostVarList() {
   m_n       = 0;
-  m_hostvar = NULL;
+  m_hostvar = nullptr;
 }
 
 HostVarList::HostVarList(const HostVarDescriptionList &desc) {
   m_n       = 0;
-  m_hostvar = NULL;
+  m_hostvar = nullptr;
   describe(desc);
 }
 
 HostVarList::HostVarList(const HostVarList &src) {
   m_n       = 0;
-  m_hostvar = NULL;
+  m_hostvar = nullptr;
   describe(src.getdescription());
 }
 
@@ -126,14 +126,14 @@ HostVarList::~HostVarList() {
 }
 
 void HostVarList::clear() {
-  if(m_hostvar != NULL) {
+  if(m_hostvar != nullptr) {
     for(unsigned int i = 0; i < m_n; i++) {
       delete[] m_hostvar[i].sqldata;
       delete   m_hostvar[i].sqlind;
     }
     delete[] m_hostvar;
   }
-  m_hostvar = NULL;
+  m_hostvar = nullptr;
   m_n       = 0;
 }
 

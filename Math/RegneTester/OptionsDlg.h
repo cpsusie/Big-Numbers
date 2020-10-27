@@ -6,7 +6,7 @@ class COptionsDlg : public CDialog {
 private:
   Options &m_options;
 public:
-    COptionsDlg(Options &options, CWnd *pParent = NULL);
+    COptionsDlg(Options &options, CWnd *pParent = nullptr);
 
     enum { IDD = IDD_OPTIONS_DIALOG };
     CString m_confirmPassword;

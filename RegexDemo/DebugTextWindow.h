@@ -33,7 +33,7 @@ public:
   bool hasLastAcceptLine() const {
     return m_lastAcceptLine >= 0;
   }
-  void setAllowMarking(bool allowMarking, const BitSet *possibleBreakPointLines = NULL);
+  void setAllowMarking(bool allowMarking, const BitSet *possibleBreakPointLines = nullptr);
   void addBreakPoint(UINT line);
   void removeBreakPoint(UINT line);
   void scrollToBottom();

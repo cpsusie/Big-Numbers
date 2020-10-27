@@ -3,12 +3,12 @@
 #include "DrawTool.h"
 
 MoveRectangleTool::MoveRectangleTool(PixRectContainer *container) : DrawTool(container) {
-  m_copy = m_old = NULL;
+  m_copy = m_old = nullptr;
   m_dragRectVisible = false;
 }
 
 MoveRectangleTool::~MoveRectangleTool() {
-  if(m_copy != NULL) {
+  if(m_copy != nullptr) {
     invertDragRect();
     releaseCopy();
   }
@@ -25,7 +25,7 @@ void MoveRectangleTool::invertDragRect() {
     getImage()->drawDragRect(&m_lastDragRect, CSize(0,0), &m_lastDragRect, size);
   } else {
     m_lastDragRect = CRect(m_p0, m_p1);
-    getImage()->drawDragRect(&m_lastDragRect, size, NULL, size);
+    getImage()->drawDragRect(&m_lastDragRect, size, nullptr, size);
   }
 
 //  getImage()->rectangle(CRect(m_p0,m_p1),0,true);
@@ -35,7 +35,7 @@ void MoveRectangleTool::invertDragRect() {
 }
 
 void MoveRectangleTool::OnLButtonDown(UINT nFlags, const CPoint &point) {
-  if(m_copy == NULL) {
+  if(m_copy == nullptr) {
     m_p0 = m_p1 = point;
     invertDragRect();
     assert(m_dragRectVisible);
@@ -56,7 +56,7 @@ void MoveRectangleTool::OnLButtonDown(UINT nFlags, const CPoint &point) {
 
 void MoveRectangleTool::OnMouseMove(UINT nFlags, const CPoint &point) {
   if(nFlags & MK_LBUTTON) {
-    if(m_copy == NULL) {
+    if(m_copy == nullptr) {
       assert(m_dragRectVisible);
       invertDragRect(); // remove dragrect
       m_p1 = point;
@@ -77,7 +77,7 @@ void MoveRectangleTool::OnMouseMove(UINT nFlags, const CPoint &point) {
 }
 
 void MoveRectangleTool::OnLButtonUp(UINT nFlags, const CPoint &point) {
-  if(m_copy == NULL) {
+  if(m_copy == nullptr) {
     assert(m_dragRectVisible);
     invertDragRect();   // remove dragrect
     m_rect = CRect(min(m_p0.x, m_p1.x), min(m_p0.y, m_p1.y), max(m_p0.x, m_p1.x), max(m_p0.y, m_p1.y)); // define rect
@@ -101,7 +101,7 @@ void MoveRectangleTool::cut() {
 }
 
 void MoveRectangleTool::copy() {
-  if(m_copy == NULL) {
+  if(m_copy == nullptr) {
     DrawTool::copy();
   } else {
     HBITMAP bm = *m_copy;
@@ -111,5 +111,5 @@ void MoveRectangleTool::copy() {
 }
 
 int MoveRectangleTool::getCursorId() const {
-  return m_copy == NULL ? IDC_CURSORHAIRCROSS : IDC_CURSORMOVE4WAYS;
+  return m_copy == nullptr ? IDC_CURSORHAIRCROSS : IDC_CURSORMOVE4WAYS;
 }

@@ -65,12 +65,12 @@ namespace TestTokenizer {
 public:
 
     TEST_METHOD(testTokenizer) {
-      testTokenizer(1, _T("a,b,c"), _T(","), 0, 0, _T("a"), _T("b"), _T("c"), NULL);
-      testTokenizer(2, _T("a,b, c"), _T(","), 0, 0, _T("a"), _T("b"), _T(" c"), NULL);
-      testTokenizer(3, _T("a,b\t c"), _T("\t"), 0, 0, _T("a,b"), _T(" c"), NULL);
-      testTokenizer(4, _T("a,b\t c"), _T("\t, "), 0, 0, _T("a"), _T("b"), _T("c"), NULL);
-      testTokenizer(5, _T("a,b\t\" c\""), _T("\t, "), _T('"'), 0, _T("a"), _T("b"), _T("\" c\""), NULL);
-      testTokenizer(6, _T("a,b\t\tc\t"), _T("\t"), _T('"'), TOK_SINGLEDELIMITERS, _T("a,b"), EMPTYSTRING, _T("c"), NULL);
+      testTokenizer(1, _T("a,b,c"), _T(","), 0, 0, _T("a"), _T("b"), _T("c"), nullptr);
+      testTokenizer(2, _T("a,b, c"), _T(","), 0, 0, _T("a"), _T("b"), _T(" c"), nullptr);
+      testTokenizer(3, _T("a,b\t c"), _T("\t"), 0, 0, _T("a,b"), _T(" c"), nullptr);
+      testTokenizer(4, _T("a,b\t c"), _T("\t, "), 0, 0, _T("a"), _T("b"), _T("c"), nullptr);
+      testTokenizer(5, _T("a,b\t\" c\""), _T("\t, "), _T('"'), 0, _T("a"), _T("b"), _T("\" c\""), nullptr);
+      testTokenizer(6, _T("a,b\t\tc\t"), _T("\t"), _T('"'), TOK_SINGLEDELIMITERS, _T("a,b"), EMPTYSTRING, _T("c"), nullptr);
     }
   };
 }

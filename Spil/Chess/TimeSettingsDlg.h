@@ -54,7 +54,7 @@ private:
   void setVisible(bool visible, const int *ctrlArray, int size);
   ClockTab getCurrentTab();
 public:
-    CTimeSettingsDlg(bool clockRunning, CWnd *pParent = NULL);
+    CTimeSettingsDlg(bool clockRunning, CWnd *pParent = nullptr);
     bool getResetClocks() const {
       return m_resetClocks ? true : false;
     }

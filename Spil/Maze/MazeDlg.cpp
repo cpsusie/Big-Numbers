@@ -41,8 +41,8 @@ void CMazeDlg::OnHelpAboutMaze() {
 
 CMazeDlg::CMazeDlg(CWnd *pParent) : CDialog(CMazeDlg::IDD, pParent) {
   m_initialized = false;
-  m_pathFinder  = NULL;
-  m_maze        = NULL;
+  m_pathFinder  = nullptr;
+  m_maze        = nullptr;
   m_doorWidth   = 10;
   m_hIcon       = theApp.LoadIcon(IDR_MAINICON);
 }
@@ -91,9 +91,9 @@ void CMazeDlg::createDC() {
   m_workDC.CreateCompatibleDC(&dc);
   CRect r;
   GetClientRect(&r);
-  m_cleanMazeBM.CreateBitmap(r.Width(),r.Height(),planes,bitsPixel,NULL);
-  m_workBM.CreateBitmap(r.Width(),r.Height(),planes,bitsPixel,NULL);
-  m_cleanMazeDC.BitBlt(0,0,r.Width(),r.Height(),NULL,0,0,WHITENESS);
+  m_cleanMazeBM.CreateBitmap(r.Width(),r.Height(),planes,bitsPixel,nullptr);
+  m_workBM.CreateBitmap(r.Width(),r.Height(),planes,bitsPixel,nullptr);
+  m_cleanMazeDC.BitBlt(0,0,r.Width(),r.Height(),nullptr,0,0,WHITENESS);
 }
 
 void CMazeDlg::destroyDC() {
@@ -110,7 +110,7 @@ BOOL CMazeDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if (pSysMenu != NULL) {
+  if (pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if (!strAboutMenu.IsEmpty()) {
@@ -158,14 +158,14 @@ void CMazeDlg::OnPaint() {
     // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    if(m_pathFinder != NULL) {
+    if(m_pathFinder != nullptr) {
       m_pathFinder->suspend();
     }
 
     __super::OnPaint();
     workToScreen();
 
-    if(m_pathFinder != NULL) {
+    if(m_pathFinder != nullptr) {
       m_pathFinder->resume();
     }
   }
@@ -195,9 +195,9 @@ void CMazeDlg::newMaze() {
   stopPathFinder();
   theApp.BeginWaitCursor();
 
-  if(m_maze != NULL) {
+  if(m_maze != nullptr) {
     delete m_maze;
-    m_maze = NULL;
+    m_maze = nullptr;
   }
 
   CRect rect = getClientRect(this);
@@ -237,13 +237,13 @@ void CMazeDlg::OnFileNewMaze() {
 }
 
 void CMazeDlg::stopPathFinder() {
-  if(m_pathFinder != NULL) {
+  if(m_pathFinder != nullptr) {
     m_pathFinder->stop();
     while(m_pathFinder->stillActive()) {
       Sleep(100);
     }
     delete m_pathFinder;
-    m_pathFinder = NULL;
+    m_pathFinder = nullptr;
   }
 }
 

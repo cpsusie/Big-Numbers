@@ -30,7 +30,7 @@ void FileInfo::extractFileInfo(const String &line, size_t lineNumber) {
 
   TCHAR *sp1 = copy.cstr() + s_skillLength1;
   TCHAR *sp2;
-  if((sp2 = _tcsstr(sp1, s_skillLine2)) == NULL) {
+  if((sp2 = _tcsstr(sp1, s_skillLine2)) == nullptr) {
     libError(line, lineNumber);
   } else {
     const TCHAR ch = *sp2;
@@ -81,7 +81,7 @@ void FileInfo::setFileTimes() const {
   HANDLE f = INVALID_HANDLE_VALUE;
   try {
     f = CreateFile(m_name.cstr()
-                  ,FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+                  ,FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
     if(f == INVALID_HANDLE_VALUE) {
       throwLastErrorOnSysCallNameException(m_name);
     }
@@ -102,7 +102,7 @@ void FileInfo::getFileTimes() {
   HANDLE f = INVALID_HANDLE_VALUE;
   try {
     f = CreateFile(m_name.cstr()
-                  ,FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+                  ,FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
     if(f == INVALID_HANDLE_VALUE) {
       throwLastErrorOnSysCallNameException(m_name);
     }

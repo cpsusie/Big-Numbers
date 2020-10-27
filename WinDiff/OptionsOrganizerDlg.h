@@ -9,7 +9,7 @@ private:
     void ajourButtons(int selected = -1);
 
 public:
-    COptionsOrganizerDlg(CWnd *pParent = NULL);
+    COptionsOrganizerDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_DIALOGORGANIZEOPTIONS };
     CListCtrl   m_nameListCtrl;

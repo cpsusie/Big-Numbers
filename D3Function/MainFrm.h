@@ -26,7 +26,7 @@ private:
   mutable D3SceneEditor *m_editor;
   D3SceneEditor &getEditor() const;
 public:
-  CD3FunctionSplitterWnd() : m_splitPointMoved(false), m_editor(NULL) {
+  CD3FunctionSplitterWnd() : m_splitPointMoved(false), m_editor(nullptr) {
   }
   void RecalcLayout();
   void OnInvertTracker(const CRect& rect);
@@ -80,10 +80,10 @@ private:
 
   void killDebugger(bool showCreateSurface);
   inline bool hasDebugger() const {
-    return m_debugger != NULL;
+    return m_debugger != nullptr;
   }
   inline bool hasCamera() const {
-    return m_editor.getSelectedCAM() != NULL;
+    return m_editor.getSelectedCAM() != nullptr;
   }
   D3Camera *dbgCAM();
   inline bool isDebuggerState(DebuggerState state) const {
@@ -117,7 +117,7 @@ private:
     return m_hasFinalDebugIsoSurface;
   }
   inline FinalDebugIsoSurface *getFinalDebugIsoSurface() const {
-    return hasFinalDebugIsoSurface() ? (FinalDebugIsoSurface*)getCalculatedObject() : NULL;
+    return hasFinalDebugIsoSurface() ? (FinalDebugIsoSurface*)getCalculatedObject() : nullptr;
   }
 #endif // ISODEBUGGER
 
@@ -139,7 +139,7 @@ private:
   void createInitialObject();
   void createSaddle();
   void deleteCalculatedObject();
-  void setCalculatedObject(D3SceneObjectVisual *obj, FunctionImageParamPersistentData *param = NULL);
+  void setCalculatedObject(D3SceneObjectVisual *obj, FunctionImageParamPersistentData *param = nullptr);
 
   template<typename T> void setCalculatedObject(T &param) {
     stopDebugging();

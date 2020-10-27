@@ -5,7 +5,7 @@ private:
   CBitmap m_bitmap;
 
 public:
-    CNameDlg(CWnd *pParent = NULL);
+    CNameDlg(CWnd *pParent = nullptr);
 
     String getName() const {
       return (LPCTSTR)m_name;

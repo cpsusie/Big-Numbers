@@ -5,10 +5,10 @@
 #define new DEBUG_NEW
 #endif
 
-CJuliaDlg::CJuliaDlg(const RealPoint2D &point, CWnd *pParent /*=NULL*/)
+CJuliaDlg::CJuliaDlg(const RealPoint2D &point, CWnd *pParent /*=nullptr*/)
 : m_point(point)
 , CDialog(CJuliaDlg::IDD, pParent)
-, m_job(NULL)
+, m_job(nullptr)
 {
 }
 

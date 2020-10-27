@@ -244,7 +244,7 @@ void CFindDlg::enableControls(bool enable) {
 }
 
 void CFindDlg::startTimer() {
-  if(!m_timerIsRunning && SetTimer(1, TIMERUPDATERATE, NULL)) {
+  if(!m_timerIsRunning && SetTimer(1, TIMERUPDATERATE, nullptr)) {
     m_timerIsRunning = true;
     enableControls(false);
     GetDlgItem(IDC_PROGRESSFIND)->ShowWindow(SW_SHOW);

@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CTestOBMButtonDlg::CTestOBMButtonDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestOBMButtonDlg::IDD, pParent) {
+CTestOBMButtonDlg::CTestOBMButtonDlg(CWnd *pParent /*=nullptr*/) : CDialog(CTestOBMButtonDlg::IDD, pParent) {
     m_buttonsEnabled = TRUE;
 }
 

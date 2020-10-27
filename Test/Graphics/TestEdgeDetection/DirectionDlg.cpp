@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CDirectionDlg::CDirectionDlg(Direction dir, CWnd *pParent /*=NULL*/) : m_dir(dir), CDialog(CDirectionDlg::IDD, pParent) {
+CDirectionDlg::CDirectionDlg(Direction dir, CWnd *pParent /*=nullptr*/) : m_dir(dir), CDialog(CDirectionDlg::IDD, pParent) {
 }
 
 

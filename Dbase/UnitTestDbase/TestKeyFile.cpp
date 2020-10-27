@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include <FileNameSplitter.h>
+#include <ProcessTools.h>
 #include "DbFileTester.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -104,7 +106,7 @@ namespace UnitTestKeyFile {
   }
 
   void KeyFileTester::checkData(int line) {
-    KeyCursor cursorDesc(*m_keyFile,RELOP_TRUE,NULL,0,RELOP_TRUE,NULL,0,SORT_DESCENDING);
+    KeyCursor cursorDesc(*m_keyFile,RELOP_TRUE,nullptr,0,RELOP_TRUE,nullptr,0,SORT_DESCENDING);
     intptr_t i = m_keyList.size()-1;
     while(cursorDesc.hasNext()) {
       KeyType key;
@@ -233,8 +235,8 @@ namespace UnitTestKeyFile {
             ,relOpString(beginRelOp),beginIndex,beginFieldCount
             ,relOpString(endRelOp)  ,endIndex  ,endFieldCount
             ,sortDirString(dir));
-    KeyType *beginKey = NULL;
-    KeyType *endKey   = NULL;
+    KeyType *beginKey = nullptr;
+    KeyType *endKey   = nullptr;
 
     if(m_keyList.size() > 0) {
       beginKey = &m_keyList[beginIndex];

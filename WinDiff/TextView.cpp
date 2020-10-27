@@ -20,8 +20,8 @@ TextView::TextView() {
   m_winSize               = CSize(-1,-1);
   m_caretSize             = CSize(-1,-1);
   m_arrowSize             = CSize(-1,-1);
-  m_arrowDC.CreateCompatibleDC(NULL);
-  m_workDC.CreateCompatibleDC( NULL);
+  m_arrowDC.CreateCompatibleDC(nullptr);
+  m_workDC.CreateCompatibleDC( nullptr);
   m_maxOffset.set(0,0);
 }
 
@@ -35,7 +35,7 @@ void TextView::init() {
 
 void TextView::Create(const CRect &r, CWnd *parent, Diff &diff) {
   m_diff = &diff;
-  if(__super::Create(NULL, NULL, AFX_WS_DEFAULT_VIEW ,r, parent, 0) == -1) {
+  if(__super::Create(nullptr, nullptr, AFX_WS_DEFAULT_VIEW ,r, parent, 0) == -1) {
     throwException(_T("TextView::Create failed"));
   }
 }
@@ -181,7 +181,7 @@ bool TextView::setIgnoreColumns(bool newValue, bool repaint) {
   if(newValue) {
     changed = getDocument()->setFileFormat(&getOptions().m_fileFormat, repaint);
   } else {
-    changed = getDocument()->setFileFormat(NULL, repaint);
+    changed = getDocument()->setFileFormat(nullptr, repaint);
   }
   REFRESHBOTH;
   return changed;
@@ -193,7 +193,7 @@ bool TextView::setIgnoreRegex(bool newValue, bool repaint) {
   if(newValue) {
     changed = getDocument()->setRegexFilter(&getOptions().m_regexFilter, repaint);
   } else {
-    changed = getDocument()->setRegexFilter(NULL, repaint);
+    changed = getDocument()->setRegexFilter(nullptr, repaint);
   }
   REFRESHBOTH;
   return changed;
@@ -234,7 +234,7 @@ static bool operator==(const LOGFONT &lf1, const LOGFONT &lf2) {
 
 LOGFONT TextView::getLogFont() {
   LOGFONT result;
-  if(m_font.m_hObject != NULL) {
+  if(m_font.m_hObject != nullptr) {
     m_font.GetLogFont(&result);
   } else {
     memset(&result,0,sizeof(LOGFONT));
@@ -458,7 +458,7 @@ void TextView::setArrowSize(const CSize &size) {
   }
   resetArrow();
   if(m_arrowBitmap.m_hObject) {
-    m_arrowDC.SelectObject((CBitmap*)NULL);
+    m_arrowDC.SelectObject((CBitmap*)nullptr);
     m_arrowBitmap.DeleteObject();
     m_backgroundBitmap.DeleteObject();
   }
@@ -467,15 +467,15 @@ void TextView::setArrowSize(const CSize &size) {
   rawBM.LoadBitmap(IDB_ARROW);
   const CSize rawSize = getBitmapSize(rawBM);
 
-  m_arrowBitmap.CreateBitmap(size.cx, size.cy, 1, 32,NULL);
+  m_arrowBitmap.CreateBitmap(size.cx, size.cy, 1, 32,nullptr);
   m_arrowDC.SelectObject(&m_arrowBitmap);
   CDC rawDC;
-  rawDC.CreateCompatibleDC(NULL);
+  rawDC.CreateCompatibleDC(nullptr);
   CBitmap *oldbm = rawDC.SelectObject(&rawBM);
   SetStretchBltMode(m_arrowDC, COLORONCOLOR /*HALFTONE*/);
   m_arrowDC.StretchBlt( 0,0,size.cx, size.cy, &rawDC, 0,0,rawSize.cx, rawSize.cy, SRCCOPY);
   m_arrowSize = size;
-  m_backgroundBitmap.CreateBitmap(m_arrowSize.cx, m_arrowSize.cy, 1, 32,NULL);
+  m_backgroundBitmap.CreateBitmap(m_arrowSize.cx, m_arrowSize.cy, 1, 32,nullptr);
 }
 
 // ------------------------------------ Caret functions ---------------------------------
@@ -554,7 +554,7 @@ void TextView::displayCaret(CDC *pDC) {
   }
 
   CClientDC dc(this);
-  if(pDC == NULL) {
+  if(pDC == nullptr) {
     pDC = &dc;
   }
 
@@ -736,12 +736,12 @@ void TextView::paintTextLine(CDC *pDC, int y, COLORREF tc, COLORREF bc, const TC
     backgroundColorAfterText = BLUE;
     if(lineSeg.m_segments & HAS_LEFTSEGMENT) {
       length = lineSeg.m_c1;
-      paintTextSegment(pDC, 0, y, length, tc, bc, s, (lineSeg.m_segments == HAS_LEFTSEGMENT) ? &textEnd : NULL);
+      paintTextSegment(pDC, 0, y, length, tc, bc, s, (lineSeg.m_segments == HAS_LEFTSEGMENT) ? &textEnd : nullptr);
     }
     if(lineSeg.m_segments & HAS_MIDDLESEGMENT) {
       const int left = max(0, lineSeg.m_c1);
       length         = max(0, lineSeg.m_c2 - left);
-      paintTextSegment(pDC, left, y, length, WHITE, BLUE, s, (lineSeg.m_segments & HAS_RIGHTSEGMENT) ? NULL : &textEnd);
+      paintTextSegment(pDC, left, y, length, WHITE, BLUE, s, (lineSeg.m_segments & HAS_RIGHTSEGMENT) ? nullptr : &textEnd);
     }
     if(lineSeg.m_segments & HAS_RIGHTSEGMENT) {
       const int left = max(0, lineSeg.m_c2);
@@ -1204,7 +1204,7 @@ void TextView::ctrlCharRight() {
 void TextView::redrawBoth() {
   TextView *partner = getPartner();
   CDC *dc  = GetDC();
-  CDC *pdc = partner ? partner->GetDC() : NULL;
+  CDC *pdc = partner ? partner->GetDC() : nullptr;
 
   try {
     if(!partner) {
@@ -1416,7 +1416,7 @@ CWinDiffView &TextView::getDiffView() {
 
 TextView *TextView::getPartner() {
   CWinDiffView *view = getDiffView().getPartner();
-  return (view == NULL) ? NULL : &view->m_textView;
+  return (view == nullptr) ? nullptr : &view->m_textView;
 }
 
 CWinDiffDoc *TextView::getDocument() {
@@ -1424,7 +1424,7 @@ CWinDiffDoc *TextView::getDocument() {
 }
 
 bool TextView::hasPartner() {
-  return getPartner() != NULL;
+  return getPartner() != nullptr;
 }
 
 int TextView::getMaxCaretX() {
@@ -1446,7 +1446,7 @@ int TextView::getMaxCaretY() {
 
 void TextView::activatePartner() {
   TextView *partner = getPartner();
-  if(partner == NULL) {
+  if(partner == nullptr) {
     return;
   }
   setActive(false);
@@ -1597,15 +1597,15 @@ void TextView::selectAll() {
 }
 
 void TextView::createWorkBitmap(int w, int h) {
-  if(m_workBitmap.m_hObject != NULL) {
-    m_workDC.SelectObject((CBitmap*)NULL);
+  if(m_workBitmap.m_hObject != nullptr) {
+    m_workDC.SelectObject((CBitmap*)nullptr);
     m_workBitmap.DeleteObject();
   }
 
   CClientDC screen(this);
   m_workSize.cx = w; m_workSize.cy = h;
   const int depth = screen.GetDeviceCaps(BITSPIXEL);
-  m_workBitmap.CreateBitmap(w,h,screen.GetDeviceCaps(PLANES),depth,NULL);
+  m_workBitmap.CreateBitmap(w,h,screen.GetDeviceCaps(PLANES),depth,nullptr);
   m_workDC.SelectObject(&m_workBitmap);
   clearDC(&m_workDC);
 }
@@ -1676,7 +1676,7 @@ String LineSegments ::toString() const {
 
 String LineSegments::flagsToString(unsigned char flags) { // static
   String result;
-  const TCHAR *delim = NULL;
+  const TCHAR *delim = nullptr;
 
 #define ADDIFSET(f) { if(flags&HAS_##f) { if(delim) result += delim; else delim = _T(" | "); result += #f; } }
 
@@ -1689,7 +1689,7 @@ String LineSegments::flagsToString(unsigned char flags) { // static
 
 String ViewFlags::toString() const {
   String result;
-  const TCHAR *delim = NULL;
+  const TCHAR *delim = nullptr;
 
 #define ADDIFSET(f) { if(contains(f)) { if(delim) result += delim; else delim = _T(" | "); result += #f; } }
 

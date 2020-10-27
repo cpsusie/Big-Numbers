@@ -64,7 +64,7 @@ BOOL CPrShowApp::InitInstance() {
   String fileName;
   PixRect *pr;
   try {
-    if(*argv != NULL) {
+    if(*argv != nullptr) {
       fileName = *argv;
       pr = PixRect::load(m_device, ByteInputFile(fileName));
     } else {

@@ -8,7 +8,7 @@ static void usage() {
 
 int main(int argc, char **argv) {
   char *cp;
-  char *servername = NULL;
+  char *servername = nullptr;
   bool loop = false;
   for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
     for(cp++;*cp;cp++) {

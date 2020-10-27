@@ -46,7 +46,7 @@ bool AvlTree::nodeInsert(AvlNode **pp, int key) {
       exit(-1);
     }
 
-    p->m_left    = p->m_right = NULL;
+    p->m_left    = p->m_right = nullptr;
     p->m_balance = 0;
     p->m_color   = BLACK;
     p->m_key     = key;
@@ -302,7 +302,7 @@ bool AvlTree::nodeDel(AvlNode **r) {
 bool AvlTree::nodeDelete(AvlNode **pp, int key) {
   AvlNode *p = *pp;
 
-  if(p == NULL) {
+  if(p == nullptr) {
     return false; // key not found
   }
 
@@ -322,10 +322,10 @@ bool AvlTree::nodeDelete(AvlNode **pp, int key) {
   }
 
   bool ret = false;
-  if(p->m_right == NULL) {
+  if(p->m_right == nullptr) {
     *pp = p->m_left;
     ret = true;
-  } else if( p->m_left  == NULL ) {
+  } else if( p->m_left  == nullptr ) {
     *pp = p->m_right;
     ret = true;
   } else {
@@ -344,7 +344,7 @@ bool AvlTree::nodeDelete(AvlNode **pp, int key) {
 }
 
 AvlTree::AvlTree() {
-  m_root           = NULL;
+  m_root           = nullptr;
   m_size           = 0;
   m_tracing        = false;
   m_balanceVisible = false;
@@ -403,7 +403,7 @@ void AvlTree::clear() {
   if(m_root) {
     deleteNodeRecurse(m_root);
   }
-  m_root  = NULL;
+  m_root  = nullptr;
   m_size  = 0;
 }
 
@@ -434,19 +434,19 @@ bool AvlTree::remove(int key) {
 }
 
 int *AvlTree::getFirst() {
-  AvlNode *q = NULL;
+  AvlNode *q = nullptr;
   for(AvlNode *p = m_root; p; p = p->m_left) {
     q = p;
   }
-  return q ? &q->m_key : NULL;
+  return q ? &q->m_key : nullptr;
 }
 
 int *AvlTree::getLast() {
-  AvlNode *q = NULL;
+  AvlNode *q = nullptr;
   for(AvlNode *p = m_root; p; p = p->m_right) {
     q = p;
   }
-  return q ? &q->m_key : NULL ;
+  return q ? &q->m_key : nullptr ;
 }
 
 bool AvlTree::contains(int key) {
@@ -470,7 +470,7 @@ private:
   AvlNode *m_result;
 public:
   AvlNodeFinder(const CPoint &point) : m_point(point) {
-    m_result = NULL;
+    m_result = nullptr;
   }
   AvlNode *getResult() {
     return m_result;
@@ -548,7 +548,7 @@ void TreePainter::initWorkFields() {
   const int w = m_workRect.Width();
   const int h = m_workRect.Height();
   m_charSize = graphics->getCharSize();
-  m_workBitmap.CreateBitmap(w,h,screen.GetDeviceCaps(PLANES),screen.GetDeviceCaps(BITSPIXEL),NULL);
+  m_workBitmap.CreateBitmap(w,h,screen.GetDeviceCaps(PLANES),screen.GetDeviceCaps(BITSPIXEL),nullptr);
   m_workBitmap.SetBitmapDimension(w,h);
   m_workDC.SelectObject(m_workBitmap);
 }
@@ -558,16 +558,16 @@ void TreePainter::paint(double slideAmount) {
   m_workDC.FillSolidRect(&m_workRect,RGB(255,255,255));
   AvlNode *root = m_tree.getRoot();
   if(root) {
-    paintNode(root,NULL);
+    paintNode(root,nullptr);
   }
   flush();
 }
 
 TreePainter::~TreePainter() {
-  if(m_workDC.m_hDC != NULL) {
+  if(m_workDC.m_hDC != nullptr) {
     m_workDC.DeleteDC();
   }
-  if(m_workBitmap.m_hObject != NULL) {
+  if(m_workBitmap.m_hObject != nullptr) {
     m_workBitmap.DeleteObject();
   }
 }
@@ -583,7 +583,7 @@ void TreePainter::paintNode(AvlNode *p, const CPoint *parentPos) {
   const CRect  ellipseRect   = p->getEllipseRect(pos);
   const CPoint ellipseCenter = ellipseRect.CenterPoint();
 
-  if(parentPos != NULL) {
+  if(parentPos != nullptr) {
     m_workDC.MoveTo(*parentPos);
     m_workDC.LineTo(ellipseCenter.x, ellipseRect.top);
   }
@@ -710,7 +710,7 @@ void AvlTree::setColor(int color) {
 // Makes a cascade of single-rotations if root is deleted
 AvlNode *AvlTree::makeFibonacciNodeType1(int height) {
   if(height <= 0)
-    return NULL;
+    return nullptr;
 
   AvlNode *p   = new AvlNode;
   p->m_left    = makeFibonacciNodeType1(height-1);
@@ -726,7 +726,7 @@ AvlNode *AvlTree::makeFibonacciNodeType1(int height) {
 // Makes a cascade of double-rotations if root is deleted,
 AvlNode *AvlTree::makeFibonacciNodeType2(int height, int balance) {
   if(height <= 0)
-    return NULL;
+    return nullptr;
 
   AvlNode *p = new AvlNode;
   p->m_color = BLACK;
@@ -759,7 +759,7 @@ void AvlTree::makeFibonacciTree(int height, int type) { // type = 1/2
 
 static int checkAvlNode(const AvlNode *n) { // Return height of tree.
   int leftHeight = 0, rightHeight = 0;
-  if(n == NULL)
+  if(n == nullptr)
     return 0;
 
   if(n->m_left) {
@@ -807,7 +807,7 @@ void AvlIterator::push(AvlNode *avlNode, AvlIteratorStatus status) {
 int *AvlIterator::next() {
   AvlIteratorStackElem *sp;
   if(!m_lastWasNext) {
-    if((sp = top()) != NULL) {
+    if((sp = top()) != nullptr) {
       if(sp->m_status == LEFT_FOR) {
         sp->m_status = RIGHT_FOR;
       }
@@ -848,13 +848,13 @@ int *AvlIterator::next() {
       NODEFAULT;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 int *AvlIterator::prev() {
   AvlIteratorStackElem *sp;
   if(m_lastWasNext) {
-    if((sp = top()) != NULL) {
+    if((sp = top()) != nullptr) {
       if(sp->m_status == RIGHT_FOR) {
         sp->m_status = LEFT_FOR;
       }
@@ -895,7 +895,7 @@ int *AvlIterator::prev() {
       NODEFAULT;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 int *AvlIterator::first() {
@@ -960,6 +960,6 @@ void AvlIterator::paint() {
 */
 
 static String makeCurrentKey(const int *x) {
-  return x ? format(_T("%d"),*x) : _T("NULL");
+  return x ? format(_T("%d"),*x) : _T("nullptr");
 }
 

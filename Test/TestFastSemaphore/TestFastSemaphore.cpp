@@ -163,7 +163,7 @@ private:
       }
     }
     throwException(_T("%s with id %d not found."), (type==PRODUCER)?_T("Producer"):_T("Consumer"),id);
-    return NULL;
+    return nullptr;
   }
   inline Consumer *findConsumer(int id) const {
     return (Consumer*)findQueueTester(CONSUMER, id);

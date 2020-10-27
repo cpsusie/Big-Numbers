@@ -24,7 +24,7 @@ public:
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CMakeAviDlg::CMakeAviDlg(CWnd *pParent /*=NULL*/) : CDialog(CMakeAviDlg::IDD, pParent) {
+CMakeAviDlg::CMakeAviDlg(CWnd *pParent /*=nullptr*/) : CDialog(CMakeAviDlg::IDD, pParent) {
   m_framePerSecond = 15;
   m_useEvery       = 1;
   m_hIcon          = theApp.LoadIcon(IDR_MAINFRAME);
@@ -64,7 +64,7 @@ BOOL CMakeAviDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -292,7 +292,7 @@ public:
     , m_useEvery(useEvery)
   {
     m_index   = 0;
-    m_dc      = NULL;
+    m_dc      = nullptr;
     m_bitmap  = 0;
   }
   ~AviConverter();
@@ -313,10 +313,10 @@ public:
 };
 
 AviConverter::~AviConverter() {
-  if(m_bitmap != NULL) {
+  if(m_bitmap != nullptr) {
     DeleteObject(m_bitmap);
   }
-  if(m_dc != NULL) {
+  if(m_dc != nullptr) {
     DeleteDC(m_dc);
   }
 }
@@ -423,7 +423,7 @@ UINT AviReader::safeRun() {
   const String dir = spl.getDrive() + spl.getDir();
   m_maxIndex = aviFile.getStreamInfo(). dwLength;
   HBITMAP bitmap;
-  while((bitmap = aviFile.readFrame()) != NULL) {
+  while((bitmap = aviFile.readFrame()) != nullptr) {
     m_index++;
     if(isInterrupted()) {
       throwException(_T("Interrupted by user"));

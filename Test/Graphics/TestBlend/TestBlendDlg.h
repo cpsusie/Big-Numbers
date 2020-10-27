@@ -21,7 +21,7 @@ private:
     void setCursors(int winCursor, int imageCursor);
     void drawKingRotated();
 public:
-    CTestBlendDlg(CWnd *pParent = NULL);
+    CTestBlendDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_TESTBLEND_DIALOG };
     UINT    m_srcConstAlpha;

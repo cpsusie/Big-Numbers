@@ -4,7 +4,7 @@ class CTablebaseDlg : public CDialog, OptionsAccessor {
 private:
     HACCEL  m_accelTable;
 public:
-    CTablebaseDlg(CWnd *pParent = NULL);
+    CTablebaseDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_TABLEBASE_DIALOG };
     int     m_moveCount;

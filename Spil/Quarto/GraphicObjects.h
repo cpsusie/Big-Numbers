@@ -13,7 +13,7 @@ class GameBoardObject;
 
 class BoardObjectWithTexture : public D3SceneObjectWithMesh {
 protected:
-  virtual LPDIRECT3DTEXTURE getTexture() = NULL; /* TODO not virtual in base-class */
+  virtual LPDIRECT3DTEXTURE getTexture() = nullptr; /* TODO not virtual in base-class */
 public:
   BoardObjectWithTexture(D3Scene &scene, LPD3DXMESH mesh) : D3SceneObjectWithMesh(scene, mesh) {
   }

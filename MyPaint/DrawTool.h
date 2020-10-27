@@ -368,7 +368,7 @@ public:
 
 class NullTool : public DrawTool {
 public:
-  NullTool() : DrawTool(NULL) {}
+  NullTool() : DrawTool(nullptr) {}
   DrawToolType getType() const {
     return NULLTOOL;
   }

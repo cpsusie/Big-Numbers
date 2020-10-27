@@ -4,7 +4,7 @@ class CTestDirectXDlg : public CDialog {
 private:
     HICON m_hIcon;
 public:
-    CTestDirectXDlg(CWnd *pParent = NULL);
+    CTestDirectXDlg(CWnd *pParent = nullptr);
 
     PixRect *m_image;
 

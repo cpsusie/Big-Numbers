@@ -43,7 +43,7 @@ private:
       m_xTo   = i.getTo();
     }
 public:
-    CCustomFitThreadDlg(const CString &expr, const DoubleInterval &range, const Point2DArray &pointArray, FunctionPlotter &fp, CWnd *pParent = NULL);
+    CCustomFitThreadDlg(const CString &expr, const DoubleInterval &range, const Point2DArray &pointArray, FunctionPlotter &fp, CWnd *pParent = nullptr);
 
     enum { IDD = IDR_CUSTOMFIT };
 

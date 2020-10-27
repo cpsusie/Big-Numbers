@@ -33,17 +33,17 @@ protected:
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestExpressionGraphicsDlg::CTestExpressionGraphicsDlg(CWnd *pParent /*=NULL*/) : CDialogWithDynamicLayout(IDD, pParent), m_numberFormat(0) {
+CTestExpressionGraphicsDlg::CTestExpressionGraphicsDlg(CWnd *pParent /*=nullptr*/) : CDialogWithDynamicLayout(IDD, pParent), m_numberFormat(0) {
   m_exprText         = EMPTYSTRING;
   m_x                = 0.0;
   m_hIcon            = theApp.LoadIcon(IDR_MAINFRAME);
-  m_debugExpr        = NULL;
-  m_debugger         = NULL;
+  m_debugExpr        = nullptr;
+  m_debugger         = nullptr;
   m_debugWinId       = -1;
   m_contextWinId     = -1;
-  m_contextRect      = NULL;
-  m_leastContextRect = NULL;
-  m_currentChildDlg  = NULL;
+  m_contextRect      = nullptr;
+  m_leastContextRect = nullptr;
+  m_currentChildDlg  = nullptr;
 }
 
 CTestExpressionGraphicsDlg::~CTestExpressionGraphicsDlg() {
@@ -113,7 +113,7 @@ BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -158,7 +158,7 @@ void CTestExpressionGraphicsDlg::callNotepad(const String &s) {
   FILE *f = mkfopen(TMPFNAME,_T("w"));
   _ftprintf(f, _T("%s"), s.cstr());
   fclose(f);
-  intptr_t ret = _spawnl(_P_NOWAIT,"c:\\windows\\system32\\notepad.exe", "notepad", TMPFNAME, NULL);
+  intptr_t ret = _spawnl(_P_NOWAIT,"c:\\windows\\system32\\notepad.exe", "notepad", TMPFNAME, nullptr);
 }
 
 void CTestExpressionGraphicsDlg::OnPaint() {
@@ -196,19 +196,19 @@ BOOL CTestExpressionGraphicsDlg::PreTranslateMessage(MSG *pMsg) {
 
 void CTestExpressionGraphicsDlg::buildSamplesMenu() {
   HMENU samplesMenu    = findMenuContainingId(*GetMenu(), ID_SAMPLES_RUNALL);
-  HMENU currentSubMenu = NULL;
+  HMENU currentSubMenu = nullptr;
   int   subMenuCount   = 0, itemsInSubMenu;
   const size_t count = ExpressionSamples::getCount();
 #define SAMPLESPERMENU 20
   for(UINT i = 0; i < count; i++) {
-    if(currentSubMenu == NULL) {
+    if(currentSubMenu == nullptr) {
       currentSubMenu = insertSubMenu(samplesMenu, subMenuCount++, format(_T("%2d - %2d"), i, i + SAMPLESPERMENU-1));
       itemsInSubMenu = 0;
     }
     const TCHAR *text = ExpressionSamples::getSample(i);
     insertMenuItem(currentSubMenu, itemsInSubMenu++, text, FIRST_SAMPLE_COMMAND + i);
     if(itemsInSubMenu == SAMPLESPERMENU) {
-      currentSubMenu = NULL;
+      currentSubMenu = nullptr;
     }
   }
 }
@@ -266,10 +266,10 @@ void CTestExpressionGraphicsDlg::OnViewShowReductionStack() {
     szText.m_nXRatio  = 100; szImage.m_nYRatio =   0;
     szImage.m_nXRatio = 100; szImage.m_nYRatio =  50;
   }
-  setCtrlRect(IDC_STATICREDUCTIONSTACK,stackRect, NULL, &szStack);
-  setCtrlRect(IDC_STATICEXPRIMAGE     ,r1       , NULL, &szImage);
-  setCtrlRect(IDC_EDITDERIVED         ,r2       , NULL, &szText );
-  setCtrlRect(IDC_STATICDERIVEDIMAGE  ,r3       , NULL, &szImage);
+  setCtrlRect(IDC_STATICREDUCTIONSTACK,stackRect, nullptr, &szStack);
+  setCtrlRect(IDC_STATICEXPRIMAGE     ,r1       , nullptr, &szImage);
+  setCtrlRect(IDC_EDITDERIVED         ,r2       , nullptr, &szText );
+  setCtrlRect(IDC_STATICDERIVEDIMAGE  ,r3       , nullptr, &szImage);
 #endif
 }
 
@@ -426,7 +426,7 @@ void CTestExpressionGraphicsDlg::OnSamplesRunall() {
 void CTestExpressionGraphicsDlg::startViewPhoto(const String &dir, const String &fileName) { // static
   const String fullName = FileNameSplitter::getChildName(dir,fileName);
   const String cmd = format(_T("shimgvw.dll,ImageView_Fullscreen %s"), fullName.cstr());
-  HINSTANCE inst = ::ShellExecute(NULL,L"open",_T("rundll32.exe"),cmd.cstr(),dir.cstr(),SW_SHOWNORMAL);
+  HINSTANCE inst = ::ShellExecute(nullptr,L"open",_T("rundll32.exe"),cmd.cstr(),dir.cstr(),SW_SHOWNORMAL);
 }
 
 void CTestExpressionGraphicsDlg::startDebugger(int debugWinId, bool singleStep) {
@@ -489,10 +489,10 @@ void CTestExpressionGraphicsDlg::handlePropertyChanged(const PropertyContainer *
     case TREE_SELECTEDNODE:
       { ExpressionNode *oldSelected = (ExpressionNode*)oldValue;
         ExpressionNode *newSelected = (ExpressionNode*)newValue;
-        if(oldSelected != NULL) {
+        if(oldSelected != nullptr) {
           oldSelected->unMark();
         }
-        if(newSelected != NULL) {
+        if(newSelected != nullptr) {
           newSelected->mark();
         }
         updateContextWinImage();
@@ -925,7 +925,7 @@ int CTestExpressionGraphicsDlg::getWindowIdFromPoint(CPoint &p) { // assume p re
     ClientToScreen(&stackPoint);
     m_reductionStackWindow.ScreenToClient(&stackPoint);
     m_selectedStackElement = getSelectedStackElement(stackPoint);
-    if((m_selectedStackElement == NULL) || !m_selectedStackElement->hasNode()) {
+    if((m_selectedStackElement == nullptr) || !m_selectedStackElement->hasNode()) {
       return -1;
     }
     p = stackPoint;
@@ -956,7 +956,7 @@ bool CTestExpressionGraphicsDlg::loadMenu(CMenu &menu, int id) {
 
 #if defined(TRACE_REDUCTION_CALLSTACK)
 const ReductionStackElement *CTestExpressionGraphicsDlg::getSelectedStackElement(CPoint p) {
-  if(!isDebuggerPaused()) return NULL;
+  if(!isDebuggerPaused()) return nullptr;
 
   const int             lineHeight  = m_reductionStackWindow.getLineHeight();
   const CSize           clSize      = getClientRect(m_reductionStackWindow).Size();
@@ -965,7 +965,7 @@ const ReductionStackElement *CTestExpressionGraphicsDlg::getSelectedStackElement
   const int             index       = stackHeight - 1 - (clSize.cy - p.y) / lineHeight ; // from top
 
   if(index < 0 || index >= stackHeight) {
-    return NULL;
+    return nullptr;
   }
   // index = [0..stack.getHeightHeight()-1]. topelement is top(0), bottom element i top(stackHeight()-1)
   return &stack.top(index);
@@ -974,7 +974,7 @@ const ReductionStackElement *CTestExpressionGraphicsDlg::getSelectedStackElement
 
 void CTestExpressionGraphicsDlg::OnContextMenuShowExprTree() {
   Expression     *expr;
-  ExpressionNode *node = NULL;
+  ExpressionNode *node = nullptr;
   bool  handleNodeChanges = false;
   if(isDebuggerPaused() && (getContextWindowId() == m_debugWinId)) {
     expr = m_debugExpr;
@@ -984,7 +984,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuShowExprTree() {
     handleNodeChanges = true;
   }
 
-  if(expr == NULL) {
+  if(expr == nullptr) {
     showWarning(_T("No expression to show"));
     return;
   }
@@ -1008,7 +1008,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuShowExprTree() {
 
 void CTestExpressionGraphicsDlg::OnContextMenuToStandardForm() {
   Expression *expr = getContextExpression();
-  if(expr == NULL) {
+  if(expr == nullptr) {
     showWarning(_T("No expression to convert"));
     return;
   }
@@ -1019,7 +1019,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuToStandardForm() {
 
 void CTestExpressionGraphicsDlg::OnContextMenuToCanoncalForm() {
   Expression *expr = getContextExpression();
-  if(expr == NULL) {
+  if(expr == nullptr) {
     showWarning(_T("No expression to convert"));
     return;
   }
@@ -1030,7 +1030,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuToCanoncalForm() {
 
 void CTestExpressionGraphicsDlg::OnContextMenuToNumericForm() {
   Expression *expr = getContextExpression();
-  if(expr == NULL) {
+  if(expr == nullptr) {
     showWarning(_T("No expression to convert"));
     return;
   }
@@ -1049,7 +1049,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuShowNodeTree() {
 void CTestExpressionGraphicsDlg::OnContextMenuExpand() {
   if(!hasContextNode()) return;
   Expression *expr = getContextExpression();
-  if(expr == NULL) {
+  if(expr == nullptr) {
     showWarning(_T("No expression to expand"));
     return;
   }
@@ -1063,7 +1063,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuExpand() {
 void CTestExpressionGraphicsDlg::OnContextMenuMultiply() {
   if(!hasContextNode()) return;
   Expression *expr = getContextExpression();
-  if(expr == NULL) {
+  if(expr == nullptr) {
     showWarning(_T("No expression to multiply"));
     return;
   }
@@ -1372,7 +1372,7 @@ void CTestExpressionGraphicsDlg::clearContextWindow() {
 }
 
 void CTestExpressionGraphicsDlg::setContextWindow(int winId) {
-  setContextRect(winId,NULL,NULL);
+  setContextRect(winId,nullptr,nullptr);
 }
 
 void CTestExpressionGraphicsDlg::setContextRect(int winId, const ExpressionRectangle *rect, const ExpressionRectangle *leastRect) {
@@ -1383,9 +1383,9 @@ void CTestExpressionGraphicsDlg::setContextRect(int winId, const ExpressionRecta
   case IDC_STATICREDUCTIONSTACK: winName = _T("Stack"  ); break;
   default                      : winName = _T("None"   ); break;
   }
-  if(leastRect != NULL) {
-    if(rect == NULL) {
-      showMessageBox(0, _T("rect == NULL && leastRect != NULL"));
+  if(leastRect != nullptr) {
+    if(rect == nullptr) {
+      showMessageBox(0, _T("rect == nullptr && leastRect != nullptr"));
       return;
     }
     if((rect != leastRect) && !leastRect->isDescentantOf(*rect)) {
@@ -1422,7 +1422,7 @@ Expression *CTestExpressionGraphicsDlg::getContextExpression() {
 }
 
 ExpressionImage *CTestExpressionGraphicsDlg::getContextImage() {
-  return hasImageInWindow(m_contextWinId) ? &getImageFromWinId(m_contextWinId) : NULL;
+  return hasImageInWindow(m_contextWinId) ? &getImageFromWinId(m_contextWinId) : nullptr;
 }
 
 bool CTestExpressionGraphicsDlg::hasImageInWindow(int winId) const {
@@ -1436,12 +1436,12 @@ bool CTestExpressionGraphicsDlg::hasImageInWindow(int winId) const {
 }
 
 Expression *CTestExpressionGraphicsDlg::getExprFromWinId(int winId) {
-  if(!hasImageInWindow(winId)) return NULL;
+  if(!hasImageInWindow(winId)) return nullptr;
   switch(winId) {
   case IDC_STATICEXPRIMAGE   : return &m_expr;
   case IDC_STATICDERIVEDIMAGE: return &m_derivedExpr;
   }
-  return NULL;
+  return nullptr;
 }
 
 ExpressionImage &CTestExpressionGraphicsDlg::getImageFromWinId(int winId) {

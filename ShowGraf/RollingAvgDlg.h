@@ -10,7 +10,7 @@ private:
   void winToParam(      RollingAvg &param);
   bool validate();
 public:
-  CRollingAvgDlg(const RollingAvg &rollingAvg, CWnd *pParent = NULL);
+  CRollingAvgDlg(const RollingAvg &rollingAvg, CWnd *pParent = nullptr);
 
   enum { IDD = IDD_ROLLINGAVG_DIALOG };
   UINT    m_queueSize;

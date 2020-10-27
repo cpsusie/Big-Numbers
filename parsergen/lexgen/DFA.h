@@ -21,7 +21,7 @@ public:
   // next state for each character
   DFAtrans      m_transition;
 
-  DFAstate(int id, BitSet *NFAset = NULL, AcceptAction *action = NULL);
+  DFAstate(int id, BitSet *NFAset = nullptr, AcceptAction *action = nullptr);
   void print(MarginFile &f) const;
 };
 
@@ -48,7 +48,7 @@ private:
   // index of the state entry, else return -1.
   int         stateExist(const BitSet &NFAset) const;
   // Return a set that contains all NFA states that can be reached by making
-  // transitions on "c" from any NFA state in NFAset. Returns NULL if
+  // transitions on "c" from any NFA state in NFAset. Returns nullptr if
   // there are no such transitions.
   BitSet     *transition(BitSet &NFAset, int c) const;
   void        epsClosure(BitSet &NFAset, AcceptAction *&accept) const;

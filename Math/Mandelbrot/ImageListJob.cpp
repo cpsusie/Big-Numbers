@@ -10,7 +10,7 @@ UINT ImageListJob::safeRun() {
 
   HBITMAP bm;
   int frameIndex = 0;
-  while((bm = m_frameGenerator.nextBitmap()) != NULL) {
+  while((bm = m_frameGenerator.nextBitmap()) != nullptr) {
     frameIndex++;
     const String fileName = FileNameSplitter::getChildName(dirName, format(_T("frame%05d.jpg"), frameIndex));
     DEBUGLOG(_T("got frame\n"));

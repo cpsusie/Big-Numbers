@@ -26,7 +26,7 @@ void EndGameTablebase::load(ByteInputStream &s) {
 }
 
 String EndGameTablebase::loadPacked() {
-  if(m_packedIndex != NULL) {
+  if(m_packedIndex != nullptr) {
     return EMPTYSTRING;
   }
   const String fileName = getTbFileName(ALLTABLEBASE);
@@ -218,7 +218,7 @@ void EndGameTablebase::doBuild(BuildStep buildStep) {
         } else {
           unravelWinnerPositions();
         }
-        m_info.m_buildTime = _time32(NULL);
+        m_info.m_buildTime = _time32(nullptr);
         save();
         checkAllSubKeysFound();
         buildStep = FIXUP_POSITIONS;
@@ -895,7 +895,7 @@ bool EndGameTablebase::fixupPositions() {
     }
     if(((changedPositions == 0) && (startState == 0)) || checkConsistency(CHECK_HEADER | CHECK_POSITIONS | CHECK_RETURN_ON_ERROR)) {
       m_info.m_stateFlags |= TBISTATE_CONSISTENT;
-      m_info.m_consistencyCheckedTime = _time32(NULL);
+      m_info.m_consistencyCheckedTime = _time32(nullptr);
       return true;
     }
     m_info.m_stateFlags = 0; // reset all flags and repeat
@@ -1265,7 +1265,7 @@ EndGameResult EndGameTablebase::getBestResult(Game &game, bool breakOnDraw) { //
   bool         drawMoveFound     = false;
   bool         winningMoveFound  = false;
   bool         loosingMoveFound  = false;
-  const Piece *skipNextPromotion = NULL;
+  const Piece *skipNextPromotion = nullptr;
 
   Move           m;
   MoveGenerator &mg   = game.getMoveGenerator();
@@ -1279,7 +1279,7 @@ EndGameResult EndGameTablebase::getBestResult(Game &game, bool breakOnDraw) { //
       if(m.m_piece == skipNextPromotion) {
         continue;
       } else {
-        skipNextPromotion = NULL;
+        skipNextPromotion = nullptr;
       }
     }
     game.tryMove(m);
@@ -1542,7 +1542,7 @@ int EndGameTablebase::getInfoLength() const {
 }
 
 void EndGameTablebase::logPositionCount() const {
-  if(m_logFile == NULL) {
+  if(m_logFile == nullptr) {
     m_logFile = MKFOPEN(getTempFileName(format(_T("%sCount.log"), getName().cstr())), _T("w"));
   }
 
@@ -1579,9 +1579,9 @@ void EndGameTablebase::startLogging() {
 
 void EndGameTablebase::stopLogging() {
   m_logTimer.stopTimer();
-  if(m_logFile != NULL) {
+  if(m_logFile != nullptr) {
     fclose(m_logFile);
-    m_logFile = NULL;
+    m_logFile = nullptr;
   }
 }
 
@@ -1939,7 +1939,7 @@ String EndGameTablebase::save(bool convert) const {
 
 String EndGameTablebase::saveAllForwardPositions(bool convert) {
   if(!convert) {
-    m_info.m_buildTime = _time32(NULL);
+    m_info.m_buildTime = _time32(nullptr);
   }
   return save(getTbFileName(ALLFORWARDPOSITIONS), convert);
 }
@@ -1952,7 +1952,7 @@ String EndGameTablebase::loadAllForwardPositions() {
 
 String EndGameTablebase::saveAllRetroPositions(bool convert) {
   if(!convert) {
-    m_info.m_buildTime = _time32(NULL);
+    m_info.m_buildTime = _time32(nullptr);
   }
   return save(getTbFileName(ALLRETROPOSITIONS), convert);
 }

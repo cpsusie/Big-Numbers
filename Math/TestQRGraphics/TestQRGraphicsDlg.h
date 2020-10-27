@@ -8,7 +8,7 @@ class CTestQRGraphicsDlg : public CDialog {
 private:
     HICON     m_hIcon;
 public:
-    CTestQRGraphicsDlg(CWnd *pParent = NULL);
+    CTestQRGraphicsDlg(CWnd *pParent = nullptr);
     CFont     m_font;
     Matrix    a;
 

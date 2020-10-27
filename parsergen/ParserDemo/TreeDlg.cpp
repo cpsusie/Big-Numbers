@@ -85,7 +85,7 @@ BOOL TreeDlg::PreTranslateMessage(MSG *pMsg) {
       CPoint     p    = pMsg->pt;
       ctrl->ScreenToClient(&p);
       HTREEITEM item = findTreeItemByPoint(ctrl, p);
-      if(item != NULL) {
+      if(item != nullptr) {
         const String derivation = getDerivation(ctrl, item, 160);
         showInformation(derivation);
         return TRUE;
@@ -121,7 +121,7 @@ void TreeDlg::getDerivation(CTreeCtrl *ctrl, HTREEITEM item, String &derivation,
     derivation += s.GetBuffer(maxlen);
     return;
   }
-  for(HTREEITEM child = ctrl->GetChildItem(item); child != NULL; child = ctrl->GetNextSiblingItem(child)) { // item is a nonterminal
+  for(HTREEITEM child = ctrl->GetChildItem(item); child != nullptr; child = ctrl->GetNextSiblingItem(child)) { // item is a nonterminal
     String tmp;
     getDerivation(ctrl, child, tmp, maxlen);
     if(derivation.length() > 0) derivation += _T(" ");

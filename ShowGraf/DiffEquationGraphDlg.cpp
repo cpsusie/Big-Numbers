@@ -139,7 +139,7 @@ bool CDiffEquationGraphDlg::validate() {
     return false;
   }
   bool  ok       = true;
-  FILE *listFile = NULL;
+  FILE *listFile = nullptr;
   try {
     const String listFileName = getListFileName(param);
     if(listFileName.length() > 0) {
@@ -156,7 +156,7 @@ bool CDiffEquationGraphDlg::validate() {
     showException(e);
     ok = false;
   }
-  if(listFile != NULL) {
+  if(listFile != nullptr) {
     fclose(listFile);
   }
   return ok;
@@ -199,7 +199,7 @@ void CDiffEquationGraphDlg::gotoTextPosition(int ctrlId, const SourcePosition &p
 
 void CDiffEquationGraphDlg::gotoErrorPosition(int index) {
   const ErrorPosition &pos = m_errorPosArray[index];
-  CDiffEquationEdit   *eq  = NULL;
+  CDiffEquationEdit   *eq  = nullptr;
   switch(pos.getLocation()) {
   case ERROR_INNAME   :
     if(eq = getEquationEdit(pos.getEquationIndex())) {
@@ -275,7 +275,7 @@ void CDiffEquationGraphDlg::addToRecent(const String &fileName) {
 
 void CDiffEquationGraphDlg::OnEditFindmatchingparentesis() {
   CDiffEquationEdit *eq = getFocusEquation();
-  if(eq == NULL) return;
+  if(eq == nullptr) return;
   if(eq->getFocusField() == EQ_EXPR_EDIT) {
     gotoMatchingParanthes(this, eq->getExprId());
   }

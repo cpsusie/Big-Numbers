@@ -15,7 +15,7 @@ KeyFileWrapper::KeyFileWrapper(const String &fileName, int keySize, int valueSiz
     create(fileName);
   }
 
-  m_file = new KeyFile(m_fileName, DBFMODE_READWRITE, NULL);
+  m_file = new KeyFile(m_fileName, DBFMODE_READWRITE, nullptr);
 
   const KeyFileDefinition &keydef = m_file->getDefinition();
   SETCONST(m_keyFieldCount, keydef.getKeyFieldCount(), UINT);
@@ -70,7 +70,7 @@ void *KeyFileWrapper::get(const void *key) {
     return getValue(m_key);
   } else {
     m_fileKey = m_key;
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -164,7 +164,7 @@ DEFINECLASSNAME(FileHashMapKeyIterator);
 
 FileHashMapKeyIterator::FileHashMapKeyIterator(KeyFileWrapper &keyFile)
   : m_keyFile(keyFile)
-  , m_keyCursor(keyFile.getFile(), RELOP_TRUE, NULL, 0, RELOP_TRUE, NULL, 0, SORT_ASCENDING)
+  , m_keyCursor(keyFile.getFile(), RELOP_TRUE, nullptr, 0, RELOP_TRUE, nullptr, 0, SORT_ASCENDING)
 {
   m_hasElement = false;
 }
@@ -204,7 +204,7 @@ void FileHashMapEntryIterator::flush() {
 
 FileHashMapEntryIterator::FileHashMapEntryIterator(KeyFileWrapper &keyFile)
   : m_keyFile(&keyFile)
-  , m_keyCursor(keyFile.getFile(), RELOP_TRUE, NULL, 0, RELOP_TRUE, NULL, 0, SORT_ASCENDING)
+  , m_keyCursor(keyFile.getFile(), RELOP_TRUE, nullptr, 0, RELOP_TRUE, nullptr, 0, SORT_ASCENDING)
 {
   m_buffer.m_key   = m_key.m_data;
   m_buffer.m_value = m_keyFile->getValue(m_key);

@@ -9,7 +9,7 @@
 
 #define PORTNUMBER 3571
 
-CConnectDlg::CConnectDlg(Game &game, CWnd *pParent /*=NULL*/) : m_game(game), CDialog(CConnectDlg::IDD, pParent) {
+CConnectDlg::CConnectDlg(Game &game, CWnd *pParent /*=nullptr*/) : m_game(game), CDialog(CConnectDlg::IDD, pParent) {
   const Options &options = getOptions();
   m_serverComputerName = options.getServerComputerName().cstr();
   m_connectedToServer  = options.isConnectedToServer() ? 1 : 0;
@@ -124,7 +124,7 @@ void CConnectDlg::OnTimer(UINT_PTR nIDEvent) {
 }
 
 void CConnectDlg::startTimer() {
-  if(SetTimer(1, 100, NULL)) {
+  if(SetTimer(1, 100, nullptr)) {
     m_timerIsRunning = true;
   }
 }

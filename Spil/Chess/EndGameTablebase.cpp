@@ -16,13 +16,13 @@ EndGameTablebase::EndGameTablebase(const EndGameKeyDefinition &keydef)
   m_useRemoteSubTablebase = false;
   m_loadRefCount          = 0;
 #if defined(TABLEBASE_BUILDER)
-  m_packedIndex           = NULL;
+  m_packedIndex           = nullptr;
   resetInitialSetupFlags();
   m_buildOk               = true;
   m_allKeysFound          = true;
   m_generatingPositions   = false;
   m_verboseTriggered      = false;
-  m_logFile               = NULL;
+  m_logFile               = nullptr;
   m_infoLength            = 0;
   m_positionsAnalyzed     = 0;
 #endif
@@ -126,12 +126,12 @@ void EndGameTablebase::unloadSubTablebases() {
 }
 
 EndGamePositionStatus EndGameTablebase::isTerminalMove(const Game &game, const Move &m, UINT *pliesToEnd, MoveResultArray *allMoves) const {
-  if((m.m_capturedPiece == NULL) && (m.m_type != PROMOTION)) {
+  if((m.m_capturedPiece == nullptr) && (m.m_type != PROMOTION)) {
     return EG_UNDEFINED;
   } else {
     const SubTablebaseKey key(m);
     SubTablebasePositionInfo *sps = m_subTablebaseMap.get(key);
-    if(sps == NULL) {
+    if(sps == nullptr) {
       m_subTablebaseMap.put(key, SubTablebasePositionInfo(game));
       sps = m_subTablebaseMap.get(key);
       if(sps->isRemote()) {

@@ -254,7 +254,7 @@ class TablebaseWithSwap {
 public:
   EndGameTablebase *m_db;
   bool              m_swap;
-  TablebaseWithSwap() : m_db(NULL), m_swap(false) {
+  TablebaseWithSwap() : m_db(nullptr), m_swap(false) {
   }
   TablebaseWithSwap(EndGameTablebase *db, bool swap) : m_db(db), m_swap(swap) {
   }
@@ -336,7 +336,7 @@ EndGameTablebase *EndGameTablebase::getInstanceBySignature(const PositionSignatu
     swap = dbs->m_swap;
     return dbs->m_db;
   }
-  return NULL;
+  return nullptr;
 /*
   const EndGameTablebaseList &list = getRegisteredEndGameTablebases();
   for(int i = 0; i < list.size(); i++) {
@@ -345,7 +345,7 @@ EndGameTablebase *EndGameTablebase::getInstanceBySignature(const PositionSignatu
       return db;
     }
   }
-  return NULL; // no tablebase matches the given signatur
+  return nullptr; // no tablebase matches the given signatur
 */
 }
 

@@ -82,18 +82,18 @@ protected:
   CDC           m_dc;
 
   static CFont &getFont(bool symbol, const Point2D &vector);
-  void          paintCircle(         const CPoint &p, int radius, CPen *pen, CBrush *brush                    , HDC hdc = NULL);
-  void          paintRing(           const CPoint &p, int radius, CPen *pen, CBrush *brush                    , HDC hdc = NULL);
-  DirectionPair paintLineArrow(      const CPoint &from, const CPoint &to                                     , HDC hdc = NULL);
-  DirectionPair paintBezierArrow(    const CPoint &from, const CPoint &to                                     , HDC hdc = NULL);
-  void          paintLoopArrow(      const CPoint &from, int radius, DirectionPair dir, const String &text    , HDC hdc = NULL);
-  void          paintPathArrow(      const TransitionPath &path                                               , HDC hdc = NULL);
+  void          paintCircle(         const CPoint &p, int radius, CPen *pen, CBrush *brush                    , HDC hdc = nullptr);
+  void          paintRing(           const CPoint &p, int radius, CPen *pen, CBrush *brush                    , HDC hdc = nullptr);
+  DirectionPair paintLineArrow(      const CPoint &from, const CPoint &to                                     , HDC hdc = nullptr);
+  DirectionPair paintBezierArrow(    const CPoint &from, const CPoint &to                                     , HDC hdc = nullptr);
+  void          paintLoopArrow(      const CPoint &from, int radius, DirectionPair dir, const String &text    , HDC hdc = nullptr);
+  void          paintPathArrow(      const TransitionPath &path                                               , HDC hdc = nullptr);
   // assume pen if selected.
   void          paintArrowEnd(       const CPoint &from, const CPoint &to                                     , HDC hdc);
   CPoint        findBestTextPosition(const CPoint pFrom, ArrowDirection direction, const CSize &textSize) const;
   CSize         getTextSize(CFont &font, const String &text);
-  void          setToWhite(HDC hdc = NULL);
-  void          textOut(             const CPoint &p, CFont &font, const String &text, HDC hdc = NULL);
+  void          setToWhite(HDC hdc = nullptr);
+  void          textOut(             const CPoint &p, CFont &font, const String &text, HDC hdc = nullptr);
   inline HDC    getDC(HDC hdc) { return hdc ? hdc : m_dc; }
   void          flushImage(HDC hdc);
   static        ArrowDirection getVectorDirection(const Point2D &vector);

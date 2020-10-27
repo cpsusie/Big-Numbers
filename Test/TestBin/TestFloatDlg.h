@@ -77,7 +77,7 @@ private:
   void             expo2ToWin();
   void             markLabel(int id, bool marked);
 public:
-  CTestFloatDlg(CWnd *pParent = NULL);
+  CTestFloatDlg(CWnd *pParent = nullptr);
   enum { IDD = IDD_TESTFLOAT_DIALOG };
 
 protected:

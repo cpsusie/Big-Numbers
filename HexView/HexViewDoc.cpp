@@ -38,7 +38,7 @@ void CHexViewDoc::close() {
 
 void CHexViewDoc::init() {
   m_fileName      = EMPTYSTRING;
-  m_file          = NULL;
+  m_file          = nullptr;
   m_readOnly      = true;
   resetStat();
   resetContent();
@@ -130,7 +130,7 @@ void CHexViewDoc::save() {
 
 void CHexViewDoc::saveAs(const String &newName) {
   SaveAsJob job(newName, *this);
-  ProgressWindow(NULL, job, 1000);
+  ProgressWindow(nullptr, job, 1000);
   if(!job.isOk()) {
     throwException(job.getErrorMsg());
   } else {

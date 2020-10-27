@@ -44,7 +44,7 @@ void LineArray::updateCapacity() {
 
 void LineArray::dump(const String &fname) const {
   FILE *f = fopen(fname,_T("w"));
-  if(f == NULL) {
+  if(f == nullptr) {
     return;
   }
   for(size_t i = 0; i < size(); i++) {
@@ -57,8 +57,8 @@ Lcs::Lcs(LcsComparator &cmp, CompareJob *job)
 : m_cmp(cmp)
 , m_job(job)
 {
-  m_tresh = NULL;
-  m_link  = NULL;
+  m_tresh = nullptr;
+  m_link  = nullptr;
 }
 
 Lcs::~Lcs() {

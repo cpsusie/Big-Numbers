@@ -50,7 +50,7 @@ UINT32 FourCC (const char *ChunkName) {
 //----------------------------------------------------------------------
 
 RiffFile::RiffFile() {
-  file  = NULL;
+  file  = nullptr;
   fmode = RFM_UNKNOWN;
 
   riff_header.ckID   = FourCC("RIFF");
@@ -95,7 +95,7 @@ DDCRET RiffFile::Open(const char *Filename, RiffFileMode NewMode) {
         if(fread(&riff_header, sizeof(riff_header), 1, file) != 1) {
           fclose(file);
           fmode = RFM_UNKNOWN;
-          file  = NULL;
+          file  = nullptr;
         } else {
           fmode = RFM_READ;
         }
@@ -138,7 +138,7 @@ DDCRET RiffFile::Close() {
     fclose(file);
     break;
   }
-  file  = NULL;
+  file  = nullptr;
   fmode = RFM_UNKNOWN;
   return retcode;
 }

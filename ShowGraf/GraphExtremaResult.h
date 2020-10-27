@@ -34,7 +34,7 @@ public:
   inline String getExtremaTypeName() const {
     return ::toString(getExtremaType());
   }
-  String toString(const TCHAR *name = NULL) const;
+  String toString(const TCHAR *name = nullptr) const;
 };
 
 inline std::wostream &operator<<(std::wostream &out, const GraphExtremaResult &er) {

@@ -9,7 +9,7 @@ private:
     void showFlags(const TCHAR *function, UINT flags);
     void releaseCreatedCursor();
 public:
-    CTestMouseDlg(CWnd *pParent = NULL);
+    CTestMouseDlg(CWnd *pParent = nullptr);
     ~CTestMouseDlg();
 
     enum { IDD = IDD_TESTMOUSE_DIALOG };

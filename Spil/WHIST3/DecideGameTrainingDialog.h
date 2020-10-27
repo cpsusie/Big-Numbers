@@ -45,7 +45,7 @@ private:
   void startTraining();
   void stopTraining();
 public:
-    DecideGameTrainingDialog(CWnd *pParent = NULL);
+    DecideGameTrainingDialog(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_DECIDE_GAME_TRAINING_DIALOG };
     int     m_pointPerStik;

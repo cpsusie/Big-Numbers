@@ -164,26 +164,26 @@ int main()
   /* Make necessary initializations so that Triangle can return a */
   /*   triangulation in `mid' and a voronoi diagram in `vorout'.  */
 
-  mid.pointlist             = NULL;   /* Not needed if -N switch used. */
+  mid.pointlist             = nullptr;   /* Not needed if -N switch used. */
   /* Not needed if -N switch used or number of point attributes is zero: */
-  mid.pointattributelist    = NULL;
-  mid.pointmarkerlist       = NULL;   /* Not needed if -N or -B switch used. */
-  mid.trianglelist          = NULL;   /* Not needed if -E switch used. */
+  mid.pointattributelist    = nullptr;
+  mid.pointmarkerlist       = nullptr;   /* Not needed if -N or -B switch used. */
+  mid.trianglelist          = nullptr;   /* Not needed if -E switch used. */
   /* Not needed if -E switch used or number of triangle attributes is zero: */
-  mid.triangleattributelist = NULL;
-  mid.neighborlist          = NULL;   /* Needed only if -n switch used. */
+  mid.triangleattributelist = nullptr;
+  mid.neighborlist          = nullptr;   /* Needed only if -n switch used. */
   /* Needed only if segments are output (-p or -c) and -P not used: */
-  mid.segmentlist           = NULL;
+  mid.segmentlist           = nullptr;
   /* Needed only if segments are output (-p or -c) and -P and -B not used: */
-  mid.segmentmarkerlist     = NULL;
-  mid.edgelist              = NULL;   /* Needed only if -e switch used. */
-  mid.edgemarkerlist        = NULL;   /* Needed if -e used and -B not used. */
+  mid.segmentmarkerlist     = nullptr;
+  mid.edgelist              = nullptr;   /* Needed only if -e switch used. */
+  mid.edgemarkerlist        = nullptr;   /* Needed if -e used and -B not used. */
 
-  vorout.pointlist          = NULL;   /* Needed only if -v switch used. */
+  vorout.pointlist          = nullptr;   /* Needed only if -v switch used. */
   /* Needed only if -v switch used and number of attributes is not zero: */
-  vorout.pointattributelist = NULL;
-  vorout.edgelist           = NULL;   /* Needed only if -v switch used. */
-  vorout.normlist           = NULL;   /* Needed only if -v switch used. */
+  vorout.pointattributelist = nullptr;
+  vorout.edgelist           = nullptr;   /* Needed only if -v switch used. */
+  vorout.normlist           = nullptr;   /* Needed only if -v switch used. */
 
   /* Triangulate the points.  Switches are chosen to read and write a  */
   /*   PSLG (p), preserve the convex hull (c), number everything from  */
@@ -209,17 +209,17 @@ int main()
   /* Make necessary initializations so that Triangle can return a */
   /*   triangulation in `out'.                                    */
 
-  out.pointlist             = NULL;         /* Not needed if -N switch used. */
+  out.pointlist             = nullptr;         /* Not needed if -N switch used. */
   /* Not needed if -N switch used or number of attributes is zero: */
-  out.pointattributelist    = NULL;
-  out.trianglelist          = NULL;          /* Not needed if -E switch used. */
+  out.pointattributelist    = nullptr;
+  out.trianglelist          = nullptr;          /* Not needed if -E switch used. */
   /* Not needed if -E switch used or number of triangle attributes is zero: */
-  out.triangleattributelist = NULL;
+  out.triangleattributelist = nullptr;
 
   /* Refine the triangulation according to the attached */
   /*   triangle area constraints.                       */
 
-  triangulate("prazBP", &mid, &out, NULL);
+  triangulate("prazBP", &mid, &out, nullptr);
 
   printf("Refined triangulation:\n\n");
   report(out, 0, 1, 0, 0, 0, 0);

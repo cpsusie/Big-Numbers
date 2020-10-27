@@ -80,17 +80,17 @@ private:
   void startErrorPlotter();
   void stopErrorPlotter();
   bool hasErrorPlotter() const {
-    return m_errorPlotter != NULL;
+    return m_errorPlotter != nullptr;
   }
   void deallocateAll();
   void setSubMK(int subM, int subK);
   void adjustMaxMKSum();
   String getThreadStateName() const;
   inline bool hasRemes() const {
-    return m_remes != NULL;
+    return m_remes != nullptr;
   }
   inline bool hasDebugger() const {
-    return m_debugger != NULL;
+    return m_debugger != nullptr;
   }
   inline bool isDebuggerPaused() const {
     return hasDebugger() && (m_debugger->getState() == DEBUGGER_PAUSED);
@@ -130,7 +130,7 @@ private:
     return DoubleInterval(m_xFrom, m_xTo);
   }
 public:
-  CIRemesDlg(CWnd *pParent = NULL);
+  CIRemesDlg(CWnd *pParent = nullptr);
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
   void handleRemesProperty(const Remes &r, int id, const void *oldValue, const void *newValue);
 

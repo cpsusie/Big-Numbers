@@ -15,7 +15,7 @@ public:
 Interval::Interval(TCHAR *s, int maxpos) {
   TCHAR *m = _tcschr(s,'-');
 
-  if(m == NULL) {
+  if(m == nullptr) {
     if(_stscanf(s, _T("%u"), &l) == 1) {
       r = l;
     } else {

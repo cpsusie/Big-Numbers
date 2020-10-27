@@ -2,7 +2,7 @@
 
 class DisplayPoly : public CDialog {
 public:
-    DisplayPoly(CWnd *pParent = NULL);
+    DisplayPoly(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_DISPLAYPOLY };
     CString m_fisk;

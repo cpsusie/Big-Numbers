@@ -2,11 +2,11 @@
 #include "DrawTool.h"
 
 CombineImagesTool::CombineImagesTool(PixRectContainer *container) : DrawTool(container) {
-  m_copy = m_old = NULL;
+  m_copy = m_old = nullptr;
 }
 
 CombineImagesTool::~CombineImagesTool() {
-  if(m_copy != NULL) {
+  if(m_copy != nullptr) {
     invertDragRect();
     makeFinalImage();
     releaseCopy();
@@ -24,7 +24,7 @@ void CombineImagesTool::invertDragRect() {
 }
 
 void CombineImagesTool::OnLButtonDown(UINT nFlags, const CPoint &point) {
-  if(m_copy == NULL) {
+  if(m_copy == nullptr) {
     m_p0 = m_p1 = point;
     invertDragRect();
   } else if(m_rect.PtInRect(point)) {
@@ -41,7 +41,7 @@ void CombineImagesTool::OnLButtonDown(UINT nFlags, const CPoint &point) {
 
 void CombineImagesTool::OnMouseMove(UINT nFlags, const CPoint &point) {
   if(nFlags & MK_LBUTTON) {
-    if(m_copy == NULL) {
+    if(m_copy == nullptr) {
       invertDragRect(); // remove dragrect
       m_p1 = point;
       invertDragRect(); // draw dragRect
@@ -60,7 +60,7 @@ void CombineImagesTool::OnMouseMove(UINT nFlags, const CPoint &point) {
 }
 
 void CombineImagesTool::OnLButtonUp(UINT nFlags, const CPoint &point) {
-  if(m_copy == NULL) {
+  if(m_copy == nullptr) {
     invertDragRect();   // remove dragrect
     m_rect = CRect(min(m_p0.x,m_p1.x),min(m_p0.y,m_p1.y),max(m_p0.x,m_p1.x),max(m_p0.y,m_p1.y)); // define rect
     if(m_rect.Width() > 0 && m_rect.Height() > 0) {                                              // if valid rectangle
@@ -77,7 +77,7 @@ void CombineImagesTool::OnLButtonUp(UINT nFlags, const CPoint &point) {
 }
 
 int CombineImagesTool::getCursorId() const {
-  return m_copy == NULL ? IDC_CURSORHAIRCROSS : IDC_CURSORMOVE4WAYS;
+  return m_copy == nullptr ? IDC_CURSORHAIRCROSS : IDC_CURSORMOVE4WAYS;
 }
 
 void CombineImagesTool::makeFinalImage() {

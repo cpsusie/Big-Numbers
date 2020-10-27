@@ -28,14 +28,14 @@ public:
   int           m_edge;
   // Characterclass when m_edge = EDGE_CHCLASS
   BitSet       *m_charClass;
-  // Next state (or NULL if none)
+  // Next state (or nullptr if none)
   NFAstate     *m_next1;
-  // Alternative next state if m_edge = EDGE_EPSILON. NULL if no alternative.
+  // Alternative next state if m_edge = EDGE_EPSILON. nullptr if no alternative.
   NFAstate     *m_next2;
-  // AcceptAction if accepting state, else NULL
+  // AcceptAction if accepting state, else nullptr
   AcceptAction *m_accept;
   NFAstate(int edge = EDGE_EPSILON);
-  // Returns successor-state on transition c (character). NULL if none
+  // Returns successor-state on transition c (character). nullptr if none
   NFAstate *successor(int c) const;
   int getID() const {
     return m_id;

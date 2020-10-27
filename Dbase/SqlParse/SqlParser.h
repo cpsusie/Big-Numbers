@@ -3,9 +3,7 @@
 
 #include <LRparser.h>
 
-const extern ParserTables *SqlTables;
-
-#line 6 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+#line 6 "C:\\Mytools2015\\Dbase\\SqlParse\\Sql.y"
 #include "Sqlsymbol.h"
 #include "ParserTree.h"
 #include "SqlSymbol.h"
@@ -13,27 +11,29 @@ const extern ParserTables *SqlTables;
 
 class SqlParser : public LRparser {
 private:
+  static const ParserTables *SqlTables;
   ParserTree &m_tree;
   Date      ttoDate(     const TCHAR *str);
   Time      ttoTime(     const TCHAR *str);
   Timestamp ttoTimestamp(const TCHAR *str);
-  SyntaxNodeP m_dollardollar,*m_stacktop,m_userstack[256];
-  int   reduceAction(unsigned int prod);
-  int   userStackGetHeight() const                { return (int)(m_stacktop - m_userstack); }
-  void  userStackInit()		                      { m_stacktop = m_userstack;		     }
-  void  userStackShiftSymbol(unsigned int symbol) { m_stacktop++;					     } // push 1 element (garbage) on userstack
-  void  userStackPopSymbols(unsigned int count)   { m_stacktop -= count; 			     } // pop count symbols from userstack
-  void  userStackShiftDollarDollar()	          { *(++m_stacktop) = m_dollardollar;    } // push($$) on userstack
-  void  defaultReduce(unsigned int prod)	      { m_dollardollar  = getStackTop(getProductionLength(prod)?0:1);	 } // $$ = $1
-  SyntaxNodeP getStackTop(int fromtop)            { return m_stacktop[-fromtop];         }
-  SyntaxNode *newNode( const SourcePosition &pos, int token, ... );
+  SyntaxNodeP m_leftSide,*m_stacktop,m_userstack[256];
+  SyntaxNodeP getStackTop(int fromtop)            { return m_stacktop[-fromtop];            }
+  int  userStackGetHeight() const                 { return (int)(m_stacktop - m_userstack); }
+  void userStackInit()                   override { m_stacktop = m_userstack;               }
+  void userStackShiftSymbol(UINT symbol) override { m_stacktop++;                           } // push 1 element (garbage) on userstack
+  void userStackPopSymbols( UINT count ) override { m_stacktop      -= count;               } // pop count symbols from userstack
+  void userStackShiftLeftSide()          override { *(++m_stacktop) = m_leftSide;           } // push($$) on userstack
+  void defaultReduce(       UINT prod  ) override { m_leftSide      = getStackTop(getProductionLength(prod)?0:1);} // $$ = $1
+  int  reduceAction(        UINT prod  ) override;
+  SyntaxNode       *newNode(const SourcePosition &pos, int token, ...  );
 public:
-  SqlParser(ParserTree &tree, Scanner *lex = NULL) : LRparser(*SqlTables,lex), m_tree(tree) {
+  SqlParser(ParserTree &tree, Scanner *lex = nullptr) : LRparser(*SqlTables,lex), m_tree(tree) {
   }
   void      parse( const SourcePosition &pos, const String &stmt); // parse stmt
-  void      verror(const SourcePosition &pos, const TCHAR  *format, va_list argptr);
+  void      verror(const SourcePosition &pos, const TCHAR  *format, va_list argptr) override;
+  static inline const ParserTables &getTables() {
+    return *SqlTables;
+  }
 };
 
-
-#line 18 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
-
+#line 17 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"

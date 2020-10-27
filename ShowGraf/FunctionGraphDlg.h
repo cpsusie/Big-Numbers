@@ -29,7 +29,7 @@ private:
 protected:
   String getListFileName() const;
 public:
-  CFunctionGraphDlg(FunctionGraphParameters &param, int showFlags = SHOW_INTERVAL|SHOW_STEP, CWnd *pParent = NULL);   // standard constructor
+  CFunctionGraphDlg(FunctionGraphParameters &param, int showFlags = SHOW_INTERVAL|SHOW_STEP, CWnd *pParent = nullptr);   // standard constructor
   enum { IDD = IDR_FUNCTION };
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);

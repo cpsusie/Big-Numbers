@@ -273,7 +273,7 @@ void DFA::printAcceptTable(MarginFile &f) const {
     if(i % 10 == 0) {
       f.printf(_T("/* %3d */"), i);
     }
-    if(state.m_accept == NULL) {
+    if(state.m_accept == nullptr) {
       f.printf(_T("  0"));
     } else {
       f.printf(_T("  %d"), state.m_accept->m_anchor ? state.m_accept->m_anchor : 4);

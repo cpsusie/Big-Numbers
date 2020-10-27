@@ -15,7 +15,7 @@ CRegexDemoApp::CRegexDemoApp() {
 CRegexDemoApp theApp;
 
 BOOL CRegexDemoApp::InitInstance() {
-  UseSafeNew = 1;
+//  UseSafeNew = 1;
 	AfxEnableControlContainer();
 
 	// Standard initialization

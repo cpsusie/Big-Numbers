@@ -80,7 +80,7 @@ void COpeningDlg::OnButtonExpandAll() {
 
 HTREEITEM getChildByIndex(CTreeCtrl *ctrl, HTREEITEM parent, int index) {
   HTREEITEM child = ctrl->GetChildItem(parent);
-  for(int i = 0; i < index && child != NULL; i++) {
+  for(int i = 0; i < index && child != nullptr; i++) {
     child = ctrl->GetNextSiblingItem(child);
   }
   return child;

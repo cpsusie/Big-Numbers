@@ -52,7 +52,7 @@ BOOL CTestWinToolsApp::InitInstance() {
   }
 
   // Delete the shell manager created above.
-  if(pShellManager != NULL) {
+  if(pShellManager != nullptr) {
     delete pShellManager;
   }
 

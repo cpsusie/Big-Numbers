@@ -13,7 +13,7 @@ private:
   const EndGameTablebase *m_tb;
   UINT64                  m_compressedSize;
 public:
-  DecompressSingleJob() : m_tb(NULL), m_compressedSize(0) {
+  DecompressSingleJob() : m_tb(nullptr), m_compressedSize(0) {
   }
   DecompressSingleJob(EndGameTablebase *tb)
     : m_tb(tb)
@@ -260,7 +260,7 @@ void EndGameTablebase::decompressAll() { // static
     AfxMessageBox(IDS_ALLTABLEBASESDECOMPRESSED, MB_ICONINFORMATION|MB_OK);
   } else {
     DecompressJob job(jobList);
-    ProgressWindow(NULL, job, 0, 2000);
+    ProgressWindow(nullptr, job, 0, 2000);
     if(job.isInterrupted()) {
       AfxMessageBox(_IDS_INTERRUPTED_BY_USER, MB_ICONEXCLAMATION|MB_OK);
     } else {

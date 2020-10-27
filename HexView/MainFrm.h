@@ -25,7 +25,7 @@ private:
   void searchText();
   void destroySearchMachine();
   inline bool hasSearchMachine() const {
-    return m_searchMachine != NULL;
+    return m_searchMachine != nullptr;
   }
   bool canFindNext() const;
   bool canFindPrev() const;

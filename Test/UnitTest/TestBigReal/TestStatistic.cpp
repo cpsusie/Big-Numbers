@@ -27,7 +27,7 @@ FastSemaphore TestStatistic::s_lock;
 bool          TestStatistic::s_stopNow        = false;
 static const int logyStartPos = getProcessorCount() + 1;
 int           TestStatistic::s_logypos = logyStartPos;
-tostream     *TestStatistic::s_errorLogStream = NULL;
+tostream     *TestStatistic::s_errorLogStream = nullptr;
 bool          TestStatistic::s_timerIsStarted = false;
 static        SetTimeToPrint timerEventHandler;
 Timer         TestStatistic::s_updateScreenTimer(1, "ScreenUpdate");
@@ -127,7 +127,7 @@ TestStatistic::~TestStatistic() {
 
 tostream &TestStatistic::getErrorLog(bool logTime) { // static
   s_lock.wait();
-  if(s_errorLogStream == NULL) {
+  if(s_errorLogStream == nullptr) {
     FileNameSplitter finfo(getModuleFileName());
     finfo.setDir(getSourceDir()).setFileName(finfo.getFileName() + _T("Errors")).setExtension(_T("log"));
     const String fileName = finfo.getFullPath();
@@ -143,7 +143,7 @@ tostream &TestStatistic::getErrorLog(bool logTime) { // static
 
 void TestStatistic::flushAndCloseErorLog() { // static
   s_lock.wait();
-  if(s_errorLogStream != NULL) {
+  if(s_errorLogStream != nullptr) {
     s_errorLogStream->flush();
     SAFEDELETE(s_errorLogStream);
   }
@@ -489,7 +489,7 @@ void TestStatistic::update(const BigReal &Q) {
 
 /*
   int *count = m_count.get(key);
-  if(count != NULL) {
+  if(count != nullptr) {
     (*count)++;
   } else {
     m_count.put(key, 1);

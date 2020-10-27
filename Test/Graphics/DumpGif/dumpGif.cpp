@@ -69,8 +69,8 @@ void dumpExtensionBlocks(const ExtensionBlock *blockArray, int n) {
 }
 
 void dumpColorMap(ColorMapObject *map) {
-  if(map == NULL) {
-    _tprintf(_T("ColorMap=NULL\n"));
+  if(map == nullptr) {
+    _tprintf(_T("ColorMap=nullptr\n"));
   } else {
     _tprintf(_T("ColorMap:ColorCount:%d, BitsPerPixel:%d, SortFlag:%s\n")
             ,map->ColorCount, map->BitsPerPixel, boolToStr(map->SortFlag));
@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
 
   int errorCode;
   GifFileType *gifFile = DGifOpenFileName(*argv, &errorCode);
-  if(gifFile == NULL) {
+  if(gifFile == nullptr) {
     printf("Error:%s\n", GifErrorString(errorCode));
     exit(-1);
   }

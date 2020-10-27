@@ -64,7 +64,7 @@ private:
     return (CMFCColorButton*)GetDlgItem(IDC_BUTTONCOLOR);
   }
 public:
-    CDataGraphDlg(DataGraph &g, CWnd *pParent = NULL);
+    CDataGraphDlg(DataGraph &g, CWnd *pParent = nullptr);
     enum { IDD = IDD_DATAGRAPH_DIALOG };
     DataGraph    &m_graph;
 

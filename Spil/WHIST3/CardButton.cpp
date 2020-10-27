@@ -41,7 +41,7 @@ void CardButton::setCard(Card card) {
 }
 
 void CardButton::SetAbove(CWnd *under) {
-  if(under == NULL) {
+  if(under == nullptr) {
     CardButton::SetWindowPos(&wndBottom,0,0,0,0,SWP_NOSIZE|SWP_NOMOVE);
   } else {
     CardButton::SetWindowPos(under,0,0,0,0,SWP_NOSIZE|SWP_NOMOVE);

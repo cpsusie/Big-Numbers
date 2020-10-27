@@ -10,7 +10,7 @@ private:
   OBMButton            m_regexCharButton;
   void gotoRegexCombo();
 public:
-  CRegexDlg(RegexFilter &param, CWnd *pParent = NULL);
+  CRegexDlg(RegexFilter &param, CWnd *pParent = nullptr);
   void addRegexSymbol(const TCHAR *s, int cursorpos);
 
   RegexFilter  &m_param;

@@ -23,7 +23,7 @@ private:
       getColorButton()->SetColor(color);
     }
 public:
-    CDegreeDlg(const Point2DArray &m_pointArray, FunctionPlotter &fp, CWnd *pParent = NULL);
+    CDegreeDlg(const Point2DArray &m_pointArray, FunctionPlotter &fp, CWnd *pParent = nullptr);
 
     enum { IDD = IDD_DEGREE_DIALOG };
     UINT    m_degree;

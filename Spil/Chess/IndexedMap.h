@@ -10,7 +10,7 @@ private:
   FILE *m_logFile;
 public:
   EndGameEntryIterator(AbstractIterator *it) : Iterator<EndGameEntry>(it) {
-    m_logFile = NULL;
+    m_logFile = nullptr;
   }
   ~EndGameEntryIterator() {
     setLog(false);
@@ -62,11 +62,11 @@ public:
   IndexedMap &markAllVisited();
 
   const EndGameResult *getFirstElement() const {
-    return size() ? &first() : NULL;
+    return size() ? &first() : nullptr;
   }
 
   const EndGameResult *getLastElement() const {
-    return size() ? &last() : NULL;
+    return size() ? &last() : nullptr;
   }
 
   void convertIndex();
@@ -143,7 +143,7 @@ public:
   ~IndexedMap();
   EndGameResult get(EndGameKey key) const;
   bool isAllocated() const {
-    return m_positionIndex != NULL;
+    return m_positionIndex != nullptr;
   }
 
   void decompress(ByteInputStream &s, const TablebaseInfo &info) const;
@@ -171,7 +171,7 @@ public:
   }
   EndGameResult get(EndGameKey key) const;
   bool isAllocated() const {
-    return m_wpIndex != NULL;
+    return m_wpIndex != nullptr;
   }
   void decompress(BigEndianInputStream &s, const TablebaseInfo &info) const;
   void clear();

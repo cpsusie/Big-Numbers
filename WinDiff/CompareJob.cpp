@@ -5,7 +5,7 @@
 
 CompareJob::CompareJob(CWinDiffDoc *doc, bool recompare)
 : m_doc(*doc)
-, m_exe2(NULL)
+, m_exe2(nullptr)
 , m_recompare(recompare)
 {
   m_sumEstimatedTimeUnits = 0;
@@ -147,9 +147,9 @@ void Execute2::run(CompareSubJob &job1, CompareSubJob &job2) {
     timer.startTimer(300, *this, true);
     ThreadPool::executeInParallel(jobArray);
     timer.stopTimer();
-    m_compareJob.setExecute2(NULL);
+    m_compareJob.setExecute2(nullptr);
   } catch (...) {
-    m_compareJob.setExecute2(NULL);
+    m_compareJob.setExecute2(nullptr);
     throw;
   }
 }

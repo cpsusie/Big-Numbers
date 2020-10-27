@@ -20,7 +20,7 @@ class RectMark : public CRect { // screen rect
 public:
   CBitmap          *m_image;
   MarkId            m_markId;
-  RectMark() : m_image(NULL), m_markId(UNKNOWN) {
+  RectMark() : m_image(nullptr), m_markId(UNKNOWN) {
   }
   RectMark(MarkId markId, const CPoint &p, int imageId, int degree);
 };

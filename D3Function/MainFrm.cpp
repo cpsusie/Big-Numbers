@@ -95,7 +95,7 @@ static UINT indicators[] = {
 
 CMainFrame::CMainFrame()
 #if defined(ISODEBUGGER)
-: m_debugger(               NULL )
+: m_debugger(               nullptr )
 , m_hasIsoSurfaceParam(     false)
 , m_hasFinalDebugIsoSurface(false)
 , m_octaBreakPoints(        100  )
@@ -158,7 +158,7 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/, CCreateContext *pContex
 }
 
 D3SceneEditor &CD3FunctionSplitterWnd::getEditor() const {
-  if(m_editor == NULL) {
+  if(m_editor == nullptr) {
     m_editor = &theApp.getMainFrame()->getEditor();
   }
   return *m_editor;
@@ -208,9 +208,9 @@ void CMainFrame::updateLoadOptionsMenu() {
   const String saveOptionsMenuPath = _T("3/11");
   int index;
   HMENU optionsMenu = findMenuByString(m_hMenuDefault, saveOptionsMenuPath, &index);
-  HMENU loadMenu    = (optionsMenu && (index >= 0)) ? getSubMenu(optionsMenu, _T("load options")) : NULL;
+  HMENU loadMenu    = (optionsMenu && (index >= 0)) ? getSubMenu(optionsMenu, _T("load options")) : nullptr;
 
-  if(loadMenu != NULL) {
+  if(loadMenu != nullptr) {
     removeAllMenuItems(loadMenu);
   } else if(optionNames.size() > 0) {
     loadMenu = insertSubMenu(optionsMenu, 12, _T("&Load options"));
@@ -331,7 +331,7 @@ void CMainFrame::ajourMenuItems() {
 
 void CMainFrame::startTimer() {
   if(!m_timerRunning) {
-    if(SetTimer(1, 5000, NULL) == 1) {
+    if(SetTimer(1, 5000, nullptr) == 1) {
       m_timerRunning = true;
     }
   }
@@ -419,11 +419,11 @@ void CMainFrame::setCalculatedObject(D3SceneObjectVisual *obj, FunctionImagePara
 D3SceneObjectVisual *CMainFrame::getCalculatedObject() const {
   for(D3VisualIterator it = m_scene.getVisualIterator(); it.hasNext();) {
     D3SceneObjectVisual *obj = it.next();
-    if(obj->getUserData() != NULL) {
+    if(obj->getUserData() != nullptr) {
       return obj;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 bool CMainFrame::is3DWindow(HWND hwnd) const {
@@ -442,7 +442,7 @@ bool CMainFrame::canDelete3DWindow(HWND hwnd) const {
 WindowPair CMainFrame::split3DWindow(HWND hwnd, bool vertical) {
   WindowPair    result;
   C3DSceneView *viewToSplit = C3DSceneView::findViewByHwnd(hwnd);
-  if(viewToSplit == NULL) {
+  if(viewToSplit == nullptr) {
     return result;
   }
   bool timerRuns = getTimerRunning();
@@ -478,10 +478,10 @@ WindowPair CMainFrame::split3DWindow(HWND hwnd, bool vertical) {
 }
 
 CWnd *getParentAndCheckType(CWnd *wnd, CRuntimeClass *expectedClass) {
-  if(wnd == NULL) return NULL;
+  if(wnd == nullptr) return nullptr;
   CWnd *parent = wnd->GetParent();
-  if((parent == NULL) || !parent->IsKindOf(expectedClass)) {
-    return NULL;
+  if((parent == nullptr) || !parent->IsKindOf(expectedClass)) {
+    return nullptr;
   }
   return parent;
 }
@@ -493,7 +493,7 @@ bool CMainFrame::delete3DWindow(HWND hwnd) {
   CSplitView        *splitViewToDelete = GETPARENT(parentSplitter   , CSplitView       );
   CSplitterWnd      *gparentSplitter   = GETPARENT(splitViewToDelete, CSplitterWnd     );
   CWnd              *partner           = parentSplitter->findNeighbor(viewToDelete); // either C3DSceneView/CSplitView
-  if((partner == NULL) || (gparentSplitter == NULL)) { // something went wrong...cannot go further
+  if((partner == nullptr) || (gparentSplitter == nullptr)) { // something went wrong...cannot go further
     return false;
   }
   const MatrixIndex   viewPos           = findPosition(gparentSplitter, splitViewToDelete);
@@ -517,7 +517,7 @@ bool CMainFrame::delete3DWindow(HWND hwnd) {
   BOOL ok = splitViewToDelete->DestroyWindow();
   setWindowRect(partner, rect);
   RecalcLayout();
-  SetActiveView(NULL, FALSE);
+  SetActiveView(nullptr, FALSE);
   if(timerRuns) {
     startTimer();
   }
@@ -637,7 +637,7 @@ D3Camera *CMainFrame::dbgCAM() {
 }
 
 void CMainFrame::startDebugging() {
-  setCalculatedObject(NULL);
+  setCalculatedObject(nullptr);
   try {
     killDebugger(false);
     m_debugger = new Debugger(this, m_isoSurfaceParam);
@@ -1006,7 +1006,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
     return false;
   }
   D3Camera *cam;
-  if((pMsg->message == WM_MOUSEMOVE) && ((cam = m_scene.getPickedCamera(pMsg->pt)) != NULL)) {
+  if((pMsg->message == WM_MOUSEMOVE) && ((cam = m_scene.getPickedCamera(pMsg->pt)) != nullptr)) {
     m_wndStatusBar.SetPaneText(0, toString(cam->screenToWin(pMsg->pt)).cstr());
   }
   const bool levelIncremented = pMsg->message != ID_MSG_RENDER;

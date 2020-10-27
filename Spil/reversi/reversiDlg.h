@@ -24,7 +24,7 @@ private:
     void  stopTimer();
     void  computerMove();
 public:
-    CReversiDlg(CWnd *pParent = NULL);
+    CReversiDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_REVERSI_DIALOG };
 

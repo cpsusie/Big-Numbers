@@ -9,7 +9,7 @@ private:
   void setToDefault();
 
 public:
-    CTestLayoutManagerDlg(CWnd *pParent = NULL);
+    CTestLayoutManagerDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_TESTLAYOUTMANAGER_DIALOG };
     BOOL    m_windowRetainAspectRatio;

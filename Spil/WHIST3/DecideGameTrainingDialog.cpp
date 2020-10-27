@@ -9,7 +9,7 @@ DecideGameTrainingDialog::DecideGameTrainingDialog(CWnd *pParent) : CDialog(Deci
     m_pointPerStik = -1;
     m_gameType = -1;
 
-  m_trainerThread = NULL;
+  m_trainerThread = nullptr;
   m_timerIsRunning = false;
   m_bpn.load();
 }
@@ -154,7 +154,7 @@ void DecideGameTrainingDialog::OnButtonSave() {
 }
 
 void DecideGameTrainingDialog::OnButtontrain() {
-  if(m_trainerThread == NULL) {
+  if(m_trainerThread == nullptr) {
     try {
       m_trainerThread = new TrainerThread(this); TRACE_NEW(m_trainerThread);
       m_trainerThread->start();
@@ -168,7 +168,7 @@ void DecideGameTrainingDialog::OnButtontrain() {
     m_trainerThread->stopTraining();
     while(m_trainerThread->stillActive());
     SAFEDELETE(m_trainerThread);
-    m_trainerThread = NULL;
+    m_trainerThread = nullptr;
     m_bpn.load();
     GetDlgItem(IDC_BUTTONTRAIN)->SetWindowText(_T("S&tart training"));
   }
@@ -227,7 +227,7 @@ void DecideGameTrainingDialog::OnButtondecide() {
 }
 
 void DecideGameTrainingDialog::OnTimer(UINT_PTR nIDEvent) {
-  if(m_trainerThread != NULL) {
+  if(m_trainerThread != nullptr) {
     double errorSum = m_trainerThread->getErrorSum();
 
     GetDlgItem(IDC_TRAININGINFO)->SetWindowText(format(_T("Errorsum:%lf"),errorSum).cstr());
@@ -238,7 +238,7 @@ void DecideGameTrainingDialog::OnTimer(UINT_PTR nIDEvent) {
 #define TIMERUPDATERATE 1000
 
 void DecideGameTrainingDialog::startTimer() {
-  if(!m_timerIsRunning && SetTimer(1,TIMERUPDATERATE,NULL)) {
+  if(!m_timerIsRunning && SetTimer(1,TIMERUPDATERATE,nullptr)) {
     m_timerIsRunning = true;
   }
 }

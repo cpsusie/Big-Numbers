@@ -31,9 +31,9 @@ void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestPictureDlg::CTestPictureDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestPictureDlg::IDD, pParent) {
+CTestPictureDlg::CTestPictureDlg(CWnd *pParent /*=nullptr*/) : CDialog(CTestPictureDlg::IDD, pParent) {
   m_hIcon      = theApp.LoadIcon(IDR_MAINFRAME);
-  m_workPr     = NULL;
+  m_workPr     = nullptr;
   m_lastMouse  = CPoint(0,0);
 }
 
@@ -76,7 +76,7 @@ BOOL CTestPictureDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -183,13 +183,13 @@ void CTestPictureDlg::allocateWorkPr(const CSize &sz) {
 void CTestPictureDlg::deallocateWorkPr() {
   if(m_workPr) {
     delete m_workPr;
-    m_workPr = NULL;
+    m_workPr = nullptr;
   }
 }
 
 HDC CTestPictureDlg::getWorkDC() {
   const CSize sz = getClientRect(getImageWin()).Size();
-  if((m_workPr == NULL) || (m_workPr->getSize() != sz)) {
+  if((m_workPr == nullptr) || (m_workPr->getSize() != sz)) {
     allocateWorkPr(sz);
   }
   D3DCOLOR backColor = ::GetSysColor(COLOR_BTNFACE);
@@ -500,7 +500,7 @@ static HBITMAP swapRB(HBITMAP bm) {
 void CTestPictureDlg::OnEditSwapRedAndBlue() {
   CPicture &pic = getCurrentImage();
   if(pic.isLoaded()) {
-    HBITMAP bm = NULL;
+    HBITMAP bm = nullptr;
     try {
       bm = swapRB(pic);
       pic = bm;

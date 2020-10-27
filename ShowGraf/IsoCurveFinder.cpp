@@ -159,7 +159,7 @@ int IsoCurveFinder::getPointId(const HashedRectCorner &c1, const HashedRectCorne
 #endif
   RectEdgeHashKey edgeKey(c1.m_key,c2.m_key);
   int *p = m_edgeMap.get(edgeKey);
-  if(p != NULL) {
+  if(p != nullptr) {
     m_statistics.m_edgeHits++;
     return *p; // already computed
   }
@@ -217,7 +217,7 @@ void IsoCurveFinder::testEdge(int i, int j, const StackedRectangle &oldRectangle
   newRectangle.m_corners[FLIP(c1, bit)] = oldRectangle.m_corners[c1];
   newRectangle.m_corners[FLIP(c2, bit)] = oldRectangle.m_corners[c2];
   for(int n = 0; n < ARRAYSIZE(newRectangle.m_corners); n++) {
-    if(newRectangle.m_corners[n] == NULL) {
+    if(newRectangle.m_corners[n] == nullptr) {
       newRectangle.m_corners[n] = getCorner(i + BIT(n, 1), j + BIT(n, 0));
     }
   }
@@ -239,7 +239,7 @@ bool IsoCurveFinder::addCenter(const Point2DKey &key) {
 const HashedRectCorner *IsoCurveFinder::getCorner(int i, int j) {
   const Point2DKey key(i, j);
   const HashedRectCorner *result = m_cornerMap.get(key);
-  if(result != NULL) {
+  if(result != nullptr) {
     m_statistics.m_cornerHits++;
     return result;
   } else {

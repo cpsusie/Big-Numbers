@@ -5,7 +5,7 @@ private:
     HICON   m_hIcon;
     HACCEL  m_accelTable;
 public:
-    CGetresourcesDlg(CWnd *pParent = NULL);
+    CGetresourcesDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_GETRESOURCES_DIALOG };
 

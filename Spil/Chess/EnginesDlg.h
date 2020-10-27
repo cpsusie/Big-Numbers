@@ -14,7 +14,7 @@ private:
   void addNewEngine();
 
 public:
-    CEnginesDlg(CWnd *pParent = NULL);
+    CEnginesDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_ENGINES_DIALOG };
     CListCtrl   m_listCtrl;

@@ -43,7 +43,7 @@ private:
   void fieldsToAfin();
 
 public:
-    CFernDlg(CWnd *pParent = NULL);
+    CFernDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_FERN_DIALOG };
     double  m_x00;

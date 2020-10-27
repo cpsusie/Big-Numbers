@@ -22,9 +22,9 @@ typedef BigReal   (*rBigRealFunction2Pool )(const BigReal  &x, const BigReal  &y
 BigReal getRandom(int length, int exponent, RandomGenerator &rnd, DigitPool *pool, bool allowZero = true);
 Array<BigReal> generateTestData(const TestInterval &interval, DigitPool *pool, int count = 23);
 
-float    getRelativeError32(float           x, DigitPool *pool , size_t *length = NULL);
-double   getRelativeError64(double          x, DigitPool *pool , size_t *length = NULL);
-double   getRelativeError80(const Double80 &x, DigitPool *pool , size_t *length = NULL);
+float    getRelativeError32(float           x, DigitPool *pool , size_t *length = nullptr);
+double   getRelativeError64(double          x, DigitPool *pool , size_t *length = nullptr);
+double   getRelativeError80(const Double80 &x, DigitPool *pool , size_t *length = nullptr);
 double   getRelativeError(  const double   &x, const BigReal &x0);
 Double80 getRelativeError(  const Double80 &x, const BigReal &x0);
 BigReal  getRelativeError(  const BigReal  &x, const BigReal &x0);

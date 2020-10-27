@@ -11,11 +11,11 @@ NodeList::NodeList(SyntaxNode *n, int token, bool binarytree) {
 };
 
 NodeList::NodeList() {
-  findNodes(NULL);
+  findNodes(nullptr);
 }
 
 void NodeList::appendCommaList(SyntaxNode *n, int token) {
-  if(n == NULL)
+  if(n == nullptr)
     return;
   if(n->getToken() == token) {
     appendCommaList(n->getChild(1),token);
@@ -26,7 +26,7 @@ void NodeList::appendCommaList(SyntaxNode *n, int token) {
 }
 
 void NodeList::traverseTree(SyntaxNode *n, int token) {
-  if(n == NULL)
+  if(n == nullptr)
     return;
   if(n->getToken() != token) {
     add(n);

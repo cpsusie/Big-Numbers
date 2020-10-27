@@ -2,7 +2,7 @@
 
 class CGetFormatNameDlg: public CDialog {
 public:
-  CGetFormatNameDlg(const String &name, CWnd *pParent = NULL);
+  CGetFormatNameDlg(const String &name, CWnd *pParent = nullptr);
 
   enum { IDD = IDD_DIALOGENTERFORMATNAME };
   CString   m_name;

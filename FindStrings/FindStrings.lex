@@ -15,7 +15,7 @@ typedef enum {
 
 class FindStringsLex : public Scanner {
 public:
-  FindStringsLex(LexStream *inputStream = NULL) : Scanner(inputStream) {
+  FindStringsLex(LexStream *inputStream = nullptr) : Scanner(inputStream) {
   }
   int getNextLexeme() override;
 };

@@ -75,7 +75,7 @@ int DFA::stateExist(const BitSet &NFAset) const {
 void DFA::epsClosure(BitSet &NFAset, AcceptAction *&accept) const {
   // NFAset   is the set of start states to examine. also used as output
   // *accept  is modified to point to the AcceptAction associated with an accepting
-  //          state (or NULL if the state isn't an accepting state).
+  //          state (or nullptr if the state isn't an accepting state).
   //
   // Computes the epsilon closure set for the NFAset. This set
   // will contain all states that can be reached by making epsilon transitions
@@ -102,10 +102,10 @@ void DFA::epsClosure(BitSet &NFAset, AcceptAction *&accept) const {
     stateStack.push((int)it.next());
   }
 
-  accept = NULL;
+  accept = nullptr;
   while(!stateStack.isEmpty()) {                                                   // 2
     const NFAstate &p = *m_NFA[stateStack.pop()];                                  // 3
-    if(p.m_accept && (accept == NULL || p.m_accept->m_pos.getLineNumber() < accept->m_pos.getLineNumber())) {     // 4
+    if(p.m_accept && (accept == nullptr || p.m_accept->m_pos.getLineNumber() < accept->m_pos.getLineNumber())) {     // 4
       accept      = p.m_accept;
     }
 
@@ -129,13 +129,13 @@ void DFA::epsClosure(BitSet &NFAset, AcceptAction *&accept) const {
 }
 
 BitSet *DFA::transition(BitSet &NFAset, int c) const {
-  BitSet *result = NULL;
+  BitSet *result = nullptr;
 
   for(Iterator<size_t> it = NFAset.getIterator(); it.hasNext();) {
     int i = (int)it.next();
     const NFAstate *p = m_NFA[i]->successor(c);
     if(p) {
-      if(result == NULL) {
+      if(result == nullptr) {
         result = newNFAset();
       }
       result->add(p->getID());
@@ -147,10 +147,10 @@ BitSet *DFA::transition(BitSet &NFAset, int c) const {
   printf(_T(" from {"));
   printSet(inp_set);
   printf(_T("}="));
-  if(result!= NULL)
+  if(result != nullptr)
     printSet(*result);
   else
-    printf(_T("NULL"));
+    printf(_T("nullptr"));
   printf(_T("\n"));
 */
   return result;
@@ -182,7 +182,7 @@ void DFA::makeInitialGroups() {
       // accepting String as the current state. If so, add the current
       // state to the already existing group and skip past the code that
       // would create a new group. Note that since all nonAccepting states
-      // have NULL accept strings, this loop puts all of these together
+      // have nullptr accept strings, this loop puts all of these together
       // into a single group.
 
       if(m_states[i].m_accept == m_states[j].m_accept) {
@@ -276,7 +276,7 @@ void DFA::minimize() {
 #if !defined(USE_COMPACT_DFAFORMAT)
 
 void DFAstate::print(MarginFile &f) const {
-  if(m_accept == NULL) {
+  if(m_accept == nullptr) {
     f.printf(_T("// DFA State %3d [nonAccepting]"), m_id );
   } else {
     f.printf(_T("// DFA State %3d %s"), m_id, m_accept->dumpFormat().cstr());
@@ -324,10 +324,10 @@ void DFAstate::print(MarginFile &f) const {
 }
 
 #define FLUSHRANGE() { if(first <= last) _FLUSHRANGE(); }
-#define NEWTRANS() { first = 1; last = 0; delim = NULL; }
+#define NEWTRANS() { first = 1; last = 0; delim = nullptr; }
 
 void DFAstate::print(MarginFile &f) const {
-  if(m_accept == NULL) {
+  if(m_accept == nullptr) {
     f.printf(_T("// DFA State %3d [nonAccepting]"), m_id );
   } else {
     f.printf(_T("// DFA State %3d %s"), m_id, m_accept->dumpFormat().cstr());

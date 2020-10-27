@@ -2,7 +2,7 @@
 
 class CSelectGameDlg : public CDialog {
 public:
-    CSelectGameDlg(CWnd *pParent = NULL);
+    CSelectGameDlg(CWnd *pParent = nullptr);
 
 
     enum { IDD = IDD_DIALOGSELECTGAME };

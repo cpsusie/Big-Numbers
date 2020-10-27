@@ -174,10 +174,10 @@ UINT MBRealCalculator::findCountPaintOrbit(const Real &X, const Real &Y, UINT ma
   return count;
 }
 
-const RealIntervalTransformation *MBRealCalculator::s_xtr    = NULL;
-const RealIntervalTransformation *MBRealCalculator::s_ytr    = NULL;
-Real                             *MBRealCalculator::s_xValue = NULL;
-Real                             *MBRealCalculator::s_yValue = NULL;
+const RealIntervalTransformation *MBRealCalculator::s_xtr    = nullptr;
+const RealIntervalTransformation *MBRealCalculator::s_ytr    = nullptr;
+Real                             *MBRealCalculator::s_xValue = nullptr;
+Real                             *MBRealCalculator::s_yValue = nullptr;
 
 void MBRealCalculator::prepareMaps(const RealRectangleTransformation &tr) { // static
   cleanupMaps();

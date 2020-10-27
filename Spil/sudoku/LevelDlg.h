@@ -2,7 +2,7 @@
 
 class CLevelDlg : public CDialog {
 public:
-    CLevelDlg(GameLevel level, CWnd *pParent = NULL);
+    CLevelDlg(GameLevel level, CWnd *pParent = nullptr);
 
 
     enum { IDD = IDD_DIALOGLEVEL };

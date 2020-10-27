@@ -28,7 +28,7 @@ template<class _itype> _itype vinputItype(_itype (*strToItype)(const char *,char
     fgets(line, ARRAYSIZE(line), stdin);
     try {
       errno = 0;
-      const _itype x = strToItype(line, NULL, 10);
+      const _itype x = strToItype(line, nullptr, 10);
       if(errno == ERANGE) {
         throwException(_T("out of range"));
       }

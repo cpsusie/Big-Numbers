@@ -17,7 +17,7 @@ static void printattributes(ULONG attributes) {
 }
 
 int _tmain(int argc, TCHAR **argv) {
-   PGROUP_INFO_2 pBuf = NULL;
+   PGROUP_INFO_2 pBuf = nullptr;
    PGROUP_INFO_2 pTmpBuf;
    DWORD dwLevel = 2;
    DWORD dwPrefMaxLen = MAX_PREFERRED_LENGTH;
@@ -26,7 +26,7 @@ int _tmain(int argc, TCHAR **argv) {
    DWORD dwTotalCount = 0;
    DWORD_PTR dwResumeHandle = 0;
    NET_API_STATUS nStatus;
-   LPTSTR pszServerName = NULL;
+   LPTSTR pszServerName = nullptr;
    DWORD i;
 
    if (argc > 2) {
@@ -52,15 +52,15 @@ int _tmain(int argc, TCHAR **argv) {
    // If the call succeeds,
    //
    if ((nStatus == NERR_Success) || (nStatus == ERROR_MORE_DATA)) {
-      if ((pTmpBuf = pBuf) != NULL) {
+      if ((pTmpBuf = pBuf) != nullptr) {
          //
          // Loop through the entries and
          //  print the data for all server types.
          //
          for (i = 0; i < dwEntriesRead; i++) {
-            assert(pTmpBuf != NULL);
+            assert(pTmpBuf != nullptr);
 
-            if (pTmpBuf == NULL) {
+            if (pTmpBuf == nullptr) {
                fprintf(stderr, "An access violation has occurred\n");
                break;
             }
@@ -91,7 +91,7 @@ int _tmain(int argc, TCHAR **argv) {
    //
    // Free the allocated buffer.
    //
-   if (pBuf != NULL)
+   if (pBuf != nullptr)
       NetApiBufferFree(pBuf);
 
    return 0;

@@ -83,7 +83,7 @@ private:
   int                         m_lastToken;
   SyntaxNodep                 m_root;
   void insertPairNoSpace( short lasttoken, short thistoken) { m_pairNoSpace.put(TokenPair(lasttoken,thistoken),1); }
-  bool memberPairNoSpace( short lasttoken, short thistoken) { return m_pairNoSpace.get(TokenPair(lasttoken,thistoken)) != NULL; }
+  bool memberPairNoSpace( short lasttoken, short thistoken) { return m_pairNoSpace.get(TokenPair(lasttoken,thistoken)) != nullptr; }
   void insertIndentAlways(short token, int size, int lmarg = 0);
   void insertIndentInside(short token, bool inside , short insidetoken, int size);
   void insertIndentCount( short token, int countmax, short insidetoken, int size);
@@ -94,7 +94,7 @@ private:
   String sprintTree(SyntaxNodep n);
 protected:
   int  reduceAction(        UINT prod  ) override;
-  void userStackInit()                   override { m_stacktop = m_userstack; delete m_root; m_root = NULL; }
+  void userStackInit()                   override { m_stacktop = m_userstack; delete m_root; m_root = nullptr; }
   void userStackShiftSymbol(UINT symbol) override;
   void push(SyntaxNodep p)                        { *(++m_stacktop) = p;              }
   void userStackPopSymbols( UINT count ) override { m_stacktop -= count;              } // pop count symbols from userstack

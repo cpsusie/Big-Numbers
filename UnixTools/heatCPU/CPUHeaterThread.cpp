@@ -8,7 +8,7 @@ CPUHeaterThread::CPUHeaterThread() : Thread("HeaterThread") {
   setDemon(true);
   m_wantedCPULoad = 0;
   m_lastCPULoad   = 1;
-  m_infoWnd       = NULL;
+  m_infoWnd       = nullptr;
   m_buffer        = new char[BUFFERSIZE];
 }
 

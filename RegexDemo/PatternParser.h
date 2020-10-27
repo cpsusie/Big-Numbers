@@ -80,7 +80,7 @@ public:
   }
 
   inline bool hasTranslateTable() const {
-    return m_translateTable != NULL;
+    return m_translateTable != nullptr;
   }
 
   inline _TUCHAR getTheCharacter() const {
@@ -152,6 +152,6 @@ private:
   void error( intptr_t index, _In_z_ _Printf_format_string_ TCHAR const * const format,...);
   void verror(intptr_t index, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
 public:
-  PatternParser(const String &pattern, NFA &nfa, const TCHAR *translateTable = NULL);
+  PatternParser(const String &pattern, NFA &nfa, const TCHAR *translateTable = nullptr);
   void thompsonConstruction();
 };

@@ -11,7 +11,7 @@ class Olm637Parser : public LRparser {
 private:
   static const ParserTables *Olm637Tables;
 public:
-  Olm637Parser(Scanner *lex=NULL) : LRparser(*Olm637Tables,lex) {
+  Olm637Parser(Scanner *lex=nullptr) : LRparser(*Olm637Tables,lex) {
   }
 private:
   YYSTYPE m_leftSide,*m_stacktop,m_userstack[256];

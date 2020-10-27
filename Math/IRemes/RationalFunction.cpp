@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "RationalFunction.h"
 
-RationalFunction::RationalFunction() : m_domain(NULL) {
+RationalFunction::RationalFunction() : m_domain(nullptr) {
   clear();
 }
 
-RationalFunction::RationalFunction(const RationalFunction &src) : m_domain(NULL) {
+RationalFunction::RationalFunction(const RationalFunction &src) : m_domain(nullptr) {
   if(src.isEmpty()) {
     clear();
   } else {

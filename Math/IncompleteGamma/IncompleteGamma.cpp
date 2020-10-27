@@ -57,7 +57,7 @@ private:
 public:
 #define DIGITS 40
 
-  ChiHelpFunction(UINT df, DigitPool *pool = NULL) : m_df(df), m_targetY(BigReal::_1 - BigReal(DBL_EPSILON)) {
+  ChiHelpFunction(UINT df, DigitPool *pool = nullptr) : m_df(df), m_targetY(BigReal::_1 - BigReal(DBL_EPSILON)) {
   }
   BigReal operator()(const BigReal &x) {
     return rDif(BRchiSquaredDistribution(m_df,x, DIGITS), m_targetY, DIGITS);

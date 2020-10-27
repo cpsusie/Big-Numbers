@@ -5,7 +5,7 @@
 
 void log(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   FILE *f = fopen(FileNameSplitter(getModuleFileName()).setExtension(_T("log")).getFullPath(),_T("a"));
-  if(f == NULL)
+  if(f == nullptr)
     return;
   va_list argptr;
   va_start(argptr,format);

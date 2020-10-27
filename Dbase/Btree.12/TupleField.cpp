@@ -55,27 +55,27 @@ void TupleField::cleanup() {
   case DBTYPE_WSTRING    :
   case DBTYPE_WSTRINGN   :
     delete m_string;
-    m_string    = NULL;
+    m_string    = nullptr;
     break;
   case DBTYPE_VARCHAR    :
   case DBTYPE_VARCHARN   :
     delete m_varchar;
-    m_varchar   = NULL;
+    m_varchar   = nullptr;
     break;
   case DBTYPE_DATE       :
   case DBTYPE_DATEN      :
     delete m_date;
-    m_date      = NULL;
+    m_date      = nullptr;
     break;
   case DBTYPE_TIME       :
   case DBTYPE_TIMEN      :
     delete m_time;
-    m_time      = NULL;
+    m_time      = nullptr;
     break;
   case DBTYPE_TIMESTAMP  :
   case DBTYPE_TIMESTAMPN :
     delete m_timestamp;
-    m_timestamp = NULL;
+    m_timestamp = nullptr;
     break;
   }
 }
@@ -274,7 +274,7 @@ TupleField::TupleField(const TupleField &rhs) {
     m_timestamp = new Timestamp(*rhs.m_timestamp);
     break;
   default:
-    m_string = NULL;
+    m_string = nullptr;
     throwSqlError(SQL_INVALID_FIELDTYPE,_T("Invalid fieldtype. TupleField.type=%d"),m_type);
   }
 }

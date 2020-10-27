@@ -14,7 +14,7 @@ CharacterMarker::CharacterMarker(CDialog *dlg, int ctrlId, int bitmapId, bool ab
   m_bitmapSize = getBitmapSize(m_markBitmap);
   m_backgroundColor = ::GetSysColor(COLOR_BTNFACE);
   CDC dc;
-  dc.CreateCompatibleDC(NULL);
+  dc.CreateCompatibleDC(nullptr);
   CBrush brush;
   brush.CreateSolidBrush(m_backgroundColor);
   dc.SelectObject(&brush);
@@ -23,7 +23,7 @@ CharacterMarker::CharacterMarker(CDialog *dlg, int ctrlId, int bitmapId, bool ab
   dc.ExtFloodFill(m_bitmapSize.cx - 1, 0, RGB(255, 255, 255), FLOODFILLSURFACE);
   dc.SelectObject(oldBitmap);
   CFont *font = m_dlg->GetDlgItem(m_ctrlId)->GetFont();
-  if (font == NULL) {
+  if (font == nullptr) {
     font = dlg->GetFont();
   }
   dc.SelectObject(font);
@@ -114,7 +114,7 @@ void CharacterMarker::paintMarkPosition(CDC &dc, size_t index, bool mark) {
   const CPoint pos = getMarkPosition(index);
   if(mark && m_marksVisible) {
     CDC srcDC;
-    srcDC.CreateCompatibleDC(NULL);
+    srcDC.CreateCompatibleDC(nullptr);
     srcDC.SelectObject(&m_markBitmap);
     dc.BitBlt(pos.x, pos.y, m_bitmapSize.cx, m_bitmapSize.cy, &srcDC, 0,0, SRCCOPY);
   } else {

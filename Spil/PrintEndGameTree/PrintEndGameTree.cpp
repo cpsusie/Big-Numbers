@@ -7,7 +7,7 @@ static void usage() {
 
 static FILE *openChessFile(const String &name) {
   FILE *f = fopen(name,_T("r"));
-  if(f != NULL) {
+  if(f != nullptr) {
     return f;
   } else {
     FileNameSplitter info(name);
@@ -37,7 +37,7 @@ private:
   void load(const Game &game);
   void unload();
   bool isLoaded() const {
-    return m_tablebase != NULL;
+    return m_tablebase != nullptr;
   }
 public:
   MoveFinder();
@@ -48,7 +48,7 @@ public:
 MoveFinder::MoveFinder() {
   EndGameKeyDefinition::setDbPath(_T("c:\\temp\\ChessEndGames"));
   EndGameKeyDefinition::setMetric(DEPTH_TO_MATE);
-  m_tablebase = NULL;
+  m_tablebase = nullptr;
 }
 
 MoveFinder::~MoveFinder() {
@@ -61,7 +61,7 @@ void MoveFinder::load(const Game &game) {
   bool swap;
 
   m_tablebase = EndGameTablebase::getInstanceBySignature(signature, swap);
-  if(m_tablebase == NULL) {
+  if(m_tablebase == nullptr) {
     throwException(_T("Tablebase %s not found"), signature.toString().cstr());
   }
   m_tablebase->load();
@@ -70,7 +70,7 @@ void MoveFinder::load(const Game &game) {
 void MoveFinder::unload() {
   if(isLoaded()) {
     m_tablebase->unload();
-    m_tablebase = NULL;
+    m_tablebase = nullptr;
   }
 }
 
@@ -197,7 +197,7 @@ private:
   void        printDoneMark();
          void indent();
   void        printTree();
-  bool        printMove(const MoveWithResult &mr, PrintableMove *em = NULL); // return true if game.position is a terminal move, ie. mate of capture
+  bool        printMove(const MoveWithResult &mr, PrintableMove *em = nullptr); // return true if game.position is a terminal move, ie. mate of capture
   void        printMoveStack() const;
   int         findBestWinnerMove(const MoveResultArray &a);
   MoveResultArray getAllMovesInCurrentPosition() {

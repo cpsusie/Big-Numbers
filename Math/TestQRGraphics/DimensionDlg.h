@@ -2,7 +2,7 @@
 
 class DimensionDlg : public CDialog {
 public:
-    DimensionDlg(int dimension, CWnd *pParent = NULL);
+    DimensionDlg(int dimension, CWnd *pParent = nullptr);
 
     enum { IDD = IDD_DIMENSIONDIALOG };
     UINT    m_dimension;

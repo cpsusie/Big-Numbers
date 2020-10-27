@@ -12,14 +12,14 @@ BEGIN_MESSAGE_MAP(CImageDoc, CDocument)
 END_MESSAGE_MAP()
 
 CImageDoc::CImageDoc() {
-  m_pixRect = NULL;
+  m_pixRect = nullptr;
   init();
 }
 
 void CImageDoc::init() {
-  if(m_pixRect != NULL) {
+  if(m_pixRect != nullptr) {
     delete m_pixRect;
-    m_pixRect = NULL;
+    m_pixRect = nullptr;
   }
   m_name    = _T("Untitled");
 }

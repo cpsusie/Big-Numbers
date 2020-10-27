@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CEditModelSchemaDlg::CEditModelSchemaDlg(const ListCtrlModelSchema &schema, CWnd *pParent /*=NULL*/) : CDialog(CEditModelSchemaDlg::IDD, pParent) {
+CEditModelSchemaDlg::CEditModelSchemaDlg(const ListCtrlModelSchema &schema, CWnd *pParent /*=nullptr*/) : CDialog(CEditModelSchemaDlg::IDD, pParent) {
   m_schema = schema;
 }
 
@@ -153,7 +153,7 @@ void *BaseTableModel::getValueAt(UINT row, UINT column) {
   case 10: return &e.m_showZero;                         // "Show zero"
   case 11: return &e.m_decimalCount;                     // "Decimals"
   case 12: return &e.m_dropDownStyle;                    // "Dropdown style"
-  default: return NULL;                                  // "?"
+  default: return nullptr;                                  // "?"
   }
 }
 
@@ -170,14 +170,14 @@ static const char *typeNames[] = {
  ,"string"
  ,"combobox"
  ,"checkbox"
- ,NULL
+ ,nullptr
 };
 
 static const char *dropdownStyle[] = {
   ""
  ,"drop down"
  ,"drop list"
- ,NULL
+ ,nullptr
 };
 
 typedef enum {

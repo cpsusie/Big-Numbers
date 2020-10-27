@@ -119,10 +119,10 @@ bool Game::isLongCastleAllowed() const {
   _SETMOVE(move, NORMALMOVE, piece, capturedPiece, dirIndex, moveIndex, to, direction)
 
 #define SETMOVE_SHORTCASTLE(move, piece)                                                          \
-  _SETMOVE(move, SHORTCASTLING, piece, NULL, 0, 0, (piece->getPlayer()==WHITEPLAYER)?G1:G8,MD_RIGHT)
+  _SETMOVE(move, SHORTCASTLING, piece, nullptr, 0, 0, (piece->getPlayer()==WHITEPLAYER)?G1:G8,MD_RIGHT)
 
 #define SETMOVE_LONGCASTLE(move, piece)                                                           \
-  _SETMOVE(move, LONGCASTLING, piece, NULL, 0, 0, (piece->getPlayer()==WHITEPLAYER)?C1:C8,MD_LEFT)
+  _SETMOVE(move, LONGCASTLING, piece, nullptr, 0, 0, (piece->getPlayer()==WHITEPLAYER)?C1:C8,MD_LEFT)
 
 
 #define SETMOVE_CHECKFORPROMOTION(move, piece, capturedPiece, dirIndex, moveIndex, to, direction) \

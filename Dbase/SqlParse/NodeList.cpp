@@ -7,11 +7,11 @@ NodeList::NodeList(SyntaxNode *n, int token, bool binarytree) {
 };
 
 NodeList::NodeList() {
-  findNodes(NULL);
+  findNodes(nullptr);
 }
 
 void NodeList::appendcommalist(SyntaxNode *n, int token) {
-  if(n == NULL) return;
+  if(n == nullptr) return;
   if(n->token() == token) {
     appendcommalist(n->child(0),token);
     add(n->child(1));
@@ -21,7 +21,7 @@ void NodeList::appendcommalist(SyntaxNode *n, int token) {
 }
 
 void NodeList::traversetree(SyntaxNode *n, int token) {
-  if(n == NULL) return;
+  if(n == nullptr) return;
   if(n->token() == token) {
     int count = n->childCount();
     for(int i = 0; i < count; i++)
@@ -50,7 +50,7 @@ const SyntaxNode *NodeList::genlist(ParserTree &tree, const CompactIntArray &set
   const SyntaxNode *last = (*this)[set[0]];
   const size_t n = set.size();
   for(size_t i = 1; i < n; i++) {
-    last = tree.fetchTokenNode(COMMA,last,(*this)[set[i]],NULL);
+    last = tree.fetchTokenNode(COMMA,last,(*this)[set[i]],nullptr);
   }
   return last;
 }

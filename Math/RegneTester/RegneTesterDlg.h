@@ -49,7 +49,7 @@ private:
   void resetExecise();
   void ajourStartButtonVisible();
 public:
-    CRegneTesterDlg(CWnd *pParent = NULL);
+    CRegneTesterDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_REGNETESTER_DIALOG };
     CString m_result;

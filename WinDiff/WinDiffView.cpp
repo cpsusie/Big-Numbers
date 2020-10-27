@@ -172,7 +172,7 @@ void CWinDiffView::setActive(bool active) {
 CWinDiffView *CWinDiffView::getPartner() {
   CWinDiffSplitterWnd *parent = (CWinDiffSplitterWnd*)GetParent();
   if(parent->getPanelCount() < 2) {
-    return NULL;
+    return nullptr;
   }
   return parent->getDiffView(1-getId());
 }
@@ -190,7 +190,7 @@ void CWinDiffView::adjustChildPositions() {
   const CSize size = getClientRect(this).Size();
 
   CWnd *nameWindow = GetDlgItem(IDC_NAME);
-  if(nameWindow != NULL) {
+  if(nameWindow != nullptr) {
     WINDOWPLACEMENT wp;
     nameWindow->GetWindowPlacement(&wp);
     wp.rcNormalPosition.left   = 0;
@@ -204,7 +204,7 @@ void CWinDiffView::adjustChildPositions() {
 
   CScrollBar *scv = (CScrollBar*)GetDlgItem(IDC_SCROLLBARV);
   int tvWidth = size.cx;
-  if(scv != NULL) {
+  if(scv != nullptr) {
     WINDOWPLACEMENT wp;
     scv->GetWindowPlacement(&wp);
     wp.rcNormalPosition.left   = tvWidth - SC_WIDTH;
@@ -212,7 +212,7 @@ void CWinDiffView::adjustChildPositions() {
     wp.rcNormalPosition.right  = tvWidth;
     wp.rcNormalPosition.bottom = size.cy - SC_WIDTH;
     scv->SetWindowPlacement(&wp);
-    if(id > 0 || partner == NULL) {
+    if(id > 0 || partner == nullptr) {
       tvWidth -= SC_WIDTH;
     } else {
       scv->ShowWindow(SW_HIDE);
@@ -220,7 +220,7 @@ void CWinDiffView::adjustChildPositions() {
   }
 
   CScrollBar *sch = (CScrollBar*)GetDlgItem(IDC_SCROLLBARH);
-  if(sch != NULL) {
+  if(sch != nullptr) {
     WINDOWPLACEMENT wp;
     sch->GetWindowPlacement(&wp);
     wp.rcNormalPosition.left   = 0;
@@ -257,7 +257,7 @@ void CWinDiffView::setNameFontSizePct(int pct, bool updatePartner) {
     m_nameFrameSize = getWindowSize(nameWindow).cy - getTextExtent(dc, _T("W")).cy;
 */
   }
-  if(m_currentNameFont.m_hObject != NULL) {
+  if(m_currentNameFont.m_hObject != nullptr) {
     m_currentNameFont.DeleteObject();
   }
   LOGFONT lf = m_origNameFont;
@@ -324,7 +324,7 @@ void CWinDiffView::copyToClipboard() {
 }
 
 void CWinDiffView::startTimer() {
-  if(!m_timerIsRunning && SetTimer(1,100,NULL)) {
+  if(!m_timerIsRunning && SetTimer(1,100,nullptr)) {
     m_timerIsRunning = true;
   }
 }
@@ -450,7 +450,7 @@ void CWinDiffView::OnInitialUpdate() {
 }
 
 void CWinDiffView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
-  if(pScrollBar == NULL) {
+  if(pScrollBar == nullptr) {
     return;
   }
   switch(nSBCode) {
@@ -483,7 +483,7 @@ void CWinDiffView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
 }
 
 void CWinDiffView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
-  if(pScrollBar == NULL) {
+  if(pScrollBar == nullptr) {
     return;
   }
   switch(nSBCode) {

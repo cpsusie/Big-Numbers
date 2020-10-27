@@ -7,7 +7,7 @@ void MazeCellMatrix::initWallArrays() {
       WallArray &wa = (*this)(r,c).getWalls();
       wa.setCapacity(m_wallCount);
       for(int i = 0; i < m_wallCount; i++) {
-        wa.add(NULL);
+        wa.add(nullptr);
       }
     }
   }

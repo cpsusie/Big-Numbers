@@ -9,7 +9,7 @@ private:
   void setColorCount(int colorCount);
   UINT m_colorCount;
 public:
-  CSettingsDlg(const ImageSettings &settings, CWnd *pParent = NULL);
+  CSettingsDlg(const ImageSettings &settings, CWnd *pParent = nullptr);
 
   enum { IDD = IDD_SETTINGS_DIALOG };
   UINT    m_scaleFactor;

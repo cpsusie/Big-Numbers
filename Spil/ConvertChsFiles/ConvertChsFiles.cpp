@@ -19,20 +19,20 @@ int _tmain(int argc, TCHAR **argv) {
     const String srcName = FileNameSplitter::getChildName(srcDir, name);
     const String dstName = FileNameSplitter::getChildName(dstDir, name);
 
-    FILE *in = NULL, *out = NULL;
+    FILE *in = nullptr, *out = nullptr;
 
     try {
       in = FOPEN(srcName, _T("r"));
       game.load(in);
       options.load(in);
       fclose(in);
-      in = NULL;
+      in = nullptr;
 
       out = MKFOPEN(dstName, _T("w"));
       game.save(out);
       options.save(out);
       fclose(out);
-      out = NULL;
+      out = nullptr;
     } catch(Exception e) {
       if(in) {
         fclose(in);

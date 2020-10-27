@@ -3,8 +3,8 @@
 ULONG Database::getMaxTableSequenceNo() const {
   KeyFile        index(*this, SYSTEM_TABLEKEY2_FNAME, DBFMODE_READONLY); // find max sequenceno
   KeyCursor cursor(index,
-                   RELOP_TRUE, NULL, 0,
-                   RELOP_TRUE, NULL, 0,
+                   RELOP_TRUE, nullptr, 0,
+                   RELOP_TRUE, nullptr, 0,
                    SORT_DESCENDING);
   KeyType key;
   KeyFileDefinition keydef(index);

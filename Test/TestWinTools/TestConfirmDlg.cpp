@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CTestConfirmDlg::CTestConfirmDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestConfirmDlg::IDD, pParent) {
+CTestConfirmDlg::CTestConfirmDlg(CWnd *pParent /*=nullptr*/) : CDialog(CTestConfirmDlg::IDD, pParent) {
     m_confirmMessage    = _T("Confirm");
     m_confirmCaption    = _T("ConfirmBox");
 }

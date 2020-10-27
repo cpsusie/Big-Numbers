@@ -11,7 +11,7 @@ private:
   void startTimer(UINT milliSeconds);
   void stopTimer();
 public:
-  CMessageDlg(int milliSeconds, const String &caption, const String &message, CWnd *pParent = NULL);
+  CMessageDlg(int milliSeconds, const String &caption, const String &message, CWnd *pParent = nullptr);
 
     enum { IDD = IDD_MESSAGE_DIALOG };
 

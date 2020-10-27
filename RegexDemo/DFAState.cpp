@@ -5,7 +5,7 @@
 
 void DFAState::getTransitionMap(DFATransitionMap &map) const {
   int           lastTransition = FAILURE;
-  CharacterSet *currentSet     = NULL;
+  CharacterSet *currentSet     = nullptr;
   map.clear();
 
   for(int ch = 0; ch < MAX_CHARS; ch++) {
@@ -13,7 +13,7 @@ void DFAState::getTransitionMap(DFATransitionMap &map) const {
       if(m_transition[ch] != lastTransition) {
         lastTransition = m_transition[ch];
         currentSet = map.get(lastTransition);
-        if(currentSet == NULL) {
+        if(currentSet == nullptr) {
           map.put(lastTransition, CharacterSet());
         }
         currentSet = map.get(lastTransition);

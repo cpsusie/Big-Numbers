@@ -91,7 +91,7 @@ private:
     __super::render(renderFlags, m_editor.getActiveCameraSet());
   }
 public:
-  CQuartoDlg(CWnd *pParent = NULL);
+  CQuartoDlg(CWnd *pParent = nullptr);
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) override;
 
   D3Scene &getScene() override {

@@ -44,7 +44,7 @@ void testParser(const String &fileName, const String &stmt) {
 }
 
 static void testParser(TCHAR **argv) {
-  if(*argv == NULL) {
+  if(*argv == nullptr) {
     for(;;) {
       String stmt = getStmt();
       testParser( EMPTYSTRING,stmt);
@@ -84,7 +84,7 @@ static void testScanner(const String &stmt) {
 }
 
 static void testScanner(TCHAR **argv) {
-  if(*argv == NULL) {
+  if(*argv == nullptr) {
     for(;;) {
       String stmt = getStmt();
       testScanner(stmt);

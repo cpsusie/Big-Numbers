@@ -11,7 +11,7 @@ private:
   void loadGifResource(int resId);
 public:
 
-    CTestGIFDlg(CWnd *pParent = NULL);
+    CTestGIFDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_TESTGIF_DIALOG };
 

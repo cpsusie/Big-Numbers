@@ -10,7 +10,7 @@ CGetIntDlg::CGetIntDlg(const TCHAR *title, const TCHAR *prompt, const IntInterva
 , m_title(title)
 , m_prompt(prompt)
 {
-  m_intervalSpecified = legalInterval != NULL;
+  m_intervalSpecified = legalInterval != nullptr;
   if(m_intervalSpecified) {
     m_interval = *legalInterval;
   }

@@ -61,7 +61,7 @@ int main(int argc, const char **argv) {
     usage();
   }
 
-  setvbuf(stdout, NULL, _IOFBF, 0x10000);
+  setvbuf(stdout, nullptr, _IOFBF, 0x10000);
   if(Cstrings) {
     FileTreeWalker::traverseArgv(argv, CStringExtractor(minLength, showNames, verbose), recurse);
   } else {

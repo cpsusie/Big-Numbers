@@ -11259,7 +11259,7 @@ State 403:
  199	productions
  404	LALR(1) states
 3965	items
-22048	bytes required for parsertables
+11.908(x86)/11.984(x64) bytes	 required for parsertables
 
    0	shift/reduce  conflicts
    0	reduce/reduce conflicts

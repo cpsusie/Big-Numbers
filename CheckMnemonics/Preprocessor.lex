@@ -9,8 +9,8 @@ class PreprocessorLex : public Scanner {
 private:
   LRparser *m_parser; // if set, redirect errors to parsers verror-routine
 public:
-  PreprocessorLex(LexStream *inputStream = NULL) : Scanner(inputStream) {
-    m_parser = NULL;
+  PreprocessorLex(LexStream *inputStream = nullptr) : Scanner(inputStream) {
+    m_parser = nullptr;
   }
   void setParser(LRparser *parser) {
     m_parser = parser;

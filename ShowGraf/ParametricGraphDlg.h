@@ -27,7 +27,7 @@ private:
 protected:
   String getListFileName() const;
 public:
-  CParametricGraphDlg(ParametricGraphParameters &param, CWnd *pParent = NULL);
+  CParametricGraphDlg(ParametricGraphParameters &param, CWnd *pParent = nullptr);
   virtual ~CParametricGraphDlg();
 
   enum { IDD = IDR_PARAMETRICCURVE };

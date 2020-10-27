@@ -7,7 +7,7 @@ private:
   HACCEL  m_accelTable;
 
 public:
-  IdentifyDialog(CWnd *pParent = NULL);
+  IdentifyDialog(CWnd *pParent = nullptr);
 
   enum { IDD = IDD_IDENTIFY_DIALOG };
   CString   m_myName;

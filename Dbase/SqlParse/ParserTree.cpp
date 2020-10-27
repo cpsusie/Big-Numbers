@@ -152,7 +152,7 @@ void ParserTree::listErrors(FILE *f) {
 
 void ParserTree::listErrors(const String &fname) {
   FILE *f = fopen(fname,_T("w"));
-  if(f == NULL) {
+  if(f == nullptr) {
     _ftprintf(stdout,_T("Cannot open %s\n"),fname.cstr());
     listErrors(stdout);
   } else {
@@ -166,13 +166,13 @@ void ParserTree::releaseAll() {
     delete m_nodetable[i];
   }
   m_errmsg.clear();
-  m_root = NULL;
+  m_root = nullptr;
   m_ok   = true;
 }
 
 ParserTree::ParserTree(TCHAR *filename) {
   m_ok       = true;
-  m_root     = NULL;
+  m_root     = nullptr;
   m_filename = filename;
 }
 
@@ -190,10 +190,10 @@ void ParserTree::parse(const String &sourcefile, const SourcePosition &pos, cons
 void dumpSyntaxTree( const SyntaxNode *n, FILE *f, int level ) {
   if(n) {
     const SourcePosition &pos = n->pos();
-    _ftprintf(f,_T("(%2d,%2d) %*.*s %2d token:[%s] ")
-               ,pos.getLineNumber(),pos.getColumn()
-               ,level,level,_T(" "), level
-               ,SqlTables->getSymbolName(n->token()) );
+    _ftprintf(f, _T("(%2d,%2d) %*.*s %2d token:[%s] ")
+              , pos.getLineNumber(), pos.getColumn()
+              , level, level, _T(" "), level
+              , SqlParser::getTables().getSymbolName(n->token()));
     switch(n->token()) {
     case NAME          : _ftprintf(f,_T(":[%s]\n"           ), n->name()                           ); break;
     case PARAM         : _ftprintf(f,_T(":[%s]\n"           ), n->param()                          ); break;
@@ -225,7 +225,7 @@ void ParserTree::dumpTree(FILE *f) const {
 
 void ParserTree::dumpTree(const String &filename) const {
   FILE *f = fopen(filename,_T("w"));
-  if(f == NULL) {
+  if(f == nullptr) {
     return;
   }
   dumpTree(f);
@@ -303,7 +303,7 @@ String SyntaxNode::toString() const {
   case TYPEVARCHAR        :
     return String(_T("varchar(")) + child(0)->toString() + _T(")");
   }
-  String s = SqlTables->getSymbolName(token());
+  String s = SqlParser::getTables().getSymbolName(token());
   int sons = childCount();
   for(int i = 0; i < sons; i++) {
     String c = child(i)->toString();

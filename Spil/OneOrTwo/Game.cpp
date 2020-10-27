@@ -94,7 +94,7 @@ Move AbstractGame::findMove(PositionSet markedPositions) const {
       return m;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 Move AbstractGame::firstMove() const {
@@ -103,7 +103,7 @@ Move AbstractGame::firstMove() const {
       return m;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 Move AbstractGame::nextMove(Move m) const {
@@ -112,7 +112,7 @@ Move AbstractGame::nextMove(Move m) const {
       return m;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 Move AbstractGame::findBestMove(MoveResultArray &moveArray, PlayLevel level) {
@@ -146,7 +146,7 @@ void MoveResultArray::sort() {
 
 void AbstractGame::executeMove(PositionSet markedPositions) {
   Move m = findMove(markedPositions);
-  if(m == NULL) {
+  if(m == nullptr) {
     showError(_T("Illegal move:%s"), sprintbin(markedPositions).cstr());
     return;
   }

@@ -33,7 +33,7 @@ protected:
 public:
   virtual BOOL PreTranslateMessage(MSG *pMsg);
   virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-  virtual BOOL LoadFrame(UINT nIDResource, DWORD dwDefaultStyle = WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, CWnd *pParentWnd = NULL, CCreateContext *pContext = NULL);
+  virtual BOOL LoadFrame(UINT nIDResource, DWORD dwDefaultStyle = WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, CWnd *pParentWnd = nullptr, CCreateContext *pContext = nullptr);
 
 private:
   HWND            m_selectedWindow;
@@ -52,7 +52,7 @@ private:
   void releaseCurrent();
 
   inline bool hasSelectedWindow() const {
-    return m_selectedWindow != NULL;
+    return m_selectedWindow != nullptr;
   }
 
   inline HWND getSelectedWindow() {
@@ -82,7 +82,7 @@ private:
     return (CCaptureDoc*)((CMainFrame*)this)->GetActiveDocument();
   }
   bool hasDocument() const {
-    return GetDocument() != NULL;
+    return GetDocument() != nullptr;
   }
   inline bool hasImage() const {
     return hasDocument() && GetDocument()->hasImage();

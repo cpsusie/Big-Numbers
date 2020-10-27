@@ -32,22 +32,22 @@ const SyntaxNode *findFirstTableReference(const SyntaxNode *expr) {
   case DATECONST:
   case TIMECONST:
   case TIMESTAMPCONST:
-    return NULL;
+    return nullptr;
 
   case NAME     :
     return expr;
 
   case HOSTVAR  :
   case PARAM    :
-    return NULL;
+    return nullptr;
 
   default:
     { int sons = expr->childCount();
       for(int i = 0; i < sons; i++) {
         const SyntaxNode *p = findFirstTableReference(expr->child(i));
-        if(p != NULL) return p;
+        if(p != nullptr) return p;
       }
-      return NULL;
+      return nullptr;
     }
   }
 }
@@ -68,14 +68,14 @@ const SyntaxNode *findFirstAggregateFunction(const SyntaxNode *expr) {
   case TIMESTAMPCONST:
   case HOSTVAR:
   case PARAM  :
-    return NULL;
+    return nullptr;
   default:
     { int sons = expr->childCount();
       for(int i = 0; i < sons; i++) {
         const SyntaxNode *p = findFirstAggregateFunction(expr->child(i));
-        if(p != NULL) return p;
+        if(p != nullptr) return p;
       }
-      return NULL;
+      return nullptr;
     }
   }
 }
@@ -117,7 +117,7 @@ bool SqlCompiler::isSimpleIndexField(const SyntaxNode *n) {
   case NAME:
   case DOT :
     { const StatementSymbolInfo *ssi = getInfo(n);
-      if(ssi == NULL) return false; // just in case
+      if(ssi == nullptr) return false; // just in case
       const StatementTable &table = ssi->m_table;
       for(UINT i = 0; i < table.m_indexStat.size(); i++) {
         const IndexDefinition &indexDef = table.m_indexStat[i].m_indexDef;
@@ -141,7 +141,7 @@ bool SqlCompiler::isNullPossible(const SyntaxNode *n) { // n = <expr>
   case NAME     :
   case DOT      :
     { const StatementSymbolInfo *ssi = getInfo(n);
-      if(ssi == NULL) return false; // just in case
+      if(ssi == nullptr) return false; // just in case
       return ssi->isNullAllowed();
     }
   case HOSTVAR  :
@@ -197,7 +197,7 @@ static int maxFieldLen(const SqlCompiler &compiler, const SyntaxNode *n) {
   case NAME:
   case DOT :
     { const StatementSymbolInfo *ssi = compiler.getInfo(n);
-      if(ssi == NULL) return -1; // just in case
+      if(ssi == nullptr) return -1; // just in case
       return ssi->len();
     }
   default:
@@ -264,15 +264,15 @@ static SyntaxNode *reduceLike(SqlCompiler &compiler, const SyntaxNode *e1, const
   const TCHAR *firstpercent    = _tcschr( str,'%');
   const TCHAR *lastpercent     = _tcschr(str,'%');
   const TCHAR *firstunderscore = _tcschr( str,'_');
-  const TCHAR *firstwildcard = (firstpercent    == NULL) ? firstunderscore
-                             : (firstunderscore == NULL) ? firstpercent
+  const TCHAR *firstwildcard = (firstpercent    == nullptr) ? firstunderscore
+                             : (firstunderscore == nullptr) ? firstpercent
                              : min(firstpercent,firstunderscore);
 
-  if(firstwildcard == NULL) // no wildcards in String
-    return compiler.fetchTokenNode(EQUAL,e1,compiler.fetchStringNode(str),NULL);
+  if(firstwildcard == nullptr) // no wildcards in String
+    return compiler.fetchTokenNode(EQUAL,e1,compiler.fetchStringNode(str),nullptr);
 
 
-  if(firstwildcard > str && (noOfNonWildCardSequences(str) > 1 || firstunderscore != NULL)) { // str is "abcd%ef%... or abcd_..."
+  if(firstwildcard > str && (noOfNonWildCardSequences(str) > 1 || firstunderscore != nullptr)) { // str is "abcd%ef%... or abcd_..."
     if(compiler.isSimpleIndexField(e1)) {
       size_t    firstwildcardpos = firstwildcard - str;
       String    tmp(str);
@@ -287,24 +287,24 @@ static SyntaxNode *reduceLike(SqlCompiler &compiler, const SyntaxNode *e1, const
                           RELOPLE
                          ,compiler.fetchStringNode(lower.cstr())
                          ,e1
-                         ,NULL
+                         ,nullptr
                        )
                       ,compiler.fetchTokenNode(
                           RELOPLE
                          ,e1
                          ,compiler.fetchStringNode(toUpperCase.cstr())
-                         ,NULL
+                         ,nullptr
                        )
-                      ,NULL
+                      ,nullptr
                     )
-               ,compiler.fetchTokenNode(LIKE,e1,compiler.fetchStringNode(str),NULL)
-               ,NULL);
+               ,compiler.fetchTokenNode(LIKE,e1,compiler.fetchStringNode(str),nullptr)
+               ,nullptr);
     }
     else
-      return compiler.fetchTokenNode(LIKE,e1,compiler.fetchStringNode(str),NULL);
+      return compiler.fetchTokenNode(LIKE,e1,compiler.fetchStringNode(str),nullptr);
   }
 
-  if(firstpercent != NULL && firstunderscore == NULL) { // at least one '%' and no '_'
+  if(firstpercent != nullptr && firstunderscore == nullptr) { // at least one '%' and no '_'
     if((lastpercent - str == (len - 1)) && charSequence(firstpercent,lastpercent,'%')) {
         // str terminate with %%%.. and has no wildcards elsewhere
       size_t firstpercentpos = firstpercent - str;
@@ -318,19 +318,19 @@ static SyntaxNode *reduceLike(SqlCompiler &compiler, const SyntaxNode *e1, const
                        RELOPLE
                       ,compiler.fetchStringNode(lower.cstr())
                       ,e1
-                      ,NULL
+                      ,nullptr
                     )
                    ,compiler.fetchTokenNode(
                        RELOPLE
                       ,e1
                       ,compiler.fetchStringNode(upper.cstr())
-                      ,NULL
+                      ,nullptr
                     )
-                   ,NULL
+                   ,nullptr
                  );
         }
         else if((UINT)maxlen == lower.length()) {
-          return compiler.fetchTokenNode(EQUAL,e1,compiler.fetchStringNode(lower.cstr()),NULL);
+          return compiler.fetchTokenNode(EQUAL,e1,compiler.fetchStringNode(lower.cstr()),nullptr);
         }
         else // maxlen(e1) < position of first % => predicate is false
           return compiler.fetchNumberNode(0);
@@ -338,7 +338,7 @@ static SyntaxNode *reduceLike(SqlCompiler &compiler, const SyntaxNode *e1, const
     }
   }
 
-  return compiler.fetchTokenNode(LIKE,e1,compiler.fetchStringNode(str),NULL);
+  return compiler.fetchTokenNode(LIKE,e1,compiler.fetchStringNode(str),nullptr);
 }
 
 int SqlCompiler::evaluateMaxStringLength(const SyntaxNode *n) { // n is stringexpression. returns -1 on undefined
@@ -528,7 +528,7 @@ const SyntaxNode *ReducedExprList::getReducedExprList(int first) {
   const SyntaxNode *last = (*this)[first].m_expr;
   size_t n = size();
   for(size_t i = first + 1; i < n; i++)
-    last = m_compiler.fetchTokenNode(COMMA,last,(*this)[i].m_expr,NULL);
+    last = m_compiler.fetchTokenNode(COMMA,last,(*this)[i].m_expr,nullptr);
   return last;
 }
 
@@ -536,13 +536,13 @@ const SyntaxNode *ReducedExprList::getReducedExprList(const CompactIntArray &set
   const SyntaxNode *last = (*this)[set[0]].m_expr;
   size_t n = set.size();
   for(size_t i = 1; i < n; i++)
-    last = m_compiler.fetchTokenNode(COMMA,last,(*this)[set[i]].m_expr,NULL);
+    last = m_compiler.fetchTokenNode(COMMA,last,(*this)[set[i]].m_expr,nullptr);
   return last;
 }
 
 static SyntaxNode *getSyntaxNode(SqlCompiler *comp, const TupleField &f) {
   if(!f.isDefined())
-    return comp->fetchTokenNode(NULLVAL,NULL);
+    return comp->fetchTokenNode(NULLVAL,nullptr);
   switch(getMainType(f.getType())) {
   case MAINTYPE_NUMERIC   :
     { double d;
@@ -571,11 +571,11 @@ static SyntaxNode *getSyntaxNode(SqlCompiler *comp, const TupleField &f) {
       return comp->fetchTimestampNode(d);
     }
   case MAINTYPE_VOID      :
-    return comp->fetchTokenNode(NULLVAL,NULL);
+    return comp->fetchTokenNode(NULLVAL,nullptr);
   default:
     throwSqlError(SQL_FATAL_ERROR,_T("getSyntaxNode - Invalid DbMainType:%d"),getMainType(f.getType()));
   }
-  return NULL;
+  return nullptr;
 }
 
 SyntaxNode *SqlCompiler::reduceExpression(SyntaxNode *n, bool &isconst) {
@@ -609,7 +609,7 @@ SyntaxNode *SqlCompiler::reduceExpression(SyntaxNode *n, bool &isconst) {
       if(v2->number() == 0)
         return v1;
                      // both v1 and v2 are non const
-    return fetchTokenNode(PLUS,v1,v2,NULL);
+    return fetchTokenNode(PLUS,v1,v2,nullptr);
 
   case MINUS    :
     if(n->childCount() == 1) {
@@ -619,7 +619,7 @@ SyntaxNode *SqlCompiler::reduceExpression(SyntaxNode *n, bool &isconst) {
         isconst = true;
         return fetchNumberNode(-v1->number());
       }
-      return fetchTokenNode(MINUS,v1,NULL);
+      return fetchTokenNode(MINUS,v1,nullptr);
     }
     else {           // 2 sons;
       v1 = reduceExpression(n->child(0),v1const);
@@ -645,13 +645,13 @@ SyntaxNode *SqlCompiler::reduceExpression(SyntaxNode *n, bool &isconst) {
       }
       if(v1const) {  // v2 not const
         if(v1->token() == NUMBER && v1->number() == 0)
-          return fetchTokenNode(MINUS,v2,NULL);
+          return fetchTokenNode(MINUS,v2,nullptr);
       }
       else if(v2const) // v2 const, v1 not const
         if(v2->token() == NUMBER && v2->number() == 0)
           return v1;
       // both v1 and v2 are non const
-      return fetchTokenNode(MINUS,v1,v2,NULL);
+      return fetchTokenNode(MINUS,v1,v2,nullptr);
     }
     break;
 
@@ -680,7 +680,7 @@ SyntaxNode *SqlCompiler::reduceExpression(SyntaxNode *n, bool &isconst) {
       if(v2->number() == 1)
         return v1;
     }
-    return fetchTokenNode(MULT,v1,v2,NULL);
+    return fetchTokenNode(MULT,v1,v2,nullptr);
 
   case DIVOP    :
     v1 = reduceExpression(n->child(0),v1const);
@@ -709,7 +709,7 @@ SyntaxNode *SqlCompiler::reduceExpression(SyntaxNode *n, bool &isconst) {
       if(v2->number() == 1)
         return v1;
     }
-    return fetchTokenNode(DIVOP,v1,v2,NULL);
+    return fetchTokenNode(DIVOP,v1,v2,nullptr);
 
   case MODOP    :
     v1 = reduceExpression(n->child(0),v1const);
@@ -738,7 +738,7 @@ SyntaxNode *SqlCompiler::reduceExpression(SyntaxNode *n, bool &isconst) {
       if(v2->number() == 1)
         return v1;
     }
-    return fetchTokenNode(MODOP,v1,v2,NULL);
+    return fetchTokenNode(MODOP,v1,v2,nullptr);
 
   case EXPO     :
     v1 = reduceExpression(n->child(0),v1const);
@@ -768,7 +768,7 @@ SyntaxNode *SqlCompiler::reduceExpression(SyntaxNode *n, bool &isconst) {
       if(v2->number() == 1)
         return v1;
     }
-    return fetchTokenNode(EXPO,v1,v2,NULL);
+    return fetchTokenNode(EXPO,v1,v2,nullptr);
 
   case NUMBER   :
   case STRING   :
@@ -796,7 +796,7 @@ SyntaxNode *SqlCompiler::reduceExpression(SyntaxNode *n, bool &isconst) {
       isconst = true;
       return fetchStringNode(sqlSubString(v1->str(),(int)v2->number(),(int)v3->number()).cstr());
     }
-    return fetchTokenNode(SUBSTRING,v1,v2,v3,NULL);
+    return fetchTokenNode(SUBSTRING,v1,v2,v3,nullptr);
 
   case TYPEDATE :
     v1 = reduceExpression(n->child(0),v1const);
@@ -814,7 +814,7 @@ SyntaxNode *SqlCompiler::reduceExpression(SyntaxNode *n, bool &isconst) {
         return n;
       }
     }
-    return fetchTokenNode(TYPEDATE,v1,v2,v3,NULL);
+    return fetchTokenNode(TYPEDATE,v1,v2,v3,nullptr);
 
   case TYPETIME :
     v1 = reduceExpression(n->child(0),v1const);
@@ -832,7 +832,7 @@ SyntaxNode *SqlCompiler::reduceExpression(SyntaxNode *n, bool &isconst) {
         return n;
       }
     }
-    return fetchTokenNode(TYPETIME,v1,v2,v3,NULL);
+    return fetchTokenNode(TYPETIME,v1,v2,v3,nullptr);
 
   case TYPETIMESTAMP :
     v1 = reduceExpression(n->child(0),v1const);
@@ -858,7 +858,7 @@ SyntaxNode *SqlCompiler::reduceExpression(SyntaxNode *n, bool &isconst) {
         return n;
       }
     }
-    return fetchTokenNode(TYPETIME,v1,v2,v3,NULL);
+    return fetchTokenNode(TYPETIME,v1,v2,v3,nullptr);
 
   case CONCAT   :
     v1 = reduceExpression(n->child(0),v1const);
@@ -870,24 +870,24 @@ SyntaxNode *SqlCompiler::reduceExpression(SyntaxNode *n, bool &isconst) {
       return fetchStringNode((String   (v1->str()) + String   (v2->str())).cstr());
     }
     else
-      return fetchTokenNode(CONCAT,v1,v2,NULL);
+      return fetchTokenNode(CONCAT,v1,v2,nullptr);
 
   case COUNT    :
     v1 = n->child(0);
     if(v1->token() == STAR)
       return n;
     v2 = reduceExpression(v1->child(0),v2const);
-    return fetchTokenNode(COUNT,fetchTokenNode(v1->token(),v2,NULL),NULL);
+    return fetchTokenNode(COUNT,fetchTokenNode(v1->token(),v2,nullptr),nullptr);
 
   case MIN      :
   case MAX      :
     v1 = reduceExpression(n->child(1),v1const);
     if(v1const) return v1;
-    return fetchTokenNode(n->token(),n->child(0),v1,NULL);
+    return fetchTokenNode(n->token(),n->child(0),v1,nullptr);
 
   case SUM             :
     v1 = reduceExpression(n->child(1),v1const);
-    return fetchTokenNode(SUM,n->child(0),v1,NULL);
+    return fetchTokenNode(SUM,n->child(0),v1,nullptr);
 
   case NULLVAL         :
     isconst = true;
@@ -913,7 +913,7 @@ SyntaxNode *SqlCompiler::reduceExpression(SyntaxNode *n, bool &isconst) {
       }
     }
     else
-      return fetchTokenNode(CAST,v1,n->child(1),NULL);
+      return fetchTokenNode(CAST,v1,n->child(1),nullptr);
   case SELECT          :
   case UNION           :
   case INTERSECT       :
@@ -988,7 +988,7 @@ SyntaxNode *SqlCompiler::reducePredicate(SyntaxNode *n, PossiblePredicateValues 
         case  1: return v2;       // result is v2
         case -1:
           if(!v2v.isConst())      // "undef and v2" equals false if v2=false and undef else
-            return fetchTokenNode(AND,v1,v2,NULL);
+            return fetchTokenNode(AND,v1,v2,nullptr);
           switch((int)v2->number()) {
           case  0: return v2;     // result is false
           case  1: return v1;     // result is undef
@@ -1002,10 +1002,10 @@ SyntaxNode *SqlCompiler::reducePredicate(SyntaxNode *n, PossiblePredicateValues 
         case  0: return v2;       // result is false
         case  1: return v1;       // result is v1
         case -1:                  // "v1 and undef" equals false if v1=false and undef else
-          return fetchTokenNode(AND,v1,v2,NULL);
+          return fetchTokenNode(AND,v1,v2,nullptr);
         }
                                   // both v1 and v2 are non-const
-      return fetchTokenNode(AND,v1,v2,NULL);
+      return fetchTokenNode(AND,v1,v2,nullptr);
     }
 
   case OR     :
@@ -1021,7 +1021,7 @@ SyntaxNode *SqlCompiler::reducePredicate(SyntaxNode *n, PossiblePredicateValues 
         case  1: return v1;       // result is true
         case -1:
           if(!v2v.isConst())      // "undef or v2" equals true if v2=true and undef else
-            return fetchTokenNode(OR,v1,v2,NULL);
+            return fetchTokenNode(OR,v1,v2,nullptr);
           switch((int)v2->number()) {
           case  0: return v1;     // result is undef
           case  1: return v2;     // result is true
@@ -1035,10 +1035,10 @@ SyntaxNode *SqlCompiler::reducePredicate(SyntaxNode *n, PossiblePredicateValues 
         case  0: return v1;       // result is v1
         case  1: return v2;       // result is true
         case -1:                  // "v1 or undef" equals true if v1=true and undef else
-          return fetchTokenNode(OR,v1,v2,NULL);
+          return fetchTokenNode(OR,v1,v2,nullptr);
         }
                                   // both v1 and v2 are non-const
-      return fetchTokenNode(OR,v1,v2,NULL);
+      return fetchTokenNode(OR,v1,v2,nullptr);
     }
   case NOT    :
     { PossiblePredicateValues vv;
@@ -1057,22 +1057,22 @@ SyntaxNode *SqlCompiler::reducePredicate(SyntaxNode *n, PossiblePredicateValues 
         return v->child(0);
       case NOTEQ:
         values = vv;
-        return fetchTokenNode(EQUAL,v->child(0)  ,v->child(1),NULL);
+        return fetchTokenNode(EQUAL,v->child(0)  ,v->child(1),nullptr);
       case RELOPLE:
         values = vv;
-        return fetchTokenNode(RELOPGT,v->child(0),v->child(1),NULL);
+        return fetchTokenNode(RELOPGT,v->child(0),v->child(1),nullptr);
       case RELOPLT:
         values = vv;
-        return fetchTokenNode(RELOPGE,v->child(0),v->child(1),NULL);
+        return fetchTokenNode(RELOPGE,v->child(0),v->child(1),nullptr);
       case RELOPGE:
         values = vv;
-        return fetchTokenNode(RELOPLT,v->child(0),v->child(1),NULL);
+        return fetchTokenNode(RELOPLT,v->child(0),v->child(1),nullptr);
       case RELOPGT:
         values = vv;
-        return fetchTokenNode(RELOPLE,v->child(0),v->child(1),NULL);
+        return fetchTokenNode(RELOPLE,v->child(0),v->child(1),nullptr);
       default:
         values = ~vv;
-        return fetchTokenNode(NOT,v,NULL);
+        return fetchTokenNode(NOT,v,nullptr);
       }
     }
   case LIKE   :
@@ -1108,7 +1108,7 @@ SyntaxNode *SqlCompiler::reducePredicate(SyntaxNode *n, PossiblePredicateValues 
         values = predfalse | predtrue;
         if(isNullPossible(v1) || isNullPossible(v2))
           values.insert(predundef);
-        return fetchTokenNode(LIKE,v1,v2,NULL);
+        return fetchTokenNode(LIKE,v1,v2,nullptr);
       }
     }
   case ISNULL:
@@ -1130,7 +1130,7 @@ SyntaxNode *SqlCompiler::reducePredicate(SyntaxNode *n, PossiblePredicateValues 
           return fetchNumberNode(0);
         }
       values = predfalse | predtrue;
-      return fetchTokenNode(ISNULL,v,NULL);
+      return fetchTokenNode(ISNULL,v,nullptr);
     }
   case EXISTS :
     { if(isEmptySelect(n->child(0))) {
@@ -1158,7 +1158,7 @@ SyntaxNode *SqlCompiler::reducePredicate(SyntaxNode *n, PossiblePredicateValues 
           return fetchNumberNode(0);
         }
         values = predfalse | predtrue | predundef;
-        return fetchTokenNode(INSYM,v1,setexpr,NULL);
+        return fetchTokenNode(INSYM,v1,setexpr,nullptr);
       default:
         { ReducedExprList exprlist(*this,setexpr);
           if(v1const) {
@@ -1190,8 +1190,8 @@ SyntaxNode *SqlCompiler::reducePredicate(SyntaxNode *n, PossiblePredicateValues 
           }
           values = predfalse | predtrue | predundef;
           if(exprlist.size() == 1)
-            return fetchTokenNode(EQUAL,v1,setexpr,NULL);
-          return fetchTokenNode(INSYM,v1,exprlist.getReducedExprList(),NULL);
+            return fetchTokenNode(EQUAL,v1,setexpr,nullptr);
+          return fetchTokenNode(INSYM,v1,exprlist.getReducedExprList(),nullptr);
         }
       }
     }
@@ -1201,7 +1201,7 @@ SyntaxNode *SqlCompiler::reducePredicate(SyntaxNode *n, PossiblePredicateValues 
     { ReducedExprList exprlist1(*this,n->child(0));
       if(n->child(1)->token() == SELECT) {     // cannot reduce predicates containing subqueries
         values = predfalse | predtrue | predundef;
-        return fetchTokenNode(n->token(),exprlist1.getReducedExprList(),n->child(1),NULL);
+        return fetchTokenNode(n->token(),exprlist1.getReducedExprList(),n->child(1),nullptr);
       } else {
         ReducedExprList exprlist2(*this,n->child(1));
         CompactIntArray nonconstset;
@@ -1266,7 +1266,7 @@ SyntaxNode *SqlCompiler::reducePredicate(SyntaxNode *n, PossiblePredicateValues 
         return fetchTokenNode(n->token()
                              ,exprlist1.getReducedExprList(nonconstset)
                              ,exprlist2.getReducedExprList(nonconstset)
-                             ,NULL
+                             ,nullptr
                              );
 
       }
@@ -1279,7 +1279,7 @@ SyntaxNode *SqlCompiler::reducePredicate(SyntaxNode *n, PossiblePredicateValues 
     { ReducedExprList exprlist1(*this,n->child(0));
       if(n->child(1)->token() == SELECT) {     // cannot reduce predicates containing subqueries
         values = predtrue | predfalse | predundef;
-        return fetchTokenNode(n->token(),exprlist1.getReducedExprList(),n->child(1),NULL);
+        return fetchTokenNode(n->token(),exprlist1.getReducedExprList(),n->child(1),nullptr);
       }
       else {
         ReducedExprList exprlist2(*this,n->child(1));
@@ -1325,7 +1325,7 @@ SyntaxNode *SqlCompiler::reducePredicate(SyntaxNode *n, PossiblePredicateValues 
             return fetchTokenNode(n->token()
                                 ,exprlist1.getReducedExprList(i)
                                 ,exprlist2.getReducedExprList(i)
-                                ,NULL
+                                ,nullptr
                                 );
           }
         }
@@ -1395,7 +1395,7 @@ SyntaxNode *SqlCompiler::reducePredicate(SyntaxNode *n, PossiblePredicateValues 
                              ,exprlistmiddle.getReducedExprList(i)
                              ,exprlistlower.getReducedExprList(i)
                              ,exprlistupper.getReducedExprList(i)
-                             ,NULL
+                             ,nullptr
                              );
       }
       // all was const AND defined AND all compare equal
@@ -1408,7 +1408,7 @@ SyntaxNode *SqlCompiler::reducePredicate(SyntaxNode *n, PossiblePredicateValues 
     break;
   }
   stopcomp(n);
-  return NULL;
+  return nullptr;
 }
 
 // returns const predicates as a number SyntaxNode with
@@ -1432,7 +1432,7 @@ SyntaxNode *SqlCompiler::reducePredicate1(SyntaxNode *n, bool &isconst) {
           return v2;
         case -1:
           if(!v2const) // "undef and v2" equals false if v2=false and undef else
-            return fetchTokenNode(AND,v1,v2,NULL);
+            return fetchTokenNode(AND,v1,v2,nullptr);
           switch((int)v2->number()) {
           case 0:      // result is false
             isconst = true;
@@ -1456,10 +1456,10 @@ SyntaxNode *SqlCompiler::reducePredicate1(SyntaxNode *n, bool &isconst) {
           isconst = false;
           return v1;
         case -1:       // "v1 and undef" equals false if v1=false and undef else
-          return fetchTokenNode(AND,v1,v2,NULL);
+          return fetchTokenNode(AND,v1,v2,nullptr);
         }
                        // both v1 and v2 are non-const
-      return fetchTokenNode(AND,v1,v2,NULL);
+      return fetchTokenNode(AND,v1,v2,nullptr);
     }
   case OR     :
     { bool v1const,v2const;
@@ -1477,7 +1477,7 @@ SyntaxNode *SqlCompiler::reducePredicate1(SyntaxNode *n, bool &isconst) {
           return v1;
         case -1:
           if(!v2const) // "undef or v2" equals true if v2=true and undef else
-            return fetchTokenNode(OR,v1,v2,NULL);
+            return fetchTokenNode(OR,v1,v2,nullptr);
           switch((int)v2->number()) {
           case 0:      // result is undef
             isconst = true;
@@ -1500,10 +1500,10 @@ SyntaxNode *SqlCompiler::reducePredicate1(SyntaxNode *n, bool &isconst) {
           isconst = true;
           return v2;
         case -1:       // "v1 or undef" equals true if v1=true and undef else
-          return fetchTokenNode(OR,v1,v2,NULL);
+          return fetchTokenNode(OR,v1,v2,nullptr);
         }
                        // both v1 and v2 are non-const
-      return fetchTokenNode(OR,v1,v2,NULL);
+      return fetchTokenNode(OR,v1,v2,nullptr);
     }
   case NOT    :
     { bool vconst;
@@ -1523,17 +1523,17 @@ SyntaxNode *SqlCompiler::reducePredicate1(SyntaxNode *n, bool &isconst) {
       case NOT:
         return v->child(0);
       case NOTEQ:
-        return fetchTokenNode(EQUAL,v->child(0)  ,v->child(1),NULL);
+        return fetchTokenNode(EQUAL,v->child(0)  ,v->child(1),nullptr);
       case RELOPLE:
-        return fetchTokenNode(RELOPGT,v->child(0),v->child(1),NULL);
+        return fetchTokenNode(RELOPGT,v->child(0),v->child(1),nullptr);
       case RELOPLT:
-        return fetchTokenNode(RELOPGE,v->child(0),v->child(1),NULL);
+        return fetchTokenNode(RELOPGE,v->child(0),v->child(1),nullptr);
       case RELOPGE:
-        return fetchTokenNode(RELOPLT,v->child(0),v->child(1),NULL);
+        return fetchTokenNode(RELOPLT,v->child(0),v->child(1),nullptr);
       case RELOPGT:
-        return fetchTokenNode(RELOPLE,v->child(0),v->child(1),NULL);
+        return fetchTokenNode(RELOPLE,v->child(0),v->child(1),nullptr);
       default:
-        return fetchTokenNode(NOT,v,NULL);
+        return fetchTokenNode(NOT,v,nullptr);
       }
     }
   case LIKE   :
@@ -1562,7 +1562,7 @@ SyntaxNode *SqlCompiler::reducePredicate1(SyntaxNode *n, bool &isconst) {
       else if(v2const)
          return reduceLike(*this,v1,v2->str());
       else
-        return fetchTokenNode(LIKE,v1,v2,NULL);
+        return fetchTokenNode(LIKE,v1,v2,nullptr);
     }
   case ISNULL:
     { bool vconst;
@@ -1576,7 +1576,7 @@ SyntaxNode *SqlCompiler::reducePredicate1(SyntaxNode *n, bool &isconst) {
           isconst = true;
           return fetchNumberNode(0);
         }
-      return fetchTokenNode(ISNULL,v,NULL);
+      return fetchTokenNode(ISNULL,v,nullptr);
     }
   case EXISTS :
     { if(isEmptySelect(n->child(0))) {
@@ -1599,7 +1599,7 @@ SyntaxNode *SqlCompiler::reducePredicate1(SyntaxNode *n, bool &isconst) {
           isconst = true;
           return fetchNumberNode(0);
         }
-        return fetchTokenNode(INSYM,v1,setexpr,NULL);
+        return fetchTokenNode(INSYM,v1,setexpr,nullptr);
       default:
         { ReducedExprList exprlist(*this,setexpr);
           if(v1const) {
@@ -1627,8 +1627,8 @@ SyntaxNode *SqlCompiler::reducePredicate1(SyntaxNode *n, bool &isconst) {
             }
           }
           if(exprlist.size() == 1)
-            return fetchTokenNode(EQUAL,v1,setexpr,NULL);
-          return fetchTokenNode(INSYM,v1,exprlist.getReducedExprList(),NULL);
+            return fetchTokenNode(EQUAL,v1,setexpr,nullptr);
+          return fetchTokenNode(INSYM,v1,exprlist.getReducedExprList(),nullptr);
         }
       }
     }
@@ -1637,7 +1637,7 @@ SyntaxNode *SqlCompiler::reducePredicate1(SyntaxNode *n, bool &isconst) {
   case NOTEQ  :
     { ReducedExprList exprlist1(*this,n->child(0));
       if(n->child(1)->token() == SELECT)      // cannot reduce predicates containing subqueries
-        return fetchTokenNode(n->token(),exprlist1.getReducedExprList(),n->child(1),NULL);
+        return fetchTokenNode(n->token(),exprlist1.getReducedExprList(),n->child(1),nullptr);
       else {
         ReducedExprList exprlist2(*this,n->child(1));
         CompactIntArray nonconstset;
@@ -1698,7 +1698,7 @@ SyntaxNode *SqlCompiler::reducePredicate1(SyntaxNode *n, bool &isconst) {
         return fetchTokenNode(n->token()
                              ,exprlist1.getReducedExprList(nonconstset)
                              ,exprlist2.getReducedExprList(nonconstset)
-                             ,NULL
+                             ,nullptr
                              );
 
       }
@@ -1710,7 +1710,7 @@ SyntaxNode *SqlCompiler::reducePredicate1(SyntaxNode *n, bool &isconst) {
   case RELOPGT:
     { ReducedExprList exprlist1(*this,n->child(0));
       if(n->child(1)->token() == SELECT)      // cannot reduce predicates containing subqueries
-        return fetchTokenNode(n->token(),exprlist1.getReducedExprList(),n->child(1),NULL);
+        return fetchTokenNode(n->token(),exprlist1.getReducedExprList(),n->child(1),nullptr);
       else {
         ReducedExprList exprlist2(*this,n->child(1));
         for(UINT i = 0; i < exprlist1.size(); i++) {
@@ -1741,7 +1741,7 @@ SyntaxNode *SqlCompiler::reducePredicate1(SyntaxNode *n, bool &isconst) {
             return fetchTokenNode(n->token()
                                 ,exprlist1.getReducedExprList(i)
                                 ,exprlist2.getReducedExprList(i)
-                                ,NULL
+                                ,nullptr
                                 );
         }
         // all was const AND defined AND all compare equal
@@ -1800,7 +1800,7 @@ SyntaxNode *SqlCompiler::reducePredicate1(SyntaxNode *n, bool &isconst) {
                              ,exprlistmiddle.getReducedExprList(i)
                              ,exprlistlower.getReducedExprList(i)
                              ,exprlistupper.getReducedExprList(i)
-                             ,NULL
+                             ,nullptr
                              );
       }
       // all was const AND defined AND all compare equal
@@ -1813,7 +1813,7 @@ SyntaxNode *SqlCompiler::reducePredicate1(SyntaxNode *n, bool &isconst) {
     break;
   }
   stopcomp(n);
-  return NULL;
+  return nullptr;
 }
 /*
 const SyntaxNode *SqlCompiler::reducePredicate( const SyntaxNode *n) {
@@ -1828,9 +1828,9 @@ SyntaxNode *SqlCompiler::reduceByKeyPredicates(SyntaxNode *n, KeyPredicatesHashM
   case AND    :
     { SyntaxNode *v1 = reduceByKeyPredicates(n->child(0),hash);
       SyntaxNode *v2 = reduceByKeyPredicates(n->child(1),hash);
-      if(v1 == NULL) return v2;
-      if(v2 == NULL) return v1;
-      return fetchTokenNode(AND,v1,v2,NULL);
+      if(v1 == nullptr) return v2;
+      if(v2 == nullptr) return v1;
+      return fetchTokenNode(AND,v1,v2,nullptr);
     }
   case OR     :
   case NOT    :
@@ -1840,7 +1840,7 @@ SyntaxNode *SqlCompiler::reduceByKeyPredicates(SyntaxNode *n, KeyPredicatesHashM
   case LIKE   :
     return n;
   case ISNULL:
-    return (hash.get(n->child(0)) == NULL) ? n : NULL;
+    return (hash.get(n->child(0)) == nullptr) ? n : nullptr;
   case EQUAL  :
   case RELOPLE:
   case RELOPLT:
@@ -1853,16 +1853,16 @@ SyntaxNode *SqlCompiler::reduceByKeyPredicates(SyntaxNode *n, KeyPredicatesHashM
 
       CompactIntArray nonkeypred;
       for(UINT i = 0; i < left.size(); i++) { // sizes are equal
-        if((hash.get(left[i]) == NULL) && (hash.get(right[i]) == NULL))
+        if((hash.get(left[i]) == nullptr) && (hash.get(right[i]) == nullptr))
           nonkeypred.add(i);
       }
       if(nonkeypred.size() == 0)
-        return NULL;
+        return nullptr;
 
       if(nonkeypred.size() == left.size())
         return n;
 
-      return fetchTokenNode(n->token(),left.genlist(*this,nonkeypred),right.genlist(*this,nonkeypred),NULL);
+      return fetchTokenNode(n->token(),left.genlist(*this,nonkeypred),right.genlist(*this,nonkeypred),nullptr);
     }
   case BETWEEN:
     { NodeList middle(n->child(0));
@@ -1871,8 +1871,8 @@ SyntaxNode *SqlCompiler::reduceByKeyPredicates(SyntaxNode *n, KeyPredicatesHashM
       NodeList lower( n->child(1));
       NodeList upper( n->child(2));
 
-      if((hash.get(lower[0]) != NULL) && (hash.get(upper[0]) != NULL))
-        return NULL;
+      if((hash.get(lower[0]) != nullptr) && (hash.get(upper[0]) != nullptr))
+        return nullptr;
       else
         return n;
     }
@@ -1882,5 +1882,5 @@ SyntaxNode *SqlCompiler::reduceByKeyPredicates(SyntaxNode *n, KeyPredicatesHashM
     stopcomp(n);
     break;
   }
-  return NULL;
+  return nullptr;
 }

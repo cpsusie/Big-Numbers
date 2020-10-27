@@ -12,7 +12,7 @@ namespace UnitTestDbFile {
     TEST_METHOD(testDbFile) {
       Array<DbFile> fileTable;
       for(int i = 0; i < 30; i++) {
-        fileTable.add(DbFile(format(_T("fisk%04d"),i),DBFMODE_READWRITE,NULL));
+        fileTable.add(DbFile(format(_T("fisk%04d"),i),DBFMODE_READWRITE,nullptr));
       }
 
       for(size_t i = 0; i < fileTable.size(); i++) {
@@ -33,7 +33,7 @@ namespace UnitTestDbFile {
       }
 
       try {
-        DbFile tmp(_T("test.dat"),DBFMODE_READONLY,NULL);
+        DbFile tmp(_T("test.dat"),DBFMODE_READONLY,nullptr);
         tmp.write(0,buf,sizeof(buf));
         verify(false);
       } catch(sqlca ca) {

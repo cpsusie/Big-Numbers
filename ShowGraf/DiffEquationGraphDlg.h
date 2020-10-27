@@ -96,7 +96,7 @@ private:
   inline int                findEquationIndexByCtrlId(UINT id) const {
     return m_equationControlArray.findEquationIndexByCtrlId(id);
   }
-  // return NULL if not in any diff-equation
+  // return nullptr if not in any diff-equation
   inline CDiffEquationEdit *findEquationByCtrlId(     UINT id) const {
     return m_equationControlArray.findEquationByCtrlId(id);
   }
@@ -104,7 +104,7 @@ private:
   inline int                getFocusEquationIndex() const {
     return findEquationIndexByCtrlId(getFocusCtrlId(this));
   }
-  // return NULL if not in any diff-equation
+  // return nullptr if not in any diff-equation
   inline CDiffEquationEdit *getFocusEquation() const {
     return findEquationByCtrlId(getFocusCtrlId(this));
   }
@@ -126,7 +126,7 @@ private:
 protected:
   String getListFileName(const DiffEquationGraphParameters &param) const;
 public:
-  CDiffEquationGraphDlg(DiffEquationGraphParameters &param, CWnd *pParent = NULL);
+  CDiffEquationGraphDlg(DiffEquationGraphParameters &param, CWnd *pParent = nullptr);
   virtual ~CDiffEquationGraphDlg();
   DiffEquationGraphParameters &m_param;
 

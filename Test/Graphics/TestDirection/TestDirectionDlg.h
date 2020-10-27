@@ -4,7 +4,7 @@ class CTestDirectionDlg : public CDialog {
 private:
     HICON m_hIcon;
 public:
-    CTestDirectionDlg(CWnd *pParent = NULL);
+    CTestDirectionDlg(CWnd *pParent = nullptr);
     CPoint m_mouseDown;
     CPoint m_lastMouse;
     void line(CPoint from, CPoint to, COLORREF color);

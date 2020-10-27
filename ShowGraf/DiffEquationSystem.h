@@ -49,7 +49,7 @@ class ExpressionInputIndex {
 public:
   UINT  m_index;
   Real *m_var;
-  inline ExpressionInputIndex() : m_index(-1), m_var(NULL) {
+  inline ExpressionInputIndex() : m_index(-1), m_var(nullptr) {
   }
   inline ExpressionInputIndex(UINT index, Real *var) : m_index(index), m_var(var) {
   }
@@ -119,8 +119,8 @@ public:
   ~DiffEquationSystem();
   DiffEquationSystem(           const DiffEquationSystem &src);
   DiffEquationSystem &operator=(const DiffEquationSystem &src);
-  bool        compile(CompilerErrorList &errorList, FILE *listFile = NULL);
-  bool        compile(        const DiffEquationDescriptionArray &desc, CompilerErrorList &errorList, FILE *listFile = NULL);
+  bool        compile(CompilerErrorList &errorList, FILE *listFile = nullptr);
+  bool        compile(        const DiffEquationDescriptionArray &desc, CompilerErrorList &errorList, FILE *listFile = nullptr);
   // throw Exception if desc does not compile
   void        setDescription( const DiffEquationDescriptionArray &desc);
   static bool validate(       const DiffEquationDescriptionArray &desc, CompilerErrorList &errorList, FILE *listFile);

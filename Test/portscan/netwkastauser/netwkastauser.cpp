@@ -5,7 +5,7 @@
 #pragma comment(lib, "netapi32.lib")
 
 StringArray getWorkStationUsers(TCHAR *serverName) {
-  LPWKSTA_USER_INFO_0 buf  = NULL;
+  LPWKSTA_USER_INFO_0 buf  = nullptr;
 
   try {
     const DWORD    level           = 0;
@@ -25,7 +25,7 @@ StringArray getWorkStationUsers(TCHAR *serverName) {
                                ,&totalEntryCount
                                ,&resumeHandle);
       if(status == NERR_Success || status == ERROR_MORE_DATA) {
-        if(buf == NULL) {
+        if(buf == nullptr) {
           throwException(_T("An access violation has occurred"));
         }
 
@@ -35,16 +35,16 @@ StringArray getWorkStationUsers(TCHAR *serverName) {
       } else {
         throwException(_T("getWorkStationUsers:NetWkstaUserEnum failed:ErrorCode=%#lx"),status);
       }
-      if (buf != NULL) {
+      if (buf != nullptr) {
         NetApiBufferFree(buf);
-        buf = NULL;
+        buf = nullptr;
       }
     } while(status == ERROR_MORE_DATA);
 
     return result;
 
   } catch(Exception e) {
-    if(buf != NULL) {
+    if(buf != nullptr) {
       NetApiBufferFree(buf);
     }
     throw;
@@ -53,7 +53,7 @@ StringArray getWorkStationUsers(TCHAR *serverName) {
 
 int _tmain(int argc, TCHAR **argv) {
   try {
-    StringArray list = getWorkStationUsers(NULL);
+    StringArray list = getWorkStationUsers(nullptr);
     for(size_t i = 0; i < list.size(); i++) {
       const String &user = list[i];
       _tprintf(_T("%s\n"),user.cstr());

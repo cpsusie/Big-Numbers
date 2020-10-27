@@ -12,7 +12,7 @@ CDC     CardBitmap::cardDC;
 #define CARDYOFF(n)  (((n) / 12) * CARDH)
 
 void CardBitmap::init() {
-  if(cardBitmap.m_hObject != NULL) {
+  if(cardBitmap.m_hObject != nullptr) {
     return;
   }
   HDC hdcScreen = getScreenDC();

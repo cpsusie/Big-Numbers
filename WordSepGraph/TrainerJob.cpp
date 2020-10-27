@@ -28,7 +28,7 @@ static void readTrainingData(TrainingList &list, WordWindowMap &wwmap) {
     WordWindowList ww(line);
     for(UINT i = 0; i < ww.size(); i++) {
       WordWindowCheck *wwc = wwmap.get(ww[i].m_window);
-      if(wwc == NULL) {
+      if(wwc == nullptr) {
         wwmap.put(ww[i].m_window,WordWindowCheck(s,ww[i].m_allowSeparation));
       } else {
         if(wwc->m_allowSeparation == ww[i].m_allowSeparation) {
@@ -51,7 +51,7 @@ static void readTrainingData(TrainingList &list, WordWindowMap &wwmap) {
   }
 
   FILE *wwfile = fopen(_T("wwdat.txt"),_T("w"));
-  if(wwfile != NULL) {
+  if(wwfile != nullptr) {
     for(Iterator<Entry<String,WordWindowCheck> > wwit = wwmap.getIterator(); wwit.hasNext(); ) {
       Entry<String,WordWindowCheck> &entry = wwit.next();
       _ftprintf(wwfile,_T("%d %s\n"),entry.getValue().m_count,entry.getKey().cstr());
@@ -65,7 +65,7 @@ static void readCycleCount(int &cycleCount, int &errorCount) { // find the last 
   errorCount = 0;
 
   FILE *f = fopen(_T("error.dat"),_T("r"));
-  if(f == NULL) return;
+  if(f == nullptr) return;
   TCHAR line[100];
   while(FGETS(line, ARRAYSIZE(line),f)) {
     if(_stscanf(line,_T("%d %d"),&cycleCount,&errorCount) != 2) {

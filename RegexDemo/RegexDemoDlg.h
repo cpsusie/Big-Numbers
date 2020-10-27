@@ -109,7 +109,7 @@ private:
   void startDebugCompile();
   void killDebugger();
   inline bool hasDebugger() const {
-    return m_debugger != NULL;
+    return m_debugger != nullptr;
   }
   inline bool searchForward() {
     return !isMenuItemChecked(this, ID_OPTIONS_SEARCHBACKWARDS);
@@ -160,7 +160,7 @@ private:
   }
 
 public:
-  CRegexDemoDlg(CWnd *pParent = NULL);
+  CRegexDemoDlg(CWnd *pParent = nullptr);
     enum { IDD = IDR_MAINFRAME };
     CString m_pattern;
     CString m_target;

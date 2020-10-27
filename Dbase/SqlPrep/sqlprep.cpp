@@ -144,7 +144,7 @@ Parser::Parser(const String &fname) : CollectScanner(fname, SQLAPI_MAXSTMTSIZE )
   m_dumpStatements   = false;
   m_dumpbnd          = false;
   m_genLineMarks     = true;
-  m_bndfile          = NULL;
+  m_bndfile          = nullptr;
 
   String bndFileName = FileNameSplitter(fname).setExtension(_T("bnd")).getFullPath();
   String cppFileName = FileNameSplitter(fname).setExtension(_T("cpp")).getFullPath();
@@ -164,7 +164,7 @@ Parser::Parser(const String &fname) : CollectScanner(fname, SQLAPI_MAXSTMTSIZE )
       error(SQL_FILE_OPEN_ERROR,_T("%s:%s\n"),e.what(), cppFileName.cstr());
     }
     m_bndfile  = fopen(bndFileName, _T("wb"));
-    if(m_bndfile == NULL) {
+    if(m_bndfile == nullptr) {
       error(SQL_FILE_OPEN_ERROR,_T("Cannot open %s\n"),bndFileName.cstr());
     }
 
@@ -178,7 +178,7 @@ Parser::Parser(const String &fname) : CollectScanner(fname, SQLAPI_MAXSTMTSIZE )
 Parser::~Parser() {
   m_listfile.close();
 
-  if(m_bndfile != NULL) {
+  if(m_bndfile != nullptr) {
     Packer p;
     p.writeEos(ByteFile(m_bndfile, WRITEMODE));
     fclose(m_bndfile);
@@ -194,7 +194,7 @@ void Parser::hostvarIndexPrint(HostVarIndex &c) {
   _tprintf(_T("  HostVar:[%3d,%3d]=("),c.m_data,c.m_ind);
   HostVar &vard = m_hostvarList[c.m_data];
   _tprintf(_T("%-20s,"),vard.m_name);
-  HostVar *vari = (c.m_ind < 0) ? NULL : &m_hostvarList[c.m_ind];
+  HostVar *vari = (c.m_ind < 0) ? nullptr : &m_hostvarList[c.m_ind];
   _tprintf(_T("%-20s)\n"),vari?vari->m_name:_T("-"));
 }
 
@@ -219,7 +219,7 @@ HostVar *Parser::findHostvar(TCHAR *name) {
       return &m_hostvarList[i];
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 /*  ------------------------------------------------------------------- */
@@ -237,12 +237,12 @@ Cursor *Parser::searchCursor(TCHAR *name) {
       return &m_cursorList[i];
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 Cursor *Parser::findCursor(TCHAR *name) {
   Cursor *cursor = searchCursor(name);
-  if(cursor == NULL) {
+  if(cursor == nullptr) {
     error(SQL_UNDECLARED_CURSOR,_T("Undeclared Cursor:%s"),name);
   }
   return cursor;
@@ -272,14 +272,14 @@ DynamicStatement *Parser::searchDynStatement(TCHAR *name) {
       return &m_dynstatementList[i];
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 DynamicStatement *Parser::findDynStatement(TCHAR *name) {
   DynamicStatement *stmt = searchDynStatement(name);
-  if(stmt == NULL) {
+  if(stmt == nullptr) {
     error(SQL_UNDECLARED_STATEMENT,_T("Undeclared statement:%s"),name);
-    return NULL;
+    return nullptr;
   } else {
     return stmt;
   }
@@ -375,7 +375,7 @@ void Parser::emitSetStr(HostVar *var) {
 
 void Parser::emitSetVar(int i, const HostVarIndex &varindex) {
   HostVar      &var = m_hostvarList[varindex.m_data];
-  HostVar      *ind = (varindex.m_ind) < 0 ? NULL : &m_hostvarList[varindex.m_ind];
+  HostVar      *ind = (varindex.m_ind) < 0 ? nullptr : &m_hostvarList[varindex.m_ind];
 
   emit(_T("  sqlapi_varl[%d].sqltype = %d;\n"), i, ind?isNullAllowed(var.m_type):var.m_type );
   switch(var.m_type) {
@@ -437,7 +437,7 @@ void Parser::emitSetVarWStr(int n, HostVar *var, wchar_t *str) {
 #endif
 
 void Parser::emitCall(int apicall,int apiopt, int ninput, int noutput) {
-  TCHAR *vars = (ninput > 0 || noutput > 0) ? _T("sqlapi_varl") : _T("NULL");
+  TCHAR *vars = (ninput > 0 || noutput > 0) ? _T("sqlapi_varl") : _T("nullptr");
 
   emit(_T("  sqlapi_call(%d,%d,sqlapi_program_id,%d,%d,%s,sqlca);\n"),
     apicall,apiopt,ninput,noutput,vars);
@@ -774,7 +774,7 @@ void Parser::parseIncludeSection() {
 
 HostVar *Parser::parseStringHost() {
   HostVar *var = findHostvar(the_name);
-  if(var == NULL) {
+  if(var == nullptr) {
     error(SQL_UNDECLARED_HOSTVAR,_T("Undeclared HostVar:%s"),the_name);
   } else if((var->m_type != DBTYPE_CSTRING) && (var->m_type != DBTYPE_WSTRING)) {
     error(SQL_INVALID_DATATYPE,_T("Invalid type. Must be char or wchar_t"));
@@ -814,7 +814,7 @@ void Parser::parseConnectto() {
   TCHAR dbname[MAX_STRING_LEN+1],
        username[MAX_STRING_LEN+1],
        password[MAX_STRING_LEN+1];
-  HostVar *dbvar = NULL,*uservar = NULL,*passwordvar = NULL;
+  HostVar *dbvar = nullptr,*uservar = nullptr,*passwordvar = nullptr;
   bool connectUsing = false;
 
   switch(token) {
@@ -1137,7 +1137,7 @@ void Parser::parseDeclare() {
   }
   parseEndExec();
 
-  emitBndStmt(cursor.m_nr,&cursor.m_hostvarList,NULL);
+  emitBndStmt(cursor.m_nr,&cursor.m_hostvarList,nullptr);
 }
 
 void Parser::parseOpen() {
@@ -1240,7 +1240,7 @@ void Parser::parseFetch() {
       emitCall(SQL_CALL_FETCH,cursor->m_nr,0,1);
     }
     emitEnd();
-    emitBndStmt(cursor->m_nr,NULL,&varlist);
+    emitBndStmt(cursor->m_nr,nullptr,&varlist);
   }
 }
 
@@ -1439,7 +1439,7 @@ void Parser::parseCreate() {
     emitChkPgmid();
     emitCall(SQL_CALL_EXECUTE,stmt.m_nr,0,0);
     emitEnd();
-    emitBndStmt(stmt.m_nr, NULL, NULL );
+    emitBndStmt(stmt.m_nr, nullptr, nullptr );
   }
 }
 

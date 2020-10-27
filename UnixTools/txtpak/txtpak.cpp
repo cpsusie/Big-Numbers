@@ -106,7 +106,7 @@ int _tmain(int argc, const TCHAR **argv) {
   bool         sorting      = false;
   bool         verbose      = false;
   LibType      libType      = LT_UNKNOWN;
-  const TCHAR *fileName     = NULL;
+  const TCHAR *fileName     = nullptr;
 
   argv++;
   if(!*argv) {
@@ -156,7 +156,7 @@ int _tmain(int argc, const TCHAR **argv) {
     switch(command) {
     case CMD_PACK   :
       { StringArray fileNames;
-        if(fileName == NULL) {
+        if(fileName == nullptr) {
           fileNames = findFiles(argv, recurse);
         } else {
           fileNames = readFileNames(fileName);
@@ -186,7 +186,7 @@ int _tmain(int argc, const TCHAR **argv) {
       break;
     case CMD_UPDATE :
       { StringArray fileNames;
-        if(fileName == NULL) {
+        if(fileName == nullptr) {
           fileNames = findFiles(argv, recurse);
         } else {
           fileNames = readFileNames(fileName);

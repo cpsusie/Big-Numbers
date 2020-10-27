@@ -374,10 +374,10 @@ public:
 };
 
 void RefFunctionsMonitor::resetAllFunctions() {
-  m_d64_1RefFunc = NULL;
-  m_d64_2RefFunc = NULL;
-  m_d80_1ValFunc = NULL;
-  m_d80_2ValFunc = NULL;
+  m_d64_1RefFunc = nullptr;
+  m_d64_2RefFunc = nullptr;
+  m_d80_1ValFunc = nullptr;
+  m_d80_2ValFunc = nullptr;
 }
 
 void RefFunctionsMonitor::prepareTest(D801ValFunc f80, D641RefFunc f64) {
@@ -435,7 +435,7 @@ static void testFunction(const String &name, D801ValFunc f80, D641RefFunc f64, d
 
 static void testFunction(const String &name, D801ValFunc f80, D641ValFunc f64, double low, double high) {
   try {
-    s_refFunctions.prepareTest(f80, NULL);
+    s_refFunctions.prepareTest(f80, nullptr);
     INFO(_T("Line %d, Testing %s in %s"), __LINE__, name.cstr(), __TFUNCSIG__);
     testFunction(name, f80_1Ref, f64, low, high);
     s_refFunctions.endTest();
@@ -447,7 +447,7 @@ static void testFunction(const String &name, D801ValFunc f80, D641ValFunc f64, d
 
 static void testFunction(const String &name, D801RefFunc f80, D641RefFunc f64, double low, double high) {
   try {
-    s_refFunctions.prepareTest(NULL, f64);
+    s_refFunctions.prepareTest(nullptr, f64);
     INFO(_T("Line %d, Testing %s in %s"), __LINE__, name.cstr(), __TFUNCSIG__);
     testFunction(name, f80, f64_1Val, low, high);
     s_refFunctions.endTest();
@@ -471,7 +471,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642RefFunc f64, d
 
 static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, double low1, double high1, double low2, double high2) {
   try {
-    s_refFunctions.prepareTest(f80, NULL);
+    s_refFunctions.prepareTest(f80, nullptr);
     INFO(_T("Line %d, Testing %s in %s"), __LINE__, name.cstr(), __TFUNCSIG__);
     testFunction(name, f80_2Ref, f64, low1, high1, low2, high2);
     s_refFunctions.endTest();
@@ -483,7 +483,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
 
 static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, double low1, double high1, double low2, double high2) {
   try {
-    s_refFunctions.prepareTest(NULL, f64);
+    s_refFunctions.prepareTest(nullptr, f64);
     INFO(_T("Line %d, Testing %s in %s"), __LINE__, name.cstr(), __TFUNCSIG__);
     testFunction(name, f80, f64_2Val, low1, high1, low2, high2);
     s_refFunctions.endTest();
@@ -610,27 +610,27 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
       verify(endp == maxStr.cstr() + maxStr.length());
 
       const String minStr = d80tot(charBuf, DBL80_MIN);
-      diff = DBL80_MIN - _tcstod80(minStr.cstr(), NULL);
+      diff = DBL80_MIN - _tcstod80(minStr.cstr(), nullptr);
       verify((diff == 0) && (errno == 0));
 
       const Double80 tmin = numeric_limits<Double80>::denorm_min();
       const String tminStr = d80tot(charBuf, tmin);
-      diff = tmin - _tcstod80(tminStr.cstr(), NULL);
+      diff = tmin - _tcstod80(tminStr.cstr(), nullptr);
       verify((diff == 0) && (errno == 0));
 
-      Double80 tmp1 = strtod80("1.18973149535723237e+4932", NULL);
+      Double80 tmp1 = strtod80("1.18973149535723237e+4932", nullptr);
       verify((tmp1 == DBL80_MAX) && (errno == ERANGE));
 
-      tmp1 = strtod80("-1.18973149535723237e+4932", NULL);
+      tmp1 = strtod80("-1.18973149535723237e+4932", nullptr);
       verify((tmp1 == -DBL80_MAX) && (errno == ERANGE));
 
       for(Double80 d = DBL80_MIN; d != 0; d /= 2) {
         const String dpStr = d80tot(charBuf, d);
-        Double80 tmp = _tcstod80(dpStr.cstr(), NULL);
+        Double80 tmp = _tcstod80(dpStr.cstr(), nullptr);
         verify((tmp == d) && (errno == 0));
         const Double80 dm = -d;
         const String dmStr = d80tot(charBuf, dm);
-        tmp = _tcstod80(dmStr.cstr(), NULL);
+        tmp = _tcstod80(dmStr.cstr(), nullptr);
         verify((tmp == dm) && (errno == 0));
       }
 
@@ -643,7 +643,7 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
         char str[50];
         Double80 d80 = randDouble80(0,p);
         d80toa(str,d80);
-        Double80 d80a = strtod80(str, NULL);
+        Double80 d80a = strtod80(str, nullptr);
         const Double80 err = getRelativeError(d80a, d80);
         if(err.isZero()) {
           zeroErrorCount++;
@@ -681,7 +681,7 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
       for(double d64 = start; isfinite(d64); d64 *= step) {
         char str[50];
         sprintf(str, "%#.17a", d64);
-        Double80 d80 = strtod80(str, NULL);
+        Double80 d80 = strtod80(str, nullptr);
         const double err = getRelativeError(d64, d80);
         if(err == 0) {
           zeroErrorCount++;
@@ -1221,13 +1221,13 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
 
       verify(rui64 == ui64max);
 
-      Double80 dstr = strtod80(" 1.23456e123", NULL);
+      Double80 dstr = strtod80(" 1.23456e123", nullptr);
       verify(fabs((dstr - 1.23456e123) / dstr) < 1e-15);
-      dstr = strtod80("+1.23456e123", NULL);
+      dstr = strtod80("+1.23456e123", nullptr);
       verify(fabs((dstr - 1.23456e123) / dstr) < 1e-15);
-      dstr = strtod80(" -1.23456e123", NULL);
+      dstr = strtod80(" -1.23456e123", nullptr);
       verify(fabs((dstr + 1.23456e123) / dstr) < 1e-15);
-      Double80 dstring = wcstod80(L"-1.23456e123", NULL);
+      Double80 dstring = wcstod80(L"-1.23456e123", nullptr);
       verify(dstr == dstring);
 
       hashCodes.add(dui64.hashCode());

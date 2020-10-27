@@ -7,7 +7,7 @@ typedef struct {
 
 class CTestOBMBitmapsDlg : public CDialog {
 public:
-    CTestOBMBitmapsDlg(CWnd *pParent = NULL);
+    CTestOBMBitmapsDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_TESTOBMBITMAPS_DIALOG };
 

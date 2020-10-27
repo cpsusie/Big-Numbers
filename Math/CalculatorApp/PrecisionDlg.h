@@ -5,7 +5,7 @@ private:
     HACCEL    m_accelTabel;
 
 public:
-    PrecisionDlg(int prec, CWnd *pParent = NULL);
+    PrecisionDlg(int prec, CWnd *pParent = nullptr);
 
     enum { IDD = IDD_DIALOGPREC };
     long    m_precision;

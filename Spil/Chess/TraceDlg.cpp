@@ -9,11 +9,11 @@
 #define new DEBUG_NEW
 #endif
 
-CTraceDlg::CTraceDlg(CTraceDlgThread &thread) : CDialog(IDD, NULL), m_thread(thread) {
+CTraceDlg::CTraceDlg(CTraceDlgThread &thread) : CDialog(IDD, nullptr), m_thread(thread) {
   m_hIcon          = theApp.LoadIcon(IDR_MAINFRAME);
   m_initDone       = false;
   m_timerCount     = 0;
-  m_textBox        = NULL;
+  m_textBox        = nullptr;
   m_caretPos       = 0;
   m_keepText       = FALSE;
 }
@@ -152,7 +152,7 @@ void CTraceDlg::setMessageLine(UINT index, const String &s) {
 
 String CTraceDlg::getMessageText() const {
   String result;
-  const TCHAR *delim = NULL;
+  const TCHAR *delim = nullptr;
   const size_t n = m_messageLineArray.size();
   for(size_t i = 0; i < n; i++) {
     const String &line = m_messageLineArray[i];
@@ -235,7 +235,7 @@ void CTraceDlg::OnShowWindow(BOOL bShow, UINT nStatus) {
   if(bShow) {
     BringWindowToTop();
     if(m_timerCount == 0) {
-      SetTimer(1, 50, NULL);
+      SetTimer(1, 50, nullptr);
     }
   }
   m_thread.setActiveProperty(bShow?true:false);

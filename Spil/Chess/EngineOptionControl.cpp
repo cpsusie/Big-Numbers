@@ -13,8 +13,8 @@ EngineOptionControl::EngineOptionControl(CEngineOptionsDlg *parent, const Engine
   m_ctrlId     = parent->nextCtrlId(option.getType());
   m_spinCtrlId = -1;
   m_column     = -1;
-  m_label = m_label2 = NULL;
-  m_ctrl  = m_spinCtrl = NULL;
+  m_label = m_label2 = nullptr;
+  m_ctrl  = m_spinCtrl = nullptr;
   switch(option.getType()) {
   case OptionTypeCheckbox:
     { CButton *ctrl = new CButton(); TRACE_NEW(ctrl);
@@ -280,7 +280,7 @@ EngineOptionControl *EngineOptionControlArray::findControlById(int ctrlId) {
       return &ctrl;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 EngineOptionControl *EngineOptionControlArray::findControlByName(const String &name) {
@@ -290,7 +290,7 @@ EngineOptionControl *EngineOptionControlArray::findControlByName(const String &n
       return &ctrl;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 CompactIntArray EngineOptionControlArray::selectCtrlIdByType(EngineOptionType type) const {
@@ -432,7 +432,7 @@ CPoint EngineOptionControlArray::createGrid(const DialogColumnInfoArray &columnI
   int maxWidth = 0;                                   \
   for(int i = from; i < to; i++) {                    \
     const EngineOptionControl &ctrl = (*this)[i];     \
-    if(ctrl.m == NULL || !(filter(ctrl))) continue;   \
+    if(ctrl.m == nullptr || !(filter(ctrl))) continue;   \
     const int textWidth = w;                          \
     maxWidth = max(textWidth, maxWidth);              \
   }                                                   \
@@ -475,7 +475,7 @@ void EngineOptionControlArray::putValues(const EngineOptionValueArray &valueArra
   for(size_t i = 0; i < valueArray.size(); i++) {
     const EngineOptionValue &v    = valueArray[i];
     EngineOptionControl     *ctrl = findControlByName(v.getName());
-    if(ctrl == NULL) continue;
+    if(ctrl == nullptr) continue;
     switch(ctrl->getType()) {
     case OptionTypeCheckbox: ctrl->setValue(v.getBoolValue()  ); break;
     case OptionTypeSpin    : ctrl->setValue(v.getIntValue()   ); break;

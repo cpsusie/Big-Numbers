@@ -76,7 +76,7 @@ public:
 
 #if defined(_DEBUG)
   DFA(const DFATables &tables, const NFA &dummy);
-  String toString(bool showNFASets = false, _DFADbgInfo *dbgInfo = NULL) const;
+  String toString(bool showNFASets = false, _DFADbgInfo *dbgInfo = nullptr) const;
   String groupsToString() const;
   inline const Array<DFAState> &getStateArray() const {
     return m_states;

@@ -7,7 +7,7 @@ private:
   CDialog            *m_mainDialog;
   void ajourState();
 public:
-  ShowStateDlg(CDialog *mainDialog, CWnd *pParent = NULL);
+  ShowStateDlg(CDialog *mainDialog, CWnd *pParent = nullptr);
 
   enum { IDD = IDD_DIALOGSHOWSTATE };
 

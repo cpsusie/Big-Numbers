@@ -290,7 +290,7 @@ void InitializeParameters::readTextFile(const String &fileName) {
       throwException(_T("No data read"));
     }
     fclose(f);
-    f = NULL;
+    f = nullptr;
     m_fileData     = data;
     m_elementCount = m_fileData.size();
     m_fileName     = fileName;

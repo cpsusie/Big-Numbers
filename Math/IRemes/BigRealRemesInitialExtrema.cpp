@@ -22,7 +22,7 @@ BigRealVector Remes::findFinalExtrema(UINT M, UINT K, bool highPrecision) {
 
   for(bool hasSolved = false;;) {
     const Array<ExtremaVector> *a = s_extremaMap.get(M, K);
-    if(a != NULL) {
+    if(a != nullptr) {
       for(size_t i = 0; i < a->size(); i++) {
         const ExtremaVector &v = (*a)[i];
         if(v.getMMQuot() <= mmQuot) {
@@ -98,12 +98,12 @@ Real InterpolationFunction::operator()(const Real &x) {
 }
 
 bool Remes::hasSavedExtrema(UINT M, UINT K) const {
-  return s_extremaMap.get(M, K) != NULL;
+  return s_extremaMap.get(M, K) != nullptr;
 }
 
 const ExtremaVector &Remes::getBestSavedExtrema(UINT M, UINT K) const {
   const Array<ExtremaVector> *a = s_extremaMap.get(M, K);
-  if(a == NULL) {
+  if(a == nullptr) {
     throwInvalidArgumentException(__TFUNCTION__, _T("ExtremaKey(%u,%u) not found"), M, K);
   }
   size_t bestIndex = 0;

@@ -26,7 +26,7 @@ void RegexFilter::compile() {
   }
 
 //  _tprintf(_T("tmp:<%s>\n"),tmp.cstr());
-  m_reg.compilePattern(tmp, m_matchCase ? NULL : String::upperCaseTranslate);
+  m_reg.compilePattern(tmp, m_matchCase ? nullptr : String::upperCaseTranslate);
   intptr_t index = m_reg.search(EMPTYSTRING);
   if(index == 0 && m_reg.getResultLength() == 0) {
     throwException(_T("regular expression <%s> matches every String"),m_regex.cstr());

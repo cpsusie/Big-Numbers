@@ -5,6 +5,8 @@
 #include <Math/Expression/ExpressionParser.h>
 #include <c:\Mytools2015\Lib\Src\Expression\ExpressionLex.h>
 
+using namespace Expr;
+
 static void scan(TCHAR *s) {
   LexStringStream stream(s);
   ExpressionLex lex(&stream);
@@ -16,7 +18,7 @@ static void scan(TCHAR *s) {
     const SourcePosition ppos = lex.getPreviousPos();
     _tprintf(_T("ppos:%s. startPos:%s : symbol:%s\n")
             ,ppos.toString().cstr(), pos.toString().cstr()
-            ,ExpressionTables->getSymbolName(symbol));
+            ,ExpressionParser::getTables().getSymbolName(symbol));
     lex.markPrevious();
   } while(symbol != 0);
 }

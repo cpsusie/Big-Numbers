@@ -21,7 +21,7 @@ static char *translateLine(char *line) {
 static void translateCharacter(char *src, char *pat, unsigned char c) {
   char *s;
   size_t l = strlen(pat);
-  while((s = strstr(src,pat)) != NULL) {
+  while((s = strstr(src,pat)) != nullptr) {
     *s = c;
     strcpy(s+1,s+l);
   }
@@ -32,7 +32,7 @@ static void translateCharacter(char *src, char *pat, unsigned char c) {
  */
 static char *translateCharacters(char *s) {
   /* optimization. no need to do anything if we havent got a '&' */
-  if(strchr(s,'&') == NULL) return s;
+  if(strchr(s,'&') == nullptr) return s;
   translateCharacter(s,"&AElig;" ,146); /* Æ */
   translateCharacter(s,"&aelig;" ,145); /* æ */
   translateCharacter(s,"&Aring;" ,143); /* Å */

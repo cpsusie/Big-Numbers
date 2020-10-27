@@ -123,7 +123,7 @@ public:
   void pageRight(    bool shift);
   void pageUp(       bool shift);
   void pageDown(     bool shift);
-  CRect updateSettings(CDC *dc = NULL);
+  CRect updateSettings(CDC *dc = nullptr);
   void initScrollBarHelper();
   void setCurrentAddr(unsigned __int64 addr, bool invalidate = false);
 

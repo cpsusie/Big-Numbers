@@ -22,7 +22,7 @@ static void printAddCountMessage(size_t addCount) {
 Library::Library(const String &libName, LibType type)
   : m_libName(libName)
   , m_libType(type   )
-  , m_lib(    NULL   )
+  , m_lib(    nullptr   )
 {
 }
 
@@ -64,7 +64,7 @@ void Library::openLib(OpenMode mode, bool checkSubDirCount) {
 void Library::closeLib() {
   if(m_lib) {
     delete m_lib;
-    m_lib = NULL;
+    m_lib = nullptr;
   }
 }
 

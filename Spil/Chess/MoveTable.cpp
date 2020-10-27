@@ -7670,21 +7670,21 @@ static const Direction knightMoveDirections_H8[2] = {
 #endif
 static const DirectionArray knightMoves_H8(2,knightMoveDirections_H8);
 
-static const DirectionArray whitePawnMoves_A1(0,NULL);
+static const DirectionArray whitePawnMoves_A1(0,nullptr);
 
-static const DirectionArray whitePawnMoves_B1(0,NULL);
+static const DirectionArray whitePawnMoves_B1(0,nullptr);
 
-static const DirectionArray whitePawnMoves_C1(0,NULL);
+static const DirectionArray whitePawnMoves_C1(0,nullptr);
 
-static const DirectionArray whitePawnMoves_D1(0,NULL);
+static const DirectionArray whitePawnMoves_D1(0,nullptr);
 
-static const DirectionArray whitePawnMoves_E1(0,NULL);
+static const DirectionArray whitePawnMoves_E1(0,nullptr);
 
-static const DirectionArray whitePawnMoves_F1(0,NULL);
+static const DirectionArray whitePawnMoves_F1(0,nullptr);
 
-static const DirectionArray whitePawnMoves_G1(0,NULL);
+static const DirectionArray whitePawnMoves_G1(0,nullptr);
 
-static const DirectionArray whitePawnMoves_H1(0,NULL);
+static const DirectionArray whitePawnMoves_H1(0,nullptr);
 
 static const int whitePawnMoves_A2_0[3] = { 2,A3,A4 };
 static const int whitePawnMoves_A2_1[2] = { 1,B3 };
@@ -8514,37 +8514,37 @@ static const Direction whitePawnMoveDirections_H7[2] = {
 #endif
 static const DirectionArray whitePawnMoves_H7(2,whitePawnMoveDirections_H7);
 
-static const DirectionArray whitePawnMoves_A8(0,NULL);
+static const DirectionArray whitePawnMoves_A8(0,nullptr);
 
-static const DirectionArray whitePawnMoves_B8(0,NULL);
+static const DirectionArray whitePawnMoves_B8(0,nullptr);
 
-static const DirectionArray whitePawnMoves_C8(0,NULL);
+static const DirectionArray whitePawnMoves_C8(0,nullptr);
 
-static const DirectionArray whitePawnMoves_D8(0,NULL);
+static const DirectionArray whitePawnMoves_D8(0,nullptr);
 
-static const DirectionArray whitePawnMoves_E8(0,NULL);
+static const DirectionArray whitePawnMoves_E8(0,nullptr);
 
-static const DirectionArray whitePawnMoves_F8(0,NULL);
+static const DirectionArray whitePawnMoves_F8(0,nullptr);
 
-static const DirectionArray whitePawnMoves_G8(0,NULL);
+static const DirectionArray whitePawnMoves_G8(0,nullptr);
 
-static const DirectionArray whitePawnMoves_H8(0,NULL);
+static const DirectionArray whitePawnMoves_H8(0,nullptr);
 
-static const DirectionArray blackPawnMoves_A1(0,NULL);
+static const DirectionArray blackPawnMoves_A1(0,nullptr);
 
-static const DirectionArray blackPawnMoves_B1(0,NULL);
+static const DirectionArray blackPawnMoves_B1(0,nullptr);
 
-static const DirectionArray blackPawnMoves_C1(0,NULL);
+static const DirectionArray blackPawnMoves_C1(0,nullptr);
 
-static const DirectionArray blackPawnMoves_D1(0,NULL);
+static const DirectionArray blackPawnMoves_D1(0,nullptr);
 
-static const DirectionArray blackPawnMoves_E1(0,NULL);
+static const DirectionArray blackPawnMoves_E1(0,nullptr);
 
-static const DirectionArray blackPawnMoves_F1(0,NULL);
+static const DirectionArray blackPawnMoves_F1(0,nullptr);
 
-static const DirectionArray blackPawnMoves_G1(0,NULL);
+static const DirectionArray blackPawnMoves_G1(0,nullptr);
 
-static const DirectionArray blackPawnMoves_H1(0,NULL);
+static const DirectionArray blackPawnMoves_H1(0,nullptr);
 
 static const int blackPawnMoves_A2_0[2] = { 1,A1 };
 static const int blackPawnMoves_A2_1[2] = { 1,B1 };
@@ -9374,21 +9374,21 @@ static const Direction blackPawnMoveDirections_H7[2] = {
 #endif
 static const DirectionArray blackPawnMoves_H7(2,blackPawnMoveDirections_H7);
 
-static const DirectionArray blackPawnMoves_A8(0,NULL);
+static const DirectionArray blackPawnMoves_A8(0,nullptr);
 
-static const DirectionArray blackPawnMoves_B8(0,NULL);
+static const DirectionArray blackPawnMoves_B8(0,nullptr);
 
-static const DirectionArray blackPawnMoves_C8(0,NULL);
+static const DirectionArray blackPawnMoves_C8(0,nullptr);
 
-static const DirectionArray blackPawnMoves_D8(0,NULL);
+static const DirectionArray blackPawnMoves_D8(0,nullptr);
 
-static const DirectionArray blackPawnMoves_E8(0,NULL);
+static const DirectionArray blackPawnMoves_E8(0,nullptr);
 
-static const DirectionArray blackPawnMoves_F8(0,NULL);
+static const DirectionArray blackPawnMoves_F8(0,nullptr);
 
-static const DirectionArray blackPawnMoves_G8(0,NULL);
+static const DirectionArray blackPawnMoves_G8(0,nullptr);
 
-static const DirectionArray blackPawnMoves_H8(0,NULL);
+static const DirectionArray blackPawnMoves_H8(0,nullptr);
 
 
 const DirectionArray MoveTable::kingMoves[64] = {

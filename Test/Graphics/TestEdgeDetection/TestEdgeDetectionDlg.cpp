@@ -29,15 +29,15 @@ void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestEdgeDetectionDlg::CTestEdgeDetectionDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestEdgeDetectionDlg::IDD, pParent) {
+CTestEdgeDetectionDlg::CTestEdgeDetectionDlg(CWnd *pParent /*=nullptr*/) : CDialog(CTestEdgeDetectionDlg::IDD, pParent) {
     m_hIcon            = theApp.LoadIcon(IDR_MAINFRAME);
-    m_dc               = NULL;
+    m_dc               = nullptr;
     m_arrowDirection   = NODIR;
     m_edgeMatrixCenter = CPoint(-1,-1);
-    m_edgeThread       = NULL;
-    m_currentDirBitmap = NULL;
-    m_pixelWindow      = NULL;
-    m_fillInfo         = NULL;
+    m_edgeThread       = nullptr;
+    m_currentDirBitmap = nullptr;
+    m_pixelWindow      = nullptr;
+    m_fillInfo         = nullptr;
 }
 
 void CTestEdgeDetectionDlg::DoDataExchange(CDataExchange *pDX) {
@@ -81,7 +81,7 @@ BOOL CTestEdgeDetectionDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -107,7 +107,7 @@ BOOL CTestEdgeDetectionDlg::OnInitDialog() {
 }
 
 CDC &CTestEdgeDetectionDlg::getDC() {
-  if(m_dc == NULL) {
+  if(m_dc == nullptr) {
     m_dc = new CClientDC(m_pixelWindow);
   }
   return *m_dc;
@@ -116,7 +116,7 @@ CDC &CTestEdgeDetectionDlg::getDC() {
 void CTestEdgeDetectionDlg::flush() {
   if(m_dc) {
     delete m_dc;
-    m_dc = NULL;
+    m_dc = nullptr;
   }
 }
 
@@ -166,7 +166,7 @@ void CTestEdgeDetectionDlg::OnSizing(UINT fwSide, LPRECT pRect) {
 }
 
 void CTestEdgeDetectionDlg::adjustPixelMatrix() {
-  if(m_pixelWindow == NULL) {
+  if(m_pixelWindow == nullptr) {
     return;
   }
   const CSize cs = getClientRect(m_pixelWindow).Size();
@@ -488,9 +488,9 @@ void CTestEdgeDetectionDlg::setSearchDir(Direction dir) {
     const DirectionMenuItem &dm = menuItems[i];
     checkMenuItem(this, dm.m_id, dm.m_dir == dir);
     if(dm.m_dir == dir) {
-      if(m_currentDirBitmap != NULL) {
+      if(m_currentDirBitmap != nullptr) {
         DeleteObject(m_currentDirBitmap);
-        m_currentDirBitmap = NULL;
+        m_currentDirBitmap = nullptr;
       }
       m_currentDirBitmap = ::LoadBitmap(theApp.m_hInstance, MAKEINTRESOURCE(dm.m_bitmapId));
       ((CStatic*)GetDlgItem(IDC_STATICDIRIMAGE))->SetBitmap(m_currentDirBitmap);
@@ -639,9 +639,9 @@ void CTestEdgeDetectionDlg::followEdge(const CPoint &p, Direction searchDir) {
 }
 
 void CTestEdgeDetectionDlg::killEdgeThread() {
-  if(m_edgeThread != NULL) {
+  if(m_edgeThread != nullptr) {
     delete m_edgeThread;
-    m_edgeThread = NULL;
+    m_edgeThread = nullptr;
     enableContinueInternal(false);
   }
 }
@@ -662,14 +662,14 @@ void CTestEdgeDetectionDlg::enableContinueInternal(bool enabled) {
 
 void CTestEdgeDetectionDlg::releaseFillInfo() {
   delete m_fillInfo;
-  m_fillInfo = NULL;
+  m_fillInfo = nullptr;
 }
 
 FillInfo &CTestEdgeDetectionDlg::getFillInfo() {
-  if((m_fillInfo != NULL) && (m_fillInfo->getSize() != m_logicalSize)) {
+  if((m_fillInfo != nullptr) && (m_fillInfo->getSize() != m_logicalSize)) {
     releaseFillInfo();
   }
-  if(m_fillInfo == NULL) {
+  if(m_fillInfo == nullptr) {
     const CRect rect(0,0,m_logicalSize.cx, m_logicalSize.cy);
     m_fillInfo = new FillInfo(rect);
   }

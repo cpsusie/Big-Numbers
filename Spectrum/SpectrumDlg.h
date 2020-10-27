@@ -15,7 +15,7 @@ private:
     FastSemaphore     m_sampleDone;
     bool              m_handlingEvent;
 public:
-    CSpectrumDlg(CWnd *pParent = NULL);
+    CSpectrumDlg(CWnd *pParent = nullptr);
   HWND getWindow() {
     return m_hWnd;
   }

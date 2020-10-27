@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CListFieldAttributeDlg::CListFieldAttributeDlg(const ListFieldAttribute &attr, CWnd *pParent /*=NULL*/) : CDialog(CListFieldAttributeDlg::IDD, pParent) {
+CListFieldAttributeDlg::CListFieldAttributeDlg(const ListFieldAttribute &attr, CWnd *pParent /*=nullptr*/) : CDialog(CListFieldAttributeDlg::IDD, pParent) {
     m_attr = attr;
     const ListFieldType type = LF_GETTYPE(attr.m_flags);
 

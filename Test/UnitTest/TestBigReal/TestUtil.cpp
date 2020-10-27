@@ -130,10 +130,10 @@ const String getSignatureSubDir() {
   return FileNameSplitter::getChildName(getSourceDir(), getCompileArchitectureSignatureString());
 }
 
-static FILE  *logFile = NULL;
+static FILE  *logFile = nullptr;
 
 void log(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
-  if (logFile == NULL) {
+  if (logFile == nullptr) {
     const String logFileName = FileNameSplitter(getModuleFileName()).setDir(getSourceDir()).setExtension(_T("log")).getFullPath();
     logFile = MKFOPEN(logFileName, _T("a"));
   }

@@ -12,7 +12,7 @@ private:
   CFont               m_font;
   AvlNode            *m_selectedNode;
 public:
-  CAvlTreeWndDlg(CWnd *pParent = NULL);
+  CAvlTreeWndDlg(CWnd *pParent = nullptr);
   void vmessage(COLORREF color, const TCHAR *format, va_list argptr);
   CRect getTreeRect();
   CWnd *getWindow();

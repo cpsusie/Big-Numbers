@@ -140,10 +140,10 @@ public:
   }
   // return value of first field with getId == ID3FN_TEXT if any; else EMPTYSTRING
   String getTextFieldValue() const;
-  // return value of first field with getType == ID3FTY_BINARY if any; else NULL
+  // return value of first field with getType == ID3FTY_BINARY if any; else nullptr
   inline const ByteArray *getBinaryFieldValue() const {
     const FieldWithData *field = findFieldByType(ID3FTY_BINARY);
-    return field ? &field->getBinData() : NULL;
+    return field ? &field->getBinData() : nullptr;
   }
 };
 
@@ -178,7 +178,7 @@ public:
   }
   inline const ByteArray *getFrameBinary(ID3_FrameID id) const {
     const Frame *frame = getFrame(id);
-    return frame ? frame->getBinaryFieldValue() : NULL;
+    return frame ? frame->getBinaryFieldValue() : nullptr;
   }
   static UINT getFrameCount(const String &sourceURL, flags_t flags = (flags_t)ID3TT_ALL);
   inline String toString(bool hexdump) const {

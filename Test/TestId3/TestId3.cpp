@@ -12,7 +12,7 @@
 
 const char *gettag(ID3_Tag &tag, ID3_FrameID id) {
   ID3_Frame *frame = tag.Find(id);
-  if(frame != NULL)
+  if(frame != nullptr)
     return frame->GetField(ID3FN_TEXT)->GetRawText();
   else
     return "";
@@ -20,7 +20,7 @@ const char *gettag(ID3_Tag &tag, ID3_FrameID id) {
 
 static void settag(ID3_Tag &tag, ID3_FrameID id, const char *value) {
   ID3_Frame* frame = tag.Find(id);
-  if(frame == NULL) {
+  if(frame == nullptr) {
     ID3_Frame newframe;
     newframe.SetID(id);
     tag.AddFrame(newframe);
@@ -123,7 +123,7 @@ int main(unsigned argc, char **argv) {
 
   ID3_Tag tag(argv[1]);
 
-  ID3_Frame         *frame = NULL;
+  ID3_Frame         *frame = nullptr;
   const char        *fname = tag.GetFileName();
   ID3_Tag::Iterator *it    = tag.CreateIterator();
   ID3_V2Spec         spec  = tag.GetSpec();
@@ -153,13 +153,13 @@ int main(unsigned argc, char **argv) {
   flags_t flags = tag.Update();
   printf("flags:%x ID3TT_ALL:%x\n",flags,ID3TT_ALL);
   return 0;
-  while((frame = it->GetNext()) != NULL) {
+  while((frame = it->GetNext()) != nullptr) {
     const char          *textid = frame->GetTextID();
     ID3_Frame::Iterator *fit    = frame->CreateIterator();
 
     printf("textid:%s %zd\n",textid,frame->NumFields());
     ID3_Field *field;
-    while((field = fit->GetNext()) != NULL) {
+    while((field = fit->GetNext()) != nullptr) {
       char value[1000];
       field->Get(value,sizeof(value));
       int n = field->GetNumTextItems();

@@ -13,7 +13,7 @@ private:
   MMCapture    *m_capture;
   FastSemaphore m_gate;
 public:
-  CTestWebCamDlg(CWnd *pParent = NULL);   // standard constructor
+  CTestWebCamDlg(CWnd *pParent = nullptr);   // standard constructor
   HWND getWindow() {
     return m_hWnd;
   }

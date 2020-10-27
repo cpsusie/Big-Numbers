@@ -32,7 +32,7 @@ const ColorName *findColorByName(const TCHAR *name) {
       return &colorNameArray[i];
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 String getLegalColorNames() {

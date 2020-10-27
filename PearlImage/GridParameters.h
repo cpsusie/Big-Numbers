@@ -61,7 +61,7 @@ public:
     return *this;
   }
   CSize findCellCount(const CSize &imageSize) const;
-  PixRect *calculateImage(const PixRect *image, PearlDiagram *diagram = NULL) const;
+  PixRect *calculateImage(const PixRect *image, PearlDiagram *diagram = nullptr) const;
   inline bool operator==(const GridParameters &rhs) const {
     return (m_cellCount == rhs.m_cellCount) && (m_colorCount == rhs.m_colorCount);
   }

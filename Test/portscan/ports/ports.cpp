@@ -56,7 +56,7 @@ int connectex(SOCKET s, const struct sockaddr *name, int namelen, long timeout) 
 
       Time.tv_sec  = timeout / 1000L;
       Time.tv_usec = (timeout % 1000) * 1000;
-      rc = select(0, NULL, &FdSet, NULL, &Time);
+      rc = select(0, nullptr, &FdSet, nullptr, &Time);
     }
   }
 
@@ -126,7 +126,7 @@ int CheckPort(DWORD ipaddr, USHORT usPort, ULONG timeout) {
     FD_SET(s, &FdSet);
     Time.tv_sec  = timeout / 1000L;
     Time.tv_usec = (timeout % 1000) * 1000;
-    if ( (select(0, &FdSet, NULL, NULL, &Time) > 0)
+    if ( (select(0, &FdSet, nullptr, nullptr, &Time) > 0)
       && ((nLen = recv(s, (char*)Data, sizeof(Data), 0)) > 0)) {
       HexDump(Data, nLen);
     }
@@ -149,7 +149,7 @@ ULONG ping(IPAddr ipaddr, ULONG ulTimeOut) {
                     ,ipaddr
                     ,pingData
                     ,requestSize
-                    ,NULL
+                    ,nullptr
                     ,replyBuffer
                     ,replySize
                     ,ulTimeOut) == 1) {
@@ -177,7 +177,7 @@ IPAddr stoip(const char *lpIP) {
   if ((lpIP[0] != '\0') && (!isdigit(lpIP[0]))) {
     // Name is specified, lookup ip address
     struct hostent *pHost;
-    if ((pHost = gethostbyname((LPSTR)lpIP)) != NULL) {
+    if ((pHost = gethostbyname((LPSTR)lpIP)) != nullptr) {
       memcpy(&ipaddr, pHost->h_addr_list[0], 4);
     }
   } else {

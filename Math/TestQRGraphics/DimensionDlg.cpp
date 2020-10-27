@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-DimensionDlg::DimensionDlg(int dimension, CWnd *pParent /*=NULL*/)
+DimensionDlg::DimensionDlg(int dimension, CWnd *pParent /*=nullptr*/)
     : CDialog(DimensionDlg::IDD, pParent)
 {
     m_dimension = dimension;

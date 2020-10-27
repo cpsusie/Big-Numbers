@@ -19,7 +19,7 @@ LogFile::LogFile(const String &fileName) {
 LogFile::~LogFile() {
   m_sem.wait();
   if(m_f) fclose(m_f);
-  m_f = NULL;
+  m_f = nullptr;
 }
 
 typedef struct {
@@ -117,7 +117,7 @@ void LogFile::abort() {
   }
   checkThreadId();
 
-  DbFile *dbf               = NULL;
+  DbFile *dbf               = nullptr;
   ULONG   currentBufferSize = 4096;
   BYTE   *buffer            = new BYTE[currentBufferSize];
   String  errorMsg;
@@ -132,11 +132,11 @@ void LogFile::abort() {
       FREAD(&trhead, sizeof(trhead), 1, m_f);
       if(dbf && trhead.m_fileName == dbf->getName()) {
         delete dbf;
-        dbf = NULL;
+        dbf = nullptr;
       }
       if(!dbf) {
-        dbf = new DbFile(trhead.m_fileName, DBFMODE_READWRITE,NULL);
-        if(dbf == NULL) {
+        dbf = new DbFile(trhead.m_fileName, DBFMODE_READWRITE,nullptr);
+        if(dbf == nullptr) {
           continue; // maybe removed
         }
       }
@@ -208,19 +208,19 @@ public:
 
 FileSlot::FileSlot(const String &fileName, ULONG lastTrans) {
   m_fileName  = toUpperCase(fileName);
-  m_file      = NULL;
+  m_file      = nullptr;
   m_lastTrans = lastTrans;
 }
 
 bool FileSlot::open() {
   m_file = fopen(m_fileName,_T("r+b"));
-  return m_file != NULL;
+  return m_file != nullptr;
 }
 
 void FileSlot::close() {
-  if(m_file != NULL) {
+  if(m_file != nullptr) {
     fclose(m_file);
-    m_file = NULL;
+    m_file = nullptr;
   }
 }
 
@@ -284,7 +284,7 @@ FileSlot *FileSlotTable::allocateFileSlot(const String &fileName) {
 FileSlot *FileSlotTable::getFileSlot(const String &fileName) {
   const String tmp    = toUpperCase(fileName);
   FileSlot    *result = get(tmp);
-  if(result == NULL) {
+  if(result == nullptr) {
     result = allocateFileSlot(tmp);
   }
   result->m_lastTrans = nextTransCount();
@@ -294,7 +294,7 @@ FileSlot *FileSlotTable::getFileSlot(const String &fileName) {
 /* assert that no fileslots is using fileName */
 void FileSlotTable::closeFileSlot(const String &fileName) {
   FileSlot *fileSlot = get(toUpperCase(fileName));
-  if(fileSlot != NULL) {
+  if(fileSlot != nullptr) {
     releaseFileSlot(fileSlot);
   }
 }
@@ -331,7 +331,7 @@ DbFile::DbFile(const String &fileName, DbFileMode mode, LogFile *lf) {
 }
 
 DbFile::DbFile(const Database &db, const String &fileName, DbFileMode mode, bool systemFile) {
-  LogFile *lf = mode == DBFMODE_READWRITE ? db.getLogFile() : NULL;
+  LogFile *lf = mode == DBFMODE_READWRITE ? db.getLogFile() : nullptr;
 
   if(systemFile) {
     init(dbFileName(db.getPath(),fileName),mode,lf);
@@ -346,7 +346,7 @@ UINT64 DbFile::getSize() {
 }
 
 void DbFile::truncate() {
-  HANDLE fh = CreateFile(getName().cstr(), GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, TRUNCATE_EXISTING, FILE_ATTRIBUTE_READONLY, NULL);
+  HANDLE fh = CreateFile(getName().cstr(), GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE, nullptr, TRUNCATE_EXISTING, FILE_ATTRIBUTE_READONLY, nullptr);
   if(fh == INVALID_HANDLE_VALUE) {
     throwSqlError(SQL_FATAL_ERROR, _T("DbFile::truncate:Cannot get handle to file %s:%s"), getName().cstr(), getLastErrorText().cstr());
   }
@@ -421,7 +421,7 @@ void DbFile::create(const String &fileName) {
   if(exist(fileName)) {
     throwSqlError(SQL_CREATE_ERROR,_T("File <%s> already exists"),fileName.cstr());
   }
-  FILE *f = NULL;
+  FILE *f = nullptr;
   try {
     f = MKFOPEN(fileName, _T("w+b"));
     fclose(f);

@@ -14,7 +14,7 @@ class CppParser : public LRparser, public ParserTree {
 private:
   static const ParserTables *CppTables;
 public:
-  CppParser(CppLex *lex = NULL) : LRparser(*CppTables,lex) {
+  CppParser(CppLex *lex = nullptr) : LRparser(*CppTables,lex) {
   }
   SyntaxNode *newNode( int token, ... );
   void  appendError(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);

@@ -52,7 +52,7 @@ public:
     return m_name;
   }
   inline bool hasGifFile() const {
-    return m_gif != NULL;
+    return m_gif != nullptr;
   }
   inline const GifFileType *getGifFile() const {
     return m_gif;

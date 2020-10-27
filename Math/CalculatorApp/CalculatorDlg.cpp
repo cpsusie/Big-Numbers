@@ -100,10 +100,10 @@ static ButtonAttribute *getAttribute(int id) {
       return allButtons+i;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
-CCalculatorDlg::CCalculatorDlg(CWnd *pParent /*=NULL*/)	: CDialog(CCalculatorDlg::IDD, pParent) {
+CCalculatorDlg::CCalculatorDlg(CWnd *pParent /*=nullptr*/)	: CDialog(CCalculatorDlg::IDD, pParent) {
   m_display = EMPTYSTRING;
   m_calc    = new Calculator(); TRACE_NEW(m_calc);
   m_hIcon   = theApp.LoadIcon(IDR_MAINFRAME);
@@ -255,9 +255,9 @@ void MyButton::initBitmaps(CButton *button) {
   CClientDC screenDC(button);
   CDC dc;
   dc.CreateCompatibleDC(&screenDC);
-  m_normalBitmap.CreateBitmap(  rect.Width(),rect.Height(),screenDC.GetDeviceCaps(PLANES),screenDC.GetDeviceCaps(BITSPIXEL),NULL);
-  m_disabledBitmap.CreateBitmap(rect.Width(),rect.Height(),screenDC.GetDeviceCaps(PLANES),screenDC.GetDeviceCaps(BITSPIXEL),NULL);
-  m_pressedBitmap.CreateBitmap( rect.Width(),rect.Height(),screenDC.GetDeviceCaps(PLANES),screenDC.GetDeviceCaps(BITSPIXEL),NULL);
+  m_normalBitmap.CreateBitmap(  rect.Width(),rect.Height(),screenDC.GetDeviceCaps(PLANES),screenDC.GetDeviceCaps(BITSPIXEL),nullptr);
+  m_disabledBitmap.CreateBitmap(rect.Width(),rect.Height(),screenDC.GetDeviceCaps(PLANES),screenDC.GetDeviceCaps(BITSPIXEL),nullptr);
+  m_pressedBitmap.CreateBitmap( rect.Width(),rect.Height(),screenDC.GetDeviceCaps(PLANES),screenDC.GetDeviceCaps(BITSPIXEL),nullptr);
 
   CSize textSize = dc.GetTextExtent(text);
   CBrush grayBrush(GRAY);
@@ -326,7 +326,7 @@ BOOL CCalculatorDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -342,7 +342,7 @@ BOOL CCalculatorDlg::OnInitDialog() {
   m_accelTabel     = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
   m_timerInterval  = 0;
   m_waitCursorOn   = false;
-  m_selectedButton = NULL;
+  m_selectedButton = nullptr;
 
   m_font.CreateFont(16, 8, 0, 0, 400, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS,
                          CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
@@ -426,7 +426,7 @@ void CCalculatorDlg::OnClose() {
 
 void CCalculatorDlg::enableButton(int id, bool enabled) {
   MyButton *but = findButton(id);
-  if(but != NULL) {
+  if(but != nullptr) {
     but->enable(enabled);
   }
 }
@@ -679,7 +679,7 @@ void CCalculatorDlg::OnSetfocusDisplay() {
 }
 
 void CCalculatorDlg::startTimer(int msec) {
-  if(!m_timerInterval && SetTimer(1, msec, NULL)) {
+  if(!m_timerInterval && SetTimer(1, msec, nullptr)) {
     m_timerInterval = msec;
   }
 }
@@ -741,7 +741,7 @@ void CCalculatorDlg::OnTimer(UINT_PTR nIDEvent) {
 
 void CCalculatorDlg::activateButton(int id) {
   MyButton *but = findButton(id);
-  if(but != NULL && !but->isEnabled()) {
+  if(but != nullptr && !but->isEnabled()) {
     return;
   }
   m_calc->enter(id);
@@ -755,7 +755,7 @@ MyButton *CCalculatorDlg::findButton(int id) {
       return m_buttons[i];
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 MyButton *CCalculatorDlg::findButton(const CPoint &p) {
@@ -764,7 +764,7 @@ MyButton *CCalculatorDlg::findButton(const CPoint &p) {
       return m_buttons[i];
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 void CCalculatorDlg::scrollLine(int count) {
@@ -795,22 +795,22 @@ BOOL CCalculatorDlg::PreTranslateMessage(MSG *pMsg) {
   case WM_LBUTTONDOWN:
   case WM_LBUTTONDBLCLK:
     m_selectedButton = findButton(pMsg->pt);
-    if(m_selectedButton != NULL && m_selectedButton->isEnabled()) {
+    if(m_selectedButton != nullptr && m_selectedButton->isEnabled()) {
       info(_T("%s"), m_selectedButton->isEnabled() ? _T("enabled") : _T("disabled"));
       m_selectedButton->press(true);
       return true;
     }
     break;
   case WM_LBUTTONUP:
-    if(m_selectedButton != NULL && m_selectedButton->isPressed() && m_selectedButton->pointInWindow(pMsg->pt)) {
+    if(m_selectedButton != nullptr && m_selectedButton->isPressed() && m_selectedButton->pointInWindow(pMsg->pt)) {
       m_selectedButton->press(false);
       activateButton(m_selectedButton->GetDlgCtrlID());
-      m_selectedButton = NULL;
+      m_selectedButton = nullptr;
       return true;
     }
     break;
   case WM_MOUSEMOVE:
-    if((pMsg->lParam & MK_LBUTTON) && m_selectedButton != NULL) {
+    if((pMsg->lParam & MK_LBUTTON) && m_selectedButton != nullptr) {
       m_selectedButton->press(m_selectedButton->pointInWindow(pMsg->pt));
     }
     break;
@@ -967,7 +967,7 @@ void CCalculatorDlg::OnShowinfo() {
 
 static String loadString(int id) {
   TCHAR buffer[4096];
-  LoadString(GetModuleHandle(NULL),id,buffer,sizeof(buffer));
+  LoadString(GetModuleHandle(nullptr),id,buffer,sizeof(buffer));
   buffer[ARRAYSIZE(buffer)-1] = '\0';
   return buffer;
 };

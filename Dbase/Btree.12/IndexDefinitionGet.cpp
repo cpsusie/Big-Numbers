@@ -32,7 +32,7 @@ const IndexArray &Database::getIndexDefinitions(const String &tableName) const {
 
   const String tmpName = toUpperCase(tableName);
   IndexArray *indexArrayp = m_indexTableNameCache.get(tmpName);
-  if(indexArrayp == NULL) {
+  if(indexArrayp == nullptr) {
     IndexArray indexArray;
     readIndexDefinitions(tmpName,indexArray);
     m_indexTableNameCache.put(tmpName,indexArray);
@@ -53,7 +53,7 @@ const IndexDefinition &Database::getIndexDefinition(const String &indexName) con
 
   const String tmpName = toUpperCase(indexName);
   IndexDefinition **indexDefpp = m_indexDefIndexNameCache.get(tmpName);
-  if(indexDefpp == NULL) {
+  if(indexDefpp == nullptr) {
     DataFile dataFile( *this,SYSTEM_INDEXDATA_FNAME, DBFMODE_READONLY);
     KeyFile  indexFile(*this,SYSTEM_INDEXKEY2_FNAME, DBFMODE_READONLY);
 
@@ -70,7 +70,7 @@ const IndexDefinition &Database::getIndexDefinition(const String &indexName) con
     getIndexDefinitions(indexData.m_tableName);
     indexDefpp = m_indexDefIndexNameCache.get(tmpName);
   }
-  if(indexDefpp == NULL) {
+  if(indexDefpp == nullptr) {
     throwSqlError(SQL_INVALID_INDEXNAME, _T("Index <%s> doesn't exist"),indexName.cstr());
   }
 

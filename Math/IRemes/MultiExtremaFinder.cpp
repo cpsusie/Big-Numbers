@@ -36,7 +36,7 @@ private:
   DigitPool          *m_pool;
   RationalFunction   &m_approx;
 public:
-  ExtremumFinder(MultiExtremaFinder *mf, int id) : m_mf(*mf), m_id(id), m_pool(NULL), m_approx(mf->m_approx) {
+  ExtremumFinder(MultiExtremaFinder *mf, int id) : m_mf(*mf), m_id(id), m_pool(nullptr), m_approx(mf->m_approx) {
     m_pool = BigRealResourcePool::fetchDigitPool();
   }
   ~ExtremumFinder() {
@@ -82,7 +82,7 @@ void MultiExtremaFinder::putExtremum(int index, const BigReal &extremum) {
 }
 
 void MultiExtremaFinder::putTerminationCode() {
-  m_resultQueue.put(NULL);
+  m_resultQueue.put(nullptr);
 }
 
 class ExtremumNotifier : public Runnable {
@@ -105,7 +105,7 @@ UINT ExtremumNotifier::run() {
 
   for(size_t i = 0; i < m_expectedResultCount; i++) {
     const ExtremumResult *r = q.get();
-    if(r == NULL) break; // terminationCode
+    if(r == nullptr) break; // terminationCode
     remes.setExtremum(r->m_index, r->m_extr);
     m_mf.m_resultArray.add(r);
   }

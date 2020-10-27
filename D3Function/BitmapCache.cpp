@@ -50,7 +50,7 @@ public:
 };
 
 BitmapCache::BitmapCache() : Singleton(__TFUNCTION__) {
-  m_device = NULL;
+  m_device = nullptr;
 
   createDevice(*theApp.GetMainWnd());
 
@@ -86,7 +86,7 @@ D3DPRESENT_PARAMETERS BitmapCache::getPresentParameters(HWND hwnd) { // static
   param.SwapEffect             = D3DSWAPEFFECT_DISCARD;
   param.EnableAutoDepthStencil = FALSE;
   param.BackBufferFormat       = D3DFMT_X8R8G8B8;
-  param.hDeviceWindow          = NULL;
+  param.hDeviceWindow          = nullptr;
   param.Flags                  = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
   param.BackBufferCount        = 1;
   param.BackBufferWidth        = sz.cx;
@@ -107,11 +107,11 @@ void BitmapCache::releaseDevice() {
 static CBitmap *cloneBitmap(CBitmap *bm) {
   const BITMAP info = getBitmapInfo(*bm);
 
-  HDC srcDC = CreateCompatibleDC(NULL);
-  HDC dstDC = CreateCompatibleDC(NULL);
+  HDC srcDC = CreateCompatibleDC(nullptr);
+  HDC dstDC = CreateCompatibleDC(nullptr);
 
   CBitmap *result = new CBitmap; TRACE_NEW(result);
-  result->CreateBitmap(info.bmWidth, info.bmHeight, info.bmPlanes, info.bmBitsPixel, NULL);
+  result->CreateBitmap(info.bmWidth, info.bmHeight, info.bmPlanes, info.bmBitsPixel, nullptr);
 
   SelectObject(srcDC, *bm);
   SelectObject(dstDC, *result);
@@ -152,10 +152,10 @@ CBitmap *getRotatedBitmapResource(int id, int degree) {
   try {
     BitmapKey    key(id, degree);
     CBitmap    **b = cache.get(key);
-    if(b == NULL) {
+    if(b == nullptr) {
       const BitmapKey k0(id,0);
       CBitmap **b0 = cache.get(k0);
-      if(b0 == NULL) {
+      if(b0 == nullptr) {
         throwException(_T("No bitmap with id=%d"),id);
       }
       CBitmap *br = bitmapRotate(cache.getDevice(), *b0, degree);

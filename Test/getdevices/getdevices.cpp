@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 int main(int argc, char **argv) {
-  void **buffer = NULL;
+  void **buffer = nullptr;
   DWORD needed;
   EnumDeviceDrivers(buffer,0,&needed);
 
@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
     DISPLAY_DEVICE device, monitor;
     device.cb  = sizeof(device);
     monitor.cb = sizeof(monitor);
-    if(EnumDisplayDevices(NULL,index,&device,0) == 0) {
+    if(EnumDisplayDevices(nullptr,index,&device,0) == 0) {
       break;
     }
     if(EnumDisplayDevices(device.DeviceName, 0, &monitor, 0) == 0) {

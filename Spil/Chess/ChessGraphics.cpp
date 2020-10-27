@@ -21,7 +21,7 @@ ChessGraphics::ChessGraphics(CWnd *wnd) : m_hwnd(*wnd) {
   allocate();
   m_flushedGameKey.clear(WHITEPLAYER);
 
-  m_game                   = NULL;
+  m_game                   = nullptr;
   m_paintLevel             = 0;
 #if defined(_DEBUG)
   m_maxPaintLevel          = 0;
@@ -30,7 +30,7 @@ ChessGraphics::ChessGraphics(CWnd *wnd) : m_hwnd(*wnd) {
   m_visibleClocks          = 0;
   m_mouseField             = m_selectedPieceField = -1;
   m_computerFrom           = m_computerTo         = -1;
-  m_pieceDragger           = NULL;
+  m_pieceDragger           = nullptr;
   m_remainingTime[0]       = m_remainingTime[1]       = 0;
   m_kingFlags[WHITEPLAYER] = m_kingFlags[BLACKPLAYER] = 0;
   m_lastDebugFieldSize     = CSize(0,0);
@@ -58,7 +58,7 @@ void ChessGraphics::allocate() {
 void ChessGraphics::deallocate() {
   SAFEDELETE(m_bufferPr);
   m_selectedRect.cleanup();
-  m_bufferPr   = NULL;
+  m_bufferPr   = nullptr;
   m_paintLevel = 0;
 }
 
@@ -186,8 +186,8 @@ void ChessGraphics::setShowBackMoves(bool show) {
 }
 
 const Image *ChessGraphics::getPieceImage(int pos) const {
-  const Piece *piece = m_game ? m_game->getPieceAtPosition(pos) : NULL;
-  return piece ? m_resources.getPieceImage(piece) : NULL;
+  const Piece *piece = m_game ? m_game->getPieceAtPosition(pos) : nullptr;
+  return piece ? m_resources.getPieceImage(piece) : nullptr;
 }
 
 void ChessGraphics::paintAll() {
@@ -363,7 +363,7 @@ void ChessGraphics::updatePlayerIndicator() {
 void ChessGraphics::paintField(int pos) {
   pushLevel();
   const Piece *piece = m_game->getPieceAtPosition(pos);
-  if(piece != NULL) {
+  if(piece != nullptr) {
     const CRect r = getFieldRect(pos, false);
     bool rotated = false;
     if(piece->getType() == King && !m_matingPositions.contains(pos)) { // king needs special attention
@@ -400,7 +400,7 @@ void ChessGraphics::paintKings() {
 }
 
 void ChessGraphics::paintKing(Player player) {
-  if(m_game == NULL) return;
+  if(m_game == nullptr) return;
   pushLevel();
   BYTE &flags = m_kingFlags[player];
   const Piece   *king  = m_game->getPlayerState(player).m_king;
@@ -545,7 +545,7 @@ const OffboardPiece *ChessGraphics::getOffboardPieceByPosition(const CPoint &poi
       }
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 const OffboardPiece *ChessGraphics::getOffboardPieceByKey(PieceKey key) const {
@@ -556,7 +556,7 @@ const OffboardPiece *ChessGraphics::getOffboardPieceByKey(PieceKey key) const {
       return &obp;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 void ChessGraphics::beginDragPiece(const CPoint &point, PieceKey key) {
@@ -644,7 +644,7 @@ const CPoint ChessGraphics::getTimeTextPosition(int i) const {
 const CSize &ChessGraphics::getTimeTextSize() const {
   static CSize size(0,0);
   if(size.cx == 0) {
-    HDC     tmpDC   = CreateCompatibleDC(NULL);
+    HDC     tmpDC   = CreateCompatibleDC(nullptr);
     HGDIOBJ oldFont = SelectObject(tmpDC, m_resources.getBoardFont());
     size = getTextExtent(tmpDC, _T("00:00:00"));
     SelectObject(tmpDC, oldFont);
@@ -953,7 +953,7 @@ MoveBaseArray ChessGraphics::getLegalMoves() const {
 #if defined(TABLEBASE_BUILDER)
   if(m_debugFlags.m_flags.m_showBackMoves) {
     const Piece *piece = m_game->getPieceAtPosition(m_selectedPieceField);
-    if(piece == NULL || piece->getPlayer() == m_game->getPlayerInTurn()) {
+    if(piece == nullptr || piece->getPlayer() == m_game->getPlayerInTurn()) {
       return result;
     }
     return m_game->getLegalBackMoves( m_selectedPieceField);
@@ -961,14 +961,14 @@ MoveBaseArray ChessGraphics::getLegalMoves() const {
 #endif
 
   const Piece *piece = m_game->getPieceAtPosition(m_selectedPieceField);
-  if(piece == NULL || piece->getPlayer() != m_game->getPlayerInTurn()) {
+  if(piece == nullptr || piece->getPlayer() != m_game->getPlayerInTurn()) {
     return result;
   }
   return m_game->getLegalMoves(m_selectedPieceField);
 }
 
 const Piece *ChessGraphics::getSelectedPiece() const {
-  return (m_selectedPieceField < 0) ? NULL : m_game->getPieceAtPosition(m_selectedPieceField);
+  return (m_selectedPieceField < 0) ? nullptr : m_game->getPieceAtPosition(m_selectedPieceField);
 }
 
 void ChessGraphics::setSelectedField(int pos) {
@@ -977,7 +977,7 @@ void ChessGraphics::setSelectedField(int pos) {
     return;
   }
   const Piece *piece = m_game->getPieceAtPosition(pos);
-  if(piece == NULL) {
+  if(piece == nullptr) {
     return;
   }
 #if defined(TABLEBASE_BUILDER)
@@ -1028,7 +1028,7 @@ void ChessGraphics::unmarkSelectedPiece() {
 }
 
 PixRect *SavedImageRect::getPixRect(const CSize &size) {
-  if(m_pr == NULL || needResize(m_pr->getSize(), size)) {
+  if(m_pr == nullptr || needResize(m_pr->getSize(), size)) {
     cleanup();
     m_pr = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, size); TRACE_NEW(m_pr);
   }
@@ -1042,7 +1042,7 @@ void SavedImageRect::save(const PixRect *src, const CRect &r) {
 }
 
 void SavedImageRect::restore(PixRect *dst) const {
-  if(m_pr == NULL) return;
+  if(m_pr == nullptr) return;
   dst->rop(m_rect, SRCCOPY, m_pr, CRect(ORIGIN, m_rect.Size()));
 }
 

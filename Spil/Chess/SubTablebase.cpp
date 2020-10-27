@@ -27,7 +27,7 @@ bool SubTablebaseKey::operator==(const SubTablebaseKey &key) const {
 }
 
 SubTablebasePositionInfo::SubTablebasePositionInfo() {
-  m_tablebase   = NULL;
+  m_tablebase   = nullptr;
   m_swapPlayers = false;
 }
 
@@ -46,7 +46,7 @@ SubTablebasePositionInfo::SubTablebasePositionInfo(const Game &game) {
 
   const PositionSignature gps = game.getPositionSignature();
 
-  m_tablebase = NULL;
+  m_tablebase = nullptr;
 
   // First check if this one of the "certain draw games"
   const String gps1String = gps.toString();
@@ -65,7 +65,7 @@ SubTablebasePositionInfo::SubTablebasePositionInfo(const Game &game) {
 #define LOADASSUBTABLEBASE() load()
 #endif
 
-  if(m_tablebase != NULL) {
+  if(m_tablebase != nullptr) {
     bool error = false;
     try {
       m_tablebase->LOADASSUBTABLEBASE();
@@ -89,7 +89,7 @@ SubTablebasePositionInfo::SubTablebasePositionInfo(const Game &game) {
 }
 
 EndGamePositionStatus SubTablebasePositionInfo::getPositionStatus(const Game &game) const {
-  if(m_tablebase != NULL) {
+  if(m_tablebase != nullptr) {
     return m_tablebase->getPositionStatus(game, m_swapPlayers);
   } else {
     return EG_DRAW;
@@ -97,7 +97,7 @@ EndGamePositionStatus SubTablebasePositionInfo::getPositionStatus(const Game &ga
 }
 
 EndGameResult SubTablebasePositionInfo::getPositionResult(const Game &game) const {
-  if(m_tablebase != NULL) {
+  if(m_tablebase != nullptr) {
     return m_tablebase->getPositionResult(game, m_swapPlayers);
   } else {
     return EGR_DRAW;
@@ -105,7 +105,7 @@ EndGameResult SubTablebasePositionInfo::getPositionResult(const Game &game) cons
 }
 
 MoveResultArray &SubTablebasePositionInfo::getAllMoves(const Game &game, MoveResultArray &a) const {
-  if(m_tablebase != NULL) {
+  if(m_tablebase != nullptr) {
     return m_tablebase->getAllMoves(game, m_swapPlayers, a);
   } else {
     return a.clear(game.getKey().getPlayerInTurn());
@@ -113,17 +113,17 @@ MoveResultArray &SubTablebasePositionInfo::getAllMoves(const Game &game, MoveRes
 }
 
 void SubTablebasePositionInfo::unload() {
-  if(m_tablebase != NULL) {
+  if(m_tablebase != nullptr) {
     m_tablebase->unload();
     if(m_tablebase->isRemote()) {
       SAFEDELETE(m_tablebase);
     }
-    m_tablebase = NULL;
+    m_tablebase = nullptr;
   }
 }
 
 #if defined(TABLEBASE_BUILDER)
 bool SubTablebasePositionInfo::allKeysFound() const {
-  return (m_tablebase == NULL) ? true : m_tablebase->allKeysFound();
+  return (m_tablebase == nullptr) ? true : m_tablebase->allKeysFound();
 }
 #endif

@@ -209,7 +209,7 @@ void EndGameKeyDefinition::init(PieceKey pk2, ...) {
   assert((m_totalPieceCount >= 3) && (m_totalPieceCount <= ARRAYSIZE(m_pieceKey)));
 
 #if defined(TABLEBASE_BUILDER)
-  m_usedIndex = NULL;
+  m_usedIndex = nullptr;
 #endif
 
   int i = 0;
@@ -1675,7 +1675,7 @@ AllPositionScanner::AllPositionScanner(const EndGameKeyDefinition &keydef)
 , m_usedIndex((size_t)keydef.getIndexSize())
 , m_lastPositionCount(-1)
 {
-  for(int i = 0; i < m_pieceCount; i++) m_scannerFunctions[i] = NULL;
+  for(int i = 0; i < m_pieceCount; i++) m_scannerFunctions[i] = nullptr;
   m_scannerFunctions[0] = &AllPositionScanner::allPositions;
   m_scannerFunctions[1] = &AllPositionScanner::blackKingPositions;
 

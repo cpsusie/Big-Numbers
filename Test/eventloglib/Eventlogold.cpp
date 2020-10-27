@@ -103,7 +103,7 @@ bool registereventsource() {
   char dir[_MAX_DIR];
   char ext[_MAX_EXT];
 
-  GetModuleFileName(NULL,path,sizeof(path));
+  GetModuleFileName(nullptr,path,sizeof(path));
 
   _splitpath( path, drive, dir, modulefilename, ext );
 
@@ -129,21 +129,21 @@ static void log(int wtype, const char *format, va_list argptr) {
   HANDLE  hEventSource;
   LPTSTR  lpszStrings[2];
 
-  hEventSource = RegisterEventSource(NULL, TEXT(modulefilename));
+  hEventSource = RegisterEventSource(nullptr, TEXT(modulefilename));
 
   vsprintf(szMsg, format, argptr);
   lpszStrings[0] = szMsg;
 
-  if(hEventSource != NULL) {
+  if(hEventSource != nullptr) {
     ReportEvent(hEventSource,      // handle of event source
         wtype,                     // event type
         0,                         // event category
         MYMSG,                     // event ID
-        NULL,                      // current user's SID
+        nullptr,                      // current user's SID
         1,                         // strings in lpszStrings
         0,                         // no bytes of raw data
         (const char**)lpszStrings, // Array of error strings
-        NULL);                     // no raw data
+        nullptr);                     // no raw data
 
     DeregisterEventSource(hEventSource);
   }

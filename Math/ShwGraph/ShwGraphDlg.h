@@ -27,7 +27,7 @@ private:
   CCoordinateSystem   m_cs;
 
 public:
-  CShwGraphDlg(CWnd *pParent = NULL);
+  CShwGraphDlg(CWnd *pParent = nullptr);
 
   void readData(FILE *f);
   void readTextFile(const String &fname);

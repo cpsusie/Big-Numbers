@@ -38,7 +38,7 @@ String findShortestKnightRoute(UINT from, UINT to) {
     route.add(p);
   }
   String result;
-  const TCHAR *delimiter = NULL;
+  const TCHAR *delimiter = nullptr;
   for(UINT i = (UINT)route.size()-1; i--;) {
     if(delimiter) result += delimiter; else delimiter = _T(" ");
     result += getFieldName(route[i]);

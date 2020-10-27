@@ -30,7 +30,7 @@ void SequentialByteContainer::fseek(INT64 pos) {
 }
 
 SearchMachine::SearchMachine() {
-  m_byteContainer = NULL;
+  m_byteContainer = nullptr;
   m_size          = 0;
   m_fileIndex     = 0;
   m_maxProgress   = 10;
@@ -42,10 +42,10 @@ void SearchMachine::prepareSearch(const SearchParameters &param, ByteContainer *
 
 void SearchMachine::prepareSearch(bool forwardSearch, INT64 startPosition, const String &findWhat, ByteContainer *byteContainer) {
   clearAllFlags();
-  if(byteContainer != NULL) {
+  if(byteContainer != nullptr) {
     m_byteContainer = byteContainer;
   }
-  if(m_byteContainer == NULL) {
+  if(m_byteContainer == nullptr) {
     throwException(_T("%s:ByteContainer not set"), __TFUNCTION__);
   }
   if(findWhat.length() > 0) {

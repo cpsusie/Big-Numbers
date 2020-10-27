@@ -143,7 +143,7 @@ String RemoteEndGameSubTablebase::load(bool packed) {
               ,_T("-R")
               , m_keydef.toString().cstr()
               ,format(_T("%d"), portNumber).cstr()
-              ,NULL) == -1) {
+              ,nullptr) == -1) {
     throwErrNoOnSysCallException(_T("_tspawnlp"));
   }
   m_socket = tcpAccept(s_listenSocket);
@@ -243,12 +243,12 @@ void RemoteEndGameSubTablebase::remoteService(TCHAR **argv) { // static.
   int    portNumber;
 
   if(!*argv) {
-    throwInvalidArgumentException(method, _T("argv[1]=NULL, Must be tablename"));
+    throwInvalidArgumentException(method, _T("argv[1]=nullptr, Must be tablename"));
   } else {
     tablebaseName = *(argv++);
   }
   if(!*argv) {
-    throwInvalidArgumentException(method, _T("argv[2]=NULL, Must be portnumber"));
+    throwInvalidArgumentException(method, _T("argv[2]=nullptr, Must be portnumber"));
   } else {
     portNumber = _tstoi(*argv);
   }

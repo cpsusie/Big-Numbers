@@ -6,7 +6,7 @@ class CFraktalsDlg : public CDialog {
 private:
     HICON m_hIcon;
 public:
-    CFraktalsDlg(CWnd *pParent = NULL);
+    CFraktalsDlg(CWnd *pParent = nullptr);
     void setcheckstate(int id, bool on);
     bool ischecked(    int id);
     void togglestate(  int id);

@@ -16,11 +16,11 @@ void FunctionTest1ArgND64D80::runTest(int threadId, DigitPool *pool) {
     const BigReal &x           = testData[i];
     const BigReal  exactResult = m_f1 ? m_f1(x, maxTolerance) : m_f1pool(x, maxTolerance, pool);
 
-    if(m_f1_64 != NULL) {
+    if(m_f1_64 != nullptr) {
       checkBigRealDouble64(m_functionName, m_f1_64, x, exactResult);
     }
 
-    if(m_f1_80 != NULL) {
+    if(m_f1_80 != nullptr) {
       checkBigRealDouble80(m_functionName, m_f1_80, x, exactResult);
     }
 
@@ -51,11 +51,11 @@ void FunctionTest2ArgND64D80::runTest(int threadId, DigitPool *pool) {
       const BigReal &y           = yTestData[j];
       const BigReal  exactResult = m_f2 ? m_f2( x, y, maxTolerance) : m_f2pool(x, y, maxTolerance, pool);
 
-      if(m_f2_64 != NULL) {
+      if(m_f2_64 != nullptr) {
         checkBigRealDouble64(m_functionName, m_f2_64, x, y, exactResult);
       }
 
-      if(m_f2_80 != NULL) {
+      if(m_f2_80 != nullptr) {
         checkBigRealDouble80(m_functionName, m_f2_80, x, y, exactResult);
       }
 
@@ -134,11 +134,11 @@ void OperatorTest2ArgND64D80Pool::specialTest(int threadId, DigitPool *pool) {
 
   for(int p = 0; p <= MAXDIGITS; p += DIGITSTEP) {
 
-    if(m_f2_64 != NULL) {
+    if(m_f2_64 != nullptr) {
       checkBigRealDouble64(m_functionName, m_f2_64, x, y, exactResult);
     }
 
-    if(m_f2_80 != NULL) {
+    if(m_f2_80 != nullptr) {
       checkBigRealDouble80(m_functionName, m_f2_80, x, y, exactResult);
     }
 
@@ -170,11 +170,11 @@ void OperatorTest2ArgND64D80Pool::runTest(int threadId, DigitPool *pool) {
                                );
         }
 
-        if(m_f2_64 != NULL) {
+        if(m_f2_64 != nullptr) {
           checkBigRealDouble64(m_functionName, m_f2_64, x, y, exactResult);
         }
 
-        if(m_f2_80 != NULL) {
+        if(m_f2_80 != nullptr) {
           checkBigRealDouble80(m_functionName, m_f2_80, x, y, exactResult);
         }
 

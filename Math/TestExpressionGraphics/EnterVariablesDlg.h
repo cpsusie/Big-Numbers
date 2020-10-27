@@ -7,7 +7,7 @@ private:
   Expression            &m_expr;
   VariableEditFieldArray m_fieldArray;
 public:
-    CEnterVariablesDlg(Expression &expr, CWnd *pParent = NULL);
+    CEnterVariablesDlg(Expression &expr, CWnd *pParent = nullptr);
 
     enum { IDD = IDD_ENTER_VARIABLES_DIALOG };
 

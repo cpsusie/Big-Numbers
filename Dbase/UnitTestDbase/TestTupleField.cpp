@@ -263,7 +263,7 @@ try {                                                                           
     //    _tprintf(_T("x as timestamp::%s\n"),x.toString().cstr());
         x.get(ts);
     //    _tprintf(_T("ts:%s\n"),ts.toString(ddMMyyyyhhmmssSSS).cstr());
-        double difference = diff(ts, now,TMILLISECOND);
+        double difference = Timestamp::diff(ts, now,TMILLISECOND);
     //    _tprintf(_T("difference:%lf\n"),difference);
         verify(fabs(difference) < 3);
 

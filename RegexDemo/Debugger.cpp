@@ -32,7 +32,7 @@ void Debugger::initDebugger(bool singleStep) {
 }
 
 void Debugger::clearStates() {
-  m_handlerState = NULL;
+  m_handlerState = nullptr;
 }
 
 Debugger::~Debugger() {
@@ -92,7 +92,7 @@ UINT Debugger::safeRun() {
 }
 
 Debugger &Debugger::enableHandleStep(bool enabled) {
-  m_regex.setHandler(enabled ? this : NULL);
+  m_regex.setHandler(enabled ? this : nullptr);
   return *this;
 }
 

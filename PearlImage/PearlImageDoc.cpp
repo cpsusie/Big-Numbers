@@ -42,7 +42,7 @@ BOOL CPearlImageDoc::OnOpenDocument(LPCTSTR name) {
 
 void CPearlImageDoc::init() {
   resetHistory();
-  setImage(NULL);
+  setImage(nullptr);
   SetTitle(s_defaultName);
   setSaveTime();
   CHECKINVARIANT;
@@ -50,7 +50,7 @@ void CPearlImageDoc::init() {
 
 void CPearlImageDoc::clear() {
   resetHistory();
-  setImage(NULL);
+  setImage(nullptr);
 }
 
 BOOL CPearlImageDoc::IsModified() {
@@ -91,11 +91,11 @@ BOOL CPearlImageDoc::OnSaveDocument(LPCTSTR name) {
 void CPearlImageDoc::setImage(PixRect *image) {
   if(image == m_image.m_pr) return;
   const CSize oldSize = getSize();
-  if(image == NULL) {
+  if(image == nullptr) {
     m_image.clear();
   } else if (!m_image.hasImage()) {
     m_image.set(image);
-  } else if(*image != *m_image.m_pr) {  // both are != NULL
+  } else if(*image != *m_image.m_pr) {  // both are != nullptr
     m_image.set(image);
   } else {
     SAFEDELETE(image);

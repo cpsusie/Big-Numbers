@@ -52,7 +52,7 @@ private:
     return GetDlgItem(IDC_EDITINFO);
   }
 public:
-    CTestPictureDlg(CWnd *pParent = NULL);
+    CTestPictureDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_TESTPICTURE_DIALOG };
 

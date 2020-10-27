@@ -226,7 +226,7 @@ void Remes::nextSolveState() {
 void Remes::saveExtremaToMap(const BigReal &E, const BigReal &mmQuot) {
   ExtremaKey key(m_M,m_K);
   Array<ExtremaVector> *a = extremaMap.get(key);
-  if(a != NULL) {
+  if(a != nullptr) {
     a->add(ExtremaVector(m_extrema,E, mmQuot));
   } else {
     Array<ExtremaVector> a;
@@ -259,7 +259,7 @@ BigRealVector Remes::findFinalExtrema(const int M, const int K, const bool highP
 
   for(bool hasSolved = false;;) {
     Array<ExtremaVector> *a = extremaMap.get(ExtremaKey(M,K));
-    if(a != NULL) {
+    if(a != nullptr) {
       for(size_t i = 0; i < a->size(); i++) {
         ExtremaVector &v = (*a)[i];
         if(v.getMMQuot() <= mmQuot) {
@@ -321,12 +321,12 @@ Real InterpolationFunction::operator()(const Real &x) {
 }
 
 bool Remes::hasSavedExtrema(const int M, const int K) {
-  return extremaMap.get(ExtremaKey(M,K)) != NULL;
+  return extremaMap.get(ExtremaKey(M,K)) != nullptr;
 }
 
 const ExtremaVector &Remes::getBestSavedExtrema(const int M, const int K) {
   const Array<ExtremaVector> *a = extremaMap.get(ExtremaKey(M,K));
-  if(a == NULL) {
+  if(a == nullptr) {
     throwException(_T("Remes:getBestSavedExtrema:ExtremaKey(%d,%d) not found"), M, K);
   }
  size_t bestIndex = 0;

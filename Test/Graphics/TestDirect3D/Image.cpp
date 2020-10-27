@@ -12,7 +12,7 @@ D3DCAPS9               Image::m_caps;
 void Image::init(HWND wnd) { // static
   m_direct3D9 = Direct3DCreate9(D3D_SDK_VERSION);
 
-  if(m_direct3D9 == NULL) {
+  if(m_direct3D9 == nullptr) {
     throwException("Cannot initialize Direct3D9");
   }
 
@@ -77,14 +77,14 @@ void Image::endScene() { // static
 
 void Image::render() {
 /*
-  m_device->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
+  m_device->Clear( 0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
                     , D3DCOLOR_COLORVALUE(0.35f, 0.53f, 0.7, 1.0f), 1.0f, 0 );
 */
 
   IDirect3DSurface9 *renderTarget;
   CHECKD3DRESULT(m_device->GetRenderTarget(0, &renderTarget));
-  CHECKD3DRESULT(m_device->StretchRect(m_surface, NULL, renderTarget, NULL, D3DTEXF_NONE));
-  CHECKD3DRESULT(m_device->Present(NULL, NULL, NULL, NULL));
+  CHECKD3DRESULT(m_device->StretchRect(m_surface, nullptr, renderTarget, nullptr, D3DTEXF_NONE));
+  CHECKD3DRESULT(m_device->Present(nullptr, nullptr, nullptr, nullptr));
   renderTarget->Release();
 }
 
@@ -99,8 +99,8 @@ Image::Image(const CSize &size, bool renderTarget) {
 }
 
 Image::Image(int resId, ImageType type, bool transparentWhite) {
-  m_surface = NULL;
-  m_texture = NULL;
+  m_surface = nullptr;
+  m_texture = nullptr;
   switch(type) {
   case RESOURCE_BITMAP:
     loadBMP(resId);
@@ -135,7 +135,7 @@ void Image::loadBMP(int resId) {
   m_size    = getBitmapSize(cbm);
   m_surface = createSurface(m_size, D3DFMT_A8R8G8B8, D3DPOOL_SYSTEMMEM);
 
-  HDC srcDC = CreateCompatibleDC(NULL);
+  HDC srcDC = CreateCompatibleDC(nullptr);
   HBITMAP bm = cbm;
   HGDIOBJ oldObj = SelectObject(srcDC, bm);
   HDC dstDC = getDC();
@@ -156,7 +156,7 @@ void Image::loadJPG(int resId) {
 
 IDirect3DSurface9 *Image::createSurface(const CSize &size, D3DFORMAT format, D3DPOOL pool) { // static
   IDirect3DSurface9 *surface;
-  CHECKD3DRESULT(m_device->CreateOffscreenPlainSurface(size.cx, size.cy, format, pool, &surface, NULL));
+  CHECKD3DRESULT(m_device->CreateOffscreenPlainSurface(size.cx, size.cy, format, pool, &surface, nullptr));
   return surface;
 }
 
@@ -169,7 +169,7 @@ IDirect3DSurface9 *Image::createRenderTarget(const CSize &size, D3DFORMAT format
   CHECKD3DRESULT(oldRenderTarget->GetDesc(&desc));
   oldRenderTarget->Release();
 
-  CHECKD3DRESULT(m_device->CreateRenderTarget(size.cx, size.cy, format, desc.MultiSampleType, desc.MultiSampleQuality, false, &surface, NULL));
+  CHECKD3DRESULT(m_device->CreateRenderTarget(size.cx, size.cy, format, desc.MultiSampleType, desc.MultiSampleQuality, false, &surface, nullptr));
 //  D3DSURFACE_DESC newDesc;
 //  CHECKD3DRESULT(surface->GetDesc(&newDesc));
 
@@ -180,7 +180,7 @@ IDirect3DTexture9 *Image::createTexture(const CSize &size, D3DFORMAT format) { /
   IDirect3DTexture9 *texture;
 
 // Create an alpha texture
-  CHECKD3DRESULT(m_device->CreateTexture(size.cx, size.cy, 1, D3DUSAGE_AUTOGENMIPMAP, format, D3DPOOL_DEFAULT, &texture, NULL));
+  CHECKD3DRESULT(m_device->CreateTexture(size.cx, size.cy, 1, D3DUSAGE_AUTOGENMIPMAP, format, D3DPOOL_DEFAULT, &texture, nullptr));
   int levels = texture->GetLevelCount();
   D3DSURFACE_DESC desc;
   CHECKD3DRESULT(texture->GetLevelDesc(0, &desc));
@@ -201,7 +201,7 @@ void Image::releaseDC(HDC dc) const {
 void Image::makeWhiteTransparent() {
   D3DLOCKED_RECT lockedRect;
 
-  CHECKD3DRESULT(m_surface->LockRect(&lockedRect, NULL, D3DLOCK_NOOVERWRITE/*D3DLOCK_DISCARD*/));
+  CHECKD3DRESULT(m_surface->LockRect(&lockedRect, nullptr, D3DLOCK_NOOVERWRITE/*D3DLOCK_DISCARD*/));
   D3DCOLOR *pixelRow = (D3DCOLOR*)lockedRect.pBits;
   const int PixelPerRow = lockedRect.Pitch / sizeof(D3DCOLOR);
   for(int y = 0; y < m_size.cy; y++, pixelRow += PixelPerRow) {
@@ -219,7 +219,7 @@ void Image::makeWhiteTransparent() {
 void Image::makeOpaque() {
   D3DLOCKED_RECT lockedRect;
 
-  CHECKD3DRESULT(m_surface->LockRect(&lockedRect, NULL, D3DLOCK_DISCARD));
+  CHECKD3DRESULT(m_surface->LockRect(&lockedRect, nullptr, D3DLOCK_DISCARD));
   D3DCOLOR *pixelRow = (D3DCOLOR*)lockedRect.pBits;
   const int PixelPerRow = lockedRect.Pitch / sizeof(D3DCOLOR);
   for(int y = 0; y < m_size.cy; y++, pixelRow += PixelPerRow) {
@@ -284,13 +284,13 @@ void Image::copySurfaceToTexture(IDirect3DTexture9 *dst, IDirect3DSurface9 *src)
   IDirect3DSurface9 *dstSurface;
   CHECKD3DRESULT(dst->GetSurfaceLevel(0, &dstSurface));
 
-  CHECKD3DRESULT(m_device->UpdateSurface(src, NULL, dstSurface, NULL));
+  CHECKD3DRESULT(m_device->UpdateSurface(src, nullptr, dstSurface, nullptr));
   dstSurface->Release();
 
 //  D3DLOCKED_RECT srcRect;
 //  D3DLOCKED_RECT dstRect;
-//  CHECKD3DRESULT(src->LockRect(   &srcRect, NULL, D3DLOCK_READONLY));
-//  CHECKD3DRESULT(dst->LockRect(0, &dstRect, NULL, D3DLOCK_NOOVERWRITE));
+//  CHECKD3DRESULT(src->LockRect(   &srcRect, nullptr, D3DLOCK_READONLY));
+//  CHECKD3DRESULT(dst->LockRect(0, &dstRect, nullptr, D3DLOCK_NOOVERWRITE));
 
 //  CHECKD3DRESULT(dst->UnlockRect(0));
 //  CHECKD3DRESULT(src->UnlockRect());

@@ -149,7 +149,7 @@ protected:
     }
   }
 public:
-  IndexComparator(LcsComparator &c) : m_c(c), m_runnable(NULL) {
+  IndexComparator(LcsComparator &c) : m_c(c), m_runnable(nullptr) {
     m_compareCount = 0;
   }
   inline void setRunnable(InterruptableRunnable *runnable) {

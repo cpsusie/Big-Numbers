@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CPasswordDlg::CPasswordDlg(const String &expectedPassword, CWnd *pParent /*=NULL*/)
+CPasswordDlg::CPasswordDlg(const String &expectedPassword, CWnd *pParent /*=nullptr*/)
     : CDialog(CPasswordDlg::IDD, pParent)
 {
     m_password = EMPTYSTRING;

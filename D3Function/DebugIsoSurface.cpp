@@ -211,7 +211,7 @@ void TetraObject::selectVisibleChild(int index) {
 
 UINT TetraObject::getLinesObject(const Tetrahedron &tetra) {
   UINT *index = m_objectCache.get(tetra);
-  if(index != NULL) {
+  if(index != nullptr) {
     return *index;
   }
   const UINT newIndex = addChild(new SubTetraObject(this, createLineArray(tetra), tetra.toString()));
@@ -443,7 +443,7 @@ DebugIsoSurface::DebugIsoSurface(Debugger *debugger, D3SceneContainer &sc, const
   : m_debugger(*debugger)
   , m_sc(sc)
   , m_param(param)
-  , m_polygonizer(NULL)
+  , m_polygonizer(nullptr)
   , m_exprWrapper(param.m_expr, param.m_machineCode)
   , m_reverseSign(false)
   , m_lastVertexCount(          0)
@@ -622,7 +622,7 @@ void DebugIsoSurface::updateTetraObject() {
 
 void DebugIsoSurface::updateFacesObject() {
   if(!isSet(HAS_FACE)) {
-    m_sceneObject.setFacesObject(NULL);
+    m_sceneObject.setFacesObject(nullptr);
     m_visibleFaceCountObj = 0;
   } else if(m_visibleFaceCount > m_visibleFaceCountObj) {
     m_sceneObject.setFacesObject(createFacesObject());
@@ -641,7 +641,7 @@ void DebugIsoSurface::updateVertexObject() {
 
 static String flagsToString(BYTE flags) {
   String result;
-  const TCHAR *delim = NULL;
+  const TCHAR *delim = nullptr;
 #define ADDFLAG(f) if(flags & HAS_##f) { if(delim) result += delim; else delim = _T(" "); result += _T(#f); }
   ADDFLAG(OCTA  );
   ADDFLAG(TETRA );
@@ -734,7 +734,7 @@ void DebugIsoSurface::debuggerStateChanged(DebuggerState oldState, DebuggerState
 
 FinalDebugIsoSurface::FinalDebugIsoSurface(D3SceneEditor &editor, LPD3DXMESH m, const PolygonizerBase &polygonizer)
 : DebugMeshObject(*editor.getScene(), m)
-, m_octaObject(NULL)
+, m_octaObject(nullptr)
 , m_editor(editor)
 , m_polygonizer(polygonizer)
 , m_cubeIndex(-1)
@@ -749,7 +749,7 @@ bool FinalDebugIsoSurface::OnLButtonDown(UINT nFlags, CPoint point) {
   if(nFlags != 1) return false;
   const int cubeIndex = findCubeIndex(point);
   if(cubeIndex >= 0) {
-    if(m_octaObject == NULL) {
+    if(m_octaObject == nullptr) {
       m_octaObject = new OctaObject(this, (float)m_polygonizer.getCellSize());
     }
     m_octaObject->setOctagon(Octagon(&m_polygonizer, cubeIndex));

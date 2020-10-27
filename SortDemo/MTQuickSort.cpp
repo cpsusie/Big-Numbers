@@ -31,7 +31,7 @@ int SynchronizedComparator::cmp(const void *e1, const void *e2) {
 
 AbstractComparator *SynchronizedComparator::clone() const {
   throwException(_T("SynchonizedComparator not cloneable"));
-  return NULL;
+  return nullptr;
 }
 
 template<typename T> class JobParam {
@@ -39,7 +39,7 @@ public:
   T      *m_base;
   size_t  m_size;
 
-  JobParam(T *base = NULL, size_t size = 0) {
+  JobParam(T *base = nullptr, size_t size = 0) {
     m_base = base;
     m_size = size;
   }
@@ -126,7 +126,7 @@ template<typename T> void MTQuicksortClass<T>::killAll() {
     m_killAllRequest = true;
     m_jobQueue.clear();
     for(size_t i = 0; i < m_workerArray.size(); i++) {
-      addJob(NULL,0);
+      addJob(nullptr,0);
     }
   }
   m_lock.notify();

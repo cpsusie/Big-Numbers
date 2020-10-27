@@ -16,7 +16,7 @@ String OccupationMap::toString() const {
 String PlayerOccupationMap::toString() const {
   String result;
   TCHAR tmpStr[10];
-  TCHAR *delim = NULL;
+  TCHAR *delim = nullptr;
   for(int i = 0; i < 64; i++) {
     if(contains(i)) {
       if(delim) {

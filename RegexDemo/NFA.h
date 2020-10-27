@@ -92,8 +92,8 @@ private:
     return m_marked;
   }
 public:
-  NFAState     *m_next;            // Next state (or NULL if none), or tonext free if UNUSED
-  NFAState     *m_next2;           // Alternative next state if m_edge = EDGE_EPSILON. NULL if no alternative.
+  NFAState     *m_next;            // Next state (or nullptr if none), or tonext free if UNUSED
+  NFAState     *m_next2;           // Alternative next state if m_edge = EDGE_EPSILON. nullptr if no alternative.
   AcceptType    m_accept;
 
   static NFAState *fetch(int edge = EDGE_EPSILON);
@@ -104,7 +104,7 @@ public:
   ~NFAState();
   NFAState &operator=(const NFAState &src);
 
-  NFAState *getSuccessor(int c) const; // Returns successor-state on transition c (character). NULL if none
+  NFAState *getSuccessor(int c) const; // Returns successor-state on transition c (character). nullptr if none
 
   CharacterSet &getCharacterSet() const;
   void setEdge(int edge);
@@ -196,7 +196,7 @@ private:
   NFAState *m_start;
   NFAState *m_end;
 public:
-  SubNFA(bool init = false) : m_start(init? NFAState::fetch() : NULL), m_end(init ? NFAState::fetch() : NULL) {
+  SubNFA(bool init = false) : m_start(init? NFAState::fetch() : nullptr), m_end(init ? NFAState::fetch() : nullptr) {
   }
   SubNFA &create2StateNFA(_TUCHAR ch);      // create an NFA with a startstate and end endstate with transition from start to on edge
   SubNFA &create2StateNFA(const CharacterSet &charSet);
@@ -208,7 +208,7 @@ public:
   SubNFA plusClosure()  const;
   SubNFA starClosure()  const;
   bool isEmpty() const {
-    return m_start == NULL;
+    return m_start == nullptr;
   }
   void setAccepting(BYTE anchor) {
     m_end->setAccepting(anchor);
@@ -234,7 +234,7 @@ private:
 public:
 #if defined(_DEBUG)
   DFARegexStepHandler *m_stepHandler;
-  NFA(DFARegexStepHandler *stepHandler = NULL) : m_stepHandler(stepHandler) {
+  NFA(DFARegexStepHandler *stepHandler = nullptr) : m_stepHandler(stepHandler) {
   }
 #else
   NFA() {

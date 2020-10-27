@@ -76,7 +76,7 @@ class EngineOptionDescriptionArray : public Array<EngineOptionDescription> {
 private:
   int findMaxNameLength() const;
 public:
-  const EngineOptionDescription *findOptionByName(const String &optionName) const; // return NULL if not found
+  const EngineOptionDescription *findOptionByName(const String &optionName) const; // return nullptr if not found
   EngineOptionValueArray createDefaultValueArray(const String &engineName) const;
   EngineOptionDescriptionArray &removeOptionsByType(EngineOptionType type); // return *this
   EngineOptionValueArray pruneDefaults(const EngineOptionValueArray &src) const;
@@ -166,12 +166,12 @@ private:
   void   setParameterValue(const EngineOptionValue &v);
   void   debugMsg(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) const;
   bool   hasInput() const {
-    return m_inputThread != NULL;
+    return m_inputThread != nullptr;
   }
 public:
   ExternEngine(Player player, const String &path);
  ~ExternEngine();
-  void start(AbstractMoveReceiver *mr = NULL); // only when mr!=NULL, the thread will be started
+  void start(AbstractMoveReceiver *mr = nullptr); // only when mr!=nullptr, the thread will be started
   void quit();
   inline bool isStarting() const {
     return isStarted() && !isStateFlagsSet(EXE_UCIOK);

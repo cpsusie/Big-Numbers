@@ -7,7 +7,7 @@
 #define new DEBUG_NEW
 #endif
 
-CHighScoreDlg::CHighScoreDlg(int execiszeType, CWnd *pParent /*=NULL*/)
+CHighScoreDlg::CHighScoreDlg(int execiszeType, CWnd *pParent /*=nullptr*/)
 : m_execiszeType(execiszeType)
 , CDialog(CHighScoreDlg::IDD, pParent) {
 }

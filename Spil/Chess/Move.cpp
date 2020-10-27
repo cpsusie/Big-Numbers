@@ -14,8 +14,8 @@ const bool MoveTable::uncoversKing[5][9] = { // Indexed by PinnedStatus,MoveDire
 
 Move &Move::setNoMove() {
   MoveBase::setNoMove();
-  m_piece         = NULL;
-  m_capturedPiece = NULL;
+  m_piece         = nullptr;
+  m_capturedPiece = nullptr;
   return *this;
 }
 

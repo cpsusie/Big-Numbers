@@ -2,7 +2,7 @@
 
 class CAfstandDlg : public CDialog {
 public:
-    CAfstandDlg(CWnd *pParent = NULL);
+    CAfstandDlg(CWnd *pParent = nullptr);
     void Beregnafstand();
     void Adder();
 

@@ -5,7 +5,7 @@ class CShowDirAndArgDlg : public CDialog {
 private:
   HICON               m_hIcon;
 public:
-  CShowDirAndArgDlg(CWnd *pParent = NULL);
+  CShowDirAndArgDlg(CWnd *pParent = nullptr);
 
   enum { IDD = IDD_SHOWDIRANDARG_DIALOG };
 protected:

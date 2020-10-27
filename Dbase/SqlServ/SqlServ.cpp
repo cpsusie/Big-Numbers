@@ -71,7 +71,7 @@ public:
 };
 
 ClientConnection::ClientConnection(SOCKET s) : m_p(s) {
-  m_db = NULL;
+  m_db = nullptr;
 }
 
 ClientConnection::~ClientConnection() {
@@ -79,13 +79,13 @@ ClientConnection::~ClientConnection() {
 }
 
 void ClientConnection::closeDatabase() {
-  if(m_db != NULL) {
+  if(m_db != nullptr) {
     while(m_opencursor.size() > 0) {
       delete m_opencursor[0];
       m_opencursor.remove(0);
     }
     delete m_db;
-    m_db = NULL;
+    m_db = nullptr;
   }
 }
 
@@ -394,10 +394,10 @@ static unsigned short getPort() {
   TCHAR *sm;
   unsigned short portnr;
 
-  if(envval == NULL)
+  if(envval == nullptr)
     throwException(_T("%s not defined"),envvar);
 
-  if(((sm = _tcschr(envval,';')) == NULL) || _stscanf(sm+1,_T("%hd"),&portnr) != 1) {
+  if(((sm = _tcschr(envval,';')) == nullptr) || _stscanf(sm+1,_T("%hd"),&portnr) != 1) {
     throwException(_T("%s must contain servername and portnumber"),envvar);
   }
   return portnr;

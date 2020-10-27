@@ -127,7 +127,7 @@ D3SceneObjectVisual *Debugger::getSceneObject() {
 }
 
 String Debugger::getFlagNames(BYTE flags) { // static
-  const TCHAR *delim = NULL;
+  const TCHAR *delim = nullptr;
   String result;
 #define ADDFLAG(f) if(flags & (FL_##f)) { if(delim) result += delim; else delim = _T(" "); result += _T(#f); }
   ADDFLAG(BREAKONOCTAINDEX )

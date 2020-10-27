@@ -20,8 +20,8 @@ BEGIN_MESSAGE_MAP(CSplitView, CView)
 END_MESSAGE_MAP()
 
 static FastSemaphore s_gate;
-CRuntimeClass *CSplitView::s_childClass1      = NULL;
-CRuntimeClass *CSplitView::s_childClass2      = NULL;
+CRuntimeClass *CSplitView::s_childClass1      = nullptr;
+CRuntimeClass *CSplitView::s_childClass2      = nullptr;
 SplitDirection CSplitView::s_splitDirection   = SPLIT_NONE;
 double         CSplitView::s_relativeSplitPos = 0;
 
@@ -35,16 +35,16 @@ CSplitView *CSplitView::create(CWnd *parent, CRuntimeClass *child1, CRuntimeClas
 
     CSplitView *view = createView(theApp.getMainFrame(), parent, CSplitView, rect);
 
-    s_childClass1      = NULL;
-    s_childClass2      = NULL;
+    s_childClass1      = nullptr;
+    s_childClass2      = nullptr;
     s_splitDirection   = SPLIT_NONE;
     s_relativeSplitPos = 0;
 
     s_gate.notify();
     return view;
   } catch(...) {
-    s_childClass1      = NULL;
-    s_childClass2      = NULL;
+    s_childClass1      = nullptr;
+    s_childClass2      = nullptr;
     s_splitDirection   = SPLIT_NONE;
     s_relativeSplitPos = 0;
 
@@ -99,8 +99,8 @@ int CSplitView::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   const MatrixDimension &dim = m_splitter.getDimension();
   const int rows = (int)dim.rowCount, cols = (int)dim.columnCount;
   VERIFY(m_splitter.CreateStatic(this, rows, cols));
-  VERIFY(m_splitter.CreateView(0     , 0     , s_childClass1, childSize, NULL));
-  VERIFY(m_splitter.CreateView(rows-1, cols-1, s_childClass2, childSize, NULL));
+  VERIFY(m_splitter.CreateView(0     , 0     , s_childClass1, childSize, nullptr));
+  VERIFY(m_splitter.CreateView(rows-1, cols-1, s_childClass2, childSize, nullptr));
   return TRUE;
 }
 
@@ -130,11 +130,11 @@ void CSplitView::OnDraw(CDC *pDC) {
 
 CWnd *CSplitView::getChild(UINT index) const {
   if(!isChildrenCreated()) {
-    return NULL;
+    return nullptr;
   }
   const MatrixDimension &dim = m_splitter.getDimension();
   if(index >= dim.getElementCount()) {
-    return NULL;
+    return nullptr;
   }
   const UINT r = (UINT)(index / dim.columnCount), c = (UINT)(index % dim.columnCount);
   return m_splitter.GetPane(r, c);
@@ -251,22 +251,22 @@ void SplitViewSplitter::saveRelativeSplitPos(const CSize &size) {
 CWnd *SplitViewSplitter::findNeighbor(CWnd *wnd) const {
   const int rows = GetRowCount(), cols = GetColumnCount();
   bool wndFound = false;
-  CWnd *result = NULL;
+  CWnd *result = nullptr;
   for(int r = 0; r < rows; r++) {
     for(int c = 0; c < cols; c++) {
       CWnd *w = GetPane(r, c);
       if(w == wnd) {
         wndFound = true;
       } else {
-        if(result != NULL) {
-          return NULL; // Error....this may only contain 2 panes
+        if(result != nullptr) {
+          return nullptr; // Error....this may only contain 2 panes
         }
         result = w;
       }
     }
   }
   if(!wndFound) {
-    result = NULL;
+    result = nullptr;
   }
   return result;
 }

@@ -107,7 +107,7 @@ const EdgeMark *EdgeMarkArray::findEdgeMark(const CPoint &point) const {
       return &m;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 #if defined(_DEBUG)

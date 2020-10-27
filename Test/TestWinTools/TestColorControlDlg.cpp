@@ -108,7 +108,7 @@ void CTestColorControlDlg::OnButtonpickcolor() {
 void CTestColorControlDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   __super::OnLButtonDown(nFlags, point);
   if(m_pickingColor) {
-    HDC hdcScreen = CreateDC(_T("DISPLAY"), NULL, NULL, NULL);
+    HDC hdcScreen = CreateDC(_T("DISPLAY"), nullptr, nullptr, nullptr);
     ClientToScreen(&point);
     m_colormap.SetColor(GetPixel(hdcScreen,point.x,point.y));
     DeleteDC(hdcScreen);

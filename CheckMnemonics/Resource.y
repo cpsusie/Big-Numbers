@@ -643,13 +643,13 @@ menuType                    : _MENU
                             | MENUEX
                             ;
 
-menuBody                    : BEGIN menuSpecList END                                        { $$ = $2; }
+menuBody                    : BEGIN menuSpecList END                                         { $$ = $2; }
                             ;
 
-menuSpecList                : menuSpecList menuSpec                                         { $$ = ($1&&$2)
-                                                                                                 ? newNode(getPos(2), COMMA, $1, $2, nullptr)
-                                                                                                 : $1 ? $1 : $2;
-                                                                                            }
+menuSpecList                : menuSpecList menuSpec                                          { $$ = ($1&&$2)
+                                                                                                  ? newNode(getPos(2), COMMA, $1, $2, nullptr)
+                                                                                                  : $1 ? $1 : $2;
+                                                                                             }
                             | menuSpec
                             ;
 
@@ -657,7 +657,7 @@ menuSpec                    : popupMenu
                             | menuItem
                             ;
 
-popupMenu                   : POPUP string menuItemModifierList menuBody                    { $$ = newNode(getPos(1), POPUP, $2, $4, nullptr); }
+popupMenu                   : POPUP string menuItemModifierList menuBody                     { $$ = newNode(getPos(1), POPUP, $2, $4, nullptr); }
                             ;
 
 menuItem                    : _MENUITEM string COMMA identifierOrNumber menuItemModifierList { $$ = newNode(getPos(1), _MENUITEM, $2, $4, nullptr); }

@@ -5,8 +5,8 @@
 #include "AutomatePainter.h"
 
 AutomatePainter::AutomatePainter(const CSize &size) : m_size(size) {
-  m_dc.CreateCompatibleDC(NULL);
-  m_bm.CreateBitmap(m_size.cx, size.cy, 1, 32, NULL);
+  m_dc.CreateCompatibleDC(nullptr);
+  m_bm.CreateBitmap(m_size.cx, size.cy, 1, 32, nullptr);
   m_dc.SelectObject(&m_bm);
 
   initStaticGDIObjects();
@@ -20,7 +20,7 @@ void AutomatePainter::flushImage(HDC hdc) {
 }
 
 void AutomatePainter::setToWhite(HDC hdc) {
-  if(hdc == NULL) {
+  if(hdc == nullptr) {
     m_dc.FillSolidRect(0,0,m_size.cx, m_size.cy, RGB(255,255,255));
   } else {
     HGDIOBJ oldBrush = SelectObject(hdc, s_whiteBrush);
@@ -44,8 +44,8 @@ void AutomatePainter::textOut(const CPoint &p, CFont &font, const String &text, 
 }
 
 void AutomatePainter::paintRing(HDC hdc, const CPoint &p, int radius, CPen *pen, CBrush *brush) { // static
-  HGDIOBJ oldPen   = pen   ? SelectObject(hdc, *pen)   : NULL;
-  HGDIOBJ oldBrush = brush ? SelectObject(hdc, *brush) : NULL;
+  HGDIOBJ oldPen   = pen   ? SelectObject(hdc, *pen)   : nullptr;
+  HGDIOBJ oldBrush = brush ? SelectObject(hdc, *brush) : nullptr;
 
   Ellipse(hdc, p.x - radius, p.y - radius, p.x + radius, p.y + radius);
 
@@ -60,8 +60,8 @@ void AutomatePainter::paintRing(HDC hdc, const CPoint &p, int radius, CPen *pen,
 }
 
 void AutomatePainter::paintCircle(HDC hdc, const CPoint &p, int radius, CPen *pen, CBrush *brush) { // static
-  HGDIOBJ oldPen   = pen   ? SelectObject(hdc, *pen)   : NULL;
-  HGDIOBJ oldBrush = brush ? SelectObject(hdc, *brush) : NULL;
+  HGDIOBJ oldPen   = pen   ? SelectObject(hdc, *pen)   : nullptr;
+  HGDIOBJ oldBrush = brush ? SelectObject(hdc, *brush) : nullptr;
 
   Ellipse(hdc, p.x - radius, p.y - radius, p.x + radius, p.y + radius);
 
@@ -75,7 +75,7 @@ void AutomatePainter::markStartState(HDC hdc, const CPoint &pos) {
   v.normalize();
   const Point2D to   = d - v * CIRCLE_RADIUS;
   const Point2D from = d - v * ((float)CIRCLE_RADIUS * 2);
-  paintLineArrow(from, to, hdc);
+  paintLineArrow((CPoint)from, (CPoint)to, hdc);
 }
 
 void AutomatePainter::textOut(HDC hdc, const CPoint &p, CFont &font, const String &text) { // static
@@ -83,7 +83,7 @@ void AutomatePainter::textOut(HDC hdc, const CPoint &p, CFont &font, const Strin
 }
 
 ArrowDirection AutomatePainter::getVectorDirection(const Point2D &vector) { // static
-  double theta = RAD2GRAD(atan2(vector.y, vector.x));
+  double theta = RAD2GRAD(atan2(vector.y(), vector.x()));
   if(theta >= 0) {
     if(theta <= 22.5) {
       return DIR_E;
@@ -115,7 +115,7 @@ DirectionPair AutomatePainter::paintLineArrow(const CPoint &from, const CPoint &
   hdc = getDC(hdc);
 
   HGDIOBJ oldPen = SelectObject(hdc, s_blackPen);
-  MoveToEx(hdc, from.x, from.y, NULL);
+  MoveToEx(hdc, from.x, from.y, nullptr);
   LineTo(hdc, to.x, to.y);
   paintArrowEnd(from, to, hdc);
   SelectObject(hdc, oldPen);
@@ -127,11 +127,11 @@ DirectionPair AutomatePainter::paintBezierArrow(const CPoint &from, const CPoint
   CPoint bp[4];
   const Point2D v = Point2D(to - from).normalize();
   const Point2D m = (from + to)/2;
-  Point2D vr90(v.y, -v.x);
+  Point2D vr90(v.y(), -v.x());
   vr90 *= 15;
 
   bp[0] = from;
-  bp[1] = Point2D(m + vr90);
+  bp[1] = (CPoint)(m + vr90);
   bp[2] = bp[1];
   bp[3] = to;
 
@@ -150,7 +150,7 @@ void AutomatePainter::paintPathArrow(const TransitionPath &path, HDC hdc) {
   CPen redPen;
   HGDIOBJ oldPen = SelectObject(hdc, s_blackPen);
   const CPoint &p0 = path[0];
-  MoveToEx(hdc, p0.x, p0.y, NULL);
+  MoveToEx(hdc, p0.x, p0.y, nullptr);
   for(size_t i = 1; i < path.size(); i++) {
     const CPoint p1 = path[i];
     LineTo(hdc, p1.x, p1.y);
@@ -194,8 +194,8 @@ void AutomatePainter::paintLoopArrow(const CPoint &from, int radius, DirectionPa
   const Point2D center = from;
   Point2D vs,ve;
   if(dirPair.m_startDir == dirPair.m_endDir) {
-    vs = (getDirectionVector(dirPair.m_startDir) * radius).rotate(10);
-    ve = vs.rotate(-20);
+    vs = rotate(getDirectionVector(dirPair.m_startDir) * radius,10);
+    ve = rotate(vs,-20);
   } else {
     vs = getDirectionVector(dirPair.m_startDir) * radius;
     ve = getDirectionVector(dirPair.m_endDir  ) * radius;
@@ -207,14 +207,14 @@ void AutomatePainter::paintLoopArrow(const CPoint &from, int radius, DirectionPa
 
 #define LOOPSIZE 5
 
-  bp[0] = pFrom;
-  bp[1] = center + vs * LOOPSIZE;
-  bp[2] = center + ve * LOOPSIZE;
-  bp[3] = pTo;
+  bp[0] = (CPoint)pFrom;
+  bp[1] = (CPoint)(center + vs * LOOPSIZE);
+  bp[2] = (CPoint)(center + ve * LOOPSIZE);
+  bp[3] = (CPoint)pTo;
 
   HGDIOBJ oldPen = SelectObject(hdc, s_blackPen);
   PolyBezier(hdc, bp, 4);
-  paintArrowEnd(bp[2], pTo, hdc);
+  paintArrowEnd(bp[2], (CPoint)pTo, hdc);
   SelectObject(hdc, oldPen);
 
   CFont &font = getFont();
@@ -227,32 +227,32 @@ void AutomatePainter::paintLoopArrow(const CPoint &from, int radius, DirectionPa
   switch(dirPair.m_startDir) {
   case DIR_N :
     textPos = origPos;
-    textPos.x -= textSize.cx / 2;
-    textPos.x = minMax((int)textPos.x, 0, (int)(m_size.cx - textSize.cx));
-    textPos.y -= textSize.cy;
-    if(textPos.y < 0) {
-      if(textPos.x < m_size.cx/2) { // Put text to the right
+    textPos.x() -= textSize.cx / 2;
+    textPos.x() = minMax((int)textPos.x(), 0, (int)(m_size.cx - textSize.cx));
+    textPos.y() -= textSize.cy;
+    if(textPos.y() < 0) {
+      if(textPos.x() < m_size.cx/2) { // Put text to the right
         textPos = center + vm * (LOOPSIZE/2) + getDirectionVector(DIR_E) * (LOOPSIZE/2);
-        textPos.x += 2;
+        textPos.x() += 2;
       } else {                      // Put text to the left
         textPos = center + vm * (LOOPSIZE/2) + getDirectionVector(DIR_W) * textSize.cx;
-        textPos.x -= 2;
+        textPos.x() -= 2;
       }
-      textPos.y -= textSize.cy/2;
+      textPos.y() -= textSize.cy/2;
     }
     break;
   case DIR_E :
     textPos = origPos;
-    textPos.y -= textSize.cy/2;
-    if(textPos.x > m_size.cx - textSize.cx) {
-      if(textPos.y < m_size.cy/2) { // Put text below
+    textPos.y() -= textSize.cy/2;
+    if(textPos.x() > m_size.cx - textSize.cx) {
+      if(textPos.y() < m_size.cy/2) { // Put text below
         textPos = center + vm * (LOOPSIZE/2) + getDirectionVector(DIR_S) * textSize.cy;
-        textPos.y += 2;
+        textPos.y() += 2;
       } else {                      // Put text above
         textPos = center + vm * (LOOPSIZE/2) + getDirectionVector(DIR_N) * 2*textSize.cy;
-        textPos.y -= 2;
+        textPos.y() -= 2;
       }
-      textPos.x -= textSize.cx/2;
+      textPos.x() -= textSize.cx/2;
     }
     break;
   case DIR_NE:
@@ -260,16 +260,16 @@ void AutomatePainter::paintLoopArrow(const CPoint &from, int radius, DirectionPa
   case DIR_SE:
   case DIR_S :
     textPos = origPos;
-    textPos.x -= textSize.cx / 2;
-    if(textPos.y > m_size.cy - textSize.cy) {
-      if(textPos.x < m_size.cx/2) { // Put text to the right
+    textPos.x() -= textSize.cx / 2;
+    if(textPos.y() > m_size.cy - textSize.cy) {
+      if(textPos.x() < m_size.cx/2) { // Put text to the right
         textPos = center + vm * (LOOPSIZE/2) + getDirectionVector(DIR_E) * (LOOPSIZE/2);
-        textPos.x += 2;
+        textPos.x() += 2;
       } else {                      // Put text to the left
         textPos = center + vm * (LOOPSIZE/2) + getDirectionVector(DIR_W) * textSize.cx;
-        textPos.x -= 2;
+        textPos.x() -= 2;
       }
-      textPos.y -= textSize.cy/2;
+      textPos.y() -= textSize.cy/2;
     }
     break;
 
@@ -277,17 +277,17 @@ void AutomatePainter::paintLoopArrow(const CPoint &from, int radius, DirectionPa
 
   case DIR_W :
     textPos = origPos;
-    textPos.x -= textSize.cx  + 2;
-    textPos.y -= textSize.cy/2;
-    if(textPos.x < 0) {
-      if(textPos.y < m_size.cy/2) { // Put text below
+    textPos.x() -= textSize.cx  + 2;
+    textPos.y() -= textSize.cy/2;
+    if(textPos.x() < 0) {
+      if(textPos.y() < m_size.cy/2) { // Put text below
         textPos = center + vm * (LOOPSIZE/2) + getDirectionVector(DIR_S) * textSize.cy;
-        textPos.y += 2;
+        textPos.y() += 2;
       } else {                      // Put text above
         textPos = center + vm * (LOOPSIZE/2) + getDirectionVector(DIR_N) * 2*textSize.cy;
-        textPos.y -= 2;
+        textPos.y() -= 2;
       }
-      textPos.x -= textSize.cx/2;
+      textPos.x() -= textSize.cx/2;
     }
     break;
 
@@ -299,10 +299,10 @@ void AutomatePainter::paintLoopArrow(const CPoint &from, int radius, DirectionPa
     throwInvalidArgumentException(__TFUNCTION__, _T("direction="), dirPair.m_startDir);
   }
 
-  textPos.x = minMax((int)textPos.x, 1, (int)(m_size.cx - textSize.cx - 1));
-  textPos.y = minMax((int)textPos.y, 1, (int)(m_size.cy - textSize.cy - 1));
+  textPos.x() = minMax((int)textPos.x(), 1, (int)(m_size.cx - textSize.cx - 1));
+  textPos.y() = minMax((int)textPos.y(), 1, (int)(m_size.cy - textSize.cy - 1));
 
-  textOutTransparentBackground(hdc, textPos, text, font, RGB(0,0,0));
+  textOutTransparentBackground(hdc, (CPoint)textPos, text, font, RGB(0,0,0));
 }
 
 CPoint AutomatePainter::findBestTextPosition(const CPoint pFrom, ArrowDirection direction, const CSize &textSize) const {
@@ -313,17 +313,17 @@ CPoint AutomatePainter::findBestTextPosition(const CPoint pFrom, ArrowDirection 
 
   case DIR_NE:
     { const Point2D &v = getDirectionVector(direction);
-      Point2D textPos  = Point2D(pFrom) + v * textSize.cy / -v.y;
-      textPos.x += 5;
-      return textPos;
+      Point2D textPos  = Point2D(pFrom) + v * textSize.cy / -v.y();
+      textPos.x() += 5;
+      return (CPoint)textPos;
     }
 
   case DIR_SE:
     { const Point2D &v       = getDirectionVector(direction);
-      Point2D        textPos = Point2D(pFrom) + v * textSize.cy / v.y;
-      textPos.x += 5;
-      textPos.y -= textSize.cy;
-      return textPos;
+      Point2D        textPos = Point2D(pFrom) + v * textSize.cy / v.y();
+      textPos.x() += 5;
+      textPos.y() -= textSize.cy;
+      return (CPoint)textPos;
     }
   case DIR_S :
     return CPoint(pFrom.x+2, pFrom.y + 2);
@@ -336,9 +336,9 @@ CPoint AutomatePainter::findBestTextPosition(const CPoint pFrom, ArrowDirection 
 
   case DIR_NW:
     { const Point2D &v       = getDirectionVector(direction);
-      Point2D        textPos = Point2D(pFrom) + v * textSize.cy / -v.y;
-      textPos.x -= textSize.cx;
-      return textPos;
+      Point2D        textPos = Point2D(pFrom) + v * textSize.cy / -v.y();
+      textPos.x() -= textSize.cx;
+      return (CPoint)textPos;
     }
   default     :
     throwInvalidArgumentException(__TFUNCTION__, _T("direction="), direction);
@@ -354,16 +354,16 @@ CSize AutomatePainter::getTextSize(CFont &font, const String &text) {
 }
 
 void AutomatePainter::paintArrowEnd(const CPoint &from, const CPoint &to, HDC hdc) {
-  if(hdc == NULL) hdc = m_dc;
+  if(hdc == nullptr) hdc = m_dc;
 
   Point2D v = from - to;
   v.normalize();
-  Point2D vleft  = v.rotate(GRAD2RAD( 26)) * 6;
-  Point2D vright = v.rotate(GRAD2RAD(-26)) * 6;
+  Point2D vleft  = rotate(v,GRAD2RAD( 26)) * 6;
+  Point2D vright = rotate(v,GRAD2RAD(-26)) * 6;
   CPoint vertices[3];
   vertices[0] = to;
-  vertices[1] = to + vleft;
-  vertices[2] = to + vright;
+  vertices[1] = to + (CPoint)vleft;
+  vertices[2] = to + (CPoint)vright;
   HGDIOBJ oldBrush = SelectObject(hdc, s_blackBrush);
   Polygon(hdc, vertices, 3);
   SelectObject(hdc, oldBrush);
@@ -422,7 +422,7 @@ static const FontInfo fontInfo[2] = {
 };
 
 CFont &AutomatePainter::getFont(bool symbol, const Point2D &vector) { // static
-  int degree = (int)RAD2GRAD(atan2(vector.y,vector.x));
+  int degree = (int)RAD2GRAD(atan2(vector.y(),vector.x()));
   const FontKey key(symbol, degree);
   CFont **fontpp = s_fontCache.get(key), *fontp;
   if(fontpp) {

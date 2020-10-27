@@ -5,7 +5,7 @@
 #include "ResourceParser.h"
 
 ParserTree::ParserTree(const String &fileName) {
-  m_root            = NULL;
+  m_root            = nullptr;
   m_ok              = true;
   m_absolutFileName = FileNameSplitter(fileName).getAbsolutePath();
 }
@@ -13,7 +13,7 @@ ParserTree::ParserTree(const String &fileName) {
 void ParserTree::vAddError(const SourcePosition *pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   String tmp2;
   String tmp = vformat(format, argptr);
-  if(pos != NULL) {
+  if(pos != nullptr) {
     tmp2 = ::format(_T("(%d,%d) : error --- %s")
                    ,pos->getLineNumber(), pos->getColumn()
                    ,tmp.cstr()
@@ -36,7 +36,7 @@ void ParserTree::addError(const SourcePosition &pos, _In_z_ _Printf_format_strin
 void ParserTree::addError(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
-  vAddError(NULL, format, argptr);
+  vAddError(nullptr, format, argptr);
   va_end(argptr);
 }
 
@@ -56,7 +56,7 @@ void ParserTree::listErrors(tostream &out) const {
 
 void ParserTree::listErrors(const TCHAR *fname) const {
   FILE *f = _tfopen(fname,_T("w"));
-  if(f == NULL) {
+  if(f == nullptr) {
     _ftprintf(stdout,_T("Cannot open %s\n"),fname);
     listErrors(stdout);
   } else {
@@ -104,7 +104,7 @@ void ParserTree::releaseAll() {
   }
   m_nodetable.clear();
   m_ok       = true;
-  m_root     = NULL;
+  m_root     = nullptr;
   m_errors.clear();
 }
 
@@ -178,7 +178,7 @@ void ParserTree::dumpSyntaxTree(const SyntaxNode *root, FILE *f) { // static
 
 void ParserTree::dumpSyntaxTree(const SyntaxNode *root, const TCHAR *fname) { // static
   FILE *f = _tfopen(fname,_T("w"));
-  if(f == NULL) {
+  if(f == nullptr) {
     _ftprintf(stdout, _T("Cannot open %s\n"), fname);
     dumpSyntaxTree(root, stdout);
   } else {

@@ -20,7 +20,7 @@ END_MESSAGE_MAP()
 void CListBoxDiffMarks::substituteControl(CWnd *parent, int id) {
   DEFINEMETHODNAME;
   CListBox *oldCtrl = (CListBox*)parent->GetDlgItem(id);
-  if(oldCtrl == NULL) {
+  if(oldCtrl == nullptr) {
     showError(_T("%s:Control with id=%d does not exist"), method, id);
     return;
   }
@@ -33,7 +33,7 @@ void CListBoxDiffMarks::substituteControl(CWnd *parent, int id) {
   style &= ~(LBS_SORT);
 
   CFont *font = oldCtrl->GetFont();
-  if(font == NULL) {
+  if(font == nullptr) {
     font = parent->GetFont();
   }
   const TabOrder tabOrder(parent);

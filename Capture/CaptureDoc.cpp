@@ -12,7 +12,7 @@ BEGIN_MESSAGE_MAP(CCaptureDoc, CDocument)
 END_MESSAGE_MAP()
 
 CCaptureDoc::CCaptureDoc() {
-  m_bitmap  = NULL;
+  m_bitmap  = nullptr;
   m_size.cx = m_size.cy = 0;
 }
 
@@ -22,9 +22,9 @@ CCaptureDoc::CCaptureDoc(HBITMAP bitmap) {
 }
 
 void CCaptureDoc::resetImage() {
-  if(m_bitmap != NULL) {
+  if(m_bitmap != nullptr) {
     DeleteObject(m_bitmap);
-    m_bitmap = NULL;
+    m_bitmap = nullptr;
   }
   m_size.cx = m_size.cy = 0;
 }
@@ -77,7 +77,7 @@ void CCaptureDoc::save(const String &fileName) {
 
 CCaptureDoc *CCaptureDoc::getScaledCopy(double factor) {
   if(!hasImage()) {
-    return NULL;
+    return nullptr;
   }
 
   PixRect *p1 = new PixRect(theApp.m_device, m_bitmap);

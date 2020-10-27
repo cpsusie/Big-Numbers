@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CTestLayoutManagerDlg::CTestLayoutManagerDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestLayoutManagerDlg::IDD, pParent) {
+CTestLayoutManagerDlg::CTestLayoutManagerDlg(CWnd *pParent /*=nullptr*/) : CDialog(CTestLayoutManagerDlg::IDD, pParent) {
   setToDefault();
 }
 

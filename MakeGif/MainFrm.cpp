@@ -198,7 +198,7 @@ void CMainFrame::OnFileSaveAs() {
   CFileDialog dlg(FALSE,_T("gif"), tmpName);
   dlg.m_ofn.lpstrTitle  = _T("Save gif");
   dlg.m_ofn.lpstrFilter = saveFileDialogExtensions;
-  if((dlg.DoModal() == IDOK) && (dlg.m_ofn.lpstrFile != NULL)) {
+  if((dlg.DoModal() == IDOK) && (dlg.m_ofn.lpstrFile != nullptr)) {
     name = dlg.m_ofn.lpstrFile;
   } else {
     return;

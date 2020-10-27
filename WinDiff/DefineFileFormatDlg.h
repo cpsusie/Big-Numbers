@@ -7,7 +7,7 @@
 class CDefineFileFormatDlg: public CDialog {
   OBMButton            m_delimiterCharButton;
 public:
-    CDefineFileFormatDlg(FileFormat &param, const String &sampleline, CWnd *pParent = NULL);
+    CDefineFileFormatDlg(FileFormat &param, const String &sampleline, CWnd *pParent = nullptr);
     FileFormat &m_param;
 
     enum { IDD = IDD_DIALOGCOLUMNS };

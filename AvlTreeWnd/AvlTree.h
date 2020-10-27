@@ -144,7 +144,7 @@ private:
   }
 
   AvlIteratorStackElem *top() {
-    return isEmpty() ? NULL : m_stack + m_top - 1;
+    return isEmpty() ? nullptr : m_stack + m_top - 1;
   }
 public:
   AvlIterator(AvlTree &tree);

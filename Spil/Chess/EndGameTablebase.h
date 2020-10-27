@@ -15,7 +15,7 @@ public:
   inline EndGameSubTablebase(const EndGameKeyDefinition &keydef) : m_keydef(keydef) {
   }
 
-  virtual String load(ByteCounter *byteCounter = NULL) = 0;
+  virtual String load(ByteCounter *byteCounter = nullptr) = 0;
   virtual void   unload()         = 0;
   virtual bool   isLoaded() const = 0;
   virtual bool   isRemote() const = 0;
@@ -105,7 +105,7 @@ public:
 
 class SubTablebasePositionInfo {
 private:
-  EndGameSubTablebase  *m_tablebase; // if NULL result is draw
+  EndGameSubTablebase  *m_tablebase; // if nullptr result is draw
   bool                  m_swapPlayers;
 
 public:
@@ -200,7 +200,7 @@ private:
   inline String  toString(const EndGameKey &key, bool initFormat=false) const {
     return key.toString(m_keydef, initFormat);
   }
-  EndGamePositionStatus isTerminalMove(const Game &game, const Move &m, UINT *pliesToEnd = NULL, MoveResultArray *allMoves = NULL) const;
+  EndGamePositionStatus isTerminalMove(const Game &game, const Move &m, UINT *pliesToEnd = nullptr, MoveResultArray *allMoves = nullptr) const;
   EndGameResult         getKeyResult(  const EndGameKey  key) const;
   // throw Exception
   void                  statusError(EndGamePositionStatus status, const EndGameKey &key) const {
@@ -247,7 +247,7 @@ private:
   String loadAllForwardPositions();
   String saveAllRetroPositions(  bool convert = false);
   String loadAllRetroPositions();
-  void   load(const String    &fileName, ByteCounter *byteCounter = NULL);
+  void   load(const String    &fileName, ByteCounter *byteCounter = nullptr);
   void   loadPacked(const String &fileName);
   void   loadPacked(ByteInputStream &s);
   String save( const String     &fileName, bool convert) const;
@@ -339,7 +339,7 @@ public:
   EndGameTablebase(const EndGameKeyDefinition &keydef);
   virtual ~EndGameTablebase();
 
-  String                load(ByteCounter *byteCounter = NULL);
+  String                load(ByteCounter *byteCounter = nullptr);
   void                  unload();
   inline int            getLoadRefCount() const {
     return m_loadRefCount;
@@ -432,7 +432,7 @@ public:
 
 #if !defined(TABLEBASE_BUILDER)
   static void           decompressAll();
-  void                  decompress(ByteCounter *byteCounter = NULL) const;
+  void                  decompress(ByteCounter *byteCounter = nullptr) const;
   bool                  needDecompress() const;
   static void           listNewSizes();
   static void           dumpRangeTables();

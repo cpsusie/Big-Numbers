@@ -63,7 +63,7 @@ void CFileFormatsDlg::OnEndLabelEditList(NMHDR *pNMHDR, LRESULT *pResult) {
 
   LVITEM &lv = pDispInfo->item;
   const TCHAR *str = lv.pszText;
-  if(str == NULL || str[0] == 0) {
+  if(str == nullptr || str[0] == 0) {
     *pResult = FALSE;
   } else {
     *pResult = TRUE;

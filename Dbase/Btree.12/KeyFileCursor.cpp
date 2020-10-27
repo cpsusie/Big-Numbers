@@ -156,7 +156,7 @@ KeyType &KeyCursor::next(KeyType &key) {
   if(bufferIsEmpty()) {
     try {
       if(m_lastWasFull) {
-        KeyFile file(m_fileName, DBFMODE_READONLY, NULL);
+        KeyFile file(m_fileName, DBFMODE_READONLY, nullptr);
         bufferFill(file);
       }
       m_hasNext = !bufferIsEmpty();

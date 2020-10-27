@@ -28,10 +28,10 @@ void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestAVIFileDlg::CTestAVIFileDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestAVIFileDlg::IDD, pParent) {
+CTestAVIFileDlg::CTestAVIFileDlg(CWnd *pParent /*=nullptr*/) : CDialog(CTestAVIFileDlg::IDD, pParent) {
     m_hIcon         = theApp.LoadIcon(IDR_MAINFRAME);
-    m_movieThread   = NULL;
-    m_frame         = NULL;
+    m_movieThread   = nullptr;
+    m_frame         = nullptr;
     m_frameCount    = 100;
     m_timersRunning = 0;
 }
@@ -57,7 +57,7 @@ BOOL CTestAVIFileDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty())  {
@@ -126,7 +126,7 @@ void CTestAVIFileDlg::OnClose() {
 #define clrTimerBit(id)    (m_timersRunning &= ~(1 << (id)))
 
 void CTestAVIFileDlg::startTimer(unsigned int id, int msec) {
-  if(!isTimerRunning(id) && SetTimer(id,msec,NULL)) {
+  if(!isTimerRunning(id) && SetTimer(id,msec,nullptr)) {
     setTimerBit(id);
   }
 }
@@ -224,7 +224,7 @@ PixRect *CTestAVIFileDlg::nextFrame() {
     m_frameIndex++;
     return m_frame;
   } else {
-    return NULL;
+    return nullptr;
   }
 }
 

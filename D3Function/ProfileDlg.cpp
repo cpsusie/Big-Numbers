@@ -33,16 +33,16 @@ void throwValidateException(int field, const TCHAR *format, ...) {
 CProfileDlg::CProfileDlg(CWnd *pParent) : CDialog(IDD, pParent) {
   m_doubleSided      = TRUE;
   m_3dmode           = 0;
-  m_visual           = NULL;
-  m_viewport         = NULL;
-  m_currentDrawTool  = NULL;
+  m_visual           = nullptr;
+  m_viewport         = nullptr;
+  m_currentDrawTool  = nullptr;
   m_exceptionRaised  = false;
   m_lastSavedProfile = m_profile;
 }
 
 CProfileDlg::~CProfileDlg() {
   m_editor.setEnabled(false);
-  setCurrentDrawTool(NULL);
+  setCurrentDrawTool(nullptr);
   m_editor.close();
   destroy3DObject();
   m_scene.close();
@@ -156,17 +156,17 @@ void CProfileDlg::createWorkBitmap() {
   m_workRect = getClientRect(this, IDC_STATIC_PROFILEIMAGE2D);
   const CSize sz = m_workRect.Size();
   m_workDC.CreateCompatibleDC(&screen);
-  m_workBitmap.CreateBitmap(sz.cx,sz.cy,screen.GetDeviceCaps(PLANES),screen.GetDeviceCaps(BITSPIXEL),NULL);
+  m_workBitmap.CreateBitmap(sz.cx,sz.cy,screen.GetDeviceCaps(PLANES),screen.GetDeviceCaps(BITSPIXEL),nullptr);
   m_workBitmap.SetBitmapDimension(sz.cx,sz.cy);
   m_workDC.SelectObject(m_workBitmap);
   initViewport();
 }
 
 void CProfileDlg::destroyWorkBitmap() {
-  if(m_workBitmap.m_hObject != NULL) {
+  if(m_workBitmap.m_hObject != nullptr) {
     m_workBitmap.DeleteObject();
   }
-  if(m_workDC.m_hDC != NULL) {
+  if(m_workDC.m_hDC != nullptr) {
     m_workDC.DeleteDC();
   }
 }
@@ -343,7 +343,7 @@ bool CProfileDlg::needUpdate3DObject() {
 
 void CProfileDlg::create3DObject() {
   m_editor.pushStateFlags().setEnabled(false, SE_RENDER);
-  D3ProfileObjectWithColor *visual = NULL;
+  D3ProfileObjectWithColor *visual = nullptr;
   if(!m_profile.isEmpty()) {
     visual = new D3ProfileObjectWithColor(this); TRACE_NEW(visual);
   }
@@ -353,13 +353,13 @@ void CProfileDlg::create3DObject() {
 }
 
 void CProfileDlg::setVisual(D3ProfileObjectWithColor *visual) {
-  const bool hadOldVisual = m_visual != NULL;
+  const bool hadOldVisual = m_visual != nullptr;
   ProfileObjectProperties oldProperties;
   if(hadOldVisual) {
     m_visual->getAllProperties(oldProperties);
   }
   destroy3DObject();
-  if(visual != NULL) {
+  if(visual != nullptr) {
     if(hadOldVisual) {
       visual->setAllProperties(oldProperties);
     }
@@ -580,7 +580,7 @@ void CProfileDlg::OnFileSelectFromFont() {
   if(!dirtyCheck()) {
     return;
   }
-  CFontDialog dlg(&m_logFont,CF_EFFECTS | CF_SCREENFONTS,NULL,this);
+  CFontDialog dlg(&m_logFont,CF_EFFECTS | CF_SCREENFONTS,nullptr,this);
   if(dlg.DoModal() == IDOK) {
     dlg.GetCurrentFont(&m_logFont);
     CSelectGlyphDlg selectGlyphDlg(m_logFont,this);
@@ -814,7 +814,7 @@ void CProfileDlg::OnLButtonUp(UINT nFlags, CPoint point) {
   switch(getControlAtPoint(point)) {
   case IDC_STATIC_PROFILEIMAGE2D:
     m_currentDrawTool->OnLButtonUp(nFlags,getRelativePoint(IDC_STATIC_PROFILEIMAGE2D,point));
-    ClipCursor(NULL);
+    ClipCursor(nullptr);
     break;
   }
   __super::OnLButtonUp(nFlags, point);
@@ -834,7 +834,7 @@ void CProfileDlg::OnRButtonUp(UINT nFlags, CPoint point) {
   switch(getControlAtPoint(point)) {
   case IDC_STATIC_PROFILEIMAGE2D:
     m_currentDrawTool->OnRButtonUp(nFlags,getRelativePoint(IDC_STATIC_PROFILEIMAGE2D,point));
-    ClipCursor(NULL);
+    ClipCursor(nullptr);
     break;
   }
   __super::OnRButtonUp(nFlags, point);
@@ -925,6 +925,6 @@ void CProfileDlg::OnKillfocusEditEdgeCount() {
 
 int CProfileDlg::getControlAtPoint(const CPoint &point) {
   CWnd *w = ChildWindowFromPoint(point);
-  m_currentControl = (w == NULL) ? -1 : w->GetDlgCtrlID();
+  m_currentControl = (w == nullptr) ? -1 : w->GetDlgCtrlID();
   return m_currentControl;
 }

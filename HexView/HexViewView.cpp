@@ -170,9 +170,9 @@ void CHexViewView::draw(CDC *dc) {
 CRect CHexViewView::updateSettings(CDC *dc) {
   CRect cr;
   GetClientRect(&cr);
-  CFont *oldFont = NULL;
+  CFont *oldFont = nullptr;
 
-  if(dc == NULL) {
+  if(dc == nullptr) {
     dc = &m_workDC;
     oldFont = dc->SelectObject(&m_font);
   }
@@ -847,16 +847,16 @@ void CHexViewView::createWorkDC(const CSize &size) {
   m_workRect.left  = 0; m_workRect.top    = 0;
   m_workRect.right = size.cx; m_workRect.bottom = size.cy;
   m_workDC.CreateCompatibleDC(&screen);
-  m_workBitmap.CreateBitmap(size.cx, size.cy, screen.GetDeviceCaps(PLANES), screen.GetDeviceCaps(BITSPIXEL), NULL);
+  m_workBitmap.CreateBitmap(size.cx, size.cy, screen.GetDeviceCaps(PLANES), screen.GetDeviceCaps(BITSPIXEL), nullptr);
   m_workBitmap.SetBitmapDimension(size.cx, size.cy);
   m_workDC.SelectObject(m_workBitmap);
 }
 
 void CHexViewView::destroyWorkDC() {
-  if(m_workDC.m_hDC != NULL) {
+  if(m_workDC.m_hDC != nullptr) {
     m_workDC.DeleteDC();
   }
-  if(m_workBitmap.m_hObject != NULL) {
+  if(m_workBitmap.m_hObject != nullptr) {
     m_workBitmap.DeleteObject();
   }
 }

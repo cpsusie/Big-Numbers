@@ -9,8 +9,8 @@ class ResourceLex : public Scanner {
 private:
   LRparser *m_parser; // if set, redirect errors to parsers verror-routine
 public:
-  ResourceLex(LexStream *inputStream = NULL) : Scanner(inputStream) {
-    m_parser = NULL;
+  ResourceLex(LexStream *inputStream = nullptr) : Scanner(inputStream) {
+    m_parser = nullptr;
   }
   void setParser(LRparser *parser) {
     m_parser = parser;

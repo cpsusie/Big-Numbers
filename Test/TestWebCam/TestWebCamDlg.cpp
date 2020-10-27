@@ -65,7 +65,7 @@ BOOL CTestWebCamDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -114,7 +114,7 @@ void CTestWebCamDlg::vlog(_In_z_ _Printf_format_string_ TCHAR const * const form
     return;
   }
   CListBox *textBox = (CListBox *)GetDlgItem(IDC_TEXTINFO);
-  if(textBox != NULL) {
+  if(textBox != nullptr) {
     String line = vformat(format,argptr).cstr();
     int lineCount = textBox->GetCount();
 //    if(lineCount == 15)
@@ -132,7 +132,7 @@ void CTestWebCamDlg::vlog(_In_z_ _Printf_format_string_ TCHAR const * const form
 LRESULT CTestWebCamDlg::captureVideoStreamCallback(MMCapture &capture, PixRect *image) {
   m_gate.wait();
   CRect r = image->getRect();
-  if (m_lastImage == NULL) {
+  if (m_lastImage == nullptr) {
     m_lastImage = image->clone(true);
   } else {
     m_lastImage->rop(r, SRCCOPY, image, r);
@@ -182,7 +182,7 @@ void CTestWebCamDlg::startTimer() {
   if(m_timerIsRunning) {
     return;
   }
-  if(SetTimer(1,1000,NULL)) {
+  if(SetTimer(1,1000,nullptr)) {
     log(_T("Timer started"));
     m_timerIsRunning = true;
   } else {

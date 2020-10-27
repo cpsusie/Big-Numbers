@@ -7,8 +7,8 @@
 #pragma comment(lib, "netapi32.lib")
 
 String getDomainControllerName(const TCHAR *serverName, const TCHAR *domainName) {
-  LPBYTE buf = NULL;
-  NET_API_STATUS error = NetGetDCName(NULL,NULL,&buf);
+  LPBYTE buf = nullptr;
+  NET_API_STATUS error = NetGetDCName(nullptr,nullptr,&buf);
   if(error != NERR_Success) {
     switch(error) {
     case NERR_DCNotFound   : throwException(_T("getDomainControllerName:Could not find the domain controller for the domain,"));
@@ -17,7 +17,7 @@ String getDomainControllerName(const TCHAR *serverName, const TCHAR *domainName)
     }
   }
   String result = (char*)buf;
-  if(buf != NULL) {
+  if(buf != nullptr) {
     NetApiBufferFree(buf);
   }
   return result;
@@ -29,8 +29,8 @@ static void usage() {
 }
 
 int _tmain(int argc, TCHAR **argv) {
-  TCHAR *serverName = NULL;
-  TCHAR *domainName = NULL;
+  TCHAR *serverName = nullptr;
+  TCHAR *domainName = nullptr;
 
   argv++;
   if(*argv && (_tcscmp(*argv,_T("-?")) == 0 || _tcsicmp(*argv,_T("-help")) == 0)) {

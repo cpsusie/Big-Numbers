@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CTestTreesEqualDlg::CTestTreesEqualDlg(CWnd *pParent /*=NULL*/) : CDialogWithDynamicLayout(IDD, pParent) {
+CTestTreesEqualDlg::CTestTreesEqualDlg(CWnd *pParent /*=nullptr*/) : CDialogWithDynamicLayout(IDD, pParent) {
 	m_expr1 = EMPTYSTRING;
 	m_expr2 = EMPTYSTRING;
 

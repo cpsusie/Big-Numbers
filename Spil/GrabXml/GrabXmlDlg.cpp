@@ -36,7 +36,7 @@ void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
-CGrabXmlDlg::CGrabXmlDlg(CWnd *pParent /*=NULL*/) : CDialogEx(IDD_GRABXML_DIALOG, pParent), m_url(EMPTYSTRING) {
+CGrabXmlDlg::CGrabXmlDlg(CWnd *pParent /*=nullptr*/) : CDialogEx(IDD_GRABXML_DIALOG, pParent), m_url(EMPTYSTRING) {
   m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
@@ -68,7 +68,7 @@ BOOL CGrabXmlDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if (pSysMenu != NULL) {
+  if (pSysMenu != nullptr) {
     BOOL bNameValid;
     CString strAboutMenu;
     bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -92,7 +92,7 @@ BOOL CGrabXmlDlg::OnInitDialog() {
   m_accelTable  = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
 
   m_cbUrl.SetFocus();
-  m_currentDoc = NULL;
+  m_currentDoc = nullptr;
 
   return FALSE;
 }
@@ -152,8 +152,8 @@ void CGrabXmlDlg::OnFileExit() {
 void CGrabXmlDlg::OnBnClickedSearch() {
   UpdateData();
   if(m_url.GetLength()) {
-    m_currentDoc = NULL;
-    m_browser.Navigate(m_url, NULL, NULL, NULL, NULL);
+    m_currentDoc = nullptr;
+    m_browser.Navigate(m_url, nullptr, nullptr, nullptr, nullptr);
     m_cbUrl.updateList();
     m_cbUrl.save();
   }
@@ -173,7 +173,7 @@ BOOL CGrabXmlDlg::PreTranslateMessage(MSG *pMsg) {
     return true;
   case WM_KEYDOWN:
 //    m_browser.SendMessage(pMsg->message, pMsg->wParam, pMsg->lParam);
-    SetTimer(1, 300, NULL);
+    SetTimer(1, 300, nullptr);
     break;
   }
   return __super::PreTranslateMessage(pMsg);
@@ -215,13 +215,13 @@ void CGrabXmlDlg::findRouteAndEnterSolution() {
 #define V(f) CHECKRESULT(f)
 
 IHTMLInputElement *CGrabXmlDlg::findInputElementByName(const String &name) {
-  IHTMLElementCollection *array  = NULL;
-  IHTMLInputElement      *result = NULL;
+  IHTMLElementCollection *array  = nullptr;
+  IHTMLInputElement      *result = nullptr;
 
   V(m_currentDoc->get_all(&array));
 
-  IDispatch         *pElemDisp = NULL;
-  IHTMLInputElement *pElem     = NULL;
+  IDispatch         *pElemDisp = nullptr;
+  IHTMLInputElement *pElem     = nullptr;
   _bstr_t            bname     = name.cstr();
   _variant_t         varID(bname);
   _variant_t         varIdx(0);

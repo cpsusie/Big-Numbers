@@ -227,7 +227,7 @@ BOOL CParserDemoDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if (pSysMenu != NULL) {
+  if (pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if (!strAboutMenu.IsEmpty()) {
@@ -271,7 +271,7 @@ BOOL CParserDemoDlg::OnInitDialog() {
   CMFCDynamicLayout::SizeSettings inputSz; inputSz.m_nXRatio = 90; inputSz.m_nYRatio = 50;
   mfcLM->AddItem(m_textBox, inputMv, inputSz);
 
-  m_showStateThread  = NULL;
+  m_showStateThread  = nullptr;
 
   m_accelTable       = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORMAIN));
   m_animateOn        = isMenuItemChecked(this, ID_OPTIONS_ANIMATE);
@@ -401,7 +401,7 @@ void CParserDemoDlg::showStatus(bool gotoLastDebug) {
     setWindowText(this,IDC_LOOKAHEAD, LAtext);
     setWindowText(this,IDC_ACTION, m_parser.getActionString());
   }
-  if(m_showStateThread != NULL) {
+  if(m_showStateThread != nullptr) {
     m_showStateThread->m_pMainWnd->PostMessage(ID_SHOWSTATE_UPDATE, 0, 0);
   }
 
@@ -431,7 +431,7 @@ void CParserDemoDlg::OnFileOpen() {
     SetWindowText(fname);
     OnMaxTextEditInputString();
     resetListBoxes();
-    m_textBox.markPos(NULL);
+    m_textBox.markPos(nullptr);
   } catch(Exception e) {
     showException(e);
   }
@@ -728,7 +728,7 @@ void CParserDemoDlg::OnOptionsErrors() {
 }
 
 void CParserDemoDlg::OnOptionsShowState() {
-  if(m_showStateThread == NULL) {
+  if(m_showStateThread == nullptr) {
     CShowStateThread *thr = (CShowStateThread*)AfxBeginThread(RUNTIME_CLASS(CShowStateThread), THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
     thr->m_maindialog = this;
     m_showStateThread = thr;
@@ -874,7 +874,7 @@ void CParserDemoDlg::OnCheckBreakOnSymbol() {
 void CParserDemoDlg::OnEditBreakOnTextPosition() {
   SourcePosition currentPos = getSourcePosition();
   if(m_textBox.isMarked() && currentPos == m_textBox.getMarkedPos()) {
-    m_textBox.markPos(NULL);
+    m_textBox.markPos(nullptr);
     Invalidate(false);
   } else {
     m_textBox.markPos(&currentPos);

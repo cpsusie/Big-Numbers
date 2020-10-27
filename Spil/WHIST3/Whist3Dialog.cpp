@@ -90,7 +90,7 @@ BOOL CWhist3Dialog::OnInitDialog() {
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -121,15 +121,15 @@ BOOL CWhist3Dialog::PreTranslateMessage(MSG *pMsg) {
 }
 
 void CWhist3Dialog::createWorkBitmap(const CSize &size) {
-  if(m_workDC.m_hDC != NULL)
+  if(m_workDC.m_hDC != nullptr)
     m_workDC.DeleteDC();
-  if(m_workBitmap.m_hObject != NULL)
+  if(m_workBitmap.m_hObject != nullptr)
     m_workBitmap.DeleteObject();
 
   CClientDC screen(this);
   m_workDC.CreateCompatibleDC(&screen);
   m_workSize = size;
-  m_workBitmap.CreateBitmap(size.cx,size.cy,screen.GetDeviceCaps(PLANES),screen.GetDeviceCaps(BITSPIXEL),NULL);
+  m_workBitmap.CreateBitmap(size.cx,size.cy,screen.GetDeviceCaps(PLANES),screen.GetDeviceCaps(BITSPIXEL),nullptr);
   m_workBitmap.SetBitmapDimension(size.cx,size.cy);
   m_workDC.SelectObject(m_workBitmap);
 }

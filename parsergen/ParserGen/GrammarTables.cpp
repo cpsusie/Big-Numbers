@@ -239,7 +239,7 @@ void GrammarTables::print(MarginFile &output, Language language, bool useTableCo
 
 ByteCount GrammarTables::printByteArray(MarginFile &output, const String &name, const ByteArray &ba, UINT bytesPerLine, const StringArray *linePrefix) const {
   const UINT nBytes        = (UINT)ba.size();
-  const bool hasLinePrefix = (linePrefix != NULL);
+  const bool hasLinePrefix = (linePrefix != nullptr);
   output.setLeftMargin(0);
   output.printf(_T("static const BYTE %s[%u] = {"), name.cstr(), nBytes);
   TCHAR *delim = _T(" ");

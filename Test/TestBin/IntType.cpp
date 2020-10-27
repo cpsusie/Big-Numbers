@@ -360,22 +360,22 @@ bool IntType::isNegative() const {
 IntType::IntType(IntegerType type, const TCHAR *s, int radix) : m_type(type), m_data(0) {
   if(radix != 10) {
     switch(type) {
-    case IT_I32  : m_i32  = _tcstoul(   s, NULL, radix); break;
-    case IT_U32  : m_u32  = _tcstoul(   s, NULL, radix); break;
-    case IT_I64  : m_i64  = _tcstoui64( s, NULL, radix); break;
-    case IT_U64  : m_u64  = _tcstoui64( s, NULL, radix); break;
-    case IT_I128 : m_i128 = _tcstoui128(s, NULL, radix); break;
-    case IT_U128 : m_u128 = _tcstoui128(s, NULL, radix); break;
+    case IT_I32  : m_i32  = _tcstoul(   s, nullptr, radix); break;
+    case IT_U32  : m_u32  = _tcstoul(   s, nullptr, radix); break;
+    case IT_I64  : m_i64  = _tcstoui64( s, nullptr, radix); break;
+    case IT_U64  : m_u64  = _tcstoui64( s, nullptr, radix); break;
+    case IT_I128 : m_i128 = _tcstoui128(s, nullptr, radix); break;
+    case IT_U128 : m_u128 = _tcstoui128(s, nullptr, radix); break;
     DEFAULT_WRONGTYPE(type);
     }
   } else {
     switch(type) {
-    case IT_I32  : m_i32  = _tcstol(    s, NULL, radix); break;
-    case IT_U32  : m_u32  = _tcstoul(   s, NULL, radix); break;
-    case IT_I64  : m_i64  = _tcstoi64(  s, NULL, radix); break;
-    case IT_U64  : m_u64  = _tcstoui64( s, NULL, radix); break;
-    case IT_I128 : m_i128 = _tcstoi128( s, NULL, radix); break;
-    case IT_U128 : m_u128 = _tcstoui128(s, NULL, radix); break;
+    case IT_I32  : m_i32  = _tcstol(    s, nullptr, radix); break;
+    case IT_U32  : m_u32  = _tcstoul(   s, nullptr, radix); break;
+    case IT_I64  : m_i64  = _tcstoi64(  s, nullptr, radix); break;
+    case IT_U64  : m_u64  = _tcstoui64( s, nullptr, radix); break;
+    case IT_I128 : m_i128 = _tcstoi128( s, nullptr, radix); break;
+    case IT_U128 : m_u128 = _tcstoui128(s, nullptr, radix); break;
     DEFAULT_WRONGTYPE(type);
     }
   }

@@ -4,7 +4,7 @@ class CKalenderDlg : public CDialog {
 private:
     HICON m_hIcon;
 public:
-    CKalenderDlg(CWnd *pParent = NULL);
+    CKalenderDlg(CWnd *pParent = nullptr);
     void printhelligdage(CClientDC &dc, int year);
     void printhelligdag(CClientDC &dc, int row, const String &name, const Date &d);
     CFont     m_PrintFont;

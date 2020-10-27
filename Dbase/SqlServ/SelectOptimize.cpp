@@ -73,7 +73,7 @@ static bool singleConstantSet(const SyntaxNode *n) { // n = set_expr
 
 BitSet SelectStmt::findFieldsFixedByConstPredicate(FromTable *table, const SyntaxNode *pred, bool neg) {
   BitSet res(table->getColumnCount());
-  if(pred == NULL) return res;
+  if(pred == nullptr) return res;
   switch(pred->token()) {
   case OR :
     // if the user has specified the same Predicate in left and right subpredicate,
@@ -391,7 +391,7 @@ void Predicate::dump(FILE *f) const {
   _ftprintf(f,_T("Predicate:\"%s\" %s")
              ,relopstring(m_relOpToken),m_colIndex.toStringBasicType().cstr());
 #if defined(TRACECOMP)
-  if(m_pred != NULL) {
+  if(m_pred != nullptr) {
     dumpSyntaxTree(m_pred);
   }
 #endif
@@ -421,7 +421,7 @@ SyntaxNode *Predicate::findOpposite(FromTable *fromTable, int col) {
     }
   }
   throwSqlError(SQL_FATAL_ERROR,_T("internal error in Predicate::findOpposite:no matching expression found"));
-  return NULL;
+  return nullptr;
 }
 
 void PredicateList::dump(FILE *f) const {
@@ -698,8 +698,8 @@ void FromTable::findEqualPredicates(const SyntaxNode *n, const NodeList &left, c
   for(UINT i = 0; i < left.size(); i++) {
     const SyntaxNode *leftexpr        = left[i];
     const SyntaxNode *rightexpr       = right[i];
-    SelectSymbolInfo *leftSymbolInfo  = NULL;
-    SelectSymbolInfo *rightSymbolInfo = NULL;
+    SelectSymbolInfo *leftSymbolInfo  = nullptr;
+    SelectSymbolInfo *rightSymbolInfo = nullptr;
     switch(leftexpr->token()) {
     case NAME:
     case DOT :
@@ -736,8 +736,8 @@ void FromTable::findInEqualPredicates(const SyntaxNode *n, const NodeList &left,
   for(UINT i = 0; i < left.size() && (contleft || contright); i++) {
     const SyntaxNode *leftexpr        = left[i];
     const SyntaxNode *rightexpr       = right[i];
-    SelectSymbolInfo *leftSymbolInfo  = NULL;
-    SelectSymbolInfo *rightSymbolInfo = NULL;
+    SelectSymbolInfo *leftSymbolInfo  = nullptr;
+    SelectSymbolInfo *rightSymbolInfo = nullptr;
     switch(leftexpr->token()) {
     case NAME:
     case DOT :
@@ -745,7 +745,7 @@ void FromTable::findInEqualPredicates(const SyntaxNode *n, const NodeList &left,
         leftSymbolInfo = m_belongsTo.getInfo(leftexpr);
         if(&leftSymbolInfo->m_fromTable != this) {
           contleft       = false;
-          leftSymbolInfo = NULL;
+          leftSymbolInfo = nullptr;
         }
       }
       break;
@@ -761,7 +761,7 @@ void FromTable::findInEqualPredicates(const SyntaxNode *n, const NodeList &left,
         rightSymbolInfo = m_belongsTo.getInfo(rightexpr);
         if(&rightSymbolInfo->m_fromTable != this) {
           contright       = false;
-          rightSymbolInfo = NULL;
+          rightSymbolInfo = nullptr;
         }
       }
       break;
@@ -925,7 +925,7 @@ void FromTable::findTableSelectivity(const SyntaxNode *n, double &indexSelectivi
 void SelectStmt::statementSelectivity(double &indexSelectivity, double &selectivity) {
   indexSelectivity = 1;
   selectivity      = 1;
-  if(m_whereClause != NULL) {
+  if(m_whereClause != nullptr) {
     for(UINT i = 0; i < m_fromTable.size(); i++) {
       FromTable *table = m_fromTable[i];
       double tmpinxsel,tmpsel;
@@ -1446,7 +1446,7 @@ void SelectStmt::findJoinSequence() {
   for(i = 0; i < m_fromTable.size(); i++) {
     if(m_fromTable[i]->getNumberOfUsedColumns() == 0 && !m_fromTable[i]->m_countAggr) {
       delete m_fromTable[i];
-      m_fromTable[i] = NULL;
+      m_fromTable[i] = nullptr;
       continue;
     }
     else
@@ -1526,8 +1526,8 @@ void SelectStmt::findJoinSequence() {
 }
 
 bool SelectStmt::isEmptySelect() const {
-  return ((m_whereClause  != NULL) && (m_whereClause->token()  == NUMBER) && (m_whereClause->number()  < 1))
-      || ((m_havingClause != NULL) && (m_havingClause->token() == NUMBER) && (m_havingClause->number() < 1));
+  return ((m_whereClause  != nullptr) && (m_whereClause->token()  == NUMBER) && (m_whereClause->number()  < 1))
+      || ((m_havingClause != nullptr) && (m_havingClause->token() == NUMBER) && (m_havingClause->number() < 1));
 }
 
 bool SelectSetOperator::isEmptySelect() const {
@@ -1563,7 +1563,7 @@ KeyPredicatesHashMap::KeyPredicatesHashMap()
 }
 
 void SelectStmt::reduceByKeyPredicates() {
-  if(m_whereClause == NULL || m_whereClause->token() == NUMBER) return;
+  if(m_whereClause == nullptr || m_whereClause->token() == NUMBER) return;
   KeyPredicatesHashMap hash;
   size_t i;
   for(i = 0; i < m_fromTable.size(); i++) {

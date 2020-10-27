@@ -21,7 +21,7 @@ ImageSettings::ImageSettings() {
 }
 
 CMakeGifDoc::CMakeGifDoc() {
-  m_gif      = NULL;
+  m_gif      = nullptr;
   setDocName();
   m_rawPrArray.addPropertyChangeListener(      this);
   m_scaledPrArray.addPropertyChangeListener(   this);
@@ -82,7 +82,7 @@ static int writeGifStreamFunction(GifFileType *gf, const GifByteType *buffer, in
 
 static String gifErrorCodeToString(int errorCode) {
   const char *errorMsg = GifErrorString(errorCode);
-  if(errorMsg == NULL) {
+  if(errorMsg == nullptr) {
     return _T("No error");
   } else {
     return errorMsg;
@@ -101,7 +101,7 @@ static void throwGifErrorCode(int errorCode, const TCHAR *fileName, int line) {
 static GifFileType *loadGif(ByteInputStream &in) {
   int error;
   GifFileType *gf = DGifOpen(&in, readGifStreamFunction, &error);
-  if(gf == NULL) {
+  if(gf == nullptr) {
     THROWGIFERROR(error);
   }
   try {
@@ -118,10 +118,10 @@ static GifFileType *loadGif(ByteInputStream &in) {
 static void saveGif(ByteOutputStream &out, GifFileType *gf) {
   int error;
 
-  GifFileType *gifOut = NULL;
+  GifFileType *gifOut = nullptr;
   try {
     gifOut = EGifOpen(&out, writeGifStreamFunction, &error);
-    if(gifOut == NULL) {
+    if(gifOut == nullptr) {
       THROWGIFERROR(error);
     }
     gifOut->SWidth           = gf->SWidth;
@@ -144,12 +144,12 @@ static void saveGif(ByteOutputStream &out, GifFileType *gf) {
       THROWGIFERROR(gifOut->Error);
     }
   } catch(Exception e) {
-    if(gifOut != NULL) {
+    if(gifOut != nullptr) {
       EGifCloseFile(gifOut, &error);
     }
     throw e;
   } catch(...) {
-    if(gifOut != NULL) {
+    if(gifOut != nullptr) {
       EGifCloseFile(gifOut, &error);
     }
     throw;
@@ -174,7 +174,7 @@ void CMakeGifDoc::loadGif(const String &fileName) {
 }
 
 void CMakeGifDoc::saveGif(const String &fileName) {
-  if(m_gif == NULL) {
+  if(m_gif == nullptr) {
     return;
   }
   ::saveGif(ByteOutputFile(fileName), m_gif);
@@ -185,7 +185,7 @@ void CMakeGifDoc::saveGif(const String &fileName) {
 void CMakeGifDoc::closeGif() {
   if(hasGifFile()) {
     deallocateGif(m_gif);
-    m_gif = NULL;
+    m_gif = nullptr;
     setDocName();
     updateTimestamp();
   }

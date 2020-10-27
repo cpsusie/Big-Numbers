@@ -8,7 +8,7 @@ BoardConfig        Board::s_bc;
 BoardConfig        Board::s_savedBoard;
 int                Board::s_zobristIndex[1024];                                  // hash-index translation table
 int                Board::s_zobristKey[  1024];                                  // hash-key   translation table
-HashElement       *Board::s_hashMap     = NULL;                                  // hash table, MAPSIZE entries
+HashElement       *Board::s_hashMap     = nullptr;                                  // hash table, MAPSIZE entries
 int                Board::s_maxDepth    = 30;                                    // Maximum depth of the search
 Move               Board::s_bestMove;
 Move               Board::s_usableMove;
@@ -81,7 +81,7 @@ static const char _bishopSteps[]  = {-15, 15,-17, 17, 0                 }; // B
 static const char _rookSteps[]    = { -1,  1,-16, 16, 0                 }; // R
 
 const char *Board::s_stepList[] = {
-  NULL
+  nullptr
  ,_wpSteps
  ,_bpSteps
  ,_knightSteps
@@ -96,7 +96,7 @@ static const char legalPromotions[5] = { 0, QUEEN, KNIGHT, ROOK, BISHOP };
 #define FIELDSCORE(m) (BoardConfig::getFieldValue(m.d.m_to)-BoardConfig::getFieldValue(m.d.m_from))
 
 void Board::initEngine() {
-  if(s_hashMap == NULL) {
+  if(s_hashMap == nullptr) {
     s_hashMap = new HashElement[MAPSIZE];
   }
 
@@ -261,7 +261,7 @@ int Board::negamax(int side, int alfa, int beta, int e, int EP, char request, in
   link                         = s_hashMap + ((s_bc.m_hashCode.m_index+side*EP)&(MAPSIZE-1));                                // return score
   HashElement   &a             = *link;                                                                                      // lookup position in hash table
   int            bestScore     = a.m_score;
-  HashElement   *bestLink      = a.m_next, *tmpLink = NULL;
+  HashElement   *bestLink      = a.m_next, *tmpLink = nullptr;
   const HashCode savedHashCode = s_bc.m_hashCode;
   int            depth, capturedMaterial;
   FastMove       bestMove;

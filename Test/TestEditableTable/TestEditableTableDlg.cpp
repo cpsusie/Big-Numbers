@@ -32,7 +32,7 @@ void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestEditableTableDlg::CTestEditableTableDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestEditableTableDlg::IDD, pParent) {
+CTestEditableTableDlg::CTestEditableTableDlg(CWnd *pParent /*=nullptr*/) : CDialog(CTestEditableTableDlg::IDD, pParent) {
     m_someText = "JESPER";
     m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
@@ -70,7 +70,7 @@ BOOL CTestEditableTableDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -198,7 +198,7 @@ void *TestTableModel::getValueAt(UINT row, UINT column) {
   case 6 : return &e.m_bool;
   case 7 : return &e.m_iComboValue;
   default: throwInvalidArgumentException(__TFUNCTION__, _T("Invalid column:%d"), column);
-           return NULL;
+           return nullptr;
   }
 }
 
@@ -223,7 +223,7 @@ static const TCHAR *comboValues[] = {
  ,_T("Får")
  ,_T("Tyr")
  ,_T("Kylling med lang tekst efter")
- ,NULL
+ ,nullptr
 };
 
 const StringArray TestTableModel::getStrComboStringArray(UINT column) {

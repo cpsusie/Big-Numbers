@@ -9,12 +9,12 @@
 BigRealTestClass::~BigRealTestClass() {
   if(m_digitPool) {
     BigRealResourcePool::releaseDigitPool(m_digitPool);
-    m_digitPool = NULL;
+    m_digitPool = nullptr;
   }
 }
 
 DigitPool *BigRealTestClass::getDigitPool() {
-  if(m_digitPool == NULL) {
+  if(m_digitPool == nullptr) {
     m_digitPool = BigRealResourcePool::fetchDigitPool();
   }
   return m_digitPool;
@@ -944,19 +944,19 @@ void BigRealTestClass::testFractionate() {
     _tprintf(_T("intPart :%s\n"), toString(intPart).cstr());
     _tprintf(_T("fracpart:%s\n"), toString(fraction).cstr());
 
-    x.fractionate(&intPart, NULL);
+    x.fractionate(&intPart, nullptr);
     _tprintf(_T("intPart1:%s\n"), toString(intPart).cstr());
 
-    x.fractionate(NULL, &fraction);
+    x.fractionate(nullptr, &fraction);
     _tprintf(_T("fracpart1:%s\n"), toString(fraction).cstr());
 
     intPart  = BigInt(_T("20202020202020202020202020202"));
     fraction = BigReal(_T("10101010101010101010101010101.10101010101"));
 
-    x.fractionate(&intPart, NULL);
+    x.fractionate(&intPart, nullptr);
     _tprintf(_T("intPart2:%s\n"), toString(intPart).cstr());
 
-    x.fractionate(NULL, &fraction);
+    x.fractionate(nullptr, &fraction);
     _tprintf(_T("fracpart2:%s\n"), toString(fraction).cstr());
   }
 }

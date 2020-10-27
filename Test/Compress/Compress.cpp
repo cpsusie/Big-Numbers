@@ -29,7 +29,7 @@ typedef enum {
 } Command;
 
 int main(int argc, char **argv) {
-  Compressor *compressor = NULL;
+  Compressor *compressor = nullptr;
   int quality = 3;
 
   char *cp;
@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
     }
   }
 
-  if(compressor == NULL) {
+  if(compressor == nullptr) {
     compressor = new AdaptivHuffmanTree();
   }
 

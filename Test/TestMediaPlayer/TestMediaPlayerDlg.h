@@ -9,7 +9,7 @@ private:
     SimpleLayoutManager m_layoutManager;
     CMediaplayer        m_player;
 public:
-    CTestMediaPlayerDlg(CWnd *pParent = NULL);
+    CTestMediaPlayerDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_TESTMEDIAPLAYER_DIALOG };
 

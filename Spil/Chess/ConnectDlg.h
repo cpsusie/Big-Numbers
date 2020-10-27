@@ -15,7 +15,7 @@ private:
     void   stopTimer();
     void   makeHandshake();
 public:
-    CConnectDlg(Game &game, CWnd *pParent = NULL);
+    CConnectDlg(Game &game, CWnd *pParent = nullptr);
 
   const SocketChannel &getSocketChannel() {
     return m_channel;

@@ -8,14 +8,14 @@ MBCalculator::MBCalculator(CalculatorPool *pool, UINT id)
 , m_mbc(pool->getMBContainer())
 , m_wakeup(0)
 , m_pendingMask(pool->getPendingMask(id))
-, m_orbitPoints(NULL)
+, m_orbitPoints(nullptr)
 , m_doneCount(0)
 , m_startTime(0)
 , m_threadTime(0)
 {
   setWithOrbit();
 #if defined(SAVE_CALCULATORINFO)
-  m_info = NULL;
+  m_info = nullptr;
 #endif
 }
 

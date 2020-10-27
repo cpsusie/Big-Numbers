@@ -68,9 +68,9 @@ void Database::dataFileDump(const String &tableName, FILE *f) {
 
 void Database::KeyFiledump(const String &indexName, FILE *f) {
   const IndexDefinition &indexDef = getIndexDefinition(indexName);
-  KeyFile keyFile( indexDef.m_fileName.cstr(), DBFMODE_READONLY, NULL);
+  KeyFile keyFile( indexDef.m_fileName.cstr(), DBFMODE_READONLY, nullptr);
   KeyFileDefinition keydef(keyFile);
-  KeyCursor cursor(keyFile, RELOP_TRUE, NULL, 0, RELOP_TRUE, NULL, 0, SORT_ASCENDING);
+  KeyCursor cursor(keyFile, RELOP_TRUE, nullptr, 0, RELOP_TRUE, nullptr, 0, SORT_ASCENDING);
   while(cursor.hasNext()) {
     KeyType key;
     cursor.next(key);

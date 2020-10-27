@@ -50,7 +50,7 @@ BOOL CGetresourcesDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if (!strAboutMenu.IsEmpty()) {
@@ -249,13 +249,13 @@ ResourceImage::ResourceImage(const ResourceName &rn) {
                        ,0,0
                        ,LR_VGACOLOR);
 
-  if(m_image == NULL) {
+  if(m_image == nullptr) {
     throwException(_T("ResourceImage cannot be constructed. LoadImage failed. %s"), getLastErrorText().cstr());
   }
 }
 
 ResourceImage::~ResourceImage() {
-  if(m_image == NULL) {
+  if(m_image == nullptr) {
     return;
   }
   switch(m_type) {
@@ -324,7 +324,7 @@ void CGetresourcesDlg::OnFileOpenmodule() {
   }
 
   HMODULE module = LoadLibrary(dlg.m_ofn.lpstrFile);
-  if(module == NULL) {
+  if(module == nullptr) {
     showWarning(getLastErrorText());
     return;
   }

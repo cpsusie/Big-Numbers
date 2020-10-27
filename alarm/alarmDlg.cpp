@@ -133,7 +133,7 @@ BOOL CAlarmDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -288,7 +288,7 @@ void CAlarmDlg::startTimer(unsigned int timerIndex, int waitSeconds) {
   if(m_timerIsRunning[timerIndex]) {
     stopTimer(timerIndex);
   }
-  if(SetTimer(timerIndex,1000 * waitSeconds,NULL)) {
+  if(SetTimer(timerIndex,1000 * waitSeconds,nullptr)) {
     m_timerIsRunning[timerIndex] = true;
   } else {
     showWarning(_T("Cannot install timer"));

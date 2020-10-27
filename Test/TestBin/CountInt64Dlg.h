@@ -37,7 +37,7 @@ private:
   bool               m_editMode;
   CSize              m_staticTextWinSize;
 public:
-  CCountInt64Dlg(StartCommand command, CWnd *pParent = NULL);
+  CCountInt64Dlg(StartCommand command, CWnd *pParent = nullptr);
   bool           m_timerIsRunning;
   UINT           m_timerInterval;
   CounterThread *m_counterThread;

@@ -74,7 +74,7 @@ void Debugger::handlePropertyChanged(const PropertyContainer *source, int id, co
   }
 
   RemesPropertyData prop(*(const Remes*)source, id, oldValue, newValue);
-  notifyPropertyChanged(REMES_PROPERTY, NULL, &prop);
+  notifyPropertyChanged(REMES_PROPERTY, nullptr, &prop);
   if(m_flags) {
     switch(id) {
     case REMES_STATE:

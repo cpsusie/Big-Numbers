@@ -50,8 +50,8 @@
 ExternEngine::ExternEngine(Player player, const String &path)
 : m_player(player)
 , m_desc(path)
-, m_inputThread( NULL)
-, m_moveReceiver(NULL)
+, m_inputThread( nullptr)
+, m_moveReceiver(nullptr)
 , m_stateFlags(0)
 , m_threadIsStarted(0)
 , m_callLevel(0)
@@ -86,7 +86,7 @@ public:
 void ExternEngine::start(AbstractMoveReceiver *mr) {
   ENTERFUNC();
   try {
-    __super::start(!Options::getOptions().getShowEngineConsole(), m_desc.getPath(), NULL);
+    __super::start(!Options::getOptions().getShowEngineConsole(), m_desc.getPath(), nullptr);
     m_moveReceiver = mr;
     m_inputThread  = new RedirectingInputThread(getInput()); TRACE_NEW(m_inputThread);
     sendUCI();
@@ -163,8 +163,8 @@ void ExternEngine::deleteInputThread() {
     } else {
       verbose(_T("Cannot kill inputthread\n"));
     }
-    m_inputThread = NULL;
-    DEBUGMSG(_T("InputThread set to NULL"));
+    m_inputThread = nullptr;
+    DEBUGMSG(_T("InputThread set to nullptr"));
   }
   LEAVEFUNC();
 }
@@ -378,7 +378,7 @@ void ExternEngine::setParameters(const EngineOptionValueArray &valueArray) {
 void ExternEngine::setParameterValue(const EngineOptionValue &v) {
   ENTERFUNC();
   const EngineOptionDescription *optionDesc = m_optionArray.findOptionByName(v.getName());
-  if(optionDesc == NULL) {
+  if(optionDesc == nullptr) {
     showWarning(_T("Option %s not found for engine %s"), v.getName().cstr(), m_desc.getName().cstr());
     LEAVEFUNC();
     return;
@@ -523,7 +523,7 @@ String ExternEngine::getBeautifiedVariant(const String &pv, UINT variantLength) 
 // public
 String ExternEngine::flagsToString() const {
   String result;
-  const TCHAR *delim = NULL;
+  const TCHAR *delim = nullptr;
 
 #define addStr(s) {                              \
   if(delim) result+=delim; else delim=_T(" ");   \

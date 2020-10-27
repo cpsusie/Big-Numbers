@@ -70,7 +70,7 @@ namespace TestExpression {
 #define COND_MKFOPEN(...) MKFOPEN(__VA_ARGS__)
 #define FPRINTF(...) _ftprintf(__VA_ARGS__)
 #else
-#define COND_MKFOPEN(...) NULL
+#define COND_MKFOPEN(...) nullptr
 #define FPRINTF(...)
 #endif // GENERATE_LISTFILES
 
@@ -87,7 +87,7 @@ namespace TestExpression {
   FILE *openPowListFile(        int testCase) { return COND_MKFOPEN(makeFileName(testCase, _T("pow" )                     ), _T("w")); }
   FILE *openRootListFile(       int testCase) { return COND_MKFOPEN(makeFileName(testCase, _T("root")                     ), _T("w")); }
 
-#define FCLOSE(f) { if(f) { fclose(f); f=NULL; } }
+#define FCLOSE(f) { if(f) { fclose(f); f=nullptr; } }
 
   typedef enum {
     CMP_EQUAL

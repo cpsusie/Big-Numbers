@@ -52,7 +52,7 @@ class MoveWithResult {
 public:
   Move           m_move;
   PositionStatus m_status;
-  MoveWithResult() : m_move(NULL), m_status(0) {
+  MoveWithResult() : m_move(nullptr), m_status(0) {
   }
   MoveWithResult(Move move, PositionStatus status) : m_move(move), m_status(status) {
   }
@@ -146,7 +146,7 @@ public:
   }
 
   bool isLegalMarks(PositionSet markedPositions) const {
-    return findMove(markedPositions) != NULL;
+    return findMove(markedPositions) != nullptr;
   }
 
   void setShowNumbers(bool show) {

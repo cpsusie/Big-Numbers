@@ -104,7 +104,7 @@ OpeningLibrary ChessPlayer::s_openingLibrary;
 ChessPlayer::ChessPlayer(Player player) : m_player(player) {
   m_state      = CPS_IDLE;
   m_callLevel  = 0;
-  m_moveFinder = NULL;
+  m_moveFinder = nullptr;
 }
 
 // public
@@ -240,7 +240,7 @@ void ChessPlayer::handlePropertyChanged(const PropertyContainer *source, int id,
   ENTERFUNC();
   if(id == TRACEWINDOW_ACTIVE) {
     m_lock.wait();
-    if(m_moveFinder != NULL) {
+    if(m_moveFinder != nullptr) {
       const bool verbose = *(const bool*)newValue;
       m_moveFinder->setVerbose(verbose);
     }
@@ -340,7 +340,7 @@ void ChessPlayer::dohandleRequestFindMove(const RequestParamFindMove &param) {
   if(getOptions().isOpeningLibraryEnabled() && !isRemote()) {
     const PrintableMove libMove = getOpeningLibrary().findLibraryMove(param.getGame(), param.isVerbose());
     if(libMove.isMove()) {
-      setMoveFinder(NULL);
+      setMoveFinder(nullptr);
       m_lock.wait();
       if(getState() == CPS_PREPARESEARCH) {
         setState(CPS_BUSY);
@@ -359,7 +359,7 @@ void ChessPlayer::dohandleRequestFindMove(const RequestParamFindMove &param) {
 
   m_lock.wait();
   try {
-    if(m_moveFinder != NULL) {
+    if(m_moveFinder != nullptr) {
       if(getState() == CPS_PREPARESEARCH) {
         setState(CPS_BUSY);
         m_moveFinder->findBestMove(param);
@@ -475,7 +475,7 @@ void ChessPlayer::handleRequestShowMessage(const RequestParamShowMessage &param)
 // private
 void ChessPlayer::handleRequestReset() {
   ENTERFUNC();
-  setMoveFinder(NULL);
+  setMoveFinder(nullptr);
   setProperty(CPP_MESSAGETEXT, m_messageText, EMPTYSTRING);
   setState(CPS_IDLE);
   LEAVEFUNC();
@@ -553,7 +553,7 @@ const OpeningLibrary &ChessPlayer::getOpeningLibrary() { // static
 
 // private
 bool ChessPlayer::isNewMoveFinderNeeded(const RequestParamFindMove &param) const {
-  if(m_moveFinder == NULL) {
+  if(m_moveFinder == nullptr) {
     return true;
   }
   if(isRemote()) {
@@ -570,7 +570,7 @@ bool ChessPlayer::isNewMoveFinderNeeded(const RequestParamFindMove &param) const
 
   case TABLEBASE_POSITION    :
     { EndGameTablebase *tablebase = findMatchingTablebase(param.getGame());
-      if(tablebase == NULL) {
+      if(tablebase == nullptr) {
         return !isRightNormalPlayMoveFinder(param);
       } else {
         return !isRightTablebaseMoveFinder(tablebase);
@@ -612,11 +612,11 @@ bool ChessPlayer::isRightTablebaseMoveFinder(EndGameTablebase *tablebase) const 
 // private
 EndGameTablebase *ChessPlayer::findMatchingTablebase(const Game &g) const {
   if(!getOptions().isEndGameTablebaseEnabled()) {
-    return NULL;
+    return nullptr;
   }
   bool swapPlayers;
   EndGameTablebase *db = EndGameTablebase::getInstanceBySignature(g.getPositionSignature(), swapPlayers);
-  return (db && (db->tbFileExist(DECOMPRESSEDTABLEBASE) || db->tbFileExist(COMPRESSEDTABLEBASE))) ? db : NULL;
+  return (db && (db->tbFileExist(DECOMPRESSEDTABLEBASE) || db->tbFileExist(COMPRESSEDTABLEBASE))) ? db : nullptr;
 }
 
 void ChessPlayer::allocateRemoteMoveFinder() {
@@ -636,7 +636,7 @@ void ChessPlayer::allocateMoveFinder(const RequestParamFindMove &param) {
 
   case TABLEBASE_POSITION:
     { EndGameTablebase *tablebase = findMatchingTablebase(param.getGame());
-      if(tablebase == NULL) {
+      if(tablebase == nullptr) {
         setMoveFinder(newMoveFinderNormalPlay(param));
       } else {
         AbstractMoveFinder *amf = new MoveFinderEndGame(getPlayer(), m_inputQueue, tablebase); TRACE_NEW(amf);
@@ -724,8 +724,8 @@ void ChessPlayer::setMoveFinder(AbstractMoveFinder *moveFinder) {
   if(moveFinder != m_moveFinder) {
 
     DEBUGMSG(_T("Change movefinder(%s->%s)")
-            ,m_moveFinder?m_moveFinder->getName().cstr():_T("NULL")
-            ,moveFinder  ?  moveFinder->getName().cstr():_T("NULL"));
+            ,m_moveFinder?m_moveFinder->getName().cstr():_T("nullptr")
+            ,moveFinder  ?  moveFinder->getName().cstr():_T("nullptr"));
 
     const AbstractMoveFinder *old = m_moveFinder;
     setProperty(CPP_MOVEFINDER, m_moveFinder, moveFinder);
@@ -755,7 +755,7 @@ String ChessPlayer::toString(bool detailed) const {
                                          ).cstr());
     mfStr  += indentString(stateStr, 2);
   } else {
-    mfStr = _T("NULL");
+    mfStr = _T("nullptr");
   }
   result += indentString(format(_T("Movefinder      : %s"), mfStr.cstr()),2);
 

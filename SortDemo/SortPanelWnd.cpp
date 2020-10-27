@@ -21,7 +21,7 @@ SortPanelWnd::SortPanelWnd(CSortDemoDlg *parent, int methodId)
 , m_modifiedSet(parent->getInitParameters().m_elementCount)
 , m_resume(0)
 {
-  m_sortJob     = NULL;
+  m_sortJob     = nullptr;
   const CRect r(0,0,100,100);
   BOOL ok = Create( EMPTYSTRING, WS_VISIBLE|WS_CHILD|SS_WHITERECT, r, parent, parent->getNextCtrlId());
   if(!ok) {

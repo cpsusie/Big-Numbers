@@ -60,7 +60,7 @@ private:
   void               autoClickStreamOut();
   void               markLabel(int id, bool marked);
 public:
-  CTestIntDlg(CWnd *pParent = NULL);
+  CTestIntDlg(CWnd *pParent = nullptr);
   enum { IDD = IDD_TESTINT_DIALOG };
 
 protected:

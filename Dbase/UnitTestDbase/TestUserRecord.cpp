@@ -247,7 +247,7 @@ namespace UnitTestUserRecord {
       }
       KeyType key;
       tmp.genKey(key,tableIndex.getIndexNo(),DB_NULLADDR);
-      if(tableIndex.m_keyMap->get(key) != NULL) {
+      if(tableIndex.m_keyMap->get(key) != nullptr) {
         return true;
       }
     }
@@ -403,7 +403,7 @@ namespace UnitTestUserRecord {
       cursorParam.m_dir             = SORT_ASCENDING;
       cursorParam.m_fieldSet        = getTableRecord().getAllFields();
 
-      TableCursor cursor(m_db,cursorParam,NULL,NULL);
+      TableCursor cursor(m_db,cursorParam,nullptr,nullptr);
       Iterator<KeyType> it = tableIndex.getIterator();
       Tuple dbTuple((UINT)cursorParam.m_fieldSet.size());
 

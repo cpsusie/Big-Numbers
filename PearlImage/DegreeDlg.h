@@ -2,7 +2,7 @@
 
 class CDegreeDlg : public CDialog {
 public:
-  CDegreeDlg(double degree, CWnd *pParent = NULL);
+  CDegreeDlg(double degree, CWnd *pParent = nullptr);
 
   double getDegree() const {
     return m_degree;

@@ -427,8 +427,8 @@ CWinDiffDoc::CWinDiffDoc() {
   initOptions(getOptions());
   TCHAR **argv = __targv;
   argv++;
-  TCHAR *f1 = *argv ? *(argv++) : NULL;
-  TCHAR *f2 = *argv ? *(argv++) : NULL;
+  TCHAR *f1 = *argv ? *(argv++) : nullptr;
+  TCHAR *f2 = *argv ? *(argv++) : nullptr;
   if(f1 && f2) {
     setDocs(FileNameSplitter(f1).getAbsolutePath(),FileNameSplitter(f2).getAbsolutePath());
   } else if(f1) {
@@ -441,8 +441,8 @@ void CWinDiffDoc::initOptions(const Options &options) {
   setIgnoreCase(      options.m_ignoreCase                                    , false);
   setIgnoreStrings(   options.m_ignoreStrings                                 , false);
   setIgnoreComments(  options.m_ignoreComments                                , false);
-  setFileFormat(      options.m_ignoreColumns ? &options.m_fileFormat  : NULL , false);
-  setRegexFilter(     options.m_ignoreRegex   ? &options.m_regexFilter : NULL , false);
+  setFileFormat(      options.m_ignoreColumns ? &options.m_fileFormat  : nullptr , false);
+  setRegexFilter(     options.m_ignoreRegex   ? &options.m_regexFilter : nullptr , false);
   setStripComments(   options.m_stripComments                                 , false);
   setViewWhiteSpace(  options.m_viewWhiteSpace                                , false);
   setTabSize(         options.m_tabSize                                       , false);
@@ -532,7 +532,7 @@ void CWinDiffDoc::updateDiffDoc(bool recompare) {
 
   CWnd *mainWindow = theApp.GetMainWnd();
   if(mainWindow && !mainWindow->IsWindowVisible()) {
-    mainWindow = NULL;
+    mainWindow = nullptr;
   }
   ProgressWindow(mainWindow, job, 1000, 200);
 }
@@ -605,7 +605,7 @@ bool CWinDiffDoc::setFileFormat(const FileFormat *colparam, bool recomp) {
   if(changed && recomp) {
     recompare();
   }
-  getOptions().m_ignoreColumns = (colparam != NULL);
+  getOptions().m_ignoreColumns = (colparam != nullptr);
   return changed;
 }
 
@@ -614,7 +614,7 @@ bool CWinDiffDoc::setRegexFilter(const RegexFilter *filter, bool recomp) {
   if(changed && recomp) {
     recompare();
   }
-  getOptions().m_ignoreRegex = (filter != NULL);
+  getOptions().m_ignoreRegex = (filter != nullptr);
   return changed;
 }
 

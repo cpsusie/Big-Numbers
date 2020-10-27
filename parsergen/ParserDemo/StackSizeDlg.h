@@ -2,7 +2,7 @@
 
 class StackSizeDlg : public CDialog {
 public:
-    StackSizeDlg(int oldSize, CWnd *pParent = NULL);
+    StackSizeDlg(int oldSize, CWnd *pParent = nullptr);
 
     enum { IDD = IDD_DIALOGSTACKSIZE };
 

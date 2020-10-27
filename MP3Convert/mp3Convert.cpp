@@ -144,7 +144,7 @@ MobileMediaCollection::MobileMediaCollection(const StringArray &fileNames, UINT 
 }
 
 MobileMediaCollection::MobileMediaCollection(const String &fileName, UINT flags) : m_flags(flags) {
-  FILE *input = NULL;
+  FILE *input = nullptr;
   try {
     input = fileName.isEmpty() ? stdin : FOPEN(fileName, _T("r"));
     String line;
@@ -153,12 +153,12 @@ MobileMediaCollection::MobileMediaCollection(const String &fileName, UINT flags)
     }
     if(input && (input != stdin)) {
       fclose(input);
-      input = NULL;
+      input = nullptr;
     }
   } catch(...) {
     if(input && (input != stdin)) {
       fclose(input);
-      input = NULL;
+      input = nullptr;
     }
     throw;
   }
@@ -306,7 +306,7 @@ static StringArray findFiles(TCHAR **argv, bool recurse) {
 }
 
 static StringArray readFileNames(const String &fileName) {
-  FILE *input = NULL;
+  FILE *input = nullptr;
   try {
     input = fileName.isEmpty() ? stdin : FOPEN(fileName, _T("r"));
     String      line;
@@ -316,14 +316,14 @@ static StringArray readFileNames(const String &fileName) {
     }
     if(input && (input != stdin)) {
       fclose(input);
-      input = NULL;
+      input = nullptr;
     }
     result.sort(alphasort);
     return result;
   } catch(...) {
     if(input && (input != stdin)) {
       fclose(input);
-      input = NULL;
+      input = nullptr;
     }
     throw;
   }
@@ -366,7 +366,7 @@ int _tmain(int argc, TCHAR **argv) {
   Command                   cmd               = CMD_UNKNOWN;
   bool                      recurse           = false;
   bool                      fileIsNamesOnly   = false;
-  const TCHAR              *fileName          = NULL;
+  const TCHAR              *fileName          = nullptr;
   String                    dstDir;
   UINT                      flags             = PROCESS_NONCONVERTED | LIST_MOBILETAGS;
   MobileMediaFileComparator comparator;
@@ -480,7 +480,7 @@ int _tmain(int argc, TCHAR **argv) {
   try {
     StringArray fileNames;
     bool        allDone = false;
-    if(fileName == NULL) {
+    if(fileName == nullptr) {
       fileNames = findFiles(argv, recurse);
     } else if(fileIsNamesOnly) {
       fileNames = readFileNames(fileName);

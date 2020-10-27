@@ -30,7 +30,7 @@ static void copyAndExit(const String &to, const String &md5Password) {
     }
   }
 
-  _tspawnl(P_NOWAIT, to.cstr(), to.cstr(), _T("-m"), getModuleFileName().cstr(), NULL);
+  _tspawnl(P_NOWAIT, to.cstr(), to.cstr(), _T("-m"), getModuleFileName().cstr(), nullptr);
   exit(0);
 }
 
@@ -59,7 +59,7 @@ BOOL CRegneTesterApp::InitInstance() {
           }
           if(deleteDone) {
             showInformation(_T("Indstillinger gemt"));
-            _tspawnl(P_NOWAIT, getModuleFileName().cstr(), getModuleFileName().cstr(), NULL);
+            _tspawnl(P_NOWAIT, getModuleFileName().cstr(), getModuleFileName().cstr(), nullptr);
           }
           exit(0);
         }

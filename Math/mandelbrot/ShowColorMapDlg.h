@@ -7,7 +7,7 @@ private:
     SimpleLayoutManager m_layoutManager;
     const ColorMap     &m_colorMap;
 public:
-    CShowColorMapDlg(const ColorMap &colorMap, CWnd *pParent = NULL);
+    CShowColorMapDlg(const ColorMap &colorMap, CWnd *pParent = nullptr);
 
     enum { IDD = IDD_SHOWCOLORMAP_DIALOG };
 

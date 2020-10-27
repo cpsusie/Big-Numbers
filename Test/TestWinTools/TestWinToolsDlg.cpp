@@ -44,7 +44,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-CTestWinToolsDlg::CTestWinToolsDlg(CWnd *pParent /*=NULL*/)
+CTestWinToolsDlg::CTestWinToolsDlg(CWnd *pParent /*=nullptr*/)
     : CDialogEx(IDD_TESTWINTOOLS_DIALOG, pParent)
 {
     m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
@@ -79,7 +79,7 @@ BOOL CTestWinToolsDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if (pSysMenu != NULL)   {
+  if (pSysMenu != nullptr)   {
     BOOL bNameValid;
     CString strAboutMenu;
     bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX);

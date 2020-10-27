@@ -207,7 +207,7 @@ MoveGenerator &Game::getBackMoveGenerator() const {
 
 void Game::setEndGameKeyDefinition() {
   const EndGameTablebase *t = EndGameTablebase::getInstanceBySignature(getPositionSignature(), m_swapPlayers);
-  m_keydef = t ? &t->getKeyDefinition() : NULL;
+  m_keydef = t ? &t->getKeyDefinition() : nullptr;
 }
 
 void Game::setEndGameKeyDefinition(const EndGameKeyDefinition &keydef) {
@@ -534,10 +534,10 @@ bool BackMoveGenerator::isPromotePosition(int pos) const {
   }
   PRINTF(_T("Check if %s is promoteField\n"), getFieldName(pos));
   bool result;
-  if(m_game.m_keydef == NULL) { // No symmetric transformation or swapping of players
+  if(m_game.m_keydef == nullptr) { // No symmetric transformation or swapping of players
     result = GETROW(pos) == LASTROW;
   } else {
-    if(s_hfs.m_promoteFieldSet == NULL) { // lazy evaluering
+    if(s_hfs.m_promoteFieldSet == nullptr) { // lazy evaluering
       findPromoteFieldSet();
     }
     __assume(s_hfs.m_promoteFieldSet);
@@ -548,7 +548,7 @@ bool BackMoveGenerator::isPromotePosition(int pos) const {
 }
 
 void BackMoveGenerator::resetPromoteFieldSet(int kingFrom) const {
-  s_hfs.m_promoteFieldSet = NULL;
+  s_hfs.m_promoteFieldSet = nullptr;
   s_hfs.m_kingSourceField = kingFrom;
 }
 
@@ -587,7 +587,7 @@ void BackMoveGenerator::invalidPawnPosition(bool firstMove, const Piece *piece) 
 #define SETBACKMOVE(move, piece, dirIndex, moveIndex, from, direction)                            \
 { move.m_type          = NORMALMOVE;                                                              \
   move.m_piece         = piece;                                                                   \
-  move.m_capturedPiece = NULL;                                                                    \
+  move.m_capturedPiece = nullptr;                                                                    \
   move.m_dirIndex      = dirIndex;                                                                \
   move.m_moveIndex     = moveIndex;                                                               \
   move.m_from          = from;                                                                    \
@@ -879,7 +879,7 @@ bool BackMoveGeneratorLDCheck::firstMove(Move &m) const {
   const int kingPos = m_game.m_playerState[PLAYERINTURN].m_king->m_position;
 
   Piece *checkingPiece = findCheckingLDAPiece(kingPos);
-  if(checkingPiece == NULL) {
+  if(checkingPiece == nullptr) {
     throwException(_T("%s:No LDA-piece attacks %s king at %s"), __TFUNCTION__, getPlayerNameEnglish(PLAYERINTURN), getFieldName(kingPos));
   }
   const DirectionArray &da        = checkingPiece->m_moveTable[checkingPiece->m_position];
@@ -1260,7 +1260,7 @@ Piece *BackMoveGeneratorLDCheck::findCheckingLDAPiece(int kingPos) const {
       continue;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 // --------------------------------------------- BackMoveGeneratorSDCheck ------------------------------------------------
@@ -1276,7 +1276,7 @@ bool BackMoveGeneratorSDCheck::firstMove(Move &m) const {
     return false;
   }
   Piece *piece = m_game.m_board[sdaPos];
-  if(piece == NULL) {
+  if(piece == nullptr) {
     return false;
   }
   switch(piece->getType()) {
@@ -1460,7 +1460,7 @@ bool BackMoveGeneratorLDDoubleCheck::firstMove(Move &m) const {
   int            sourceField;
   MoveDirection  direction;
   Piece *piece = findMovedPiece(sourceField, direction);
-  if(piece == NULL) {
+  if(piece == nullptr) {
     return false;
   }
   SETBACKMOVE(m, piece, 0, 0, sourceField, direction);
@@ -1539,7 +1539,7 @@ Piece *BackMoveGeneratorLDDoubleCheck::findMovedPiece(int &sourceField, MoveDire
   if(rcDist > diagDist) {                                                           // Moved piece must be the diagonal-moving piece, ie a bishop
     if((diagPiece->getType() != Bishop)                                             // A queen can't do it
     || enemyState.m_attackTable[diagPiece->m_position].isLDAttackedFromDir(dDir)) { // And we cannot have another enemypiece behind the bishop
-      return NULL;
+      return nullptr;
     }
     switch(playerState.m_kingAttackState) {
     case KING_LD_ATTACKED_FROM_ROW | KING_LD_ATTACKED_FROM_DIAG1:
@@ -1563,13 +1563,13 @@ Piece *BackMoveGeneratorLDDoubleCheck::findMovedPiece(int &sourceField, MoveDire
       break;
     }
     if(!isValidPosition(sourceField) || (Game::getWalkDistance(sourceField, kingPos) >= rcDist)) {
-      return NULL;
+      return nullptr;
     }
     return (Piece*)diagPiece;
   } else if(rcDist < diagDist) {                                                  // Moved piece must be the parallel-moving piece, ie. a rook
     if((rcPiece->getType() != Rook)                                               // A queen can't do it
     || enemyState.m_attackTable[rcPiece->m_position].isLDAttackedFromDir(pDir)) { // And we cannot have another enemypiece behind the rook
-      return NULL;
+      return nullptr;
     }
     switch(playerState.m_kingAttackState) {
     case KING_LD_ATTACKED_FROM_ROW | KING_LD_ATTACKED_FROM_DIAG1:
@@ -1593,11 +1593,11 @@ Piece *BackMoveGeneratorLDDoubleCheck::findMovedPiece(int &sourceField, MoveDire
       break;
     }
     if(!isValidPosition(sourceField) || (Game::getWalkDistance(sourceField, kingPos) >= diagDist)) {
-      return NULL;
+      return nullptr;
     }
     return (Piece*)rcPiece;
   }
-  return NULL; // The very special situation, where the distance to the diagonal- and parallel-attacking piece
+  return nullptr; // The very special situation, where the distance to the diagonal- and parallel-attacking piece
                // are equal can happen in 2 different situations:
                // 1. As shown in "The Chess Mysteries of the Arabian Knights" by Raymond Smullyan:
                // W:Kb3, Ba4. B:Kd1, Rb5, Bd5,c3. This doublecheck must have been given by the black pawn capturing e.p

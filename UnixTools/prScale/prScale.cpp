@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
               fprintf(stderr,"prScale:FactorX=%lf. Must be > 0\n",factor);
               usage();
             }
-            param.m_scale.x = factor;
+            param.m_scale.x() = factor;
             break;
           case 'y':
             if(sscanf(cp+1,"%le",&factor) != 1) {
@@ -57,13 +57,13 @@ int main(int argc, char **argv) {
               fprintf(stderr,"prScale:FactorY=%lf. Must be > 0\n",factor);
               usage();
             }
-            param.m_scale.y = factor;
+            param.m_scale.y() = factor;
             break;
           default:
             if(sscanf(cp+1,"%le",&factor) != 1) {
               usage();
             }
-            param.m_scale.x = param.m_scale.y = factor;
+            param.m_scale.x() = param.m_scale.y() = factor;
             break;
           }
           break;
@@ -85,8 +85,8 @@ int main(int argc, char **argv) {
             usage();
           }
           param.m_toSize = true;
-          param.m_scale.x = width;
-          param.m_scale.y = height;
+          param.m_scale.x() = width;
+          param.m_scale.y() = height;
           break;
         default:
           usage();

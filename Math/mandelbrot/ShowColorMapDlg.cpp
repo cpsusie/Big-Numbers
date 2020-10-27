@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CShowColorMapDlg::CShowColorMapDlg(const ColorMap &colorMap, CWnd *pParent /*=NULL*/)
+CShowColorMapDlg::CShowColorMapDlg(const ColorMap &colorMap, CWnd *pParent /*=nullptr*/)
 : CDialog(CShowColorMapDlg::IDD, pParent)
 , m_colorMap(colorMap)
 {

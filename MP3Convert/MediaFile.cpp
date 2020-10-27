@@ -35,7 +35,7 @@ static EncodedString getStringFieldTextItem(const ID3_Field &field, size_t index
     }
     break;
   }
-  return EncodedString(ID3TE_NONE, NULL, 0);
+  return EncodedString(ID3TE_NONE, nullptr, 0);
 }
 
 static EncodedString getStringFieldText(const ID3_Field &field) {
@@ -56,7 +56,7 @@ static EncodedString getStringFieldText(const ID3_Field &field) {
     }
     break;
   }
-  return EncodedString(ID3TE_NONE, NULL, 0);
+  return EncodedString(ID3TE_NONE, nullptr, 0);
 }
 
 StringField::StringField(const ID3_Field *field)
@@ -189,7 +189,7 @@ const FieldWithData *Frame::findFieldById(ID3_FieldID id) const {
       return &f;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 const FieldWithData *Frame::findFieldByType(ID3_FieldType type) const {
@@ -200,7 +200,7 @@ const FieldWithData *Frame::findFieldByType(ID3_FieldType type) const {
       return &f;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 String Frame::getTextFieldValue() const {
@@ -233,7 +233,7 @@ const Frame *Tag::getFrame(ID3_FrameID id) const {
       return &frame;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 UINT Tag::getFrameCount(const String &sourceURL, flags_t flags) { // static

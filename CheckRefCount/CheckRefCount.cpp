@@ -91,7 +91,7 @@ void PointerMap::handlePointerCommand(Keyword kw, Tokenizer &tok, int lineCount,
   switch(kw) {
   case KNEW:
     { PointerObject *obj = get(addr);
-      if(obj != NULL) {
+      if(obj != nullptr) {
         _tprintf(_T("Line %d<%s>:%s already allocated\n")
                 ,lineCount, line.cstr(), addrStr.cstr());
         m_ok = false;
@@ -101,7 +101,7 @@ void PointerMap::handlePointerCommand(Keyword kw, Tokenizer &tok, int lineCount,
     break;
   case KDELETE:
     { PointerObject *obj = get(addr);
-      if(obj == NULL) {
+      if(obj == nullptr) {
         _tprintf(_T("Line %d<%s>:%s not allocated\n")
                 ,lineCount, line.cstr(), addrStr.cstr());
         m_ok = false;
@@ -146,7 +146,7 @@ void MallocPointerMap::handlePointerCommand(Keyword kw, Tokenizer &tok, int line
   switch(kw) {
   case KMALLOC:
     { PointerObject *obj = get(addr);
-      if(obj != NULL) {
+      if(obj != nullptr) {
         _tprintf(_T("Line %d<%s>:%s already allocated\n")
                 ,lineCount, line.cstr(), addrStr.cstr());
         m_ok = false;
@@ -156,7 +156,7 @@ void MallocPointerMap::handlePointerCommand(Keyword kw, Tokenizer &tok, int line
     break;
   case KFREE:
     { PointerObject *obj = get(addr);
-      if(obj == NULL) {
+      if(obj == nullptr) {
         _tprintf(_T("Line %d<%s>:%s not allocated\n")
                 ,lineCount, line.cstr(), addrStr.cstr());
         m_ok = false;
@@ -170,7 +170,7 @@ void MallocPointerMap::handlePointerCommand(Keyword kw, Tokenizer &tok, int line
     break;
   case KSTRDUP:
     { PointerObject *obj = get(addr);
-      if(obj != NULL) {
+      if(obj != nullptr) {
         _tprintf(_T("Line %d<%s>:%s already allocated\n")
                 ,lineCount, line.cstr(), addrStr.cstr());
         m_ok = false;
@@ -229,7 +229,7 @@ void RefObjectMap::handleREFCNTCommand(Tokenizer &tok, int lineCount, const Stri
   switch(kw) {
   case KCREATE:
     { RefObject *obj = get(addr);
-      if(obj != NULL) {
+      if(obj != nullptr) {
         _tprintf(_T("Line %d<%s>:%s already allocated\n")
                 ,lineCount, line.cstr(), addrStr.cstr());
         m_ok = false;
@@ -242,7 +242,7 @@ void RefObjectMap::handleREFCNTCommand(Tokenizer &tok, int lineCount, const Stri
     break;
   case KADDREF:
     { RefObject *obj = get(addr);
-      if(obj == NULL) {
+      if(obj == nullptr) {
         _tprintf(_T("Line %d<%s>:%s not allocated\n")
                 ,lineCount, line.cstr(), addrStr.cstr());
         m_ok = false;
@@ -258,7 +258,7 @@ void RefObjectMap::handleREFCNTCommand(Tokenizer &tok, int lineCount, const Stri
     break;
   case KRELEASE:
     { RefObject *obj = get(addr);
-      if(obj == NULL) {
+      if(obj == nullptr) {
         _tprintf(_T("Line %d<%s>:%s not allocated\n")
                 ,lineCount, line.cstr(), addrStr.cstr());
         m_ok = false;
@@ -278,7 +278,7 @@ void RefObjectMap::handleREFCNTCommand(Tokenizer &tok, int lineCount, const Stri
     break;
   case KTRACE:
     { RefObject *obj = get(addr);
-      if(obj != NULL) {
+      if(obj != nullptr) {
         if(obj->m_refCount != refCount) {
           _tprintf(_T("Warning:Line %d<%s>:%s refcount has changed from %d to %d\n")
                   ,lineCount, line.cstr(), addrStr.cstr(), obj->m_refCount, refCount);
@@ -293,7 +293,7 @@ void RefObjectMap::handleREFCNTCommand(Tokenizer &tok, int lineCount, const Stri
     break;
   case KCHANGE:
     { RefObject *obj = get(addr);
-      if(obj == NULL) {
+      if(obj == nullptr) {
         _tprintf(_T("Line %d<%s>:%s not allocated\n")
                 ,lineCount, line.cstr(), addrStr.cstr());
         m_ok = false;
@@ -309,7 +309,7 @@ void RefObjectMap::handleREFCNTCommand(Tokenizer &tok, int lineCount, const Stri
     break;
   case KDESTROY:
     { RefObject *obj = get(addr);
-      if(obj == NULL) {
+      if(obj == nullptr) {
         _tprintf(_T("Line %d<%s>:%s not allocated\n")
                 ,lineCount, line.cstr(), addrStr.cstr());
         m_ok = false;

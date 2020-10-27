@@ -14,17 +14,17 @@ static void throwInvalidInput() {
 #define _1 pool->_1()
 #define _2 pool->_2()
 
-BigReal Rdms(const BigReal &x, int ndigits, DigitPool *digitPool = NULL) {
+BigReal Rdms(const BigReal &x, int ndigits, DigitPool *digitPool = nullptr) {
   _SELECTDIGITPOOL(x);
   return dms(x, e(_1, -ndigits, pool));
 }
 
-BigReal Rinversdms(const BigReal &x, int ndigits, DigitPool *digitPool = NULL) {
+BigReal Rinversdms(const BigReal &x, int ndigits, DigitPool *digitPool = nullptr) {
   _SELECTDIGITPOOL(x);
   return inversdms(x, e(_1, -ndigits, pool));
 }
 
-BigReal Rfac(const BigReal &x, int ndigits, DigitPool *digitPool = NULL) {
+BigReal Rfac(const BigReal &x, int ndigits, DigitPool *digitPool = nullptr) {
   _SELECTDIGITPOOL(x);
   BigReal result = _1;
   if(isInteger(x)) {
@@ -76,12 +76,12 @@ BigReal Calculator::fromRadians(const BigReal &x) const {
   return x;
 }
 
-static BigReal rSqr(const BigReal &x, int ndigits, DigitPool *digitPool = NULL) {
+static BigReal rSqr(const BigReal &x, int ndigits, DigitPool *digitPool = nullptr) {
   _SELECTDIGITPOOL(x);
   return rProd(x, x, ndigits, pool);
 }
 
-static BigReal rCubicRoot(const BigReal &x, int ndigits, DigitPool *digitPool = NULL) {
+static BigReal rCubicRoot(const BigReal &x, int ndigits, DigitPool *digitPool = nullptr) {
   _SELECTDIGITPOOL(x);
   BigReal ex3 = rQuot(_1, BigReal(3,pool), 2*ndigits,pool);
   if(x > 0) {
@@ -91,39 +91,39 @@ static BigReal rCubicRoot(const BigReal &x, int ndigits, DigitPool *digitPool = 
   }
 }
 
-static BigReal rPow3(const BigReal &x, int ndigits, DigitPool *digitPool = NULL) {
+static BigReal rPow3(const BigReal &x, int ndigits, DigitPool *digitPool = nullptr) {
   _SELECTDIGITPOOL(x);
   return rProd(rSqr(x, ndigits,pool), x, ndigits,pool);
 }
 
-static BigReal rSinh(const BigReal &x, int ndigits, DigitPool *digitPool = NULL) {
+static BigReal rSinh(const BigReal &x, int ndigits, DigitPool *digitPool = nullptr) {
   _SELECTDIGITPOOL(x);
   return rDif(rExp(x, ndigits, pool), rExp(-x, ndigits, pool), ndigits, pool).divide2();
 }
 
-static BigReal rCosh(const BigReal &x, int ndigits, DigitPool *digitPool = NULL) {
+static BigReal rCosh(const BigReal &x, int ndigits, DigitPool *digitPool = nullptr) {
   _SELECTDIGITPOOL(x);
   return rSum(rExp(x, ndigits,pool), rExp(-x, ndigits, pool), ndigits, pool).divide2();
 }
 
-static BigReal rTanh(const BigReal &x, int ndigits, DigitPool *digitPool = NULL) {
+static BigReal rTanh(const BigReal &x, int ndigits, DigitPool *digitPool = nullptr) {
   _SELECTDIGITPOOL(x);
   const BigReal e1 = rExp(x, ndigits, pool);
   const BigReal e2 = rExp(-x, ndigits, pool);
   return rQuot((e1-e2),(e1+e2), ndigits, pool);
 }
 
-static BigReal rAcosh(const BigReal &x, int ndigits, DigitPool *digitPool = NULL) {
+static BigReal rAcosh(const BigReal &x, int ndigits, DigitPool *digitPool = nullptr) {
   _SELECTDIGITPOOL(x);
   return rLn(x + rSqrt(x*x - _1, ndigits, pool), ndigits, pool);
 }
 
-static BigReal rAsinh(const BigReal &x, int ndigits, DigitPool *digitPool = NULL) {
+static BigReal rAsinh(const BigReal &x, int ndigits, DigitPool *digitPool = nullptr) {
   _SELECTDIGITPOOL(x);
   return rLn(x + rSqrt(x*x + _1, ndigits, pool), ndigits, pool);
 }
 
-static BigReal rAtanh(const BigReal &x, int ndigits, DigitPool *digitPool = NULL) {
+static BigReal rAtanh(const BigReal &x, int ndigits, DigitPool *digitPool = nullptr) {
   _SELECTDIGITPOOL(x);
   return rLn(rSqrt(rQuot((_1 + x), (_1 - x), ndigits, pool), ndigits, pool), ndigits, pool);
 }
@@ -362,7 +362,7 @@ void Calculator::handleBackspace() {
       m_inBigReal = false;
     }
   }
-  m_hasComma = _tcschr(m_mantissa, ',') != NULL;
+  m_hasComma = _tcschr(m_mantissa, ',') != nullptr;
   m_lastWasBinOp = false;
   ajourDisplay();
 }
@@ -421,7 +421,7 @@ BigReal Calculator::scanRadix(const String &str) const {
   case 2:
   case 8:
   case 16:
-    x = binToDec(cutWord(_wcstoui128(str.cstr(),NULL,m_radix)));
+    x = binToDec(cutWord(_wcstoui128(str.cstr(),nullptr,m_radix)));
     break;
   case 10:
     { String tmp = str;

@@ -16,7 +16,7 @@ private:
     void updateWindowState();
     void scrollLines(int count);
 public:
-    CMakeAviDlg(CWnd *pParent = NULL);
+    CMakeAviDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_MAKEAVI_DIALOG };
     CListCtrl   m_nameList;

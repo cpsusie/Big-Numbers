@@ -120,12 +120,12 @@ void getAdaptersInfo() {
 }
 
 void listAdapterAddresses(PIP_ADAPTER_ADDRESSES pAddresses) {
-  PIP_ADAPTER_ADDRESSES pCurrAddresses = NULL;
-  PIP_ADAPTER_UNICAST_ADDRESS pUnicast = NULL;
-  PIP_ADAPTER_ANYCAST_ADDRESS pAnycast = NULL;
-  PIP_ADAPTER_MULTICAST_ADDRESS pMulticast = NULL;
-  IP_ADAPTER_DNS_SERVER_ADDRESS *pDnServer = NULL;
-  IP_ADAPTER_PREFIX *pPrefix = NULL;
+  PIP_ADAPTER_ADDRESSES         pCurrAddresses = nullptr;
+  PIP_ADAPTER_UNICAST_ADDRESS   pUnicast       = nullptr;
+  PIP_ADAPTER_ANYCAST_ADDRESS   pAnycast       = nullptr;
+  PIP_ADAPTER_MULTICAST_ADDRESS pMulticast     = nullptr;
+  IP_ADAPTER_DNS_SERVER_ADDRESS *pDnServer     = nullptr;
+  IP_ADAPTER_PREFIX             *pPrefix       = nullptr;
 
 
   pCurrAddresses = pAddresses;
@@ -136,8 +136,8 @@ void listAdapterAddresses(PIP_ADAPTER_ADDRESSES pAddresses) {
     int i;
 
     pUnicast = pCurrAddresses->FirstUnicastAddress;
-    if (pUnicast != NULL) {
-      for (i = 0; pUnicast != NULL; i++)
+    if (pUnicast != nullptr) {
+      for (i = 0; pUnicast != nullptr; i++)
         pUnicast = pUnicast->Next;
       _tprintf(_T("\tNumber of Unicast Addresses: %d\n"), i);
     } else
@@ -145,7 +145,7 @@ void listAdapterAddresses(PIP_ADAPTER_ADDRESSES pAddresses) {
 
     pAnycast = pCurrAddresses->FirstAnycastAddress;
     if (pAnycast) {
-      for (i = 0; pAnycast != NULL; i++)
+      for (i = 0; pAnycast != nullptr; i++)
         pAnycast = pAnycast->Next;
       _tprintf(_T("\tNumber of Anycast Addresses: %d\n"), i);
     } else
@@ -153,7 +153,7 @@ void listAdapterAddresses(PIP_ADAPTER_ADDRESSES pAddresses) {
 
     pMulticast = pCurrAddresses->FirstMulticastAddress;
     if (pMulticast) {
-      for (i = 0; pMulticast != NULL; i++)
+      for (i = 0; pMulticast != nullptr; i++)
         pMulticast = pMulticast->Next;
       _tprintf(_T("\tNumber of Multicast Addresses: %d\n"), i);
     } else
@@ -161,7 +161,7 @@ void listAdapterAddresses(PIP_ADAPTER_ADDRESSES pAddresses) {
 
     pDnServer = pCurrAddresses->FirstDnsServerAddress;
     if (pDnServer) {
-      for (i = 0; pDnServer != NULL; i++)
+      for (i = 0; pDnServer != nullptr; i++)
         pDnServer = pDnServer->Next;
       _tprintf(_T("\tNumber of DNS Server Addresses: %d\n"), i);
     } else
@@ -195,7 +195,7 @@ void listAdapterAddresses(PIP_ADAPTER_ADDRESSES pAddresses) {
 
     pPrefix = pCurrAddresses->FirstPrefix;
     if (pPrefix) {
-      for (i = 0; pPrefix != NULL; i++)
+      for (i = 0; pPrefix != nullptr; i++)
         pPrefix = pPrefix->Next;
       _tprintf(_T("\tNumber of IP Adapter Prefix entries: %d\n"), i);
     } else
@@ -212,7 +212,7 @@ void getAdapterAddresses() {
   ULONG bufferSize = entryCount * sizeof(IP_ADAPTER_ADDRESSES);
   PIP_ADAPTER_ADDRESSES pAddresses = new IP_ADAPTER_ADDRESSES[entryCount];
 
-  ULONG ret = GetAdaptersAddresses( AF_UNSPEC,0,NULL,pAddresses,&bufferSize);
+  ULONG ret = GetAdaptersAddresses( AF_UNSPEC,0,nullptr,pAddresses,&bufferSize);
   _tprintf(_T("return from GetAdaptersAdresses:%lu\n"), ret);
   _tprintf(_T("bufferSize:%d\n"), bufferSize);
 

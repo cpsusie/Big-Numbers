@@ -5,7 +5,7 @@ private:
   int m_execiszeType;
   void showHighScore(int index);
 public:
-    CHighScoreDlg(int execiszeType, CWnd *pParent = NULL);
+    CHighScoreDlg(int execiszeType, CWnd *pParent = nullptr);
 
     enum { IDD = IDD_HIGHSCORE_DIALOG };
     CTabCtrl    m_execiszeTab;

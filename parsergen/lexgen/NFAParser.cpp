@@ -93,8 +93,8 @@ void NFAparser::expr(NFAstate *&startp, NFAstate *&endp) {
   catExpr(startp, endp);
 
   while(match(BAR)) {
-    NFAstate *e2_start = NULL; // expression to right of |
-    NFAstate *e2_end   = NULL;
+    NFAstate *e2_start = nullptr; // expression to right of |
+    NFAstate *e2_end   = nullptr;
     NFAstate *p;
 
     nextToken();
@@ -340,7 +340,7 @@ void NFAparser::characterInterval(BitSet &set) {
 
 AcceptAction *NFAparser::acceptString(int anchor) {
   if( *m_scanner.getInput() == '|' ) {
-    if(m_lastAction == NULL) {
+    if(m_lastAction == nullptr) {
       m_lastAction = new AcceptAction;
     }
     return m_lastAction; // we will get the actual actionstring later
@@ -348,11 +348,11 @@ AcceptAction *NFAparser::acceptString(int anchor) {
 
   // now parse the actual action and save it
   AcceptAction *action;
-  if(m_lastAction == NULL) {
+  if(m_lastAction == nullptr) {
     action = new AcceptAction;
   } else {
     action = m_lastAction;
-    m_lastAction = NULL;
+    m_lastAction = nullptr;
   }
   action->m_pos        = m_scanner.getRulePosition();
   action->m_sourceText = StringCollector::trimIndent(m_scanner.getInputPos(), (TCHAR*)m_scanner.getInput());
@@ -378,8 +378,8 @@ NFAstate *NFAparser::rule() {
   //              ;
 
 
-  NFAstate *start  = NULL;
-  NFAstate *end    = NULL;
+  NFAstate *start  = nullptr;
+  NFAstate *end    = nullptr;
   int       anchor = ANCHOR_NONE;
 
   ENTERFUNC;
@@ -517,5 +517,5 @@ void NFAparser::thompsonConstruction() {
 }
 
 NFAparser::NFAparser(const String &fname, NFA &nfa) : m_scanner(fname), m_NFA(nfa) {
-  m_lastAction = NULL;
+  m_lastAction = nullptr;
 }

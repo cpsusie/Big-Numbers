@@ -122,9 +122,9 @@ void testConstructors(TestStatistic &stat) {
   checkExact(__LINE__, _I64_MAX  , pool);
   checkExact(__LINE__, _UI64_MAX , pool);
 
-  checkExact(__LINE__,_strtoi128( "-1234567800023487623423400000",NULL,10) , pool);
-  checkExact(__LINE__,_strtoi128( "1234567800023487623423400000" ,NULL,10) , pool);
-  checkExact(__LINE__,_strtoui128("1234567800023487623423400000" ,NULL,10) , pool);
+  checkExact(__LINE__,_strtoi128( "-1234567800023487623423400000",nullptr,10) , pool);
+  checkExact(__LINE__,_strtoi128( "1234567800023487623423400000" ,nullptr,10) , pool);
+  checkExact(__LINE__,_strtoui128("1234567800023487623423400000" ,nullptr,10) , pool);
   checkExact(__LINE__, _I128_MIN , pool);
   checkExact(__LINE__, _I128_MAX , pool);
   checkExact(__LINE__, _UI128_MAX, pool);

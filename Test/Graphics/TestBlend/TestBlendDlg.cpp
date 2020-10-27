@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CTestBlendDlg::CTestBlendDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestBlendDlg::IDD, pParent) {
+CTestBlendDlg::CTestBlendDlg(CWnd *pParent /*=nullptr*/) : CDialog(CTestBlendDlg::IDD, pParent) {
     m_srcConstAlpha = 255;
     m_alpha1        = 255;
     m_alpha2        = 0;
@@ -195,7 +195,7 @@ void CTestBlendDlg::setPickMode(PickMode mode) {
   switch(mode) {
   case PICK_IDLE      :
     setCursors(OCR_NORMAL,OCR_NORMAL);
-    ClipCursor(NULL);
+    ClipCursor(nullptr);
     break;
   case PICK_CENTER    :
     { CRect r = getWindowRect(this, IDC_STATICKINGIMAGE);

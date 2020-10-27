@@ -240,7 +240,7 @@ namespace TestString {
       verify(res.length() == 100000);
       res = s2;
       verify(res == s2);
-      TCHAR *nullStr = NULL;
+      TCHAR *nullStr = nullptr;
 
       res = nullStr;
       verify(res == _T("null"));

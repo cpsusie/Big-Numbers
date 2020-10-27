@@ -30,7 +30,7 @@ void KeyFile::create(const String &name, const KeyFileDefinition &keydef) {
   header.init(keydef);
 
   DbFile::create(name);
-  DbFile file(name,DBFMODE_READWRITE, NULL);
+  DbFile file(name,DBFMODE_READWRITE, nullptr);
 
   try {
     file.write(0,&header, sizeof(header));

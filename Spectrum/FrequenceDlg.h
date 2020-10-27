@@ -2,7 +2,7 @@
 
 class CFrequenceDlg : public CDialog {
 public:
-    CFrequenceDlg(unsigned int frequence, CWnd *pParent = NULL);
+    CFrequenceDlg(unsigned int frequence, CWnd *pParent = nullptr);
     unsigned int getFrequence() const {
       return m_frequence;
     }

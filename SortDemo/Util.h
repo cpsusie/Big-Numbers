@@ -61,7 +61,7 @@ public:
     return m_param.m_elementSize;
   }
   UINT operator[](size_t index) const;
-  BitSet &getModified(BitSet &dst, const DataArray &a, const IntInterval *interval = NULL) const;
+  BitSet &getModified(BitSet &dst, const DataArray &a, const IntInterval *interval = nullptr) const;
 };
 
 template <class T> class CountComparator : public AbstractComparator {

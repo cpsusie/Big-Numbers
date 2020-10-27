@@ -17,7 +17,7 @@
 LcsSimple::LcsSimple(const LineArray &a, const LineArray &b, UINT *docSize, LcsComparator &cmp, CompareJob *job)
 : Lcs(cmp, job)
 {
-  m_matchList = NULL;
+  m_matchList = nullptr;
   init(a, b);
   if(m_seqReversed) {
     m_docSize[1] = docSize[0];
@@ -120,7 +120,7 @@ END_TIMEMEASURE(  5, m_docSize[0] + m_docSize[1]);
 BEGIN_TIMEMEASURE(6, _T("Building pairs"));
 
   CompactArray<Link*> pairs;
-  for(Link *ptr = m_link[k]; ptr != NULL; ptr = ptr->m_next) {
+  for(Link *ptr = m_link[k]; ptr != nullptr; ptr = ptr->m_next) {
     pairs.add(ptr);
   }
 

@@ -2,7 +2,7 @@
 
 class DecideGameDialog : public CDialog {
 public:
-  DecideGameDialog(int myId, const PlayerList &players, const GameHistory &gameHistory, CWnd *pParent = NULL);
+  DecideGameDialog(int myId, const PlayerList &players, const GameHistory &gameHistory, CWnd *pParent = nullptr);
   GameDescription getGameDescription() const;
 
 private:

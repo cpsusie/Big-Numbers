@@ -641,7 +641,7 @@ int main(int argc, char **argv) {
     }
     polyEder.scale(scaleFactor);
     FILE *f = fopen(fname, _T("w"));
-    if(f != NULL) {
+    if(f != nullptr) {
       polyEder.print(f);
       fclose(f);
     }

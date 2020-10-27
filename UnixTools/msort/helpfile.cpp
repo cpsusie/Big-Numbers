@@ -23,15 +23,15 @@ void HelpFile::open(FileMode mode) {
     makeName();
   }
   m_f = FOPEN(m_name,(mode == READMODE) ? _T("r") : _T("w"));
-  if(setvbuf(m_f,NULL,_IOFBF,BUF_SIZE) != 0) {
+  if(setvbuf(m_f,nullptr,_IOFBF,BUF_SIZE) != 0) {
     throwException(_T("setvbuf"));
   }
   m_lineCount = 0;
 }
 
 void HelpFile::close() {
-  if(m_f != NULL) {
+  if(m_f != nullptr) {
     fclose(m_f);
-    m_f = NULL;
+    m_f = nullptr;
   }
 }

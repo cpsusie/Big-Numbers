@@ -33,7 +33,7 @@ TCHAR *findFormatName(int cf) {
       return formats[i].m_name;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 static void usage() {
@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  if(OpenClipboard(NULL) == 0) {
+  if(OpenClipboard(nullptr) == 0) {
     _ftprintf(stderr,_T("%s\n"), getLastErrorText().cstr());
     return -1;
   }
@@ -70,13 +70,13 @@ int main(int argc, char* argv[]) {
       TCHAR name[256];
       GetClipboardFormatName(cf,name,ARRAYSIZE(name));
       TCHAR *cfName = findFormatName(cf);
-      if(cfName != NULL) {
+      if(cfName != nullptr) {
         _tprintf(_T("format:%-20s:"), cfName);
       } else {
         _tprintf(_T("format:%-20s:"), name);
       }
       HANDLE t = GetClipboardData(cf);
-      if(t == NULL) {
+      if(t == nullptr) {
         _tprintf(_T("GetClipboardData failed:%s\n"), getLastErrorText().cstr());
       } else {
         TCHAR *str = (TCHAR*)t;

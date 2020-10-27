@@ -17,7 +17,7 @@ CEngineOptionsDlg::CEngineOptionsDlg(CEngineOptionsDlgThread &thread)
 , m_optionArray(thread.getEngine().getOptionDescriptionArray())
 , m_thread(&thread)
 , m_engine(&thread.getEngine())
-, CDialog(CEngineOptionsDlg::IDD, NULL)
+, CDialog(CEngineOptionsDlg::IDD, nullptr)
 {
   commonInit();
 }
@@ -26,9 +26,9 @@ CEngineOptionsDlg::CEngineOptionsDlg(Player player)
 : m_player(player)
 , m_engineName(Options::getOptions().getPlayerOptions(player).m_engineName)
 , m_optionArray(createEngineOptionDescriptionArray(player))
-, m_thread(NULL)
-, m_engine(NULL)
-, CDialog(CEngineOptionsDlg::IDD, NULL)
+, m_thread(nullptr)
+, m_engine(nullptr)
+, CDialog(CEngineOptionsDlg::IDD, nullptr)
 {
   commonInit();
 }
@@ -107,7 +107,7 @@ BOOL CEngineOptionsDlg::PreTranslateMessage(MSG *pMsg) {
     { const int ctrlId = getFocusCtrlId(this);
       if(ctrlId < 0) break;
       const EngineOptionControl *ctrl = m_controls.findControlById(ctrlId);
-      if((ctrl == NULL) || (ctrl->getType() != OptionTypeSpin)) break;
+      if((ctrl == nullptr) || (ctrl->getType() != OptionTypeSpin)) break;
       const unsigned char asciiChar = toAscii((UINT)pMsg->wParam);
       if(!isprint(asciiChar)) break;
       if(isdigit(asciiChar) || ((asciiChar == '-') && (ctrl->getMin() < 0))) break;
@@ -156,7 +156,7 @@ BOOL CEngineOptionsDlg::OnInitDialog() {
   // then set position of all pushbuttons
   CompactIntArray buttonIdArray = m_controls.selectCtrlIdByType(OptionTypeButton);
   buttonIdArray.add(IDC_BUTTON_SETDEFAULT);
-  if(m_engine == NULL) {
+  if(m_engine == nullptr) {
     GetDlgItem(IDC_BUTTON_SENDTOENGINE)->ShowWindow(SW_HIDE);
   } else {
     buttonIdArray.add(IDC_BUTTON_SENDTOENGINE);
@@ -180,7 +180,7 @@ BOOL CEngineOptionsDlg::OnInitDialog() {
   movePusbuttonsToCorner(buttonIdArray);
   centerWindow(this);
 
-  enableUserButtons(m_engine != NULL);
+  enableUserButtons(m_engine != nullptr);
 
   putDefaultToWindow();
   putValuesToWindow(Options::getEngineOptionValues(m_player, m_engineName));
@@ -227,7 +227,7 @@ void CEngineOptionsDlg::movePusbuttonsToCorner(const CompactIntArray &buttonIdAr
 
 
 void CEngineOptionsDlg::addControl(const EngineOptionDescription &option) {
-//  if((option.getType() == OptionTypeButton) && m_engine == NULL) { // do not add buttons if engine == NULL
+//  if((option.getType() == OptionTypeButton) && m_engine == nullptr) { // do not add buttons if engine == nullptr
 //    return;
 //  }
   m_controls.add(EngineOptionControl(this, option));
@@ -313,8 +313,8 @@ void CEngineOptionsDlg::OnButtonSetDefault() {
   putDefaultToWindow();
 }
 
-void CEngineOptionsDlg::OnUserButton(UINT id) { // do nothing if m_engine == NULL. userButtons should not be created in this cse
-  if(m_engine == NULL) {
+void CEngineOptionsDlg::OnUserButton(UINT id) { // do nothing if m_engine == nullptr. userButtons should not be created in this cse
+  if(m_engine == nullptr) {
     return;
   }
   const EngineOptionControl *ctrl = m_controls.findControlById(id);
@@ -353,7 +353,7 @@ BOOL CEngineOptionsDlg::OnToolTipNotify(UINT id, NMHDR *pNMHDR, LRESULT *pResult
   if(pTTT->uFlags & TTF_IDISHWND) {
     UINT ctrlId = ::GetDlgCtrlID(HWND(CtrlHandle));
     const EngineOptionControl *ctrl = m_controls.findControlById(ctrlId);
-    if((ctrl == NULL) || (ctrl->getType() == OptionTypeButton)) {
+    if((ctrl == nullptr) || (ctrl->getType() == OptionTypeButton)) {
       return FALSE;
     }
 

@@ -13,7 +13,7 @@ class CAdjustColorDlg : public CDialog {
   bool              m_initDone;
   bool              m_firstChange;
 public:
-    CAdjustColorDlg(PixRectContainer &container, CWnd *pParent = NULL);
+    CAdjustColorDlg(PixRectContainer &container, CWnd *pParent = nullptr);
    ~CAdjustColorDlg();
     enum { IDD = IDD_ADJUSTLSHDIALOG };
     CColormap m_colorMap;

@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CFrameCountDlg::CFrameCountDlg(UINT frameCount, CWnd *pParent /*=NULL*/) : CDialog(CFrameCountDlg::IDD, pParent) {
+CFrameCountDlg::CFrameCountDlg(UINT frameCount, CWnd *pParent /*=nullptr*/) : CDialog(CFrameCountDlg::IDD, pParent) {
     m_frameCount = frameCount;
 }
 

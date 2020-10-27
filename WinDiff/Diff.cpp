@@ -538,7 +538,7 @@ END_TIMEMEASURE(1, (double)s0.size() + (double)s1.size());
 
   compare(s0, s1, filter, cmp);
 
-  m_job = NULL;
+  m_job = nullptr;
 }
 
 void Diff::compareBuffers(const TCHAR *b1, const TCHAR *b2, DiffFilter &filter, LcsComparator &cmp, CompareJob *job) {
@@ -566,7 +566,7 @@ bool Diff::refreshLines(CompareJob *job) {
                      );
   makeDiffLines(s0, s1);
 
-  m_job = NULL;
+  m_job = nullptr;
   return true;
 }
 
@@ -582,8 +582,8 @@ void Diff::clear() {
 void Diff::init() {
   m_tabSize        = 4;
   m_viewWhiteSpace = false;
-  m_diffFilter     = NULL;
-  m_job            = NULL;
+  m_diffFilter     = nullptr;
+  m_job            = nullptr;
   clear();
 }
 
@@ -630,7 +630,7 @@ bool Diff::setTabSize(int newValue, bool refresh) {
   }
   m_tabSize = newValue;
   if(refresh) {
-    refreshLines(NULL);
+    refreshLines(nullptr);
   }
   return true;
 }
@@ -641,7 +641,7 @@ bool Diff::setViewWhiteSpace(bool newValue, bool refresh) {
   }
   m_viewWhiteSpace = newValue;
   if(refresh) {
-    refreshLines(NULL);
+    refreshLines(nullptr);
   }
   return true;
 }

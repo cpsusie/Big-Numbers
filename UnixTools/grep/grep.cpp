@@ -123,9 +123,9 @@ Grepper::Grepper(bool useRegularExpression, const String &pattern, bool ignoreCa
 , m_screenWidth(Console::getWindowSize(STD_ERROR_HANDLE).X - 1)
 {
   if(m_useRegularExpression) {
-    m_regex.compilePattern(pattern, ignoreCase ? String::upperCaseTranslate : NULL);
+    m_regex.compilePattern(pattern, ignoreCase ? String::upperCaseTranslate : nullptr);
   } else {
-    m_BMAutomate.compilePattern(pattern, true, ignoreCase ? String::upperCaseTranslate : NULL);
+    m_BMAutomate.compilePattern(pattern, true, ignoreCase ? String::upperCaseTranslate : nullptr);
   }
 }
 
@@ -180,7 +180,7 @@ void Grepper::grep(FILE *f, const TCHAR *fname) {
     TCHAR line[MAXLINESIZE];
     m_queue.clear();
     if(!m_printFname) {
-      fname = NULL;
+      fname = nullptr;
     }
     while(FGETS(line, ARRAYSIZE(line), f)) {
       if(match(line) != m_complement) { // match
@@ -198,7 +198,7 @@ void Grepper::grep(FILE *f, const TCHAR *fname) {
 
 void Grepper::grep(const TCHAR *fname) {
   FILE *f = fopen(fname, _T("r"));
-  if(f == NULL) {
+  if(f == nullptr) {
     _tperror(fname);
   } else {
     grep(f, fname);
@@ -254,7 +254,7 @@ static void usage(bool showRegexHelp = false) {
 
 int main(int argc, const char **argv) {
   const char *cp;
-  const char *fileSetFileName = NULL;
+  const char *fileSetFileName = nullptr;
   bool        recurse         = false;
   bool        ignoreCase      = true;
   bool        fnameOnly       = false;
@@ -326,14 +326,14 @@ int main(int argc, const char **argv) {
     }
 
 EndOfOptions:
-    if(*argv == NULL) {
+    if(*argv == nullptr) {
       usage();
     }
     bool        regexp = false;
     const char *pattern;
     if(strcmp(*argv,"-e") == 0) {
       argv++;
-      if(*argv == NULL) {
+      if(*argv == nullptr) {
         usage();
       }
       pattern = *(argv++);
@@ -356,12 +356,12 @@ EndOfOptions:
       if(filesetFile != stdin) {
         fclose(filesetFile);
       }
-    } else if(*argv == NULL) {
+    } else if(*argv == nullptr) {
       if(isatty(stdin)) {
         usage();
       }
       grepper.setNoVerbose();
-      grepper.grep(stdin, NULL);
+      grepper.grep(stdin, nullptr);
     } else {
       FileTreeWalker::traverseArgv(argv,grepper,recurse);
     }

@@ -154,7 +154,7 @@ namespace TestInt128 {
 
       _int128 i15 = maxUI64;
       i15++;
-      _int128 ei15 = _strtoi128("0x10000000000000000", NULL, 0);
+      _int128 ei15 = _strtoi128("0x10000000000000000", nullptr, 0);
       verify(i15 == ei15);
       i15--;
       verify(i15 == maxUI64);
@@ -917,28 +917,28 @@ namespace TestInt128 {
 
 
     TEST_METHOD(Int128ArithmethicOperators) {
-      _uint128 x1 = _strtoui128("0xffffffffffffffffffffffffffffffff", NULL, 0);
+      _uint128 x1 = _strtoui128("0xffffffffffffffffffffffffffffffff", nullptr, 0);
       _uint128 res1 = x1 + 1;
       verify(res1 == 0);
 
-      _uint128 x2 = _strtoui128("12345678901234567890123456789012345", NULL, 10);
-      _uint128 y2 = _strtoui128("23456789012345678901234567890123456", NULL, 10);
+      _uint128 x2 = _strtoui128("12345678901234567890123456789012345", nullptr, 10);
+      _uint128 y2 = _strtoui128("23456789012345678901234567890123456", nullptr, 10);
       _uint128 z2 = x2 + y2;
-      _uint128 res2 = _strtoui128("35802467913580246791358024679135801", NULL, 10);
+      _uint128 res2 = _strtoui128("35802467913580246791358024679135801", nullptr, 10);
       verify(z2 == res2);
 
       _uint128 z3 = y2 - x2;
       const char *str3 = "11111110111111111011111111101111111";
-      _uint128 res3 = _strtoui128(str3, NULL, 10);
+      _uint128 res3 = _strtoui128(str3, nullptr, 10);
 
       verify(z3 == res3);
       char buf3[300];
       _ui128toa(z3, buf3, 10);
       verify(strcmp(str3, buf3) == 0);
 
-      _uint128 x4 = _strtoui128("340282366920938463463374607431768211455", NULL, 10);
+      _uint128 x4 = _strtoui128("340282366920938463463374607431768211455", nullptr, 10);
       verify(x4 == _UI128_MAX);
-      _uint128 y4 = _strtoui128("54678423345639783523445", NULL, 10);
+      _uint128 y4 = _strtoui128("54678423345639783523445", nullptr, 10);
       _uint128 q4 = x4 / y4;
       _uint128 r4 = x4 % y4;
       _uint128 z4 = q4 * y4 + r4;
@@ -950,12 +950,12 @@ namespace TestInt128 {
 
       // ---------------------------------------------------------------
 
-      _int128 x5p = _strtoi128("170141183460469231731687303715884105727", NULL, 10);
-      _int128 x5n = _strtoi128("-170141183460469231731687303715884105728", NULL, 10);
+      _int128 x5p = _strtoi128("170141183460469231731687303715884105727", nullptr, 10);
+      _int128 x5n = _strtoi128("-170141183460469231731687303715884105728", nullptr, 10);
       verify(x5p == _I128_MAX);
       verify(x5n == _I128_MIN);
-      _int128 y5p = _strtoi128("54678423345639783523445", NULL, 10);
-      _int128 y5n = _strtoi128("-54678423345639783523445", NULL, 10);
+      _int128 y5p = _strtoi128("54678423345639783523445", nullptr, 10);
+      _int128 y5n = _strtoi128("-54678423345639783523445", nullptr, 10);
 
       _int128 x5pcopy(x5p);
       _int128 y5pcopy(y5p);
@@ -1095,8 +1095,8 @@ namespace TestInt128 {
 
       // ---------------------------------------------------------------
 
-      _int128  x6 = _strtoi128("-0x80000000000000000000000000000000", NULL, 0);
-      _uint128 ux6 = _strtoui128("0x80000000000000000000000000000000", NULL, 0);
+      _int128  x6 = _strtoi128("-0x80000000000000000000000000000000", nullptr, 0);
+      _uint128 ux6 = _strtoui128("0x80000000000000000000000000000000", nullptr, 0);
       /*
             TCHAR bx6[1200], bimin[200];
             _i128tow(x6, bx6, 16);
@@ -1105,7 +1105,7 @@ namespace TestInt128 {
             OUTPUT(_T("Imin:%s"), bimin);
       */
       verify(x6 == _I128_MIN);
-      _int128 y6 = _strtoi128("-54678423345639783523445", NULL, 0);
+      _int128 y6 = _strtoi128("-54678423345639783523445", nullptr, 0);
     } // Int128ArithmethicOperators
 
     TEST_METHOD(Int128BitOperators) {
@@ -1128,12 +1128,12 @@ namespace TestInt128 {
       x2 = x2 | 7;
       verify(x2 == _UI128_MAX);
 
-      _int128 b1 = _strtoi128("0x123456789abcdef0123456789abcdef", NULL, 0);
-      _int128 b2 = _strtoi128("0x7777777777777777777777777777777", NULL, 0);
-      _int128 b3 = _strtoi128("0x46328ab5cdf43a89b3c819bf6483219", NULL, 0);
-      _int128 ea = _strtoi128("0x1234567012345670123456701234567", NULL, 0);
+      _int128 b1 = _strtoi128("0x123456789abcdef0123456789abcdef", nullptr, 0);
+      _int128 b2 = _strtoi128("0x7777777777777777777777777777777", nullptr, 0);
+      _int128 b3 = _strtoi128("0x46328ab5cdf43a89b3c819bf6483219", nullptr, 0);
+      _int128 ea = _strtoi128("0x1234567012345670123456701234567", nullptr, 0);
       verify((b1 & b2) == ea);
-      _int128 eo = _strtoi128("0x7777777ffffffff77777777ffffffff", NULL, 0);
+      _int128 eo = _strtoi128("0x7777777ffffffff77777777ffffffff", nullptr, 0);
       verify((b1 | b2) == eo);
 
       _int128 x13 = b1 ^ b3;
@@ -1297,14 +1297,14 @@ namespace TestInt128 {
           verify(numStr == wanted);
 
           const String numStr1 = numStr + _T("!");
-          endp = NULL; errno = 0;
+          endp = nullptr; errno = 0;
           const _uinttype x1 = _tcstouitype(numStr1.cstr(), &endp, radix);
           verify(errno == 0);
           verify(endp && (*endp == '!'));
           verify(x1 == x);
 
           const String nstr = _T("-") + wanted + _T("!");
-          endp = NULL; errno = 0;
+          endp = nullptr; errno = 0;
           const _uinttype x2 = _tcstouitype(nstr.cstr(), &endp, radix);
           verify(errno == 0);
           verify(endp && (*endp == '!'));
@@ -1319,7 +1319,7 @@ namespace TestInt128 {
           }
           if (tryRadix0) {
             const String sp = prefix + numStr1;
-            endp = NULL; errno = 0;
+            endp = nullptr; errno = 0;
             const  _uinttype xp = _tcstouitype(sp.cstr(), &endp, 0);
             verify(errno == 0);
             verify(endp && (*endp == '!'));
@@ -1341,7 +1341,7 @@ namespace TestInt128 {
           verify(numStr == wanted);
 
           const String numStr1 = numStr + _T("!");
-          endp = NULL; errno = 0;
+          endp = nullptr; errno = 0;
           const  _inttype x1 = _tcstoitype(numStr1.cstr(), &endp, radix);
           if ((radix != 10) && (x < 0)) {
             verify(errno == ERANGE);
@@ -1355,7 +1355,7 @@ namespace TestInt128 {
 
           if (radix != 10) {
             const String nstr = _T("-") + wanted + _T("!");
-            endp = NULL; errno = 0;
+            endp = nullptr; errno = 0;
             const _inttype x2 = _tcstoitype(nstr.cstr(), &endp, radix);
             if (x < 0) {
               verify(errno == ERANGE);
@@ -1378,7 +1378,7 @@ namespace TestInt128 {
           }
           if (tryRadix0) {
             const String sp = prefix + numStr1;
-            endp = NULL; errno = 0;
+            endp = nullptr; errno = 0;
             const  _inttype xp = _tcstoitype(sp.cstr(), &endp, 0);
             verify(errno == 0);
             verify(endp && (*endp == '!'));
@@ -1396,13 +1396,13 @@ namespace TestInt128 {
         const String numStr = _uitypetot(x, str, radix);
 
         const String numStr1 = numStr + _T("!");
-        endp = NULL; errno = 0;
+        endp = nullptr; errno = 0;
         const _uinttype x1 = _tcstouitype(numStr1.cstr(), &endp, radix);
         verify(errno == 0);
         verify(endp && (endp[0] == '!'));
         verify(x1 == x);
 
-        endp = NULL; errno = 0;
+        endp = nullptr; errno = 0;
         const String    numStr2 = incr(numStr, radix) + _T("!");
         const _uinttype x2 = _tcstouitype(numStr2.cstr(), &endp, radix);
         verify(errno == ERANGE);
@@ -1429,19 +1429,19 @@ namespace TestInt128 {
         numStrnx += _T("!");
 
         const String numStr1 = numStrx + _T("!");
-        endp = NULL; errno = 0;
+        endp = nullptr; errno = 0;
         _inttype x1 = _tcstoitype(numStr1.cstr(), &endp, radix);
         verify(errno == 0);
         verify(endp && (endp[0] == '!'));
         verify(x1 == x);
 
-        endp = NULL; errno = 0;
+        endp = nullptr; errno = 0;
         x1 = _tcstoitype(numStrnx.cstr(), &endp, radix);
         verify(errno == 0);
         verify(endp && (endp[0] == '!'));
         verify(x1 == nx);
 
-        endp = NULL; errno = 0;
+        endp = nullptr; errno = 0;
         const String    numStr2 = incr(numStrx, radix) + _T("!");
         const _inttype  x2 = _tcstoitype(numStr2.cstr(), &endp, radix);
         verify(errno == ERANGE);

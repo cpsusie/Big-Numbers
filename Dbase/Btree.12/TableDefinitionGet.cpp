@@ -70,12 +70,12 @@ void Database::removeFromCache(const String &tableName) {
   }
   m_indexTableNameCache.remove(tmpName);
   TableDefinition *tableDefp = m_tableDefTableNameCache.get(tmpName);
-  if(tableDefp != NULL) {
+  if(tableDefp != nullptr) {
     m_tableDefSequenceCache.remove(tableDefp->getSequenceNo());
     m_tableDefTableNameCache.remove(tmpName);
   }
   TableInfo *tableInfop = m_tableInfoTableNameCache.get(tmpName);
-  if(tableInfop != NULL) {
+  if(tableInfop != nullptr) {
     m_tableInfoSequenceCache.remove(tableInfop->getSequenceNo());
     m_tableInfoTableNameCache.remove(tmpName);
   }
@@ -88,7 +88,7 @@ const TableDefinition &Database::getTableDefinition(const String &tableName) con
 
   String tmpName = toUpperCase(tableName);
   TableDefinition *tableDefp = m_tableDefTableNameCache.get(tmpName);
-  if(tableDefp == NULL) {
+  if(tableDefp == nullptr) {
     TableDefinition tableDef = readTableDefinition(tmpName);
     m_tableDefTableNameCache.put(tmpName,tableDef);
     tableDefp = m_tableDefTableNameCache.get(tmpName);
@@ -99,7 +99,7 @@ const TableDefinition &Database::getTableDefinition(const String &tableName) con
 
 const TableDefinition &Database::getTableDefinition(ULONG sequenceNo) const {
   TableDefinition **tableDefpp = m_tableDefSequenceCache.get(sequenceNo);
-  if(tableDefpp == NULL) {
+  if(tableDefpp == nullptr) {
     TableDefinition tableDef = readTableDefinition(sequenceNo);
     m_tableDefTableNameCache.put(tableDef.getTableName(),tableDef);
     TableDefinition *tableDefp = m_tableDefTableNameCache.get(tableDef.getTableName());
@@ -116,7 +116,7 @@ const TableInfo &Database::getTableInfo(const String &tableName) const {
 
   String tmpName = toUpperCase(tableName);
   TableInfo *tableInfop = m_tableInfoTableNameCache.get(tmpName);
-  if(tableInfop == NULL) {
+  if(tableInfop == nullptr) {
     const TableDefinition &tableDef   = getTableDefinition(tableName);
     const IndexArray      &indexArray = getIndexDefinitions(tableDef.getTableName());
     TableInfo tableInfo(tableDef,indexArray);
@@ -129,7 +129,7 @@ const TableInfo &Database::getTableInfo(const String &tableName) const {
 
 const TableInfo &Database::getTableInfo(ULONG sequenceNo) const {
   TableInfo **tableInfopp = m_tableInfoSequenceCache.get(sequenceNo);
-  if(tableInfopp != NULL) {
+  if(tableInfopp != nullptr) {
     return **tableInfopp;
   }
   const TableDefinition &tableDef = getTableDefinition(sequenceNo);

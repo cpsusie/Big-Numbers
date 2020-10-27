@@ -147,7 +147,7 @@ private:
   BitSet                m_fastMap;
 
   // Translate table to apply to all characters before comparing.
-  // or NULL for no translation. Translation is applied to each
+  // or nullptr for no translation. Translation is applied to each
   // character in a pattern when compiled and to characters in the
   // text string it is matched/matched
   const TCHAR          *m_translateTable;
@@ -186,10 +186,10 @@ private:
 
 public:
   DFARegex();
-  DFARegex(           const String &pattern, const TCHAR *translateTable = NULL);
-  DFARegex(           const TCHAR  *pattern, const TCHAR *translateTable = NULL);
-  void compilePattern(const String &pattern, const TCHAR *translateTable = NULL);
-  void compilePattern(const TCHAR  *pattern, const TCHAR *translateTable = NULL);
+  DFARegex(           const String &pattern, const TCHAR *translateTable = nullptr);
+  DFARegex(           const TCHAR  *pattern, const TCHAR *translateTable = nullptr);
+  void compilePattern(const String &pattern, const TCHAR *translateTable = nullptr);
+  void compilePattern(const TCHAR  *pattern, const TCHAR *translateTable = nullptr);
   // Search for the compiled expression in text
   intptr_t  search(   const String &text, bool forward = true, intptr_t startPos = -1) const;
   // Search for the compiled expression in text

@@ -4,7 +4,7 @@
 
 class CTestDirect3DDlg : public CDialog {
 public:
-    CTestDirect3DDlg(CWnd *pParent = NULL); // standard constructor
+    CTestDirect3DDlg(CWnd *pParent = nullptr); // standard constructor
 
     HICON  m_hIcon;
     Image *m_boardImage;

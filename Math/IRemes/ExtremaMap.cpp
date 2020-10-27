@@ -123,7 +123,7 @@ const Array<ExtremaVector> *ExtremaMap::get(UINT M, UINT K) const {
 void ExtremaMap::put(UINT M, UINT K, const ExtremaVector &v) {
   const ExtremaKey key(M, K);
   Array<ExtremaVector> *a = __super::get(key);
-  if(a != NULL) {
+  if(a != nullptr) {
     a->add(v);
   } else {
     Array<ExtremaVector> a;

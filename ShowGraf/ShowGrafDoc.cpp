@@ -152,7 +152,7 @@ void CShowGrafDoc::init() {
           usage();
         } else {
           const ColorName *bc = findColorByName(*argv);
-          if(bc == NULL) {
+          if(bc == nullptr) {
             usage();
           }
           __assume(bc);
@@ -162,7 +162,7 @@ void CShowGrafDoc::init() {
           usage();
         } else {
           const ColorName *ac = findColorByName(*argv);
-          if(ac == NULL) {
+          if(ac == nullptr) {
             usage();
           }
           __assume(ac);
@@ -181,7 +181,7 @@ void CShowGrafDoc::init() {
 
 void CShowGrafDoc::addArgvGraphs() {
   TCHAR **argv = m_argvFileNames;
-  if(*argv == NULL) {
+  if(*argv == nullptr) {
     addInitialDataGraph(_T("stdin"), getColor(0));
   } else {
     for(int colorIndex = 0; *argv && isOK(); argv++) {

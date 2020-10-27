@@ -8,7 +8,7 @@ private:
   void showInfo();
 
 public:
-    CTestWinToolsDlg(CWnd *pParent = NULL); // standard constructor
+    CTestWinToolsDlg(CWnd *pParent = nullptr); // standard constructor
 
 #if defined(AFX_DESIGN_TIME)
     enum { IDD = IDD_TESTWINTOOLS_DIALOG };

@@ -76,9 +76,9 @@ BigRealRectangle2D MBFrameGenerator::getInterpolatedRectangle() const {
   return BigRealRectangle2D(x,y,w,h);
 }
 
-HBITMAP MBFrameGenerator::nextBitmap() { // should return NULL when no more frames.
+HBITMAP MBFrameGenerator::nextBitmap() { // should return nullptr when no more frames.
   DEBUGLOG(_T("enter nextBitmap\n"));
-  if(!requestNextFrame()) return NULL;
+  if(!requestNextFrame()) return nullptr;
   DEBUGLOG(_T("got frame %d\n"), m_frameIndex);
 
   HGDIOBJ oldGDI = SelectObject(m_dc, m_bm);

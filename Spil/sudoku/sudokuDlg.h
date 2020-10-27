@@ -12,7 +12,7 @@ private:
     time_t         m_startPause;
     bool           m_timerIsRunning;
 public:
-    CSudokuDlg(CWnd *pParent = NULL);
+    CSudokuDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_SUDOKU_DIALOG };
 

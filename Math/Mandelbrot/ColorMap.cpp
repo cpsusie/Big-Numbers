@@ -77,7 +77,7 @@ void ColorMapData::setAsDefault() const {
 
 ColorMapData ColorMapData::loadDefaultFile() { // static
   const String fileName = makeFileName();
-  FILE *f = NULL;
+  FILE *f = nullptr;
   ColorMapData result;
   try {
     f = FOPEN(fileName, _T("r"));
@@ -91,9 +91,9 @@ ColorMapData ColorMapData::loadDefaultFile() { // static
       ColorMapInterpolationPoint p(line);
       result.add(p);
     }
-    fclose(f); f = NULL;
+    fclose(f); f = nullptr;
   } catch (...) {
-    if(f) { fclose(f); f = NULL; }
+    if(f) { fclose(f); f = nullptr; }
     throw;
   }
   result.validate();

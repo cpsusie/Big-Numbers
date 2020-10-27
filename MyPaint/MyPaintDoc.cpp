@@ -14,8 +14,8 @@ END_MESSAGE_MAP()
 const CString CMyPaintDoc::s_defaultName = _T("Untitled");
 
 CMyPaintDoc::CMyPaintDoc() {
-  m_image     = NULL;
-  m_fileImage = NULL;
+  m_image     = nullptr;
+  m_fileImage = nullptr;
   init();
 }
 
@@ -57,7 +57,7 @@ BOOL CMyPaintDoc::IsModified() {
 
 bool CMyPaintDoc::isModified() const {
   CHECKINVARIANT;
-  return (m_fileImage == NULL) || (*m_image != *m_fileImage);
+  return (m_fileImage == nullptr) || (*m_image != *m_fileImage);
 }
 
 bool CMyPaintDoc::hasDefaultName() const {
@@ -89,7 +89,7 @@ void CMyPaintDoc::setImage(PixRect *image) {
 }
 
 PixRect *CMyPaintDoc::getImage() {
-  if(m_image == NULL) {
+  if(m_image == nullptr) {
     setImage(theApp.fetchPixRect(CSize(400,400)));
     setFileImage();
   }
@@ -105,7 +105,7 @@ void CMyPaintDoc::setFileImage() {
 
 void CMyPaintDoc::clear() {
   resetHistory();
-  setImage(NULL);
+  setImage(nullptr);
   setFileImage();
 }
 

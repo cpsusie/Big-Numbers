@@ -5,7 +5,7 @@ private:
   HICON m_hIcon;
   CString m_text;
 public:
-  CBigTextDlg(CWnd* pParent = NULL);
+  CBigTextDlg(CWnd* pParent = nullptr);
 
   enum { IDD = IDD_BIGTEXT_DIALOG };
 

@@ -52,7 +52,7 @@ BOOL CHeatCPUDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if (pSysMenu != NULL) {
+  if (pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if (!strAboutMenu.IsEmpty()) {
@@ -270,7 +270,7 @@ void CHeatCPUDlg::showCounterWindows(bool show) {
   for(int i = 0; i < ARRAYSIZE(m_CPUHeaterThread); i++) {
     CWnd *w = GetDlgItem(infoWnd[i]);
     w->ShowWindow(show ? SW_SHOW : SW_HIDE);
-    m_CPUHeaterThread[i].setInfoWindow(show ? w : NULL);
+    m_CPUHeaterThread[i].setInfoWindow(show ? w : nullptr);
   }
 }
 

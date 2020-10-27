@@ -24,9 +24,9 @@ BOOL CSelectBreakStatesDlg::OnInitDialog() {
   __super::OnInitDialog();
   String s;
 
-  TCHAR *delimiter = NULL;
+  TCHAR *delimiter = nullptr;
   for(Iterator<size_t> it = m_stateSet.getIterator(); it.hasNext(); ) {
-    if(delimiter == NULL) {
+    if(delimiter == nullptr) {
       delimiter = _T(" ");
     } else {
       s += delimiter;

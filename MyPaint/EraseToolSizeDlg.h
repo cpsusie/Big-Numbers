@@ -2,7 +2,7 @@
 
 class CEraseToolSizeDlg : public CDialog {
 public:
-  CEraseToolSizeDlg(const CSize &size, CWnd *pParent = NULL);
+  CEraseToolSizeDlg(const CSize &size, CWnd *pParent = nullptr);
 
   CSize getToolSize() const {
     return CSize(m_width,m_height);

@@ -70,7 +70,7 @@ BOOL CMessageDlg::OnInitDialog() {
 }
 
 void CMessageDlg::startTimer(UINT milliSeconds) {
-  if(!m_timerIsRunning && SetTimer(1,milliSeconds,NULL)) {
+  if(!m_timerIsRunning && SetTimer(1,milliSeconds,nullptr)) {
     m_timerIsRunning = true;
   }
 }

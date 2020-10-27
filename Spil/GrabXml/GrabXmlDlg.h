@@ -17,7 +17,7 @@ private:
   void enterText(const String &id, const String &text);
   void findRouteAndEnterSolution();
 public:
-  CGrabXmlDlg(CWnd *pParent = NULL);    // standard constructor
+  CGrabXmlDlg(CWnd *pParent = nullptr);    // standard constructor
 
 #if defined(AFX_DESIGN_TIME)
   enum { IDD = IDD_GRABXML_DIALOG };

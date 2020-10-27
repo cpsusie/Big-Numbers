@@ -300,7 +300,7 @@ void CalculatorPool::addCalculatorInfo(const CalculatorInfo &info) {
 
 const CalculatorInfo *CalculatorPool::findInfo(const CPoint &p) const {
   m_gate.wait();
-  const CalculatorInfo *result = NULL;
+  const CalculatorInfo *result = nullptr;
   for(int i = 0; i < m_infoArray.size(); i++) {
     if(m_infoArray[i].contains(p)) {
       result = &m_infoArray[i];

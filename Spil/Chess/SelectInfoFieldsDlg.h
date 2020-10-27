@@ -8,7 +8,7 @@ private:
     void dataToWindow(const EngineVerboseFields &evf);
     void enableFields();
 public:
-    CSelectInfoFieldsDlg(CWnd *pParent = NULL);
+    CSelectInfoFieldsDlg(CWnd *pParent = nullptr);
     virtual ~CSelectInfoFieldsDlg();
 
     enum { IDD = IDD_SELECTINFOFIELDS_DIALOG };

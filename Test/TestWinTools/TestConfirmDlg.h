@@ -12,7 +12,7 @@ private:
   int getSelectedConfirmIcon();
   void initComboItems();
 public:
-    CTestConfirmDlg(CWnd *pParent = NULL);
+    CTestConfirmDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_TESTCONFIRMDLG_DIALOG };
     CString m_confirmCaption;

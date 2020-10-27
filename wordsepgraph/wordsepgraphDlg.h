@@ -21,7 +21,7 @@ private:
   void setTrainingPriority(int p);
 
 public:
-  CWordsepgraphDlg(CWnd *pParent = NULL);
+  CWordsepgraphDlg(CWnd *pParent = nullptr);
 
   enum { IDD = IDD_WORDSEPGRAPH_DIALOG };
   CString m_ord;

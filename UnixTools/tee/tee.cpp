@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
       }
     }
 
-    if(*argv == NULL) {
+    if(*argv == nullptr) {
       usage();
     }
 

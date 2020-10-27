@@ -19,7 +19,7 @@ const TCHAR *_TrigonometricModeName::modeToStr(TrigonometricMode mode) { // stat
     }
   }
   throwInvalidArgumentException(__TFUNCTION__, _T("mode=%d"), mode);
-  return NULL;
+  return nullptr;
 }
 
 TrigonometricMode _TrigonometricModeName::strToMode(const TCHAR *str ) { // static

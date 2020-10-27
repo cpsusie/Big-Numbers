@@ -7,7 +7,7 @@
 #endif
 
 
-ParamDlg::ParamDlg(ParamDlgParameters &params, CWnd *pParent /*=NULL*/)
+ParamDlg::ParamDlg(ParamDlgParameters &params, CWnd *pParent /*=nullptr*/)
 : CDialog(ParamDlg::IDD, pParent), m_params(params)
 {
   m_learningrate = params.m_learningRate;

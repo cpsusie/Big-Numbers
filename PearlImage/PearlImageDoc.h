@@ -12,7 +12,7 @@ private:
 public:
   const PixRect *m_pr;
   Timestamp      m_ts;
-  PixRectWithTimestamp() : m_pr(NULL) {
+  PixRectWithTimestamp() : m_pr(nullptr) {
   }
   PixRectWithTimestamp(const PixRect *pr, Timestamp ts)
     : m_pr(pr)
@@ -20,7 +20,7 @@ public:
   }
   // NB... No destructor, copy constructor or operator=
   void clear() {
-    if(m_pr != NULL) {
+    if(m_pr != nullptr) {
       SAFEDELETE(m_pr);
       updateTimeStamp();
     }
@@ -42,7 +42,7 @@ public:
     return !(*this == rhs);
   }
   inline bool hasImage() const {
-    return m_pr != NULL;
+    return m_pr != nullptr;
   }
   inline CSize getSize() const {
     return hasImage() ? m_pr->getSize() : CSize(0,0);

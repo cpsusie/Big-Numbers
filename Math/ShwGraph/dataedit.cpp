@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-dataedit::dataedit(CWnd *pParent /*=NULL*/) : CDialog(dataedit::IDD, pParent) {
+dataedit::dataedit(CWnd *pParent /*=nullptr*/) : CDialog(dataedit::IDD, pParent) {
 }
 
 void dataedit::DoDataExchange(CDataExchange *pDX) {

@@ -112,7 +112,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   m_wndToolBar.EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
 
   // Allow user-defined toolbars operations:
-  InitUserToolbars(NULL, uiFirstUserToolBarId, uiLastUserToolBarId);
+  InitUserToolbars(nullptr, uiFirstUserToolBarId, uiLastUserToolBarId);
 */
 
   if(!m_wndStatusBar.Create(this)) {
@@ -141,7 +141,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   // enable quick (Alt+drag) toolbar customization
   CMFCToolBar::EnableQuickCustomization();
 
-  if(CMFCToolBar::GetUserImages() == NULL) {
+  if(CMFCToolBar::GetUserImages() == nullptr) {
     // load user-defined toolbar images
    if(m_UserImages.Load(_T(".\\UserImages.bmp")))
       {
@@ -230,7 +230,7 @@ BOOL CMainFrame::LoadFrame(UINT nIDResource, DWORD dwDefaultStyle, CWnd *pParent
 
   for(int i = 0; i < iMaxUserToolbars; i ++) {
     CMFCToolBar* pUserToolbar = GetUserToolBarByIndex(i);
-    if(pUserToolbar != NULL) {
+    if(pUserToolbar != nullptr) {
       pUserToolbar->EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
     }
   }
@@ -452,7 +452,7 @@ void CMainFrame::OnStartMSPaint() {
     doc->save(tempName);
     const TCHAR *msPaint = _T("c:\\windows\\system32\\mspaint.exe");
     const char *msPaintA = T2A(msPaint);
-    if(_spawnlp(_P_NOWAITO, msPaintA, msPaintA, tempNameA, NULL) == -1) {
+    if(_spawnlp(_P_NOWAITO, msPaintA, msPaintA, tempNameA, nullptr) == -1) {
       throwErrNoOnSysCallException(_T("_spawnlp(\"mapaint.exe\")"));
     }
   } catch(Exception e) {
@@ -507,7 +507,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point) {
       if(hasSelectedWindow()) {
         restoreSelectedWindow();
       }
-      if(window != NULL) {
+      if(window != nullptr) {
         selectWindow(window);
       }
     } catch(Exception e) {
@@ -553,27 +553,27 @@ void CMainFrame::restoreWindowPlacement() {
 }
 
 void CMainFrame::initCurrent() {
-  m_savedWindowDC  = NULL;
-  m_savedBitmap    = NULL;
-  m_selectedWindow = NULL;
+  m_savedWindowDC  = nullptr;
+  m_savedBitmap    = nullptr;
+  m_selectedWindow = nullptr;
 }
 
 void CMainFrame::releaseCurrent() {
-  if(m_savedWindowDC != NULL) {
+  if(m_savedWindowDC != nullptr) {
     DeleteDC(m_savedWindowDC);
-    m_savedWindowDC = NULL;
+    m_savedWindowDC = nullptr;
   }
 
-  if(m_savedBitmap != NULL) {
+  if(m_savedBitmap != nullptr) {
     DeleteObject(m_savedBitmap);
-    m_savedBitmap   = NULL;
+    m_savedBitmap   = nullptr;
   }
-  m_selectedWindow = NULL;
+  m_selectedWindow = nullptr;
 }
 
 void CMainFrame::restoreSelectedWindow() {
   HDC hdc = ::GetWindowDC(m_selectedWindow);
-  if(hdc == NULL) {
+  if(hdc == nullptr) {
     throwException(_T("GetWindowDC failed:%s"), getLastErrorText().cstr());
   }
   CRect rect = getWindowRect(m_selectedWindow);
@@ -593,7 +593,7 @@ void CMainFrame::restoreSelectedWindow() {
 
 void CMainFrame::selectWindow(HWND hwnd) {
   HDC hdc = ::GetWindowDC(hwnd);
-  if(hdc == NULL) {
+  if(hdc == nullptr) {
     throwException(_T("GetWindowDC failed:%s"),getLastErrorText().cstr());
   }
   CRect rect = getWindowRect(hwnd);
@@ -617,7 +617,7 @@ void CMainFrame::drawRectangle(HWND hwnd) {
   const int fromEdge = PENSIZE/2;
   HGDIOBJ   oldPen   = ::SelectObject(hdc, m_blackPen);
 
-  MoveToEx(hdc, fromEdge, fromEdge, NULL);
+  MoveToEx(hdc, fromEdge, fromEdge, nullptr);
   LineTo(hdc, w-fromEdge, fromEdge  );
   LineTo(hdc, w-fromEdge, h-fromEdge);
   LineTo(hdc, fromEdge  , h-fromEdge);
@@ -630,12 +630,12 @@ HWND CMainFrame::findWindow(const CPoint &point) {
   CPoint p = point;
   ClientToScreen(&p);
   HWND parent = ::WindowFromPoint(p);
-  if(parent == NULL) {
-    return NULL;
+  if(parent == nullptr) {
+    return nullptr;
   }
   ::ScreenToClient(parent, &p);
   HWND child = ::ChildWindowFromPointEx(parent, p, CWP_ALL);
-  return child != NULL ? child : parent;
+  return child != nullptr ? child : parent;
 }
 
 BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {

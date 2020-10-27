@@ -23,7 +23,7 @@ static void dumpGridMatrix(const String &label, const BitMatrix &m) {
 BYTE NFAStatePoint::createAttributes(const NFAState *s) { // static
   return s->m_accept.m_acceptAttribute
       | (s->isStartState()                             ? ATTR_ISSTARTSTATE   : ATTR_HASPREDECESSOR)
-      | (((s->m_next != NULL) || (s->m_next2 != NULL)) ? ATTR_HASSUCCESSSORS : 0);
+      | (((s->m_next != nullptr) || (s->m_next2 != nullptr)) ? ATTR_HASSUCCESSSORS : 0);
 }
 
 static int compareById(NFAState * const &s1, NFAState * const &s2) { // static
@@ -118,7 +118,7 @@ void NFAPainter::calculateAllPositions() {
     const NFAStatePoint *sp = m_nfaPoints[pointIndexStack.pop()];
     int succesorCount = 0;
 
-    NFAStatePoint *sp1 = NULL, *sp2 = NULL;
+    NFAStatePoint *sp1 = nullptr, *sp2 = nullptr;
     if(sp->m_state->m_next) {
       const int id = sp->m_state->m_next->getID();
       if(!done.contains(id)) {
@@ -279,8 +279,8 @@ void NFAPainter::setPositions(size_t subNFACount) {
 
   for(size_t i = 0; i < m_nfaPoints.size(); i++) {
     NFAStatePoint *sp = m_nfaPoints[i];
-    sp->setPosition(Point2D((float)m_size.cx * (sp->m_gridX + 0.5) / gridSize.cx
-                           ,(float)m_size.cy * (sp->m_gridY + 0.5) / gridSize.cy));
+    sp->setPosition((CPoint)Point2D((float)m_size.cx * (sp->m_gridX + 0.5) / gridSize.cx
+                                   ,(float)m_size.cy * (sp->m_gridY + 0.5) / gridSize.cy));
   }
 }
 
@@ -306,7 +306,7 @@ void NFAPainter::paintState(HDC hdc, CPoint p, int id, BYTE attr) {
   } else if(!(attr & ATTR_HASSUCCESSSORS)) {
     paintRing(  p, CIRCLE_RADIUS, getBlackPen(), getLightGreenBrush() , hdc);
   } else {
-    paintCircle(p, CIRCLE_RADIUS, getBlackPen(), NULL                 , hdc);
+    paintCircle(p, CIRCLE_RADIUS, getBlackPen(), nullptr                 , hdc);
   }
   const String text     = format(_T("%d"), id);
   CFont       &font     = getFont();
@@ -329,28 +329,28 @@ void NFAPainter::paintTransition(const NFAStatePoint *from, const NFAStatePoint 
   if(cf == ct) { // transition to the same state. No possible with NFA
     v = Point2D(1,-1).normalize();
     const Point2D pFrom = cf + v  * CIRCLE_RADIUS;
-    const Point2D v2(-v.x,v.y);
+    const Point2D v2(-v.x(),v.y());
     const Point2D pTo   = cf + v2 * CIRCLE_RADIUS;
-    paintBezierArrow(pFrom, pTo);
+    paintBezierArrow((CPoint)pFrom, (CPoint)pTo);
   } else {
     v = (ct - cf).normalize();
     Point2D pFrom, pTo;
 
     if((st.getID() < sf.getID()) && (st.m_next == &sf || st.m_next2 == &sf)) {
       Point2D v2 = -v;
-      v  = v.rotate( GRAD2RAD(-45));
-      v2 = v2.rotate(GRAD2RAD( 45));
+      v  = rotate(v, GRAD2RAD(-45));
+      v2 = rotate(v2,GRAD2RAD( 45));
       pFrom = cf + v  * CIRCLE_RADIUS;
       pTo   = ct + v2 * CIRCLE_RADIUS;
 
-      paintBezierArrow(pFrom, pTo);
+      paintBezierArrow((CPoint)pFrom, (CPoint)pTo);
     } else {
       pFrom = cf + v * CIRCLE_RADIUS;
       pTo   = ct - v * CIRCLE_RADIUS;
-      paintLineArrow(pFrom, pTo);
+      paintLineArrow((CPoint)pFrom, (CPoint)pTo);
     }
   }
-  Point2D tv(v.y, -v.x);
+  Point2D tv(v.y(), -v.x());
   Point2D textPos = cf + (v * (CIRCLE_RADIUS+2) + tv * 17);
   String text;
   CFont *font;
@@ -368,7 +368,7 @@ void NFAPainter::paintTransition(const NFAStatePoint *from, const NFAStatePoint 
     font = &getFont(false, v);
     break;
   }
-  textOut(textPos, *font, text, m_dc);
+  textOut((CPoint)textPos, *font, text, m_dc);
 }
 
 void NFAPainter::checkAllocated() {
@@ -403,9 +403,9 @@ NFAPointArray NFAPainter::s_newNFAPoints;
 
 class AnimationPoint {
 public:
-  NFAStatePoint *m_oldP,*m_newP;  // m_oldP can be NULL
-  Point2D        m_from, m_to;    // if m_oldP is NULL, then just *m_newP
-  AnimationPoint() : m_oldP(NULL), m_newP(NULL), m_from(0,0), m_to(0,0) {
+  NFAStatePoint *m_oldP,*m_newP;  // m_oldP can be nullptr
+  Point2D        m_from, m_to;    // if m_oldP is nullptr, then just *m_newP
+  AnimationPoint() : m_oldP(nullptr), m_newP(nullptr), m_from(0,0), m_to(0,0) {
   }
   AnimationPoint(NFAStatePoint *oldP, NFAStatePoint *newP)
     : m_oldP(oldP)
@@ -416,13 +416,13 @@ public:
   }
   CPoint interpolate(double t) const {
     const double t1 = 1.0 - t;
-    return t1 * m_from + t * m_to;
+    return (CPoint)(m_from*t1 + m_to*t);
   }
   int getUpdateFlags() const;
 };
 
 int AnimationPoint::getUpdateFlags() const {
-  if(m_oldP == NULL) {
+  if(m_oldP == nullptr) {
     return COUNT_CHANGED;
   }
   int result = 0;
@@ -480,7 +480,7 @@ void NFAPainter::animateOldToNew(HDC hdc) {
   for(size_t i = 0; i < pointCount; i++) {
     NFAStatePoint  *newP     = s_newNFAPoints[i];
     const NFAState *newState = newP->m_state;
-    NFAStatePoint  *oldP     = NULL;
+    NFAStatePoint  *oldP     = nullptr;
     for(size_t j = 0; j < s_oldNFAPoints.size(); j++) { // find the corresponding StatePoint in old pointArray, if any
       NFAStatePoint *old = s_oldNFAPoints[j];
       if(old->m_state == newState) {
@@ -532,14 +532,14 @@ FallingNFAState::FallingNFAState(const NFAStatePoint *state, int id) {
 #define RESTOREBACKGROUND(p) BitBlt(hdc   , p.x-CIRCLE_RADIUS,p.y-CIRCLE_RADIUS,CIRCLE_SIZE,CIRCLE_SIZE, saveDC,p.x-CIRCLE_RADIUS,p.y-CIRCLE_RADIUS,SRCCOPY)
 
 void NFAPainter::animateFallingStates(HDC hdc, FallingNFAStateArray &states) {
-  HDC     saveDC  = CreateCompatibleDC(NULL);
-  HBITMAP saveBM  = CreateBitmap(m_size.cx, m_size.cy, 1, 32, NULL);
+  HDC     saveDC  = CreateCompatibleDC(nullptr);
+  HBITMAP saveBM  = CreateBitmap(m_size.cx, m_size.cy, 1, 32, nullptr);
   HRGN    clipRgn = CreateRectRgn(0,0,m_size.cx, m_size.cy);
   HGDIOBJ oldGDI  = SelectObject(saveDC, saveBM);
   SelectClipRgn(hdc, clipRgn);
 
   for(size_t i = 0; i < states.size(); i++) {
-    unpaintState(hdc, states[i].m_p0);
+    unpaintState(hdc, (CPoint)states[i].m_p0);
   }
   SAVEBACKGROUND();
   const int maxY = m_size.cy + CIRCLE_RADIUS;
@@ -549,7 +549,7 @@ void NFAPainter::animateFallingStates(HDC hdc, FallingNFAStateArray &states) {
     bool anyInside = false;
     for(size_t i = 0; i < states.size(); i++) {
       FallingNFAState &s = states[i];
-      s.m_pos = ((g * (0.5 * t)) + v0) * t + s.m_p0;
+      s.m_pos = (CPoint)(((g * (0.5 * t)) + v0) * t + s.m_p0);
       paintState(hdc, s.m_pos, s.m_id, s.m_attributes);
       if(s.m_pos.y <= maxY) anyInside = true;
     }
@@ -565,7 +565,7 @@ void NFAPainter::animateFallingStates(HDC hdc, FallingNFAStateArray &states) {
   DeleteObject(saveBM);
   DeleteDC(saveDC);
 
-  SelectClipRgn(hdc, NULL);
+  SelectClipRgn(hdc, nullptr);
   DeleteObject(clipRgn);
 }
 

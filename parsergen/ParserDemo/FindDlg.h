@@ -51,7 +51,7 @@ private:
   void                 gotoFindWhat();
 // Construction
 public:
-  FindDlg(FindParameter &param, TextContainer &tc, CWnd *pParent = NULL);
+  FindDlg(FindParameter &param, TextContainer &tc, CWnd *pParent = nullptr);
   enum { IDD = IDD_DIALOGFIND };
   BOOL    m_matchCase;
   BOOL    m_matchWholeWord;

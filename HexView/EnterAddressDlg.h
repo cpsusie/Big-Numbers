@@ -14,7 +14,7 @@ private:
   void   errorMessage(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   CEdit *getAddressField();
 public:
-  CEnterAddressDlg(UINT64 docSize, CWnd *pParent = NULL);
+  CEnterAddressDlg(UINT64 docSize, CWnd *pParent = nullptr);
   UINT64 getAddress();
   enum { IDD = IDD_DIALOGENTERADDR };
 

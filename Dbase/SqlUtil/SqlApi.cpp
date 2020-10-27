@@ -32,14 +32,14 @@ SqlApiCom::SqlApiCom(SqlApiCallCode             apicall  ,
   m_ca        = ca;
 }
 
-static BufferedSocket *sqlpipe = NULL;
+static BufferedSocket *sqlpipe = nullptr;
 
 static bool getserverport(TCHAR *servername, unsigned int &portnr) {
   TCHAR *s = _tgetenv(_T("SQLSERVER"));
 
-  if(s == NULL) return false;
+  if(s == nullptr) return false;
   _tcscpy(servername, s);
-  if(((s = _tcschr(servername,';')) != NULL) && _stscanf(s+1,_T("%d"),&portnr) == 1) {
+  if(((s = _tcschr(servername,';')) != nullptr) && _stscanf(s+1,_T("%d"),&portnr) == 1) {
     *s = '\0';
     return true;
   } else {
@@ -49,14 +49,14 @@ static bool getserverport(TCHAR *servername, unsigned int &portnr) {
 
 static void closeconnection() {
   delete sqlpipe;
-  sqlpipe = NULL;
+  sqlpipe = nullptr;
 }
 
 static void openconnection() {
   TCHAR        servername[256];
   unsigned int portnr;
 
-  if(sqlpipe != NULL) {
+  if(sqlpipe != nullptr) {
     throwSqlError(SQL_ERROR_ALREADY_CONNECTED, _T("Application already connected"));
   }
   if(!getserverport(servername,portnr)) {
@@ -75,9 +75,9 @@ static void copyvar(SqlApiVarList &dst, const SqlApiVarList &src) {
 
   int len = dst.sqllen < src.sqllen ? dst.sqllen : src.sqllen;
   memcpy(dst.sqldata,src.sqldata,len);
-  if(dst.sqlind != NULL && src.sqlind != NULL) {
+  if(dst.sqlind != nullptr && src.sqlind != nullptr) {
     memcpy(dst.sqlind, src.sqlind, sizeof(*src.sqlind));
-  } else if(src.sqlind && *src.sqlind == INDICATOR_UNDEFINED && dst.sqlind == NULL) {
+  } else if(src.sqlind && *src.sqlind == INDICATOR_UNDEFINED && dst.sqlind == nullptr) {
     throwSqlError(SQL_NOINDICATOR,_T("Unable to return nullvalue in hostvar because no indicator is specified"));
   }
 }
@@ -117,7 +117,7 @@ static void connect(const SqlApiBindProgramId &programid,
                    ) {
   switch(opt) {
     case SQL_CALL_CONNECT_RESET:
-      if(sqlpipe == NULL) {
+      if(sqlpipe == nullptr) {
         throwSqlError(SQL_ERROR_NO_CONNECTION,_T("No Database-connection"));
         return;
       }
@@ -233,7 +233,7 @@ void sqlapi_call(int                    call     , // SqlApiCallCode
                 ) {
   cca.init();
   if(call != SQL_CALL_CONNECT) {
-    if(sqlpipe == NULL) {
+    if(sqlpipe == nullptr) {
       cca.seterror(SQL_ERROR_NO_CONNECTION, _T("No Databaseconnection"));
       return;
     }
@@ -328,7 +328,7 @@ void sqlapi_unbind(   const TCHAR                *filename ,
 void sqlapi_createdb( const SqlApiCreateDb &crdb,
                       sqlca                &cca) {
 
-  if(sqlpipe != NULL) {
+  if(sqlpipe != nullptr) {
     cca.seterror(SQL_ERROR_ALREADY_CONNECTED, _T("Can't create Database when a connection is open"));
     return;
   }
@@ -351,7 +351,7 @@ void sqlapi_createdb( const SqlApiCreateDb &crdb,
 void sqlapi_dropdb(   const TCHAR                 *dbname,
                       sqlca                       &cca) {
 
-  if(sqlpipe != NULL) {
+  if(sqlpipe != nullptr) {
     cca.seterror(SQL_ERROR_ALREADY_CONNECTED, _T("Can't drop Database when a connection is open"));
     return;
   }

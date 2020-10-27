@@ -85,10 +85,10 @@ PieceKey Game::removePieceAtPosition(int pos, bool resetType) {
   VALIDATEPOS(pos);
 
   Piece *piece = m_board[pos];
-  if(piece == NULL) {
+  if(piece == nullptr) {
     return EMPTYPIECEKEY;
   }
-  m_board[pos] = NULL;
+  m_board[pos] = nullptr;
   if(resetType && piece->isPromotedPawn()) {
     piece->setType(Pawn);
   }
@@ -98,7 +98,7 @@ PieceKey Game::removePieceAtPosition(int pos, bool resetType) {
 
 bool Game::isPositionEmpty(int pos) const {
   VALIDATEPOS(pos);
-  return m_board[pos] == NULL;
+  return m_board[pos] == nullptr;
 }
 
 bool Game::isAddPieceLegal(PieceKey key, int pos, bool validatePromotions) const {
@@ -156,7 +156,7 @@ int Game::getWalkDistance(int pos1, int pos2) { // static
 Game &Game::validateBoard(bool intensive) {
   forEachPlayer(p) {
     PlayerState &state = m_playerState[p];
-    if(state.m_king == NULL || !state.m_king->m_onBoard) {
+    if(state.m_king == nullptr || !state.m_king->m_onBoard) {
       throwUserException(IDS_MSG_s_HAS_NO_KING, getPlayerName(p));
     }
   }
@@ -445,7 +445,7 @@ void Game::initKingDirections() {
 
 int Game::getKingRowAttackedFrom(Player player) const {
   const PlayerState &state = m_playerState[player];
-  if(state.m_king == NULL || !state.m_king->isOnBoard()) {
+  if(state.m_king == nullptr || !state.m_king->isOnBoard()) {
     return -1;
   }
   const int         kingPos = state.m_king->getPosition();
@@ -464,7 +464,7 @@ int Game::getKingRowAttackedFrom(Player player) const {
 
 int Game::getKingColAttackedFrom(Player player) const {
   const PlayerState &state = m_playerState[player];
-  if(state.m_king == NULL || !state.m_king->isOnBoard()) {
+  if(state.m_king == nullptr || !state.m_king->isOnBoard()) {
     return -1;
   }
   const int         kingPos = state.m_king->getPosition();
@@ -548,7 +548,7 @@ int Game::getPawnAttack(Player player, int pos, int diagonal) const { // diagona
     NODEFAULT;
   }
   const Piece *p = m_board[pp];
-  return ((p != NULL) && (p->getType() == Pawn) && (p->getPlayer() == player)) ? 1 : 0;
+  return ((p != nullptr) && (p->getType() == Pawn) && (p->getPlayer() == player)) ? 1 : 0;
 }
 
 const Piece *Game::findLDAttackingPiece(Player player, int pos, bool diagonalAttack) const {
@@ -567,7 +567,7 @@ const Piece *Game::findLDAttackingPiece(Player player, int pos, bool diagonalAtt
       return findFirstPieceInDirection(attInfo.m_attackInfo.m_fromBelove     ? finfo.m_colLine.m_lower   : finfo.m_colLine.m_upper  );
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 int Game::findAttackingKnightPosition(Player player, int pos) const {

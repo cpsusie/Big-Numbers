@@ -8,7 +8,7 @@ CStringExtractor::CStringExtractor(UINT minLength, bool showNames, bool verbose)
 
 void CStringExtractor::extractStrings(const TCHAR *fname) {
   FILE *f = FOPEN(fname, _T("rb"));
-  setvbuf(f, NULL, _IOFBF, 0x10000);
+  setvbuf(f, nullptr, _IOFBF, 0x10000);
 
   while(nextString(f)) {
     outputString();

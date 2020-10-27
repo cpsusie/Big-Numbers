@@ -8,7 +8,7 @@ private:
   OBMButton m_zoomButton, m_reduceButton, m_restoreButton;
 
 public:
-  CTestOBMButtonDlg(CWnd *pParent = NULL);
+  CTestOBMButtonDlg(CWnd *pParent = nullptr);
 
   enum { IDD = IDD_TEST_OBMBUTTON_DIALOG };
   BOOL    m_buttonsEnabled;

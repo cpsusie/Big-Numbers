@@ -10,7 +10,7 @@
 
 typedef enum {
   DEBUGGER_STATE           // DebuggerState
- ,REMES_PROPERTY           // *RemesPropertyData (oldValue = NULL)
+ ,REMES_PROPERTY           // *RemesPropertyData (oldValue = nullptr)
 } DebuggerProperty;
 
 typedef enum {

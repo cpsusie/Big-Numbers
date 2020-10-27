@@ -174,7 +174,7 @@ void Game::updateGameCaptureKing(const Move &m) {
 void Game::updateGameNormalKingMove(const Move &m) {
   Piece *piece = m.m_piece;
 
-  if(m.m_capturedPiece == NULL) {
+  if(m.m_capturedPiece == nullptr) {
     kingLeaveField(m);
     // King never blocks any lines on the new position, which would imply he goes into a check!
     SET_PIECE(m.m_to, piece);

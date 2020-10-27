@@ -130,7 +130,7 @@ void CChessDlg::OnLButtonDownEditMode(UINT nFlags, CPoint point) {
     m_removedPiece     = EMPTYPIECEKEY;
   } else {
     const OffboardPiece *obp = m_graphics->getOffboardPieceByPosition(point);
-    if(obp != NULL) {
+    if(obp != nullptr) {
       m_graphics->beginDragPiece(point, obp);
     }
   }
@@ -261,7 +261,7 @@ void CChessDlg::OnContextMenuEditMode(CWnd *pWnd, CPoint point) {
     for(int i = 0; i < ARRAYSIZE(itemArray[player]); i++) {
       const ContextMenuItem &item = itemArray[player][i];
       if(game.isAddPieceLegal(item.m_key, m_selectedPosition)) {
-        if(pm.m_hMenu == NULL) {
+        if(pm.m_hMenu == nullptr) {
           pm.CreateMenu();
           subMenuCreated = true;
         }

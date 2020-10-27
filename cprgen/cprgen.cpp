@@ -30,7 +30,7 @@ static TCHAR *CPRGenNext(TCHAR *dst) {
     }
   }
   if(i > 9999) {
-    return NULL;
+    return nullptr;
   }
   return dst;
 }
@@ -51,7 +51,7 @@ CprNumberArray::CprNumberArray(const Date &date) : m_date(date) {
   TCHAR str[20];
   m_date.tostr(str, _T("ddMMyy"));
   for(;;) {
-    if(CPRGenNext(str) == NULL) {
+    if(CPRGenNext(str) == nullptr) {
       break;
     };
     add(str);

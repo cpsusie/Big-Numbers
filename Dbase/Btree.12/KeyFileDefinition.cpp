@@ -467,9 +467,9 @@ KeyType &KeyFileDefinition::putRecordAddr(KeyType &key, const DbAddr &addr) cons
 }
 
 /* return 1 if key1 > key2; -1 if key1 < key2; 0 if key1 == key2 */
-/* according to keydef. NULL-value is AFTER notnull-value        */
+/* according to keydef. nullptr-value is AFTER notnull-value        */
 /* return 1 if key1 > key2; -1 if key1 < key2; 0 if key1 == key2 */
-/* according to keydef. NULL-value is AFTER notnull-value        */
+/* according to keydef. nullptr-value is AFTER notnull-value        */
 // optimized for primitive types
 int KeyFileDefinition::keynCmp(const KeyType &key1, const KeyType &key2, UINT fieldCount) const {
   bool defined1, defined2;

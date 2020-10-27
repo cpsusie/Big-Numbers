@@ -8,7 +8,7 @@
 #define new DEBUG_NEW
 #endif
 
-CTablebaseDlg::CTablebaseDlg(CWnd *pParent /*=NULL*/) : CDialog(CTablebaseDlg::IDD, pParent) {
+CTablebaseDlg::CTablebaseDlg(CWnd *pParent /*=nullptr*/) : CDialog(CTablebaseDlg::IDD, pParent) {
   const Options &options = getOptions();
   m_moveCount       = options.getMaxMovesWithoutCaptureOrPawnMove();
     m_defendStrength  = options.getEndGameDefendStrength();

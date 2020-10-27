@@ -2,7 +2,7 @@
 
 class CApproximateFillDlg : public CDialog {
 public:
-  CApproximateFillDlg(UINT tolerance, CWnd *pParent = NULL);
+  CApproximateFillDlg(UINT tolerance, CWnd *pParent = nullptr);
 
   UINT getTolerance() const {
     return m_tolerance;

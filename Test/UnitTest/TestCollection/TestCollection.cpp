@@ -390,10 +390,10 @@ namespace TestCollection {
       Comparator<Key> &comparator = set.getComparator();
       const Key firstKey = set.getMin();
       const Key lastKey = set.getMax();
-      const Key *last = NULL;
+      const Key *last = nullptr;
       while (it.hasNext()) {
         Key &key = it.next();
-        if(last != NULL) {
+        if(last != nullptr) {
           verify(comparator.compare(*last, key) < 0);
         } else {
           verify(comparator.compare(firstKey, key) == 0);
@@ -618,7 +618,7 @@ namespace TestCollection {
         int index = rand() % list.size();
         KeyElement &a = list[index];
         Element *e = map.get(a.m_key);
-        verify(e != NULL);
+        verify(e != nullptr);
         verify(*e == a.m_elem);
         verify(map.remove(a.m_key));
         list.removeIndex(index);
@@ -643,10 +643,10 @@ namespace TestCollection {
       const Key firstKey2 = map.entrySet().getMin().getKey();
       const Key lastKey2 = map.entrySet().getMax().getKey();
 
-      const Key *last = NULL;
+      const Key *last = nullptr;
       while(it.hasNext()) {
         Entry<Key, Element> *e = &it.next();
-        if(last != NULL) {
+        if(last != nullptr) {
           verify(comparator.compare(*last, e->getKey()) < 0);
         } else {
           verify(comparator.compare(firstKey1, e->getKey()) == 0);
@@ -688,7 +688,7 @@ namespace TestCollection {
 
     for(size_t i = 0; i < list.size(); i++) {
       const KeyElement &e = list[i];
-      verify(map.get(e.m_key) != NULL);
+      verify(map.get(e.m_key) != nullptr);
     }
 
     INFO(_T("Testing map.addAll"));
@@ -700,7 +700,7 @@ namespace TestCollection {
     while(it1.hasNext()) {
       const Key &k = it1.next().getKey();
       count++;
-      verify(bigmap.get(k) != NULL);
+      verify(bigmap.get(k) != nullptr);
     }
     verify(count == map.size());
 
@@ -710,7 +710,7 @@ namespace TestCollection {
     INFO(_T("Testing map.iterator2"));
     for(Iterator<Entry<Key, Element> > it2 = bigmap.getIterator(); it2.hasNext();) {
       const Key &k = it2.next().getKey();
-      verify(map.get(k) != NULL);
+      verify(map.get(k) != nullptr);
     }
     INFO(_T("Testing map.remove"));
     for(intptr_t i = list.size() - 1; i >= 0; i--) {

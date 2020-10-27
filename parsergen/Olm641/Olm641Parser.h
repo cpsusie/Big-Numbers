@@ -9,7 +9,7 @@ class Olm641Parser : public LRparser {
 public:
   static const ParserTables *Olm641Tables;
 public:
-  Olm641Parser(Scanner *lex=NULL) : LRparser(*Olm641Tables,lex) {
+  Olm641Parser(Scanner *lex=nullptr) : LRparser(*Olm641Tables,lex) {
   }
 private:
   int m_leftSide,*m_stacktop,m_userstack[256];

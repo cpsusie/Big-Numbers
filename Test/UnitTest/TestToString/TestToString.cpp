@@ -43,9 +43,9 @@ static const double defaultTestValues[] = {
 
 int getLastMantissaDigit(const char *s) {
   const char *epos = strchr(s, 'e');
-  if(epos == NULL) epos = strchr(s, 'E');
+  if(epos == nullptr) epos = strchr(s, 'E');
   const char *last;;
-  if(epos != NULL) {
+  if(epos != nullptr) {
     last = epos - 1;
   } else {
     for(last = s + strlen(s); last >= s && isspace(*last); last--);

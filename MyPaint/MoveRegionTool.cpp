@@ -2,11 +2,11 @@
 #include "DrawTool.h"
 
 MoveRegionTool::MoveRegionTool(PixRectContainer *container) : DrawTool(container) {
-  m_copy = m_mask = m_old = NULL;
+  m_copy = m_mask = m_old = nullptr;
 }
 
 MoveRegionTool::~MoveRegionTool() {
-  if(m_copy != NULL) {
+  if(m_copy != nullptr) {
     invertPolygon();
     releaseCopy();
   }
@@ -20,14 +20,14 @@ void MoveRegionTool::releaseCopy() {
 }
 
 void MoveRegionTool::invertPolygon(bool redraw) {
-  getImage()->polygon(m_polygon,BLACK,true,m_copy!=NULL);
+  getImage()->polygon(m_polygon,BLACK,true,m_copy!=nullptr);
   if(redraw) {
     repaint();
   }
 }
 
 void MoveRegionTool::OnLButtonDown(UINT nFlags, const CPoint &point) {
-  if(m_copy == NULL) {
+  if(m_copy == nullptr) {
     m_polygon.add(point);
     invertPolygon();
   } else if(m_polygon.contains(point) == 1) {
@@ -44,7 +44,7 @@ void MoveRegionTool::OnLButtonDown(UINT nFlags, const CPoint &point) {
 
 void MoveRegionTool::OnMouseMove(UINT nFlags, const CPoint &point) {
   if(nFlags & MK_LBUTTON) {
-    if(m_copy == NULL) {
+    if(m_copy == nullptr) {
       invertPolygon(false); // remove polygon
       m_polygon.add(point);
       invertPolygon(); // draw polygon
@@ -56,7 +56,7 @@ void MoveRegionTool::OnMouseMove(UINT nFlags, const CPoint &point) {
       m_polygon.move(point - m_lastPoint);
       m_lastPoint = point;
       m_old->rop(ORIGIN,m_rect.Size(),SRCCOPY, getImage(),m_rect.TopLeft());
-//      getImage()->rop(m_rect.TopLeft(),m_rect.Size(),DSTINVERT,NULL,ORIGIN);
+//      getImage()->rop(m_rect.TopLeft(),m_rect.Size(),DSTINVERT,nullptr,ORIGIN);
 //      getImage()->mask(m_rect.TopLeft(),m_rect.Size(),MAKEROP4(SRCCOPY,DSTINVERT), m_copy,ORIGIN, m_mask);
       getImage()->mask(m_rect.TopLeft(),m_rect.Size(),SRCCOPY, m_copy,ORIGIN, m_mask);
       repaint();
@@ -65,7 +65,7 @@ void MoveRegionTool::OnMouseMove(UINT nFlags, const CPoint &point) {
 }
 
 void MoveRegionTool::OnLButtonUp(UINT nFlags, const CPoint &point) {
-  if(m_copy == NULL) {
+  if(m_copy == nullptr) {
     invertPolygon();   // remove polygon
     m_rect = m_polygon.getBoundsRect();                                                             // define rect
     if(m_polygon.size() > 2 && m_rect.Width() > 0 && m_rect.Height() > 0) {                         // if valid rectangle
@@ -93,5 +93,5 @@ void MoveRegionTool::createMask() {
 }
 
 int MoveRegionTool::getCursorId() const {
-  return m_copy == NULL ? IDC_CURSORHAIRCROSS : IDC_CURSORMOVE4WAYS;
+  return m_copy == nullptr ? IDC_CURSORHAIRCROSS : IDC_CURSORMOVE4WAYS;
 }

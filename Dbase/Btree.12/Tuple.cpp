@@ -7,7 +7,7 @@ Tuple::Tuple(UINT size) {
 
 String Tuple::toString() const {
   String result;
-  const TCHAR *delim = NULL;
+  const TCHAR *delim = nullptr;
   for(size_t i = 0; i < size(); i++) {
     if(delim) {
       result += delim;
@@ -21,7 +21,7 @@ String Tuple::toString() const {
 
 String Tuple::toString(const TuplePrintDefinition &def) const {
   String result;
-  const TCHAR *delim = NULL;
+  const TCHAR *delim = nullptr;
   for(size_t i = 0; i < size(); i++) {
     if(delim) {
       result += delim;

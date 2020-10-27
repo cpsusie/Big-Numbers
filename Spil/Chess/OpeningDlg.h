@@ -15,7 +15,7 @@ private:
   Game &getSelectedVariant(Game &g);
   String getActiveOpenings();
 public:
-    COpeningDlg(CWnd *pParent = NULL);
+    COpeningDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_OPENINGLIB_DIALOG };
 

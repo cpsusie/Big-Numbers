@@ -35,14 +35,14 @@ public:
   bool      m_visible;
 
   MazeWall(int dummy=0) {
-    m_c1 = m_c2 = NULL;
+    m_c1 = m_c2 = nullptr;
     m_visible = true;
   }
 
   MazeWall(CPoint p1, CPoint p2) {
     m_p1 = p1;
     m_p2 = p2;
-    m_c1 = m_c2 = NULL;
+    m_c1 = m_c2 = nullptr;
     m_visible   = true;
   }
 

@@ -46,7 +46,7 @@ private:
     return DoubleInterval(m_zfrom, m_zto);
   }
 public:
-  CIsoSurfaceParametersDlg(const ExprIsoSurfaceParameters &param, AbstractTextureFactory &atf, CWnd *pParent = NULL);
+  CIsoSurfaceParametersDlg(const ExprIsoSurfaceParameters &param, AbstractTextureFactory &atf, CWnd *pParent = nullptr);
 
 #if defined(ISODEBUGGER)
   inline bool getDebugPolygonizer() const {

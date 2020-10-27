@@ -1070,9 +1070,9 @@ YYPRIVATE YY_TTYPE Yyg359[]={ 2, 47,346 , 28,360 };
 YYPRIVATE YY_TTYPE *Yy_goto[361] =
 {
 /*   0 */  Yyg000,
-/*   1 */  Yyg001, Yyg002,   NULL,   NULL, Yyg005,   NULL, Yyg007, Yyg008,
-/*   9 */    NULL,   NULL,   NULL,   NULL,   NULL,   NULL,   NULL,   NULL,
-/*  17 */    NULL,   NULL, Yyg019,   NULL,   NULL,   NULL,   NULL, Yyg024,
+/*   1 */  Yyg001, Yyg002,   nullptr,   nullptr, Yyg005,   nullptr, Yyg007, Yyg008,
+/*   9 */    nullptr,   nullptr,   nullptr,   nullptr,   nullptr,   nullptr,   nullptr,   nullptr,
+/*  17 */    nullptr,   nullptr, Yyg019,   nullptr,   NULL,   NULL,   NULL, Yyg024,
 /*  25 */  Yyg025, Yyg026,   NULL, Yyg028,   NULL,   NULL, Yyg031,   NULL,
 /*  33 */  Yyg033,   NULL, Yyg035,   NULL, Yyg037,   NULL,   NULL, Yyg040,
 /*  41 */    NULL,   NULL,   NULL,   NULL,   NULL,   NULL,   NULL,   NULL,
@@ -1663,7 +1663,7 @@ printf("size:%d\n",size);
   }
   for(i = 0; i < 361; i++) {
     p = Yy_goto[i];
-    if(p == NULL) continue;
+    if(p == nullptr) continue;
     size += (p[0] * 2 + 1) * sizeof(YY_TTYPE);
   }
   size += sizeof(void*) * 361 * 2;

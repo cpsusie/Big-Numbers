@@ -12,7 +12,7 @@ class ParamDlg : public CDialog {
 private:
   ParamDlgParameters &m_params;
 public:
-  ParamDlg(ParamDlgParameters &params, CWnd *pParent = NULL);
+  ParamDlg(ParamDlgParameters &params, CWnd *pParent = nullptr);
 
   enum { IDD = IDD_DIALOGTRAININGPARAMDIALOG };
   float   m_learningrate;

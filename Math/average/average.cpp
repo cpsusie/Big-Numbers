@@ -47,7 +47,7 @@ int _tmain(int argc, TCHAR **argv) {
     DataSet fileData;
     fileData.fileName = *argv;
 
-    while(FGETS(line,ARRAYSIZE(line),f) != NULL) {
+    while(FGETS(line,ARRAYSIZE(line),f) != nullptr) {
       lineCount++;
       Point p;
       if(_stscanf(line,_T("%le %le"),&p.x,&p.y) != 2) {

@@ -25,7 +25,7 @@ MoveResultArray &EndGameTablebase::getAllMoves(const GameKey &gameKey, MoveResul
   Game            game = gameKey;
   Move            m;
   m.clearAnnotation();
-  const Piece    *skipNextPromotion = NULL;
+  const Piece    *skipNextPromotion = nullptr;
 
   MoveGenerator &mg = game.getMoveGenerator();
   game.pushState();
@@ -35,7 +35,7 @@ MoveResultArray &EndGameTablebase::getAllMoves(const GameKey &gameKey, MoveResul
       if(m.m_piece == skipNextPromotion) {
         continue;
       } else {
-        skipNextPromotion = NULL;
+        skipNextPromotion = nullptr;
       }
     }
     UINT pliesToEnd;
@@ -96,7 +96,7 @@ MoveResult2Array &EndGameTablebase::getAllMoves(const GameKey &gameKey, MoveResu
   Game            game = gameKey;
   Move            m;
   m.clearAnnotation();
-  const Piece    *skipNextPromotion = NULL;
+  const Piece    *skipNextPromotion = nullptr;
 
   MoveGenerator &mg = game.getMoveGenerator();
   game.pushState();
@@ -106,7 +106,7 @@ MoveResult2Array &EndGameTablebase::getAllMoves(const GameKey &gameKey, MoveResu
       if(m.m_piece == skipNextPromotion) {
         continue;
       } else {
-        skipNextPromotion = NULL;
+        skipNextPromotion = nullptr;
       }
     }
     UINT            pliesToEnd;

@@ -8,7 +8,7 @@
 #define new DEBUG_NEW
 #endif
 
-CRunLayoutManagerDlg::CRunLayoutManagerDlg(int windowFlags, int list1Flags, int list2Flags, int buttonFlags, CWnd *pParent /*=NULL*/)
+CRunLayoutManagerDlg::CRunLayoutManagerDlg(int windowFlags, int list1Flags, int list2Flags, int buttonFlags, CWnd *pParent /*=nullptr*/)
 : CDialog(CRunLayoutManagerDlg::IDD, pParent)
 {
 
@@ -205,7 +205,7 @@ String toString(const CRect &r) {
 
 void CRunLayoutManagerDlg::showLayout() {
   CWnd *infoWin = GetDlgItem(IDC_STATIC_INFO);
-  if(infoWin != NULL) {
+  if(infoWin != nullptr) {
     infoWin->SetWindowText(format(_T("%s %s"), winStr(IDC_LIST1).cstr(), winStr(IDC_LIST2).cstr()).cstr());
   }
 }

@@ -88,7 +88,7 @@ int main(int argc, const char **argv) {
     }
   }
 
-  if(*argv == NULL) {
+  if(*argv == nullptr) {
     usage();
   }
 

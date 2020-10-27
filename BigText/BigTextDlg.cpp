@@ -27,7 +27,7 @@ CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX) {
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
-CBigTextDlg::CBigTextDlg(CWnd* pParent /*=NULL*/)
+CBigTextDlg::CBigTextDlg(CWnd* pParent /*=nullptr*/)
   : CDialogEx(IDD_BIGTEXT_DIALOG, pParent)
   , m_text(EMPTYSTRING)
 {
@@ -55,7 +55,7 @@ BOOL CBigTextDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL)	{
+  if(pSysMenu != nullptr)	{
     BOOL bNameValid;
     CString strAboutMenu;
     bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -122,7 +122,7 @@ void CBigTextDlg::OnClickedMakeBigText() {
   StringArray textLines(Tokenizer(text, _T("\n\r")));
   const CSize textSize = getTextExtent1(dc, textLines);
   dc.SelectObject(oldFont);
-  HDC         hdc   = CreateCompatibleDC(NULL);
+  HDC         hdc   = CreateCompatibleDC(nullptr);
   HBITMAP     bm    = CreateCompatibleBitmap(hdc, textSize.cx, textSize.cy);
   HGDIOBJ     oldBM = SelectObject(hdc, bm);
   CBrush      brush;
@@ -157,7 +157,7 @@ void CBigTextDlg::OnClickedMakeBigText() {
   fclose(f);
 
 
-  ExternProcess::run(false, _T("c:\\windows\\system32\\notepad.exe"), fileName.cstr(), NULL);
+  ExternProcess::run(false, _T("c:\\windows\\system32\\notepad.exe"), fileName.cstr(), nullptr);
 }
 
 void CBigTextDlg::OnClose() {

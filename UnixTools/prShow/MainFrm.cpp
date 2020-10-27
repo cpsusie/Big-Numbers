@@ -75,7 +75,7 @@ void CMainFrame::Dump(CDumpContext& dc) const {
 
 CImageDoc *CMainFrame::getDocument() {
   CImageView *view = getView();
-  return view ? view->GetDocument() : NULL;
+  return view ? view->GetDocument() : nullptr;
 }
 
 BOOL CMainFrame::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {

@@ -4,7 +4,7 @@ class CPasswordDlg : public CDialog {
 private:
   CString m_expectedPassword;
 public:
-    CPasswordDlg(const String &expectedPassword, CWnd *pParent = NULL);
+    CPasswordDlg(const String &expectedPassword, CWnd *pParent = nullptr);
 
     enum { IDD = IDD_PASSWORD_DIALOG };
     CString m_password;

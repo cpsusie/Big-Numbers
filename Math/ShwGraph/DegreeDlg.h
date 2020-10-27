@@ -2,7 +2,7 @@
 
 class DegreeDlg : public CDialog {
 public:
-    DegreeDlg(int degree, CWnd *pParent = NULL);
+    DegreeDlg(int degree, CWnd *pParent = nullptr);
 
     enum { IDD = IDD_DEGREE_DIALOG };
     UINT    m_degree;

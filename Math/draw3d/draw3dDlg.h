@@ -15,7 +15,7 @@ private:
   void rotateCameraLeftRight( float angle );
   void sidewalkWithCamera(    float up  , float right );
 public:
-  CDraw3dDlg(CWnd *pParent = NULL);
+  CDraw3dDlg(CWnd *pParent = nullptr);
 
   enum { IDD = IDD_DRAW3D_DIALOG };
 

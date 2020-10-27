@@ -25,7 +25,7 @@ public:
 
 void ResourceChecker::checkResources(const String &fileName) {
 #if defined(DUMPSYMBOLS)
-  FILE *log = NULL;
+  FILE *log = nullptr;
 #endif
 
   try {

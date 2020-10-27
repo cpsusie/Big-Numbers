@@ -76,8 +76,8 @@ static UINT indicators[] = {
 
 CMainFrame::CMainFrame() {
   m_currentDegree            = 0;
-  m_gridDlg                  = NULL;
-  m_gridDlgThread            = NULL;
+  m_gridDlg                  = nullptr;
+  m_gridDlgThread            = nullptr;
   m_created                  = false;
 }
 
@@ -576,11 +576,11 @@ void CMainFrame::applyMirror(bool vertical) {
 }
 
 void CMainFrame::createGridDlg() {
-  if(m_gridDlg == NULL) {
+  if(m_gridDlg == nullptr) {
     m_gridDlg = new CGridDlg(); TRACE_NEW(m_gridDlg);
     m_gridDlg->addPropertyChangeListener(this);
   }
-  if(m_gridDlgThread == NULL) {
+  if(m_gridDlgThread == nullptr) {
     m_gridDlgThread = CPropertyDialogThread::startThread(m_gridDlg);
   }
 }
@@ -591,10 +591,10 @@ void CMainFrame::destroyGridDlg() {
   }
   if(m_gridDlgThread) {
     m_gridDlgThread->kill();
-    m_gridDlgThread = NULL;
+    m_gridDlgThread = nullptr;
   }
 }
 
 bool CMainFrame::hasGridDlg() const {
-  return m_gridDlgThread != NULL;
+  return m_gridDlgThread != nullptr;
 }

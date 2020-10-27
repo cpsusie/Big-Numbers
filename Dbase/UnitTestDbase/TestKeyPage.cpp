@@ -131,7 +131,7 @@ namespace UnitTestKeyPage {
         KeyPageItem item;
         item.m_key = fields.getKey();
         item.m_child = i + 1;
-        itemList.add(insertPoint-1,item);
+        itemList.insert(insertPoint-1,item);
         keyPage.insertItem(insertPoint,item);
         fields.incrAll();
         if(i % 3 == 0)

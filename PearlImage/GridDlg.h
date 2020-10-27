@@ -40,7 +40,7 @@ private:
   bool getDoubleValue(  int id, double &value);
   CSize getImageSize() const;
 public:
-  CGridDlg(CWnd *pParent = NULL);
+  CGridDlg(CWnd *pParent = nullptr);
   virtual ~CGridDlg();
 
   enum { IDD = IDR_PEARLGRID };

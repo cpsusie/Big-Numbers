@@ -28,7 +28,7 @@ void ParserTree::listErrors(FILE *f) {
 
 void ParserTree::listErrors(char *fileName) {
   FILE *f = fopen(fileName,"w");
-  if(f == NULL) {
+  if(f == nullptr) {
     fprintf(stdout,"Cannot open %s\n",fileName);
     listErrors(stdout);
   }
@@ -40,7 +40,7 @@ void ParserTree::listErrors(char *fileName) {
 
 ParserTree::ParserTree() {
   m_ok   = true;
-  m_root = NULL;
+  m_root = nullptr;
 }
 
 void ParserTree::parse(const char *fileName) {
@@ -111,7 +111,7 @@ void dumpSyntaxTree( SyntaxNode *node, FILE *f, int indent) {
 
 void dumpSyntaxTree(SyntaxNode *root, char *fileName, int indent) {
   FILE *f = fopen(fileName,"w");
-  if(f == NULL) {
+  if(f == nullptr) {
     fprintf(stdout,"Cannot open %s\n",fileName);
     dumpSyntaxTree(root,stdout,indent);
   }
@@ -123,7 +123,7 @@ void dumpSyntaxTree(SyntaxNode *root, char *fileName, int indent) {
 
 void ParserTree::dumpTree(char *fileName) {
   FILE *f = fopen(fileName,"w");
-  if(f == NULL) return;
+  if(f == nullptr) return;
   dumpSyntaxTree(m_root,f);
   fclose(f);
 }

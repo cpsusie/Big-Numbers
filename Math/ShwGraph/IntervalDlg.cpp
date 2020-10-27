@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-IntervalDlg::IntervalDlg(CWnd *pParent /*=NULL*/) : CDialog(IntervalDlg::IDD, pParent) {
+IntervalDlg::IntervalDlg(CWnd *pParent /*=nullptr*/) : CDialog(IntervalDlg::IDD, pParent) {
     m_maxxstr = EMPTYSTRING;
     m_maxystr = EMPTYSTRING;
     m_minxstr = EMPTYSTRING;

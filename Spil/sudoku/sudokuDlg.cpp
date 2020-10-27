@@ -83,7 +83,7 @@ BOOL CSudokuDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -513,7 +513,7 @@ void CSudokuDlg::OnGameErrors() {
 }
 
 void CSudokuDlg::startTimer() {
-  if(!m_timerIsRunning && SetTimer(1,1000,NULL)) {
+  if(!m_timerIsRunning && SetTimer(1,1000,nullptr)) {
     m_timerIsRunning = true;
     time(&m_startTime);
   }

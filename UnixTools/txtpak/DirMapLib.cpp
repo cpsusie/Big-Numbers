@@ -27,9 +27,9 @@ void DirMapLib::open(OpenMode mode, bool checkSubDirCount) {
 }
 
 void DirMapLib::close() {
-  if(m_guidMap != NULL) {
+  if(m_guidMap != nullptr) {
     delete m_guidMap;
-    m_guidMap = NULL;
+    m_guidMap = nullptr;
   }
 }
 
@@ -59,7 +59,7 @@ static void removeNamesWithLibPath(StringArray &names, const String &libName) {
 
 size_t DirMapLib::addFiles(const StringArray &names, const LibraryContent *content) {
   StringArray names1 = names;
-  if(content != NULL) { // we are doing an update
+  if(content != nullptr) { // we are doing an update
     removeNamesWithLibPath(names1, getLibName());
   }
 
@@ -72,7 +72,7 @@ size_t DirMapLib::addFiles(const StringArray &names, const LibraryContent *conte
       if(name.equalsIgnoreCase(libName)) {
         continue; // do not process library !!
       }
-      if(content && (content->get(name) != NULL)) {
+      if(content && (content->get(name) != nullptr)) {
         continue;
       }
       if(m_verbose) {
@@ -167,7 +167,7 @@ void DirMapLib::removeLib(const String &libName) { // static
   RMDIR(libName);
 }
 
-// list can be NULL. return number of elements in lib, matching argv
+// list can be nullptr. return number of elements in lib, matching argv
 size_t DirMapLib::getInfoList(Array<FileInfo> *list) const {
   if(list) list->clear();
   size_t count = 0;
@@ -182,5 +182,5 @@ size_t DirMapLib::getInfoList(Array<FileInfo> *list) const {
 }
 
 size_t DirMapLib::getUnpackCount() const {
-  return isMatchAll() ? m_guidMap->size() : getInfoList(NULL);
+  return isMatchAll() ? m_guidMap->size() : getInfoList(nullptr);
 }

@@ -50,7 +50,7 @@ public:
     HINSTANCE m_hInstance;
     HICON     m_hIcon;
     HACCEL    m_accelTabel;
-    CCalculatorDlg(CWnd *pParent = NULL);
+    CCalculatorDlg(CWnd *pParent = nullptr);
     ~CCalculatorDlg();
     void showStatus();
     void checkRadix(int radix);

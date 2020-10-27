@@ -7,7 +7,7 @@ class BacksideDialog : public CDialog, public OptionsAccessor {
 private:
   Array<CardButton*> m_buttons;
 public:
-    BacksideDialog(CWnd *pParent = NULL);
+    BacksideDialog(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_BACKSIDE_DIALOG };
 

@@ -28,7 +28,7 @@ private:
 protected:
   String getListFileName() const;
 public:
-  CIsoCurveGraphDlg(IsoCurveGraphParameters &param, CWnd *pParent = NULL);
+  CIsoCurveGraphDlg(IsoCurveGraphParameters &param, CWnd *pParent = nullptr);
   enum { IDD = IDR_ISOCURVE };
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);

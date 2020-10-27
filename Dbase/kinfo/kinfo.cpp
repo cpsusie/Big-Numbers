@@ -4,7 +4,7 @@
 static void checkIntegrity(KeyFile &file, const KeyFileInfo &info) {
   _tprintf(_T("Checking integrity of keyfile...\n"));
 
-  KeyCursor cursor(file, RELOP_TRUE, NULL, 0, RELOP_TRUE, NULL, 0, SORT_ASCENDING);
+  KeyCursor cursor(file, RELOP_TRUE, nullptr, 0, RELOP_TRUE, nullptr, 0, SORT_ASCENDING);
   const KeyFileDefinition keydef(file);
   KeyType lastKey;
   unsigned __int64 keyCounter = 0;
@@ -112,7 +112,7 @@ int _tmain(int argc, TCHAR **argv) {
     const String fileName = *argv;
     const DbFileMode fileMode = importData ? DBFMODE_READWRITE : DBFMODE_READONLY;
 
-    KeyFile file(fileName, fileMode, NULL);
+    KeyFile file(fileName, fileMode, nullptr);
     KeyFileInfo info = file.getInfo();
     if(printInfo) {
       _tprintf(_T("%s\n"),info.toString().cstr());
@@ -131,7 +131,7 @@ int _tmain(int argc, TCHAR **argv) {
       checkIntegrity(file, info);
     }
     if(exportData) {
-      KeyCursor cursor(file,RELOP_TRUE,NULL,0,RELOP_TRUE,NULL,0,SORT_ASCENDING);
+      KeyCursor cursor(file,RELOP_TRUE,nullptr,0,RELOP_TRUE,nullptr,0,SORT_ASCENDING);
       const KeyFileDefinition &keydef = info.m_header.m_keydef;
       const __int64 totalKeyCount = info.m_header.m_keyCount;
             __int64 lineCount     = 0;

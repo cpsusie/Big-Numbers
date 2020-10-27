@@ -3,8 +3,8 @@
 class FrameGenerator {
 public:
   virtual CSize    getFrameSize()  = 0;
-  virtual HBITMAP  nextBitmap() {    // should return NULL when no more frames.
-    return NULL;
+  virtual HBITMAP  nextBitmap() {    // should return nullptr when no more frames.
+    return nullptr;
   }
   virtual String   getDirName() = 0;
 };

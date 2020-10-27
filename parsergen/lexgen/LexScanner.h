@@ -72,7 +72,7 @@ private:
   }
   // Gets a regular expression and the associated String from input
   // Returns a pointer to the input String normally.
-  // Returns NULL on end of file or if a line beginning with % is
+  // Returns nullptr on end of file or if a line beginning with % is
   // encountered. All blank lines are discarded and all lines that start with
   // whitespace are concatenated to the previous line.
   // Lineno is set to the line number of the top line of a multiple-line block

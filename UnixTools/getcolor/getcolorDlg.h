@@ -2,7 +2,7 @@
 
 class CGetcolorDlg : public CDialog {
 public:
-  CGetcolorDlg(CWnd *pParent = NULL);
+  CGetcolorDlg(CWnd *pParent = nullptr);
 
   HBITMAP hbmScreen;
   HICON   m_hIcon;

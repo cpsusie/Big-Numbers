@@ -10,7 +10,7 @@ class CppLex : public Scanner {
 private:
   LRparser *m_parser;
 public:
-  CppLex() { m_parser = NULL; }
+  CppLex() { m_parser = nullptr; }
   void setParser(LRparser *parser) { m_parser = parser; }
   int  getNextLexeme() override;
   void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) override;
@@ -212,7 +212,7 @@ static int nameOrKeyWord(TCHAR *lexeme) {
 }
 
 void CppLex::verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) {
-  if(m_parser==NULL) {
+  if(m_parser==nullptr) {
     Scanner::verror(pos, format, argptr);
   } else {
     m_parser->verror(pos, format, argptr);

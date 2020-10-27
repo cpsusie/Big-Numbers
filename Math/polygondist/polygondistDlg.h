@@ -29,7 +29,7 @@ private:
   void OnLButtonUpPoly(   UINT nFlags, CPoint point);
   void OnRButtonDownPoly( UINT nFlags, CPoint point);
 public:
-  CPolygondistDlg(CWnd *pParent = NULL);
+  CPolygondistDlg(CWnd *pParent = nullptr);
 
   enum { IDD = IDD_POLYGONDIST_DIALOG };
 

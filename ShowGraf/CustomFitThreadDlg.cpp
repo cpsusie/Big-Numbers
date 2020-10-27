@@ -17,8 +17,8 @@ CCustomFitThreadDlg::CCustomFitThreadDlg(const CString &expr, const DoubleInterv
   m_expr  = expr;
   setXInterval(range);
   m_name  = EMPTYSTRING;
-  m_functionFitter = NULL;
-  m_worker         = NULL;
+  m_functionFitter = nullptr;
+  m_worker         = nullptr;
 }
 
 void CCustomFitThreadDlg::DoDataExchange(CDataExchange *pDX) {
@@ -75,7 +75,7 @@ BOOL CCustomFitThreadDlg::PreTranslateMessage(MSG *pMsg) {
 }
 
 void CCustomFitThreadDlg::updateButtons() {
-  if(m_functionFitter == NULL) {
+  if(m_functionFitter == nullptr) {
     GetDlgItem(IDC_BUTTONRESTART)->EnableWindow(TRUE );
     GetDlgItem(IDC_BUTTONSTEP   )->EnableWindow(FALSE);
     GetDlgItem(IDC_BUTTONSOLVE  )->EnableWindow(FALSE);
@@ -165,7 +165,7 @@ CStatic *CCustomFitThreadDlg::infofield(int i) {
 }
 
 void CCustomFitThreadDlg::startTimer() {
-  intptr_t iInstallResult = SetTimer(1,500,NULL);
+  intptr_t iInstallResult = SetTimer(1,500,nullptr);
 }
 
 void CCustomFitThreadDlg::stopTimer() {
@@ -181,7 +181,7 @@ void CCustomFitThreadDlg::printf(int field, _In_z_ _Printf_format_string_ TCHAR 
 }
 
 void CCustomFitThreadDlg::showInfo() {
-  if (m_functionFitter == NULL) {
+  if (m_functionFitter == nullptr) {
     return;
   }
   int i;
@@ -212,7 +212,7 @@ void CCustomFitThreadDlg::OnOK() {
     showWarning(_T("Must specify name"));
     return;
   }
-  if(m_functionFitter == NULL) {
+  if(m_functionFitter == nullptr) {
     showWarning(_T("Illegal state:called OnOk with no functionfitter defined"));
     return;
   }
@@ -235,7 +235,7 @@ void CCustomFitThreadDlg::OnCancel() {
 }
 
 void CCustomFitThreadDlg::startWorker(int loopCounter) {
-  if(m_functionFitter == NULL || m_worker == NULL) {
+  if(m_functionFitter == nullptr || m_worker == nullptr) {
     showWarning(_T("Illegal state:called startWorker with no functionfitter defined"));
     return;
   }
@@ -250,7 +250,7 @@ void CCustomFitThreadDlg::OnButtonRestart() {
   UpdateData();
   allocateFunctionFitter();
   updateButtons();
-  if(m_functionFitter != NULL) {
+  if(m_functionFitter != nullptr) {
     m_functionFitter->init();
     showInfo();
   }

@@ -102,7 +102,7 @@ private:
   void showMousePosition(const CPoint &p);
   D3Device &getDevice();
 public:
-  CProfileDlg(CWnd *pParent = NULL);
+  CProfileDlg(CWnd *pParent = nullptr);
  ~CProfileDlg();
   void setProfileName(const String &name);
   inline D3SceneEditor &getD3SceneEditor() {

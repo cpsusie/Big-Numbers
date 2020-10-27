@@ -20,7 +20,7 @@ private:
   void   enableTimeFields();
 
 public:
-  CParametricR1R3SurfaceParametersDlg(const ExprParametricR1R3SurfaceParameters &param, AbstractTextureFactory &atf, CWnd *pParent = NULL);
+  CParametricR1R3SurfaceParametersDlg(const ExprParametricR1R3SurfaceParameters &param, AbstractTextureFactory &atf, CWnd *pParent = nullptr);
   virtual ~CParametricR1R3SurfaceParametersDlg();
 
   enum { IDD = IDR_PARAMETRICR1R3SURFACE };

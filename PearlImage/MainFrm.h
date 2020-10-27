@@ -35,12 +35,12 @@ private:
   bool   hasGridDlg() const;
 
   inline CPearlImageView *getView() {
-    return m_created ? (CPearlImageView*)GetActiveView() : NULL;
+    return m_created ? (CPearlImageView*)GetActiveView() : nullptr;
   }
 
   inline CPearlImageDoc *getDocument() {
     CPearlImageView *view = getView();
-    return view ? view->GetDocument() : NULL;
+    return view ? view->GetDocument() : nullptr;
   }
 
 protected:

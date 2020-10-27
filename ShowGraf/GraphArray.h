@@ -83,12 +83,12 @@ public:
   const GraphItem *getSelectedGraphItem() const {
     return (getCurrentSelection().getType() == GRAPHSELECTED)
          ? &(*this)[getCurrentSelection().getIndex()]
-         : NULL;
+         : nullptr;
   }
   MoveablePoint *getSelectedPoint() const {
     return (getCurrentSelection().getType() == POINTSELECTED)
          ? m_pointArray[getCurrentSelection().getIndex()]
-         : NULL;
+         : nullptr;
   }
 
   int  getMaxButtonWidth(CDC &dc, CFont &font) const;

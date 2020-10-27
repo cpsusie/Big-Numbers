@@ -236,11 +236,11 @@ DbMainType SqlCompiler::checkValueExpressionMainType(const SyntaxNode *expr) {
 
 void SqlCompiler::checkExpressionType(InsertColumnExpression &col) {
   const SyntaxNode *p = findFirstTableReference(col.m_expr);
-  if(p != NULL)
+  if(p != nullptr)
     syntaxError(p,SQL_INVALID_EXPR_TYPE,_T("Columnnames not allowed in valuelist"));
 
   p = findFirstAggregateFunction(col.m_expr);
-  if(p != NULL)
+  if(p != nullptr)
     syntaxError(p,SQL_INVALID_EXPR_TYPE,_T("Aggregation not allowed in valuelist"));
 
   DbMainType exprtype = checkValueExpressionMainType(col.m_expr);
@@ -272,9 +272,9 @@ void SqlCompiler::checkExpressionType(InsertColumnExpression &col) {
 SyntaxNode *SqlCompiler::fetchDefaultValueNode(const ColumnDefinition &col) {
   if(col.m_defaultValue.length() == 0) { // has no default-value
     if(col.m_nullAllowed)
-      return fetchTokenNode(NULLVAL,NULL);
+      return fetchTokenNode(NULLVAL,nullptr);
     else
-      return NULL; // no default, nulls not allowed. i.e. syntaxError !
+      return nullptr; // no default, nulls not allowed. i.e. syntaxError !
   }
   else { // defaultvalue specified. now find the type an return a syntaxnode of the right type
     switch(getMainType(col.getType())) {
@@ -291,14 +291,14 @@ SyntaxNode *SqlCompiler::fetchDefaultValueNode(const ColumnDefinition &col) {
       return fetchTimestampNode(Timestamp(col.m_defaultValue.cstr()));
     default               :
       throwSqlError(SQL_FATAL_ERROR,_T("Unexpected datatype in fetchDefaultValueNode:%d col:<%s>\n"),col.getType(),col.m_name.cstr());
-      return NULL; //  to make compiler happy
+      return nullptr; //  to make compiler happy
     }
   }
 }
 
 void SqlCompiler::genInsertValues(const SyntaxNode *n,              // n == insert_stmt
                                   StatementTable &table) {
-  NodeList    columnlist((n->child(1)->childCount() == 0) ? NULL : n->child(1)->child(0));
+  NodeList    columnlist((n->child(1)->childCount() == 0) ? nullptr : n->child(1)->child(0));
   SyntaxNode *insertwhat = n->child(2); // == VALUES
   NodeList    exprlist(insertwhat->child(0));
   Array<InsertColumnExpression> icemap;
@@ -348,7 +348,7 @@ void SqlCompiler::genInsertValues(const SyntaxNode *n,              // n == inse
           }
           if(!found) { // unspecified column
             SyntaxNode *defaultvalue = fetchDefaultValueNode(table.getColumn(i));
-            if(defaultvalue == NULL)
+            if(defaultvalue == nullptr)
               syntaxError(n->child(0),SQL_NODEFAULT_OR_NULLALLOWED,_T("Column <%s> has no default-value or null-allowed"),table.getColumn(i).m_name.cstr());
             else
               icemap.add(InsertColumnExpression(table,i,defaultvalue));

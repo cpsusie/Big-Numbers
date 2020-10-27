@@ -8,7 +8,7 @@
 #define new DEBUG_NEW
 #endif
 
-CEnginesDlg::CEnginesDlg(CWnd *pParent /*=NULL*/) : CDialog(CEnginesDlg::IDD, pParent) {
+CEnginesDlg::CEnginesDlg(CWnd *pParent /*=nullptr*/) : CDialog(CEnginesDlg::IDD, pParent) {
 }
 
 void CEnginesDlg::DoDataExchange(CDataExchange *pDX) {

@@ -21,7 +21,7 @@ END_MESSAGE_MAP()
 BOOL CCaptureAreaDialog::OnInitDialog() {
   __super::OnInitDialog();
   m_screenSize = getScreenSize();
-  SetWindowPos(NULL,0,0,m_screenSize.cx,m_screenSize.cy,SWP_NOZORDER|SWP_NOREDRAW|SWP_SHOWWINDOW);
+  SetWindowPos(nullptr,0,0,m_screenSize.cx,m_screenSize.cy,SWP_NOZORDER|SWP_NOREDRAW|SWP_SHOWWINDOW);
   ::setWindowCursor(this, IDC_CROSS);
   m_state    = 0;
   m_lastMark = CPoint(-1,-1);
@@ -38,7 +38,7 @@ void CCaptureAreaDialog::OnLButtonDown(UINT nFlags, CPoint point) {
   ss.cx = ss.cy = 1;
   m_rect.right = m_rect.left   = point.x;
   m_rect.top   = m_rect.bottom = point.y;
-  dc.DrawDragRect(&m_rect,ss,NULL,ss);
+  dc.DrawDragRect(&m_rect,ss,nullptr,ss);
 
   __super::OnLButtonDown(nFlags, point);
 }
@@ -82,8 +82,8 @@ void CCaptureAreaDialog::drawMarkLines(const CPoint &p) {
       dc.DrawDragRect(&r1, sz, &lastr1, sz);
       dc.DrawDragRect(&r2, sz, &lastr2, sz);
     } else { // last == empty
-      dc.DrawDragRect(&r1, sz, NULL, sz);
-      dc.DrawDragRect(&r2, sz, NULL, sz);
+      dc.DrawDragRect(&r1, sz, nullptr, sz);
+      dc.DrawDragRect(&r2, sz, nullptr, sz);
     }
   } else if(m_lastMark.x >= 0) {
     const CSize sz0(0,0);

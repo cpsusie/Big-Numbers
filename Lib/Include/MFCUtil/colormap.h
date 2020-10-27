@@ -22,14 +22,14 @@ public:
     }
     virtual BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle,
                         const RECT& rect, CWnd *pParentWnd, UINT nID,
-                        CCreateContext *pContext = NULL)
+                        CCreateContext *pContext = nullptr)
     {
         return CreateControl(GetClsid(), lpszWindowName, dwStyle, rect, pParentWnd, nID);
     }
 
     BOOL Create(LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd *pParentWnd,
-                UINT nID, CFile* pPersist = NULL, BOOL bStorage = FALSE,
-                BSTR bstrLicKey = NULL)
+                UINT nID, CFile* pPersist = nullptr, BOOL bStorage = FALSE,
+                BSTR bstrLicKey = nullptr)
     {
         return CreateControl(GetClsid(), lpszWindowName, dwStyle, rect, pParentWnd, nID,
         pPersist, bStorage, bstrLicKey);
@@ -49,7 +49,7 @@ public:
 
     void AboutBox()
     {
-        InvokeHelper(DISPID_ABOUTBOX, DISPATCH_METHOD, VT_EMPTY, NULL, NULL);
+        InvokeHelper(DISPID_ABOUTBOX, DISPATCH_METHOD, VT_EMPTY, nullptr, nullptr);
     }
 
 // Properties

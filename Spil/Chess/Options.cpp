@@ -236,12 +236,12 @@ int EngineOptionValueArray::getOptionIndex(const String &optionName) const {
 
 EngineOptionValue *EngineOptionValueArray::getValue(const String &optionName) {
   const int index = getOptionIndex(optionName);
-  return (index < 0) ? NULL : &((*this)[index]);
+  return (index < 0) ? nullptr : &((*this)[index]);
 }
 
 const EngineOptionValue *EngineOptionValueArray::getValue(const String &optionName) const {
   const int index = getOptionIndex(optionName);
-  return (index < 0) ? NULL : &((*this)[index]);
+  return (index < 0) ? nullptr : &((*this)[index]);
 }
 
 #define SETENGINEOPTIONVALUE(name, value)       \

@@ -8,8 +8,8 @@ private:
 public:
   DrawToolLine(ProfileEditor *editor)
     : DrawTool(editor)
-    , m_p0(NULL)
-    , m_p1(NULL)
+    , m_p0(nullptr)
+    , m_p1(nullptr)
   {
   }
   bool OnLButtonDown(  UINT nFlags, CPoint point) override;

@@ -53,7 +53,7 @@ BOOL CTestExtractIconsDlg::OnInitDialog() {
     ASSERT(IDM_ABOUTBOX < 0xF000);
 
     CMenu *pSysMenu = GetSystemMenu(FALSE);
-    if(pSysMenu != NULL) {
+    if(pSysMenu != nullptr) {
       CString strAboutMenu;
       strAboutMenu.LoadString(IDS_ABOUTBOX);
       if(!strAboutMenu.IsEmpty()) {
@@ -114,7 +114,7 @@ void CTestExtractIconsDlg::OnPaint()  {
         p.x       = 0;
         maxHeight = 0;
       }
-      DrawIconEx(dc, p.x, p.y, icon, 0, 0, 0, NULL, DI_NORMAL);
+      DrawIconEx(dc, p.x, p.y, icon, 0, 0, 0, nullptr, DI_NORMAL);
       p.x += sz.cx + 3;
       maxHeight = max(sz.cy, maxHeight);
     }
@@ -139,12 +139,12 @@ void CTestExtractIconsDlg::OnButtonOpen() {
   bool anyAdded  = false;
   for(size_t i = 0; i < fileNames.size(); i++) {
     const String &name = fileNames[i];
-    int n = ExtractIconEx(name.cstr(), -1, NULL, NULL, 0);
+    int n = ExtractIconEx(name.cstr(), -1, nullptr, nullptr, 0);
     if(n > 0) {
       CompactArray<HICON> largeIcons, smallIcons;
       for(int k = 0; k < n; k++) {
-        largeIcons.add(NULL);
-        smallIcons.add(NULL);
+        largeIcons.add(nullptr);
+        smallIcons.add(nullptr);
       }
       if(n + m_largeIcons.size() + m_smallIcons.size() > 8000) {
         showWarning(_T("Too many icons to load. max is 9000"));

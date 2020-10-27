@@ -69,7 +69,7 @@ private:
 
 public:
   ArithmeticCoder() {
-    m_totalsMap = NULL;
+    m_totalsMap = nullptr;
   }
   ~ArithmeticCoder();
   void compress(ResetableByteInputStream &input, ByteOutputStream &output, int quality);

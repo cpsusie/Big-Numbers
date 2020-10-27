@@ -23,9 +23,9 @@ END_MESSAGE_MAP()
 
 CPearlImageView::CPearlImageView() {
   m_currentZoomFactor = 1;
-  m_printInfo         = NULL;
+  m_printInfo         = nullptr;
   m_initialized       = false;
-  m_currentEdgeMark   = NULL;
+  m_currentEdgeMark   = nullptr;
   resetResizingFrame();
 }
 
@@ -156,7 +156,7 @@ void CPearlImageView::OnBeginPrinting(CDC *pDC, CPrintInfo *pInfo) {
 }
 
 void CPearlImageView::OnEndPrinting(CDC *pDC, CPrintInfo *pInfo) {
-  m_printInfo = NULL;
+  m_printInfo = nullptr;
 }
 
 #if defined(_DEBUG)
@@ -241,7 +241,7 @@ BOOL CPearlImageView::PreTranslateMessage(MSG *pMsg) {
   const CPoint    docPoint = viewToDoc(p);
   switch(pMsg->message) {
   case WM_LBUTTONDOWN:
-    if(mm != NULL) {
+    if(mm != nullptr) {
       resetResizingFrame();
       m_currentEdgeMark = mm;
       return TRUE;
@@ -250,11 +250,11 @@ BOOL CPearlImageView::PreTranslateMessage(MSG *pMsg) {
     }
     break;
   case WM_LBUTTONUP  :
-    if(m_currentEdgeMark != NULL) {
+    if(m_currentEdgeMark != nullptr) {
       resizeDocument();
       resetResizingFrame();
-      m_currentEdgeMark = NULL;
-      if(mm != NULL) {
+      m_currentEdgeMark = nullptr;
+      if(mm != nullptr) {
         setCursor(mm->getCursorId());
       } else {
         setCursor(OCR_NORMAL);
@@ -267,10 +267,10 @@ BOOL CPearlImageView::PreTranslateMessage(MSG *pMsg) {
     break;
 
   case WM_MOUSEMOVE  :
-    if(m_currentEdgeMark != NULL) {
+    if(m_currentEdgeMark != nullptr) {
       paintResizingFrame(docPoint);
       return TRUE;
-    } else if(mm != NULL) {
+    } else if(mm != nullptr) {
       setCursor(mm->getCursorId());
       return TRUE;
     } else {
@@ -282,7 +282,7 @@ BOOL CPearlImageView::PreTranslateMessage(MSG *pMsg) {
 }
 
 void CPearlImageView::resetResizingFrame() {
-  m_lastDragRect  = NULL;
+  m_lastDragRect  = nullptr;
   m_dragRect.left = m_dragRect.top = m_dragRect.right = m_dragRect.bottom = 0;
 }
 
@@ -307,7 +307,7 @@ void CPearlImageView::paintResizingFrame(const CPoint &docp) {
 }
 
 void CPearlImageView::resizeDocument() {
-  if(m_lastDragRect != NULL) {
+  if(m_lastDragRect != nullptr) {
     const CPoint vp      = m_lastDragRect->Size();
     const CSize  newSize = viewToDoc(vp);
     if(newSize.cx != 0 && newSize.cy != 0) {

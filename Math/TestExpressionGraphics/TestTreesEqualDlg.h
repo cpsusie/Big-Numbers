@@ -32,7 +32,7 @@ private:
   void ajourButtons();
 
 public:
-  CTestTreesEqualDlg(CWnd *pParent = NULL);
+  CTestTreesEqualDlg(CWnd *pParent = nullptr);
 
   enum { IDD = IDD_TREESEQUAL_DIALOG };
 

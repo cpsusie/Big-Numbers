@@ -113,7 +113,7 @@ private:
 
   void updateWindowSize(int cx, int cy);
   void updateWindowSize();
-  void paintTextSegment(  CDC *pDC, int x, int y, int w, COLORREF tc, COLORREF bc, const TCHAR *s, int *textEndX = NULL);
+  void paintTextSegment(  CDC *pDC, int x, int y, int w, COLORREF tc, COLORREF bc, const TCHAR *s, int *textEndX = nullptr);
   void paintTextLine(     CDC *pDC, int y,               COLORREF tc, COLORREF bc, const TCHAR *s, const LineSegments &lineSegments);
   void paintTextLine(     CDC *pDC, int y);
   void paintLineNumber(   CDC *pDC, int y, int lineno);
@@ -121,7 +121,7 @@ private:
   void paint(             CDC *pDC);
   void paintArrow(        CDC *pDC);
   void saveBackground(    CDC *pDC);
-  void unpaintArrow(      CDC *pDC = NULL);
+  void unpaintArrow(      CDC *pDC = nullptr);
   inline void resetArrow() {
     m_arrowLine = -1;
   }
@@ -144,14 +144,14 @@ private:
   void hideCaret();
   void createCaret();
   void destroyCaret();
-  void displayCaret(       CDC *pDC = NULL);
+  void displayCaret(       CDC *pDC = nullptr);
 public:
   inline const CPoint &getCaretPosition() const {
     return m_state.m_caret;
   }
 private:
   void unMarkSelectedText( CDC *pDC);
-  void clearDC(            CDC *pDC = NULL);
+  void clearDC(            CDC *pDC = nullptr);
   void repaintAll();
   void repaintLines(       CDC *pDC, int from, int to);
   void markSelectedText(   CDC *pDC);

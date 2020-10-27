@@ -9,7 +9,7 @@ DFATransition::DFATransition(int fromState, int successor, _TUCHAR ch) {
   m_fromState = fromState;
   m_successor = successor;
   m_ch        = ch;
-  m_set       = NULL;
+  m_set       = nullptr;
 }
 
 DFATransition::DFATransition(int fromState, int successor, const CharacterSet &set) {
@@ -41,7 +41,7 @@ void DFATransition::copy(const DFATransition &src) {
     m_set = new CharacterSet(*src.m_set); TRACE_NEW(m_set);
     m_ch  = 0;
   } else {
-    m_set = NULL;
+    m_set = nullptr;
     m_ch  = src.m_ch;
   }
 }
@@ -124,7 +124,7 @@ DirectionPair DFAStatePoint::findBestLoopPosition() const {
 
 String DFAStatePoint::usedDirectionsToString() const {
   String result;
-  const TCHAR *delim = NULL;
+  const TCHAR *delim = nullptr;
   for(int i = 0; i < 8; i++) {
     if(m_dirOccupied.contains(i)) {
       if(delim) result += delim; else delim = _T(",");
@@ -147,12 +147,12 @@ void DFAStatePoint::paint(HDC hdc, bool marked) const {
   } else if(!hasSuccessor()) {
     AutomatePainter::paintRing(  hdc, p, CIRCLE_RADIUS, AutomatePainter::getBlackPen(), AutomatePainter::getLightGreenBrush());
   } else {
-    AutomatePainter::paintCircle(hdc, p, CIRCLE_RADIUS, AutomatePainter::getBlackPen(), NULL              );
+    AutomatePainter::paintCircle(hdc, p, CIRCLE_RADIUS, AutomatePainter::getBlackPen(), nullptr              );
     ring = false;
   }
   if(marked) {
     int markRadius = ring ? (CIRCLE_RADIUS-4) : CIRCLE_RADIUS;
-    AutomatePainter::paintCircle(hdc, p, markRadius, NULL, AutomatePainter::getOrangeBrush());
+    AutomatePainter::paintCircle(hdc, p, markRadius, nullptr, AutomatePainter::getOrangeBrush());
   }
 
   const String text     = format(_T("%d"), getStateID());
@@ -242,8 +242,7 @@ void DFAPainter::calculateAllPositions() {
     assert(n == statesInColumn.size());
     for(int i = 0; i < n; i++) {
       DFAStatePoint *sp = m_dfaPoints[statesInColumn[i]];
-      sp->setPosition(Point2D((float)m_size.cx * (c + 0.5) / gridSize.cx
-                             ,(float)m_size.cy * (i + 0.5) / n));
+      sp->setPosition((CPoint)Point2D((float)m_size.cx * (c + 0.5) / gridSize.cx, (float)m_size.cy * (i + 0.5) / n));
     }
   }
   m_grid.markStateCircles(m_dfaPoints);
@@ -297,9 +296,9 @@ inline Point2D shiftingRotate(const Point2D &v, int i) {
   if(i == 0) {
     return v;
   } else if(i % 2 == 0) {
-    return v.rotate(M_PI * i / 8);
+    return rotate(v, M_PI * i / 8);
   } else {
-    return v.rotate(-M_PI * (i + 1) / 8);
+    return rotate(v,-M_PI * (i + 1) / 8);
   }
 }
 
@@ -340,7 +339,7 @@ void DFAPainter::paintOutgoingTransition(const DFAPointArray &pointArray, size_t
   to->m_dirOccupied.add(  dp.m_endDir);
   for(;;) {
     try {
-      transition.setPath(m_grid.findShortestFreePath(pFrom, pTo));
+      transition.setPath(m_grid.findShortestFreePath((CPoint)pFrom, (CPoint)pTo));
       paintPathArrow(transition.getPath(), hdc);
       m_grid.markPathAsOccupied(transition.getPath());
       break;
@@ -352,7 +351,7 @@ void DFAPainter::paintOutgoingTransition(const DFAPointArray &pointArray, size_t
   const String text     = transition.toString();
   CFont       &font     = getFont();
   const CSize  textSize = getTextSize(font, text);
-  const CPoint textPos  = findBestTextPosition(pFrom, dp.m_startDir, textSize);
+  const CPoint textPos  = findBestTextPosition((CPoint)pFrom, dp.m_startDir, textSize);
   textOut(textPos, font, text, hdc);
 }
 
@@ -414,7 +413,7 @@ DFAPointArray DFAPainter::s_newPoints;
 int           DFAPainter::s_edgeMarkStep    = 2;
 size_t        DFAPainter::s_lastPaintedSize = 0;
 int           DFAPainter::s_blinkingState   = -1;
-CWnd         *DFAPainter::s_wnd             = NULL;
+CWnd         *DFAPainter::s_wnd             = nullptr;
 
 void DFAPainter::shiftCurrentToNew() {
   s_newPoints.deleteAll();

@@ -121,9 +121,9 @@ public:
 };
 
 Simplex::Simplex(FILE *f, int traceFlags) : m_integerConstraintsDone(integerConstraintArrayHashFunction,integerConstraintArrayCompare) {
-  m_tableau                  = NULL;
-  m_integerVariableSet       = NULL;
-  m_staticIntegerVariableSet = NULL;
+  m_tableau                  = nullptr;
+  m_integerVariableSet       = nullptr;
+  m_staticIntegerVariableSet = nullptr;
   m_gotSolution              = false;
   m_hasUnboundedVariables    = false;
   m_lineCount                = 0;
@@ -198,7 +198,7 @@ Simplex::Simplex(FILE *f, int traceFlags) : m_integerConstraintsDone(integerCons
 
   int xCount = costFactors.size();
 
-  m_tableau                  = new Tableau(xCount, constraintCount, traceFlags ? &m_tracer : NULL, traceFlags);
+  m_tableau                  = new Tableau(xCount, constraintCount, traceFlags ? &m_tracer : nullptr, traceFlags);
   m_staticIntegerVariableSet = new BitSet(*m_integerVariableSet);
 
   for(size_t i = 0; i < tableauConstraints.size(); i++) {
@@ -285,13 +285,13 @@ SimplexSolution Simplex::getSolution() const {
     } else {
       const int partnerIndex = m_unboundedVariableSet[bv.m_index]; // >= 0
       const BasisVariable *partner = findBasisVariable(bvArray,partnerIndex);
-      if(partner == NULL) {
+      if(partner == nullptr) {
         if(bv.m_index <= m_xCount) {
           result.add(bv);
         } else {
           result.add(BasisVariable(bv.m_prefix,partnerIndex,-bv.m_value,-bv.m_costFactor));
         }
-      } else { // partner != NULL
+      } else { // partner != nullptr
         if(bv.m_index <= m_xCount) {
           result.add(BasisVariable(bv.m_prefix,bv.m_index,bv.m_value - partner->m_value,bv.m_costFactor));
         } else {
@@ -310,7 +310,7 @@ const BasisVariable *Simplex::findBasisVariable(const CompactArray<BasisVariable
       return &bv;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 SimplexResult Simplex::solve() {
@@ -420,9 +420,9 @@ String Simplex::toString() const {
   String result = m_tableau->toString();
   if(!m_staticIntegerVariableSet->isEmpty()) {
     result += _T("Integer variables:");
-    TCHAR *delimiter = NULL;
+    TCHAR *delimiter = nullptr;
     for(Iterator<size_t> it = m_staticIntegerVariableSet->getIterator(); it.hasNext();) {
-      if(delimiter == NULL) {
+      if(delimiter == nullptr) {
         delimiter = _T(",");
       } else {
         result += delimiter;
@@ -433,12 +433,12 @@ String Simplex::toString() const {
   }
   if(m_hasUnboundedVariables) {
     result += _T("Unbounded variables:");
-    TCHAR *delimiter = NULL;
+    TCHAR *delimiter = nullptr;
     for(int i = 1; i <= m_xCount; i++) {
       if(m_unboundedVariableSet[i] == -1) {
         continue;
       }
-      if(delimiter == NULL) {
+      if(delimiter == nullptr) {
         delimiter = _T(",");
       } else {
         result += delimiter;

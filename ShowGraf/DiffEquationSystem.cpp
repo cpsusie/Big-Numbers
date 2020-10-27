@@ -89,7 +89,7 @@ bool DiffEquationSystem::compile(CompilerErrorList &errorList, FILE *listFile) {
       for(UINT j = 0; j < m_equationDescriptionArray.size(); j++) {
         const String             &namej = m_equationDescriptionArray[j].getName();
         const ExpressionVariable *vj    = e->getVariable(namej);
-        if(vj == NULL) continue;
+        if(vj == nullptr) continue;
         if (!vj->isInput()) {
           errorList.addError(i, ERROR_INEXPR, _T("Variable '%s' is not input in this equation"), namej.cstr());
         } else {
@@ -112,7 +112,7 @@ bool DiffEquationSystem::compile(const DiffEquationDescriptionArray &desc, Compi
 
 void DiffEquationSystem::setDescription(const DiffEquationDescriptionArray &desc) {
   CompilerErrorList errorList;
-  validate(desc, errorList, NULL);
+  validate(desc, errorList, nullptr);
   cleanup();
   m_equationDescriptionArray = desc;
 }

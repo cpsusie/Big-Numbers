@@ -232,7 +232,7 @@ FileInfo FileTable::writeFillerFile(size_t n, size_t wantedSize) {
     return FileInfo();
   }
   const String name = makeFileName(n);
-  FILE        *f    = NULL;
+  FILE        *f    = nullptr;
   try {
     f = MKFOPEN(name, _T("wb"));
     fclose(f);
@@ -251,7 +251,7 @@ FileInfo FileTable::writeFillerFile(size_t n, size_t wantedSize) {
   }
 
   int           handle = -1;
-  UINT64       *buffer = NULL;
+  UINT64       *buffer = nullptr;
   double        usedTime = 0;
   size_t        totalWritten = 0;
   try {

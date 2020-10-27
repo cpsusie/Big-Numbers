@@ -144,8 +144,8 @@ void IndexedMap::saveCompressed(ByteOutputStream      &s, const TablebaseInfo &i
 #else // !TABLEBASE_BUILDER ie chess-program
 
 IndexedMap::IndexedMap(const EndGameKeyDefinition &keydef) : m_keydef(keydef) {
-  m_positionIndex       = NULL;
-  m_infoArray           = NULL;
+  m_positionIndex       = nullptr;
+  m_infoArray           = nullptr;
 }
 
 IndexedMap::~IndexedMap() {

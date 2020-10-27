@@ -41,7 +41,7 @@ void SSIMap::append(FromTable &ft, unsigned short colIndex, SyntaxNode *n) {
 }
 
 SelectSymbolInfo *SelectStmt::getInfo(const SyntaxNode *n) const {
-  if(n == NULL) throwSqlError(SQL_FATAL_ERROR,_T("getInfo:SyntaxNode is NULL"));
+  if(n == nullptr) throwSqlError(SQL_FATAL_ERROR,_T("getInfo:SyntaxNode is nullptr"));
   if(n->token() == NAME)
     return (SelectSymbolInfo *)(n->getData());
   else
@@ -49,7 +49,7 @@ SelectSymbolInfo *SelectStmt::getInfo(const SyntaxNode *n) const {
       return (SelectSymbolInfo *)(n->child(1)->getData());
 
   stopcomp(n);
-  return NULL; // just to make compiler happy
+  return nullptr; // just to make compiler happy
 }
 
 void SSIMap::dump(FILE *f, int level) const {
@@ -118,7 +118,7 @@ void ColumnAttributes::dump(const FromTable *t, FILE *f, int level) const {
   ATTRDUMP(orderAggr  );
   ATTRDUMP(orderUnaggr);
   ATTRDUMP(inGroupBy  );
-  if(m_fixedBy != NULL)
+  if(m_fixedBy != nullptr)
     _ftprintf(f,_T("fixed by %s"), m_fixedBy->toString().cstr());
   _ftprintf(f,_T("\n"));
 }
@@ -135,7 +135,7 @@ void StatementTable::calculateTableSize() {
 
 StatementTable::StatementTable(SqlCompiler &compiler, SyntaxNode *n) : m_compiler(compiler)
                                                                      , TableDefinition(compiler.m_db.getTableDefinition(n->name())) {
-  m_fixedByConst = NULL;
+  m_fixedByConst = nullptr;
   m_node         = n;
   m_tableSize    = 100;
   try {
@@ -261,25 +261,25 @@ SelectStmt::SelectStmt(SqlCompiler        &compiler,
 
   SyntaxNode *p;
 
-  if((p = n->findChild(INTO))   != NULL && p->childCount() >= 1) m_selectIntoList.findNodes(p->child(0));
-  if((p = n->findChild(FROM))   != NULL && p->childCount() >= 1) m_fromList.findNodes(      p->child(0));
-  if((p = n->findChild(WHERE))  != NULL && p->childCount() >= 1)
+  if((p = n->findChild(INTO))   != nullptr && p->childCount() >= 1) m_selectIntoList.findNodes(p->child(0));
+  if((p = n->findChild(FROM))   != nullptr && p->childCount() >= 1) m_fromList.findNodes(      p->child(0));
+  if((p = n->findChild(WHERE))  != nullptr && p->childCount() >= 1)
     m_whereClause  = p->child(0);
   else
-    m_whereClause  = NULL;
-  if((p = n->findChild(HAVING)) != NULL && p->childCount() >= 1)
+    m_whereClause  = nullptr;
+  if((p = n->findChild(HAVING)) != nullptr && p->childCount() >= 1)
     m_havingClause = p->child(0);
   else
-    m_havingClause = NULL;
+    m_havingClause = nullptr;
 
-  if((p = n->findChild(GROUP))  != NULL && p->childCount() >= 1) m_groupByList.findNodes(   p->child(0));
-  if((p = n->findChild(ORDER))  != NULL && p->childCount() >= 1) m_orderByList.findNodes(   p->child(0));
+  if((p = n->findChild(GROUP))  != nullptr && p->childCount() >= 1) m_groupByList.findNodes(   p->child(0));
+  if((p = n->findChild(ORDER))  != nullptr && p->childCount() >= 1) m_orderByList.findNodes(   p->child(0));
   m_parent          = parent;
   m_purpose         = purpose;
   m_noOfFixedTables = 0;
   m_outputPipe      = outputpipe;
   m_noOfLike        = 0;
-  if(parent != NULL) {
+  if(parent != nullptr) {
     parent->m_subSelects.add(this);
     m_name = format(_T("%s.%d"),parent->m_name.cstr(),parent->m_subSelects.size());
   }
@@ -305,7 +305,7 @@ void SelectStmt::expandStar(SelectExpressionList &expandList, const FromTable *f
     SyntaxNode *p = m_compiler.fetchTokenNode(DOT,
                       m_compiler.fetchTokenNode(NAME,ft->m_correlationName.cstr()),
                       m_compiler.fetchTokenNode(NAME,ft->getColumn(i).m_name.cstr()),
-                      NULL);
+                      nullptr);
     expandList.add(p);
   }
 }
@@ -345,7 +345,7 @@ FromTable *SelectStmt::findCorrelationName(SyntaxNode *n, bool searchParent) { /
     return ft;
   }
   syntaxError(n,SQL_INVALID_CORRELATION_NAME,_T("Correlationname <%s> not defined"),n->name());
-  return NULL;
+  return nullptr;
 }
 
 void SelectStmt::findCorrelationTable(SyntaxNode *n) { // n = <expr>
@@ -381,19 +381,19 @@ const SyntaxNode *SelectStmt::findUnAggregatedSyntaxNode(const SyntaxNode *expr,
       if(&ssi->m_fromTable == table && ssi->m_colIndex == colIndex)
         return expr;
       else
-        return NULL;
+        return nullptr;
       break;
     }
   case NUMBER :
   case STRING :
   case HOSTVAR:
   case PARAM  :
-    return NULL;
+    return nullptr;
   case SUM    :
   case COUNT  :
   case MIN    :
   case MAX    :
-    return NULL;
+    return nullptr;
 
   default     :
     { int sons = expr->childCount();
@@ -404,7 +404,7 @@ const SyntaxNode *SelectStmt::findUnAggregatedSyntaxNode(const SyntaxNode *expr,
     }
     break;
   }
-  return NULL;
+  return nullptr;
 }
 
 const SyntaxNode *SelectStmt::findUnAggregatedSelectNode(const FromTable *table, int colIndex) {
@@ -413,14 +413,14 @@ const SyntaxNode *SelectStmt::findUnAggregatedSelectNode(const FromTable *table,
     if(n) return n;
   }
   stopcomp(m_selectExprList[0].m_expr); // should not come here
-  return NULL;
+  return nullptr;
 }
 
 const SyntaxNode *SelectStmt::findUnAggregatedHavingNode(const FromTable *table, int colIndex) {
   const SyntaxNode *n = findUnAggregatedSyntaxNode(m_havingClause,table,colIndex);
   if(n) return n;
   stopcomp(m_havingClause); // should not come here
-  return NULL;
+  return nullptr;
 }
 
 const SyntaxNode *SelectStmt::findUnAggregatedOrderByNode(const FromTable *table, int colIndex) {
@@ -429,7 +429,7 @@ const SyntaxNode *SelectStmt::findUnAggregatedOrderByNode(const FromTable *table
     if(n) return n;
   }
   stopcomp(m_orderBy[0].m_expr); // should not come here
-  return NULL;
+  return nullptr;
 }
 
 bool SelectStmt::hasAggregation() const {
@@ -551,7 +551,7 @@ void SelectStmt::checkIsOuterRef(SyntaxNode *expr) {
   case DOT    :
   case NAME   :
     { SelectSymbolInfo *ssi = getInfo(expr);
-      if(ssi != NULL)
+      if(ssi != nullptr)
         if(&(ssi->m_fromTable.m_belongsTo) == this)
           aggrInWhereError(expr);
         else // != this
@@ -742,9 +742,9 @@ DbMainType SelectStmt::checkExpressionType(SyntaxNode *expr, bool inaggr) {
     return checkExpressionType(expr->child(1),inaggr); // son(2) contains the ssi.
 
   case NAME         :
-    { if(getInfo(expr) == NULL) findCorrelationTable(expr);
+    { if(getInfo(expr) == nullptr) findCorrelationTable(expr);
       SelectSymbolInfo *ssi = getInfo(expr);
-      if(ssi == NULL) return MAINTYPE_VOID;
+      if(ssi == nullptr) return MAINTYPE_VOID;
       return getMainType(ssi->getType());
     }
   case SUBSTRING    :
@@ -933,7 +933,7 @@ SelectSetOperator *SelectStmt::checkSubSelectOperator(SelectStmtPurpose purpose,
   default:
     stopcomp(expr);
   }
-  return NULL;
+  return nullptr;
 }
 
 DbMainType SelectStmt::checkSubSelect(SelectStmtPurpose purpose, SyntaxNode *expr) { // expr = SELECT, UNION, INTERSECT, SETDIFFERENCE
@@ -942,7 +942,7 @@ DbMainType SelectStmt::checkSubSelect(SelectStmtPurpose purpose, SyntaxNode *exp
 }
 
 void SelectStmt::checkPredicate(SyntaxNode *pred, bool neg) {
-  if(pred == NULL) return;
+  if(pred == nullptr) return;
   switch(pred->token()) {
   case OR :
   case AND:
@@ -1093,7 +1093,7 @@ void SelectStmt::checkGroupBy() {
       checkExpression(n);
 
     const SyntaxNode *p = findFirstAggregateFunction(n);
-    if(p != NULL) {
+    if(p != nullptr) {
       syntaxError(p,SQL_INVALID_GROUPBY,
         _T("Cannot use an aggregate or a subquery in an expression used for the group by"
            " list of a GROUP BY clause"));
@@ -1121,43 +1121,43 @@ const SyntaxNode *SelectStmt::findUnGroupedUnAggregatedColumn(const SyntaxNode *
   case DOT    :
   case NAME   :
     { SelectSymbolInfo *ssi = getInfo(expr);
-      if(!ssi) return NULL; // may be null if there was a syntaxError
+      if(!ssi) return nullptr; // may be null if there was a syntaxError
       ColumnAttributes &attr = ssi->getAttributes();
-      return attr.m_inGroupBy ? NULL : expr;
+      return attr.m_inGroupBy ? nullptr : expr;
     }
 
   case COUNT  :
   case MIN    :
   case MAX    :
   case SUM    :
-    return NULL;
+    return nullptr;
   case NUMBER :
   case STRING :
   case HOSTVAR:
   case PARAM  :
-    return NULL;
+    return nullptr;
   default     :
     { UINT n = expr->childCount();
       for(UINT i = 0; i < n; i++) {
         const SyntaxNode *p = findUnGroupedUnAggregatedColumn(expr->child(i));
         if(p) return p;
       }
-      return NULL;
+      return nullptr;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 bool SelectStmt::isTreeEqual(const SyntaxNode *t1, const SyntaxNode *t2) const {
-  if(t1 != NULL && t2 == NULL) return false;
-  if(t1 == NULL && t2 != NULL) return false;
+  if(t1 != nullptr && t2 == nullptr) return false;
+  if(t1 == nullptr && t2 != nullptr) return false;
   if(t1->token() != t2->token()) return false;
   switch(t1->token()) {
   case DOT    :
   case NAME   :
     { SelectSymbolInfo *ssi1 = getInfo(t1);
       SelectSymbolInfo *ssi2 = getInfo(t2);
-      if(ssi1 == NULL || ssi2 == NULL) return false; // may be null if there was a syntaxError
+      if(ssi1 == nullptr || ssi2 == nullptr) return false; // may be null if there was a syntaxError
       return (*ssi1 == *ssi2);
     }
   case NUMBER :
@@ -1297,7 +1297,7 @@ void SelectStmt::checkAggregation() {
     UINT i;
     for(i = 0; i < m_selectExprList.size(); i++)
       checkGroupedOrAggregatedExpression(m_selectExprList[i].m_expr,_T("SELECT LIST"));
-    if(m_havingClause != NULL)
+    if(m_havingClause != nullptr)
       checkGroupedOrAggregatedPredicate(m_havingClause,_T("HAVING CLAUSE"));
 
     for(i = 0; i < m_orderBy.size(); i++)
@@ -1351,12 +1351,12 @@ void SelectStmt::typeCheck() {
 
 #if defined(TRACECOMP)
   if(!m_compiler.ok()) return;
-  if(m_whereClause != NULL) {
+  if(m_whereClause != nullptr) {
     _tprintf(_T("unreduced where <%s>:\n"),m_name.cstr());
     dumpSyntaxTree(m_whereClause);
   }
   if(!m_compiler.ok()) return;
-  if(m_havingClause != NULL) {
+  if(m_havingClause != nullptr) {
     _tprintf(_T("unreduced having <%s>:\n"),m_name.cstr());
     dumpSyntaxTree(m_havingClause);
   }
@@ -1370,13 +1370,13 @@ void SelectStmt::typeCheck() {
     m_havingClause = m_compiler.reducePredicate(m_havingClause,m_possibleHaving);
 
 #if defined(TRACECOMP)
-  if(m_whereClause != NULL) {
+  if(m_whereClause != nullptr) {
     _tprintf(_T("reduced where <%s>:\n"),m_name.cstr());
     dumpSyntaxTree(m_whereClause);
     _tprintf(_T("where %s\n"),m_whereClause->toString().cstr());
     _tprintf(_T("possiblewhere:")); m_possibleWhere.dump();
   }
-  if(m_havingClause != NULL) {
+  if(m_havingClause != nullptr) {
     _tprintf(_T("reduced having <%s>:\n"),m_name.cstr());
     dumpSyntaxTree(m_havingClause);
     _tprintf(_T("having %s\n"),m_havingClause->toString().cstr());
@@ -1388,7 +1388,7 @@ void SelectStmt::typeCheck() {
   findJoinSequence();
 
 #if defined(TRACECOMP)
-  if(m_whereClause != NULL) {
+  if(m_whereClause != nullptr) {
     _tprintf(_T("reducedbykeypredicates where <%s>:\n"),m_name.cstr());
     dumpSyntaxTree(m_whereClause);
     _tprintf(_T("where %s\n"),m_whereClause->toString().cstr());
@@ -1453,11 +1453,11 @@ void SelectStmt::dump(FILE *f, int level) const {
   for(i = 0; i < m_fromTable.size(); i++)
     m_fromTable[i]->dump(f,level);
 
-  if(m_whereClause != NULL) {
+  if(m_whereClause != nullptr) {
     findent(f,level); _ftprintf(f,_T("where:\n"));
     dumpSyntaxTree(m_whereClause,f,level+2);
   }
-  if(m_havingClause != NULL) {
+  if(m_havingClause != nullptr) {
     findent(f,level); _ftprintf(f,_T("having:\n"));
     dumpSyntaxTree(m_havingClause,f,level+2);
   }
@@ -1572,7 +1572,7 @@ void SelectStmt::genScanOperator(FromTable &t, int outputpipe) {
 
   setCurrentTupleReg(map,0);
 
-  if(m_whereClause != NULL) {
+  if(m_whereClause != nullptr) {
     m_compiler.genPredicate(m_whereClause);
 
     m_compiler.m_code.appendIns1(CODECMPTRUE,loopstart);
@@ -1649,7 +1649,7 @@ void SelectStmt::genCode() {
 
 SelectSetOperator *SqlCompiler::genSimpleSelect(SyntaxNode *n) { // n == <simple_select>
   int outputpipe = newPipe();
-  SelectStmt *stmt = new SelectStmt(*this,n,NULL,MAINSELECT,outputpipe);
+  SelectStmt *stmt = new SelectStmt(*this,n,nullptr,MAINSELECT,outputpipe);
 
 
   if(ok())
@@ -1677,11 +1677,11 @@ SyntaxNode *findExpression(SelectSetOperator *op, int i, DbMainType type) {
     if(stmt->m_selectExprList[i].m_type == type)
       return stmt->m_selectExprList[i].m_expr;
   }
-  return NULL;
+  return nullptr;
 }
 
 void SelectSetOperator::checkCompatibleSelectLists() {
-  if(m_son1 == NULL || m_son2 == NULL) stopcomp(m_node);
+  if(m_son1 == nullptr || m_son2 == nullptr) stopcomp(m_node);
   HostVarDescriptionList d1 = m_son1->getDescription();
   HostVarDescriptionList d2 = m_son2->getDescription();
   if(d1.size() != d2.size()) {
@@ -1717,7 +1717,7 @@ SelectSetOperator::SelectSetOperator(SqlCompiler &compiler, SelectStmtPurpose pu
   m_purpose = purpose;
   m_son1    = son1;
   m_son2    = son2;
-  m_desc    = NULL;
+  m_desc    = nullptr;
 }
 
 SelectSetOperator::SelectSetOperator(SqlCompiler &compiler, SelectStmtPurpose purpose, SyntaxNode *n) : // n
@@ -1728,8 +1728,8 @@ SelectSetOperator::SelectSetOperator(SqlCompiler &compiler, SelectStmtPurpose pu
     stopcomp(n);
   compiler.m_selectOperators.add(this);
   m_purpose = purpose;
-  m_son1    = m_son2 = NULL;
-  m_desc    = NULL;
+  m_son1    = m_son2 = nullptr;
+  m_desc    = nullptr;
 }
 
 // SelectSetOperator *SqlCompiler::create_subselect(SelectStmtPurpose purpose, SyntaxNode *n,
@@ -1863,7 +1863,7 @@ SelectSetOperator *SqlCompiler::genSelect1(SyntaxNode *n) { // n == SelectStmt, 
     break;
   default:
     stopcomp(n);
-    return NULL;
+    return nullptr;
   }
   return s;
 }

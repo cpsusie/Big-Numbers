@@ -9,7 +9,7 @@ private:
   CompactArray<HICON> m_largeIcons, m_smallIcons;
   void destroyAllIcons();
 public:
-    CTestExtractIconsDlg(CWnd *pParent = NULL);
+    CTestExtractIconsDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_TESTEXTRACTICONS_DIALOG };
     BOOL    m_showLargeIcons;

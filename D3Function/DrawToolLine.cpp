@@ -14,7 +14,7 @@ bool DrawToolLine::OnLButtonDown(UINT nFlags, CPoint point) {
 }
 
 bool DrawToolLine::OnMouseMove(UINT nFlags, CPoint point) {
-  if(nFlags & MK_LBUTTON && m_p1 != NULL) {
+  if(nFlags & MK_LBUTTON && m_p1 != nullptr) {
     *m_p1 = m_editor.getViewport().backwardTransform(point);
     repaintAll();
     return true;
@@ -23,6 +23,6 @@ bool DrawToolLine::OnMouseMove(UINT nFlags, CPoint point) {
 }
 
 bool DrawToolLine::OnLButtonUp(UINT nFlags, CPoint point) {
-  m_p0 = m_p1 = NULL;
+  m_p0 = m_p1 = nullptr;
   return true;
 }

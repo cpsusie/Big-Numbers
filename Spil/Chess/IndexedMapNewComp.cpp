@@ -11,7 +11,7 @@
 
 #if defined(DEBUG_NEWCOMPRESSION)
 void IndexedMap::listCompressedContent(const TablebaseInfo &info, String fileName) const {
-  FILE *f = NULL;
+  FILE *f = nullptr;
   if(fileName.length() == 0) {
     fileName = m_keydef.getTbFileName(COMPRESSEDDUMP);
   }
@@ -54,9 +54,9 @@ void IndexedMap::listCompressedContent(const TablebaseInfo &info, String fileNam
         winnerPositions++;
       }
     }
-    fclose(f); f = NULL;
+    fclose(f); f = nullptr;
   } catch(...) {
-    if(f != NULL) {
+    if(f != nullptr) {
       fclose(f);
       throw;
     }
@@ -197,9 +197,9 @@ IndexedMap::IndexedMap(const EndGameKeyDefinition &keydef) : m_keydef(keydef) {
 }
 
 void IndexedMap::init() {
-  m_wpIndex   = NULL;
-  m_nzIndex   = NULL;
-  m_infoArray = NULL;
+  m_wpIndex   = nullptr;
+  m_nzIndex   = nullptr;
+  m_infoArray = nullptr;
 }
 
 IndexedMap::~IndexedMap() {

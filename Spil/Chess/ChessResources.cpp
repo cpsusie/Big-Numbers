@@ -140,8 +140,8 @@ CBitmap &ChessResources::getSmallPieceBitmap(CBitmap &dst, PieceKey pk) const { 
         :s_upperLeftCorner0);
   getPieceImage(pk)->paintImage(pr, ORIGIN);
 
-  HDC tmpDC = CreateCompatibleDC(NULL);
-  dst.CreateBitmap(imageSize.cx, imageSize.cy, GetDeviceCaps(tmpDC, PLANES), GetDeviceCaps(tmpDC, BITSPIXEL), NULL);
+  HDC tmpDC = CreateCompatibleDC(nullptr);
+  dst.CreateBitmap(imageSize.cx, imageSize.cy, GetDeviceCaps(tmpDC, PLANES), GetDeviceCaps(tmpDC, BITSPIXEL), nullptr);
   HGDIOBJ oldBitmap = SelectObject(tmpDC, dst);
   SetStretchBltMode(tmpDC, COLORONCOLOR /*HALFTONE*/);
   PixRect::stretchBlt(tmpDC, ORIGIN,imageSize,SRCCOPY,&pr,ORIGIN,size0);
@@ -163,7 +163,7 @@ void ChessResources::setClientRectSize(const CSize &size) {
 }
 
 void ChessResources::loadBitmap(CBitmap &dst, int resId, ImageType type) { // static
-  if(dst.m_hObject != NULL) {
+  if(dst.m_hObject != nullptr) {
     dst.DeleteObject();
   }
   switch(type) {
@@ -173,9 +173,9 @@ void ChessResources::loadBitmap(CBitmap &dst, int resId, ImageType type) { // st
   case RESOURCE_JPEG  :
     { Image tmp(resId, type);
       HDC hdc   = tmp.getDC();
-      HDC tmpDC = CreateCompatibleDC(NULL);
+      HDC tmpDC = CreateCompatibleDC(nullptr);
       CDC *dcp = CDC::FromHandle(tmpDC);
-      dst.CreateBitmap(tmp.getWidth(), tmp.getHeight(), GetDeviceCaps(tmpDC, PLANES), GetDeviceCaps(tmpDC, BITSPIXEL), NULL);
+      dst.CreateBitmap(tmp.getWidth(), tmp.getHeight(), GetDeviceCaps(tmpDC, PLANES), GetDeviceCaps(tmpDC, BITSPIXEL), nullptr);
       CBitmap *oldBitmap = dcp->SelectObject(&dst);
       BitBlt(*dcp, 0, 0, tmp.getWidth(), tmp.getHeight(), hdc, 0, 0, SRCCOPY);
       dcp->SelectObject(oldBitmap);

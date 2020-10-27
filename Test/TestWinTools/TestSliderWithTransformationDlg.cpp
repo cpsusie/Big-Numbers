@@ -4,7 +4,7 @@
 
 IMPLEMENT_DYNAMIC(CTestSliderWithTransformationDlg, CDialog)
 
-CTestSliderWithTransformationDlg::CTestSliderWithTransformationDlg(CWnd *pParent /*=NULL*/)
+CTestSliderWithTransformationDlg::CTestSliderWithTransformationDlg(CWnd *pParent /*=nullptr*/)
 : CDialog(IDD_TESTSLIDER_DIALOG, pParent)
 , m_from(0)
 , m_to(100)

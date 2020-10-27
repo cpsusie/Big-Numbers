@@ -105,7 +105,7 @@ private:
   }
   CDC &getDC();
 public:
-    CTestEdgeDetectionDlg(CWnd *pParent = NULL);
+    CTestEdgeDetectionDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_TESTEDGEDETECTION_DIALOG };
 

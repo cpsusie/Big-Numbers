@@ -23,7 +23,7 @@ private:
 
   CListBox *getListBox();
 public:
-  CSelectBreakProductionsDlg(const ParserTables &tables, BitSet &prodSet, CWnd *pParent = NULL);
+  CSelectBreakProductionsDlg(const ParserTables &tables, BitSet &prodSet, CWnd *pParent = nullptr);
 
   enum { IDD = IDD_DIALOGPRODUCTIONS };
 

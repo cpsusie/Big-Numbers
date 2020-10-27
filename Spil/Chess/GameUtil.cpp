@@ -6,17 +6,17 @@
 
 bool Game::mustSelectPromotion(int from, int to) const {
   const Piece *piece = getPieceAtPosition(from);
-  if(piece == NULL || piece->getPlayer() != PLAYERINTURN) {
+  if(piece == nullptr || piece->getPlayer() != PLAYERINTURN) {
     throwException(_T("Internal error:mustSelectPromotion(%s,%s):Piece=%s")
                   ,getFieldName(from),getFieldName(to)
-                  ,piece?getPlayerName(piece->getPlayer()):_T("NULL"));
+                  ,piece?getPlayerName(piece->getPlayer()):_T("nullptr"));
   }
   return (piece->getType() == Pawn) && (GETROW(to) == GETPROMOTEROW(piece->getPlayer()));
 }
 
 PrintableMove Game::generateMove(int from, int to, PieceType promoteTo, MoveAnnotation annotation) const {
   const Piece *piece = getPieceAtPosition(from);
-  if(piece == NULL || piece->getPlayer() != PLAYERINTURN) {
+  if(piece == nullptr || piece->getPlayer() != PLAYERINTURN) {
     throwException(_T("%s-%s is not a legal move in the current position")
                   ,getFieldName(from)
                   ,getFieldName(to));
@@ -147,7 +147,7 @@ bool Game::isSingleMovePosition() const {
 #if defined(TABLEBASE_BUILDER)
 Move Game::generateBackMove(int from, int to) const {
   const Piece *piece = getPieceAtPosition(to);
-  if(piece == NULL || piece->getPlayer() != CURRENTENEMY) {
+  if(piece == nullptr || piece->getPlayer() != CURRENTENEMY) {
     throwException(_T("%s-%s is not a legal backmove in the current position")
                   ,getFieldName(from)
                   ,getFieldName(to));
@@ -317,7 +317,7 @@ MoveBaseArray Game::getLegalMoves(int pos) const {
 
 MoveBaseArray Game::getLegalMoves(const Piece *piece) const {
   MoveBaseArray result;
-  if(piece == NULL || piece->getPlayer() != PLAYERINTURN) {
+  if(piece == nullptr || piece->getPlayer() != PLAYERINTURN) {
     return result;
   }
 
@@ -358,7 +358,7 @@ MoveBaseArray Game::getLegalBackMoves(int pos) const {
 
 MoveBaseArray Game::getLegalBackMoves(const Piece *piece) const {
   MoveBaseArray result;
-  if(piece == NULL || piece->getPlayer() == PLAYERINTURN) {
+  if(piece == nullptr || piece->getPlayer() == PLAYERINTURN) {
     return result;
   }
 
@@ -778,7 +778,7 @@ String secondsToString(double msec, bool showMilliSeconds) {
 
 
 String getPositionArrayToString(PositionArray positions) {
-  if(positions == NULL) {
+  if(positions == nullptr) {
     return EMPTYSTRING;
   } else {
     String result;
@@ -954,11 +954,11 @@ void throwUserException(int id, ...) {
   throwException(msg);
 }
 
-static FILE *verboseLog = NULL;
+static FILE *verboseLog = nullptr;
 
 void setVerboseLogging(bool on) {
   if(on) {
-    if(verboseLog == NULL) {
+    if(verboseLog == nullptr) {
       String fileName = getTempFileName(format(_T("chess%s.log"), Timestamp().toString(_T("yyyyMMddhhmm")).cstr()));
       for(;;) {
         if(ACCESS(fileName, 0) < 0) {
@@ -968,9 +968,9 @@ void setVerboseLogging(bool on) {
       }
       verboseLog = MKFOPEN(fileName, _T("w"));
     }
-  } else if(verboseLog != NULL) {
+  } else if(verboseLog != nullptr) {
     fclose(verboseLog);
-    verboseLog = NULL;
+    verboseLog = nullptr;
   }
 }
 
@@ -1002,7 +1002,7 @@ void VerboseReceiver::vprintf(_In_z_ _Printf_format_string_ TCHAR const * const 
   _ftprintf(stderr, _T("%s"), msg.cstr());
   fflush(stderr);
 
-  if((verboseLog != NULL) && (msg.find('\r') < 0)) {
+  if((verboseLog != nullptr) && (msg.find('\r') < 0)) {
     _ftprintf(verboseLog, _T("%s"), msg.cstr());
     fflush(verboseLog);
   }
@@ -1079,7 +1079,7 @@ void log(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
 }
 
 void vlog(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
-  if(verboseLog == NULL) {
+  if(verboseLog == nullptr) {
     return;
   }
   const String msg = vformat(format, argptr);

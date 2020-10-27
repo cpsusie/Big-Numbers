@@ -16,7 +16,7 @@ void TextFileLib::open(OpenMode mode, bool checkSubDirCount) {
     break;
   case WRITE_MODE:
     m_libFile = FOPEN(libName, _T("w"));
-    setvbuf(m_libFile, NULL, _IOFBF, BUFSIZE);
+    setvbuf(m_libFile, nullptr, _IOFBF, BUFSIZE);
     break;
   case UPDATE_MODE:
     m_libFile = FOPEN(libName, _T("a"));
@@ -27,9 +27,9 @@ void TextFileLib::open(OpenMode mode, bool checkSubDirCount) {
 }
 
 void TextFileLib::close() {
-  if(m_libFile != NULL) {
+  if(m_libFile != nullptr) {
     fclose(m_libFile);
-    m_libFile = NULL;
+    m_libFile = nullptr;
   }
 }
 
@@ -43,7 +43,7 @@ size_t TextFileLib::addFiles(const StringArray &names, const LibraryContent *con
       if(name.equalsIgnoreCase(libName)) {
         continue; // do not process library !!
       }
-      if(content && (content->get(name) != NULL)) {
+      if(content && (content->get(name) != nullptr)) {
         continue;
       }
       if(m_verbose) {
@@ -67,7 +67,7 @@ void TextFileLib::unpack(const TCHAR **argv, bool setTimestamp, bool setMode, bo
   String       line;
   size_t       lineNumber = 0;
   FileInfo     info;
-  FILE        *f = NULL;
+  FILE        *f = nullptr;
   while(readLine(m_libFile, line)) {
     lineNumber++;
     try {
@@ -105,7 +105,7 @@ void TextFileLib::unpack(const TCHAR **argv, bool setTimestamp, bool setMode, bo
 
 void TextFileLib::closeFile(FILE * &f, const FileInfo &info) {
   fclose(f);
-  f = NULL;
+  f = nullptr;
   restoreTimesAndMode(info);
 }
 
@@ -117,7 +117,7 @@ void TextFileLib::removeLib(const String &libName) { // static
   UNLINK(libName);
 }
 
-// list can be NULL. return number of elements in lib, matching argv
+// list can be nullptr. return number of elements in lib, matching argv
 size_t TextFileLib::getInfoList(Array<FileInfo> *list) const {
   const INT64 pos = GETPOS(m_libFile);
   if(list) list->clear();
@@ -141,7 +141,7 @@ size_t TextFileLib::getInfoList(Array<FileInfo> *list) const {
 }
 
 void TextFileLib::addFile(const String &name) {
-  FILE *f = NULL;
+  FILE *f = nullptr;
   try {
     const FileInfo info(name);
     f = FOPEN(name, _T("r"));
@@ -150,10 +150,10 @@ void TextFileLib::addFile(const String &name) {
     while(readLine(f, line)) {
       _ftprintf(m_libFile, _T("%s\n"), line.cstr());
     }
-    fclose(f); f = NULL;
+    fclose(f); f = nullptr;
   } catch(...) {
     if(f) {
-      fclose(f); f = NULL;
+      fclose(f); f = nullptr;
     }
     throw;
   }

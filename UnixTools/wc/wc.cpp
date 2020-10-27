@@ -91,7 +91,7 @@ void WordCounter::wc(const TCHAR *name, FILE *f) {
 
   CountResult result;
 
-  setvbuf(f,NULL,_IOFBF,BUFSIZE);
+  setvbuf(f,nullptr,_IOFBF,BUFSIZE);
   while(_fgetts(line, ARRAYSIZE(line),f)) {
     result.m_lineCount++;
     result.m_charCount += (int)_tcslen(line) + 1;
@@ -113,7 +113,7 @@ void WordCounter::handleFileName(const TCHAR *name, DirListEntry &info) {
 
 void WordCounter::wc(const TCHAR *name) {
   FILE *f = fopen(name,_T("r"));
-  if(f == NULL) {
+  if(f == nullptr) {
     _tperror(name);
     return;
   }
@@ -194,7 +194,7 @@ int main(int argc, const char **argv) {
 
   initWordDelimiter();
   WordCounter wordCounter(printFileContent, printSubtotals, verbose && !isatty(stdout));
-  if(*argv == NULL) {
+  if(*argv == nullptr) {
     if(isatty(stdin)) {
       usage();
     }

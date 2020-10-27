@@ -2,7 +2,7 @@
 
 class dataedit : public CDialog {
 public:
-    dataedit(CWnd *pParent = NULL);
+    dataedit(CWnd *pParent = nullptr);
     int        m_ndata;
     datapoint *m_data;
 

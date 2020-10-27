@@ -39,7 +39,7 @@ Vector ZeroFunction::operator()(const Vector &x) {
 
 ZeroFunction::ZeroFunction(Expression &e) : m_e(e) {
   const ExpressionVariable *var = m_e.getVariable(_T("x"));
-  if(var == NULL) {
+  if(var == nullptr) {
     throwException(_T("Expression doesn't depend on x"));
   }
   m_x = &e.getValueRef(*var);

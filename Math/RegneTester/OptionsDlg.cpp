@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-COptionsDlg::COptionsDlg(Options &options, CWnd *pParent /*=NULL*/)
+COptionsDlg::COptionsDlg(Options &options, CWnd *pParent /*=nullptr*/)
 : m_options(options)
 , CDialog(COptionsDlg::IDD, pParent)
 {
@@ -61,7 +61,7 @@ void COptionsDlg::OnOK() {
 
 void COptionsDlg::OnButtonFile() {
   UpdateData();
-  TCHAR *fileName = NULL;
+  TCHAR *fileName = nullptr;
   TCHAR  fileNameBuffer[256];
   if(m_highscorePath.GetLength() > 0) {
     _tcscpy(fileNameBuffer, (LPCTSTR)m_highscorePath);

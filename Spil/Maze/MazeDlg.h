@@ -7,7 +7,7 @@
 
 class CMazeDlg : public CDialog {
 public:
-  CMazeDlg(CWnd *pParent = NULL);
+  CMazeDlg(CWnd *pParent = nullptr);
 
   HICON       m_hIcon;
   HACCEL      m_accelTable;
@@ -22,7 +22,7 @@ public:
   void createDC();
   void stopPathFinder();
   bool hasPathFinder() const {
-    return m_pathFinder != NULL;
+    return m_pathFinder != nullptr;
   }
   void newMaze();
   void DCToWork(CDC &dc);

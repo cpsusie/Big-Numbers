@@ -28,7 +28,7 @@ void SaveAsJob::doSave() {
       throwException(_T("Save cancelled"));
     }
     fclose(dst);
-    dst = NULL;
+    dst = nullptr;
   } catch(...) {
     if(dst) {
       fclose(dst);

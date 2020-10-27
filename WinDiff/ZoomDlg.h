@@ -22,7 +22,7 @@ private:
   void scrollHorizontal(int n);
   void createAndSetFont(double scale);
 public:
-  CZoomDlg(const String &s1, const String &s2, CWnd *pParent = NULL);
+  CZoomDlg(const String &s1, const String &s2, CWnd *pParent = nullptr);
 
   enum { IDD = IDD_DIALOGZOOM };
   BOOL  m_ignorecase;

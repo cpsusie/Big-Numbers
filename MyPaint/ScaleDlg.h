@@ -2,7 +2,7 @@
 
 class CScaleDlg : public CDialog {
 public:
-  CScaleDlg(const ScaleParameters &scale, CWnd *pParent = NULL);
+  CScaleDlg(const ScaleParameters &scale, CWnd *pParent = nullptr);
 
   const ScaleParameters &getScaleParameters() const {
     return m_scale;

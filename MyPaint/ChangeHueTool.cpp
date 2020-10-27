@@ -18,7 +18,7 @@ void ChangeHueTool::invertDragRect() {
     getImage()->drawDragRect(&m_lastDragRect ,CSize(0,0), &m_lastDragRect, size);
   } else {
     m_lastDragRect = CRect(m_p0, m_p1);
-    getImage()->drawDragRect(&m_lastDragRect, size, NULL, size);
+    getImage()->drawDragRect(&m_lastDragRect, size, nullptr, size);
   }
 
 //  getImage()->rectangle(CRect(m_p0,m_p1),0,true);

@@ -19,7 +19,7 @@ public:
     return m_zeroes;
   }
   MoveablePointArray getMoveablePointArray() const;
-  String toString(const TCHAR *name = NULL) const;
+  String toString(const TCHAR *name = nullptr) const;
 };
 
 inline std::wostream &operator<<(std::wostream &out, const GraphZeroesResult &zr) {

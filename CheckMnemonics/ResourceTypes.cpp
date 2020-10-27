@@ -235,7 +235,7 @@ static const TCHAR *vkSynonyms[] = { // leave no space between words. COMMA (,) 
  ,_T("pg up,prior")
  ,_T("pg down,next")
  ,_T("ins,insert")
- ,NULL
+ ,nullptr
 };
 
 #define IGNORE_KEYTYPE         (~(ACC_VIRTKEY | ACC_ASCII))
@@ -507,7 +507,7 @@ void StringTableDefinition::sort() {
 
 const String *StringTableDefinition::findStringById(const String &id) const {
   intptr_t index = m_strings.binarySearch(StringId(id), stringIdCmp);
-  return (index >= 0) ? &m_strings[index].getText() : NULL;
+  return (index >= 0) ? &m_strings[index].getText() : nullptr;
 }
 
 String StringTableDefinition::toString() const {
@@ -534,7 +534,7 @@ void LanguageSection::compareSections(const LanguageSection &ls) const {
   for(size_t i = 0; i < m_menues.size(); i++) {
     const MenuDefinition &mn1 = m_menues[i];
     const MenuDefinition *mn2 = ls.findMenu(mn1.getId());
-    if(mn2 == NULL) {
+    if(mn2 == nullptr) {
       continue;
     }
     mn1.compareMenues(*mn2);
@@ -555,7 +555,7 @@ const MenuDefinition *LanguageSection::findMenu(const String &id) const {
       return &menu;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 class MenuItemAcceleratorPair {
@@ -582,7 +582,7 @@ static const MenuTextItem *findMenuItemByCommand(const CompactArray<MenuTextItem
       return item;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 static Array<MenuItemAcceleratorPair> findMatchingCommands(const AcceleratorsDefinition &accel, const CompactArray<MenuTextItem*> &menuItems) {
@@ -618,7 +618,7 @@ const AcceleratorsDefinition *LanguageSection::findMatchingAccelerator(const Dia
   if(menu) {
     const CompactArray<MenuTextItem*> menuHotKeys = menu->getMenuItemsWithHotKey();
     intptr_t                          bestCount       = 0;
-    const AcceleratorsDefinition     *bestAccelerator = NULL;
+    const AcceleratorsDefinition     *bestAccelerator = nullptr;
     for(size_t i = 0; i < m_acceleratorDefinitions.size(); i++) {
       const AcceleratorsDefinition &accel        = m_acceleratorDefinitions[i];
 
@@ -628,7 +628,7 @@ const AcceleratorsDefinition *LanguageSection::findMatchingAccelerator(const Dia
         bestAccelerator = &accel;
       }
     }
-    if(bestAccelerator != NULL) {
+    if(bestAccelerator != nullptr) {
       return bestAccelerator;
     }
   }
@@ -637,7 +637,7 @@ const AcceleratorsDefinition *LanguageSection::findMatchingAccelerator(const Dia
   const BitSet altSet = m_rf->getAltLetterSet(ctrlStrings, format(_T("Dialog %s"), dialog.getId().cstr()));
   if(!altSet.isEmpty()) {
     double                        bestPct         = 0;
-    const AcceleratorsDefinition *bestAccelerator = NULL;
+    const AcceleratorsDefinition *bestAccelerator = nullptr;
     for(size_t i = 0; i < m_acceleratorDefinitions.size(); i++) {
       const AcceleratorsDefinition    &accel   = m_acceleratorDefinitions[i];
       const Array<const Accelerator*> accArray = findMatchingAltKeys(accel, altSet);
@@ -655,20 +655,20 @@ const AcceleratorsDefinition *LanguageSection::findMatchingAccelerator(const Dia
       return bestAccelerator;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 
 void LanguageSection::checkHasAllMenuAndStrings(const StringHashSet &menuIds, const StringHashSet &stringIds) const {
   for(ConstIterator<String> it = menuIds.getIterator(); it.hasNext();) {
     const String &id = it.next();
-    if(findMenu(id) == NULL) {
+    if(findMenu(id) == nullptr) {
       m_rf->error(_T("Menu %s not defined for language %s"), id.cstr(), getLanguage().getId().cstr());
     }
   }
   for(ConstIterator<String> it = stringIds.getIterator(); it.hasNext();) {
     const String &id = it.next();
-    if(m_stringTable.findStringById(id) == NULL) {
+    if(m_stringTable.findStringById(id) == nullptr) {
       m_rf->error(_T("StringId %s not defined for language %s"), id.cstr(), getLanguage().getId().cstr());
     }
   }

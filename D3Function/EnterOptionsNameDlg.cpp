@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CEnterOptionsNameDlg::CEnterOptionsNameDlg(const String &currentName, CWnd *pParent /*=NULL*/)
+CEnterOptionsNameDlg::CEnterOptionsNameDlg(const String &currentName, CWnd *pParent /*=nullptr*/)
   : CDialog(IDD, pParent)
 {
   m_name = currentName.cstr();

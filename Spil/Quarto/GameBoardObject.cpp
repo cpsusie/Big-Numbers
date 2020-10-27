@@ -40,9 +40,9 @@ float GameBoardObject::s_ygridLines[5];
 
 #if !defined(_DEBUG)
 LPDIRECT3DTEXTURE BoardFieldObject::s_texture[3] = {
-  NULL
- ,NULL
- ,NULL
+  nullptr
+ ,nullptr
+ ,nullptr
 };
 BYTE BoardFieldObject::s_fieldCount = 0;
 void BoardFieldObject::decrFieldCount() {
@@ -111,7 +111,7 @@ static int fieldResId[] = {
 #if defined(_DEBUG)
 CFont *BoardFieldObject::getFont() { // static
   static CFont font;
-  if(font.m_hObject==NULL) {
+  if(font.m_hObject==nullptr) {
     font.CreateFont(22, 22, 0, 0, 400, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS
                     ,CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY
                     ,DEFAULT_PITCH | FF_MODERN
@@ -143,7 +143,7 @@ LPDIRECT3DTEXTURE BoardFieldObject::createTexture(bool marked) {
 LPDIRECT3DTEXTURE BoardFieldObject::getTexture(bool marked) {
 #if !defined(_DEBUG)
   const int index = GETFIELDRESINDEX(m_field,marked);
-  if(s_texture[index] == NULL) {
+  if(s_texture[index] == nullptr) {
     s_texture[index] = getDevice().loadTextureFromBitmapResource(GETFIELDRESID(m_field,marked));
   }
   return s_texture[index];
@@ -427,7 +427,7 @@ void GameBoardObject::setBricksVisible(BrickSet set, bool visible) {
 
 int GameBoardObject::getBrickFromPoint(const CPoint &p, const D3Camera *camera) const {
   const D3SceneObjectVisual *obj = camera->getPickedVisual(p);
-  if((obj == NULL) || (obj == this)) {
+  if((obj == nullptr) || (obj == this)) {
     return NOBRICK;
   }
   for(int b = 0; b < FIELDCOUNT; b++) {
@@ -440,7 +440,7 @@ int GameBoardObject::getBrickFromPoint(const CPoint &p, const D3Camera *camera) 
 
 Field GameBoardObject::getFieldFromPoint(const CPoint &p, const D3Camera *camera) const {
   const D3SceneObjectVisual *obj = camera->getPickedVisual(p);
-  if(obj == NULL || obj == this) {
+  if(obj == nullptr || obj == this) {
     return NOFIELD;
   }
   for(int r = 0; r < ROWCOUNT; r++) {

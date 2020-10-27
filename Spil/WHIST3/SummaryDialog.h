@@ -7,7 +7,7 @@ private:
   GameHistory m_gameHistory;
 
 public:
-    SummaryDialog(int myId, const PlayerList &players, const GameHistory &gameHistory, CWnd *pParent = NULL);
+    SummaryDialog(int myId, const PlayerList &players, const GameHistory &gameHistory, CWnd *pParent = nullptr);
 
     enum { IDD = IDD_SUMMARY_DIALOG };
 

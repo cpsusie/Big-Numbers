@@ -46,8 +46,8 @@ typedef enum {
 
 class CChessDlg : public CDialog, public PropertyChangeListener, public PropertyContainer, OptionsAccessor {
 public:
-  CChessDlg(const String &startupFileName, CWnd *pParent = NULL);
-  CChessDlg(const String &name, const GameKey &startPosition, const GameHistory &history, int plyIndex, CWnd *pParent = NULL);
+  CChessDlg(const String &startupFileName, CWnd *pParent = nullptr);
+  CChessDlg(const String &name, const GameKey &startPosition, const GameHistory &history, int plyIndex, CWnd *pParent = nullptr);
   ~CChessDlg();
   void toggleEnableTestMenu();
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);

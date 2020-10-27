@@ -1,6 +1,7 @@
 #pragma once
 
 #include <MyUtil.h>
+#include <StringArray.h>
 
 typedef enum {
   SQL_CALL_COMMIT    ,

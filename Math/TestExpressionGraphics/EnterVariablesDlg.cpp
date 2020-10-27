@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CEnterVariablesDlg::CEnterVariablesDlg(Expression &expr, CWnd *pParent /*=NULL*/)
+CEnterVariablesDlg::CEnterVariablesDlg(Expression &expr, CWnd *pParent /*=nullptr*/)
 : m_expr(expr)
 , CDialog(CEnterVariablesDlg::IDD, pParent)
 {

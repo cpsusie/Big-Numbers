@@ -78,7 +78,7 @@ BOOL CShwGraphDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if (pSysMenu != NULL) {
+  if (pSysMenu != nullptr) {
       CString strAboutMenu;
       strAboutMenu.LoadString(IDS_ABOUTBOX);
       if (!strAboutMenu.IsEmpty()) {
@@ -87,7 +87,7 @@ BOOL CShwGraphDlg::OnInitDialog() {
       }
   }
 
-  m_currentFont = NULL;
+  m_currentFont = nullptr;
   m_defaultFont.CreateFont(  8, 8, 0, 0, 400, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS,
                           CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
                           DEFAULT_PITCH | FF_MODERN,
@@ -278,11 +278,11 @@ intptr_t CShwGraphDlg::findDataPoint(const CPoint &point) { /* returns the index
 }
 
 void CShwGraphDlg::readTextFile(const String &fname) {
-  FILE *f = NULL;
+  FILE *f = nullptr;
   try {
     f = FOPEN(fname, _T("r"));
     readData(f);
-    fclose(f); f = NULL;
+    fclose(f); f = nullptr;
     if(m_points.size()) {
       adjustTransform();
     }
@@ -445,7 +445,7 @@ void CShwGraphDlg::OnLButtonDown(UINT nFlags, CPoint point) {
       ss.cx = ss.cy = 1;
       m_zoomRect.right = m_zoomRect.left   = point.x;
       m_zoomRect.top   = m_zoomRect.bottom = point.y;
-      dc.DrawDragRect(&m_zoomRect,ss,NULL,ss);
+      dc.DrawDragRect(&m_zoomRect,ss,nullptr,ss);
       setState(STATE_ZOOM_RESIZE);
     }
     break;
@@ -783,7 +783,7 @@ void CShwGraphDlg::OnEditFritschCarlsonSpline() {
 static void showfile(const TCHAR *fname) {
   USES_CONVERSION;
   const char *aname = T2A(fname);
-  if(_spawnl(_P_NOWAIT,"c:\\windows\\system32\\notepad.exe","notepad.exe",aname, NULL ) < 0) {
+  if(_spawnl(_P_NOWAIT,"c:\\windows\\system32\\notepad.exe","notepad.exe",aname, nullptr ) < 0) {
     showWarning(_T("Kan ikke starte notepad"));
   }
 }

@@ -7,7 +7,7 @@ private:
   RectangleTransformation m_tr;
   HACCEL                  m_accelTable;
 public:
-  CIntervalDlg(const RectangleTransformation &tr, CWnd *pParent = NULL);
+  CIntervalDlg(const RectangleTransformation &tr, CWnd *pParent = nullptr);
   Rectangle2D getDataRange();
 
   enum { IDD = IDR_INTERVAL };

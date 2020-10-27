@@ -38,7 +38,7 @@ protected:
   }
   void restoreTimesAndMode(const FileInfo &info);
   static void checkFirstLineIsInfoLine(const String &fileName);
-  // if content == NULL, all files in names-array will be added. if != NULL, names contained in content will be skipped.
+  // if content == nullptr, all files in names-array will be added. if != nullptr, names contained in content will be skipped.
   // Return number of added files
   virtual size_t addFiles(const StringArray &names, const LibraryContent *content) = 0;
   virtual bool   checkIntegrity(const Array<FileInfo> &list)                       = 0;
@@ -51,7 +51,7 @@ public:
   virtual void           open(OpenMode mode, bool checkSubDirCount = true)                         = 0;
   virtual void           close()                                                                   = 0;
   virtual void           unpack(const TCHAR **argv, bool setTimestamp, bool setMode, bool verbose) = 0;
-  // list can be NULL. return number of elements in lib, matching argv
+  // list can be nullptr. return number of elements in lib, matching argv
   virtual size_t         getInfoList(Array<FileInfo> *list) const                                  = 0;
   virtual LibType        getType() const                                                           = 0;
 
@@ -63,7 +63,7 @@ public:
   LibraryContent         getAllContent();
   // return number of elements in lib, matching argv
   virtual size_t         getUnpackCount() const {
-    return getInfoList(NULL);
+    return getInfoList(nullptr);
   }
   const String          &getLibName() const {
     return m_libName;

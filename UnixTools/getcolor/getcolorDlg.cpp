@@ -49,7 +49,7 @@ BOOL CGetcolorDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -64,10 +64,10 @@ BOOL CGetcolorDlg::OnInitDialog() {
   for(int i = 0; ; i++) {
     DISPLAY_DEVICE displaydevice;
     displaydevice.cb = sizeof(displaydevice);
-    if(EnumDisplayDevices(NULL,i,&displaydevice,0) == 0) break;
+    if(EnumDisplayDevices(nullptr,i,&displaydevice,0) == 0) break;
   }
 */
-  hdcScreen     = CreateDC(_T("DISPLAY"), NULL, NULL, NULL);
+  hdcScreen     = CreateDC(_T("DISPLAY"), nullptr, nullptr, nullptr);
   scrw          = GetDeviceCaps(hdcScreen, HORZRES);
   scrh          = GetDeviceCaps(hdcScreen, VERTRES);
   hdcCompatible = CreateCompatibleDC(hdcScreen);

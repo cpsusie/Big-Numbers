@@ -109,7 +109,7 @@ PRIVATE void clean_up P((void));
 			/* entry for that typedef.			  */
 %nonassoc <ascii> CLASS	/* extern register auto static typedef. Attribute */
 			/* is the first character of the lexeme.	  */
-%nonassoc <p_sym> NAME	/* Identifier or typedef name. Attribute is NULL  */
+%nonassoc <p_sym> NAME	/* Identifier or typedef name. Attribute is nullptr  */
 			/* if the symbol doesn't exist, a pointer to the  */
 			/* associated "symbol" structure, otherwise.	  */
 
@@ -382,7 +382,7 @@ var_decl
  * Name productions. new_name always creates a new symbol, initialized with the
  * current lexeme. Name returns a preexisting symbol with the associated name
  * (if there is one); otherwise, the symbol is allocated. The NAME token itself
- * has a NULL attribute if the symbol doesn't exist, otherwise it returns a
+ * has a nullptr attribute if the symbol doesn't exist, otherwise it returns a
  * pointer to a "symbol" for the name.
  */
 
@@ -403,7 +403,7 @@ name	: NAME	{  if( !$1 || $1->level != Nest_lev )
 ext_decl_list
 	:  ext_decl
 	   {
-		$$->next = NULL;		/* First link in chain. */
+		$$->next = nullptr;		/* First link in chain. */
 	   }
 	|  ext_decl_list COMMA ext_decl
 	   {
@@ -451,7 +451,7 @@ funct_decl
 	;
 name_list
 	: new_name		   {
-					$$->next	 = NULL;
+					$$->next	 = nullptr;
 					$$->type	 = new_link();
 					$$->type->class  = SPECIFIER;
 					$$->type->SCLASS = AUTO;
@@ -465,7 +465,7 @@ name_list
 				    }
 	;
 var_list
-	: param_declaration			{ if($1) $$->next = NULL; }
+	: param_declaration			{ if($1) $$->next = nullptr; }
 	| var_list COMMA param_declaration	{ if($3)
 						  {
 						      $$       = $3;
@@ -475,8 +475,8 @@ var_list
 	;
 param_declaration
 	: type  var_decl    	{ add_spec_to_decl($1,  $$ = $2  ); }
-	| abstract_decl		{ discard_symbol  ($1); $$ = NULL ; }
-	| ELLIPSIS		{			$$ = NULL ; }
+	| abstract_decl		{ discard_symbol  ($1); $$ = nullptr ; }
+	| ELLIPSIS		{			$$ = nullptr ; }
 	;
 
 
@@ -552,18 +552,18 @@ def_list
 					$$      = $2;
 				    }
 				}
-	| /* epsilon */		{   $$ = NULL; }   /* Initialize end-of-list */
+	| /* epsilon */		{   $$ = nullptr; }   /* Initialize end-of-list */
 	;					   /* pointer.		     */
 
 def
 	: specifiers decl_list	{ add_spec_to_decl( $1, $2 );	}
 	  		  SEMI	{ $$ = $2;			}
 
-	| specifiers SEMI 	{ $$ = NULL; }
+	| specifiers SEMI 	{ $$ = nullptr; }
 	;
 
 decl_list
-	: decl 			{ $$->next = NULL;}
+	: decl 			{ $$->next = nullptr;}
 	| decl_list COMMA decl
 	  {
 		$3->next = $1;
@@ -831,15 +831,15 @@ unary
 
 
 	| SIZEOF LP string_const RP				%prec SIZEOF
-				     { $$ = make_icon(NULL,strlen($3) + 1 ); }
+				     { $$ = make_icon(nullptr,strlen($3) + 1 ); }
 
 	| SIZEOF LP expr RP	     				%prec SIZEOF
-				     { $$ = make_icon(NULL,get_sizeof($3->type));
+				     { $$ = make_icon(nullptr,get_sizeof($3->type));
 				       release_value( $3 );
 				     }
 	| SIZEOF LP abstract_decl RP				%prec SIZEOF
 				     {
-					 $$ = make_icon( NULL,
+					 $$ = make_icon( nullptr,
 							  get_sizeof($3->type));
 					 discard_symbol( $3 );
 				     }
@@ -881,7 +881,7 @@ unary
 
 
 	| AND	  unary 	{ $$ = addr_of ( $2	 );   }   %prec UNOP
-	| STAR unary		{ $$ = indirect( NULL, $2 );  }	  %prec UNOP
+	| STAR unary		{ $$ = indirect( nullptr, $2 );  }	  %prec UNOP
 	| unary LB expr RB	{ $$ = indirect( $3,   $1 );  }	  %prec UNOP
 	| unary STRUCTOP NAME { $$ = do_struct($1, $2, yytext); } %prec STRUCTOP
 
@@ -947,14 +947,14 @@ non_comma_expr
 
 or_expr : or_list         {   int label;
 			      if( label = pop( S_andor ) )
-				  $$ = gen_false_true( label, NULL );
+				  $$ = gen_false_true( label, nullptr );
 		          }
 	;
 or_list : or_list OROR    {   if( $1 )
 				  or( $1, stack_item(S_andor,0) = tf_label());
 		          }
 	  and_expr        {   or( $4, stack_item(S_andor,0) );
-			      $$ = NULL;
+			      $$ = nullptr;
 		          }
 	| and_expr        {   push( S_andor, 0 );
 			  }
@@ -966,7 +966,7 @@ and_expr: and_list        {	int label;
 				if( label = pop( S_andor ) )
 				{
 				    gen( "goto%s%d", L_TRUE, label );
-				    $$ = gen_false_true( label, NULL );
+				    $$ = gen_false_true( label, nullptr );
 				}
 		          }
 	;
@@ -974,7 +974,7 @@ and_list: and_list ANDAND {	if( $1 )
 				    and($1, stack_item(S_andor,0) = tf_label());
 		          }
 	  binary          {	and( $4, stack_item(S_andor,0) );
-				    $$ = NULL;
+				    $$ = nullptr;
 			  }
 	| binary          {	push( S_andor, 0 );
 			  }
@@ -1051,14 +1051,14 @@ string_const
 
 		yytext[ strlen(yytext) - 1 ] = '\0' ;	/* Remove trailing " */
 
-		if( concat(STR_MAX, Str_buf, Str_buf, yytext+1, NULL) < 0 )
+		if( concat(STR_MAX, Str_buf, Str_buf, yytext+1, nullptr) < 0 )
 		    yyerror("String truncated at %d characters\n", STR_MAX );
 	  }
 	| string_const STRING
 	  {
 		yytext[ strlen(yytext) - 1 ] = '\0' ;	/* Remove trailing " */
 
-		if( concat(STR_MAX, Str_buf, Str_buf, yytext+1, NULL) < 0 )
+		if( concat(STR_MAX, Str_buf, Str_buf, yytext+1, nullptr) < 0 )
 		    yyerror("String truncated at %d characters\n", STR_MAX );
 	  }
 	;

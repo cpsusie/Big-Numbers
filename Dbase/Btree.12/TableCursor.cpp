@@ -367,7 +367,7 @@ TableCursorKey::TableCursorKey(const KeyFileDefinition &keydef, const Tuple *key
   if(fieldCount == 0) {
     return;
   }
-  if(keytuple == NULL) {
+  if(keytuple == nullptr) {
     throwSqlError(SQL_FATAL_ERROR,_T("TableCursorKey:No Tuple specified but field = %d"),fieldCount);
   }
   const Tuple &tuple = *keytuple;
@@ -491,7 +491,7 @@ TableCursor::TableCursor(Database               &db      ,
                          const TableCursorParam &param   ,
                          const Tuple            *beginKey,
                          const Tuple            *endKey) : m_db(db) {
-  m_keyCursor  = NULL;
+  m_keyCursor  = nullptr;
   m_sequenceNo = param.m_sequenceNo;
 
   const TableInfo &tableInfo = m_db.getTableInfo(m_sequenceNo);
@@ -642,6 +642,6 @@ String TableCursorParam::toString() const {
   result += format(_T("  EndRelOp       :%s\n"), relOpString(m_endRelOp)        );
   result += format(_T("  Endfieldcount  :%d\n"), m_endFieldCount                );
   result += format(_T("  Direction      :%s\n"), (m_dir == SORT_ASCENDING) ? _T("ASC") : _T("DESC"));
-  result += format(_T("  FieldSet       :%s")  , m_fieldSet.toStringBasicType().cstr());
+  result += format(_T("  FieldSet       :%s")  , m_fieldSet.toString().cstr());
   return result;
 }

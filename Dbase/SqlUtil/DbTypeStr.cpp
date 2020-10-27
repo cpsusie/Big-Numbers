@@ -68,7 +68,7 @@ bool isNullAllowed(DbFieldType dbType) {
 
 DbFieldType sqlapi_getFieldType(const TCHAR *typeString) {
   const int *type = dbTypeNameMap.get(typeString);
-  return (type == NULL) ? DBTYPE_UNKNOWN : DbTypeAttributeList[*type].m_dbType;
+  return (type == nullptr) ? DBTYPE_UNKNOWN : DbTypeAttributeList[*type].m_dbType;
 }
 
 DbMainType getMainType(DbFieldType dbType) {

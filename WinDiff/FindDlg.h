@@ -21,7 +21,7 @@ private:
   void                 addRegexSymbol(const TCHAR *s, int cursorpos);
   void                 gotoFindWhat();
 public:
-  CFindDlg(FindParameters &param, TextContainer *tc, CWnd *pParent = NULL);
+  CFindDlg(FindParameters &param, TextContainer *tc, CWnd *pParent = nullptr);
   FindParameters &m_param;
 
   enum { IDD = IDD_DIALOGFIND };

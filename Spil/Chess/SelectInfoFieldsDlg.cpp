@@ -5,7 +5,7 @@
 
 IMPLEMENT_DYNAMIC(CSelectInfoFieldsDlg, CDialog)
 
-CSelectInfoFieldsDlg::CSelectInfoFieldsDlg(CWnd *pParent /*=NULL*/) : CDialog(IDD, pParent)
+CSelectInfoFieldsDlg::CSelectInfoFieldsDlg(CWnd *pParent /*=nullptr*/) : CDialog(IDD, pParent)
 {
   dataToWindow(getOptions().getengineVerboseFields());
 }

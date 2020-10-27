@@ -21,7 +21,7 @@ namespace TestRegex {
 
     Regex regex;
     try {
-      regex.compilePattern(pattern, ignoreCase ? String::upperCaseTranslate : NULL);
+      regex.compilePattern(pattern, ignoreCase ? String::upperCaseTranslate : nullptr);
     }  catch (Exception e) {
       if (!expectException) {
         throwException(_T("error:pattern:<%s> return Exception:<%s>. No Exception expected"), pattern.cstr(), e.what());

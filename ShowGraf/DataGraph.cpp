@@ -28,12 +28,12 @@ bool DataGraph::needRefresh() const {
 void DataGraph::readData() {
   const DataGraphParameters &param = (DataGraphParameters&)getParam();
   FILE *f = !param.inputIsDiscFile() ? stdin : fopen(param.getFileName(),_T("r"));
-  if(f != NULL) {
+  if(f != nullptr) {
     try {
       readData(f);
       if(f != stdin) {
         fclose(f);
-        f = NULL;
+        f = nullptr;
       }
     } catch(...) {
       if(f && (f != stdin)) fclose(f);

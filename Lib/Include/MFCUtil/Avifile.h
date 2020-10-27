@@ -92,7 +92,7 @@ public:
   inline void appendNewFrame(int width, int height, LPVOID pBits,int bitsPerPixel) {
     (this->*m_currentFrameBitsAppender)(width,height, pBits, bitsPerPixel);
   }
-  HBITMAP readFrame(); // will return NULL at eof
+  HBITMAP readFrame(); // will return nullptr at eof
   const AVISTREAMINFO &getStreamInfo() {
     return m_aviStreamInfo;
   }

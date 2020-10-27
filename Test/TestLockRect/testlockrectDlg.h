@@ -8,7 +8,7 @@ private:
   PixRectDevice m_device;
   void log(TCHAR *format, ...);
 public:
-  CtestlockrectDlg(CWnd *pParent = NULL);   // standard constructor
+  CtestlockrectDlg(CWnd *pParent = nullptr);   // standard constructor
 
 #if defined(AFX_DESIGN_TIME)
   enum { IDD = IDD_TESTLOCKRECT_DIALOG };

@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-DisplayPoly::DisplayPoly(CWnd *pParent /*=NULL*/) : CDialog(DisplayPoly::IDD, pParent) {
+DisplayPoly::DisplayPoly(CWnd *pParent /*=nullptr*/) : CDialog(DisplayPoly::IDD, pParent) {
   m_fisk = EMPTYSTRING;
   counter = 0;
 }

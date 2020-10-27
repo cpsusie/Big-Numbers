@@ -6,7 +6,7 @@
 bool MazeCell::allWallsVisible() const{
   for(size_t i = 0; i < m_walls.size(); i++) {
     const MazeWall *w = m_walls[i];
-    if(w == NULL || !w->isVisible()) {
+    if(w == nullptr || !w->isVisible()) {
       return false;
     }
   }
@@ -15,8 +15,8 @@ bool MazeCell::allWallsVisible() const{
 
 MazeCell *MazeCell::getNeighbor(int index) const {
   MazeWall *w = m_walls[index];
-  if(w == NULL) {
-    return NULL;
+  if(w == nullptr) {
+    return nullptr;
   }
   return (w->m_c1 == this) ? w->m_c2 : w->m_c1;
 }
@@ -25,7 +25,7 @@ CompactArray<MazeCell*> MazeCell::findCompleteNeighbors() {
   CompactArray<MazeCell*> result;
   for(int i = 0; i < getWallCount(); i++) {
      MazeCell *nc = getNeighbor(i);
-     if(nc != NULL && nc->allWallsVisible()) {
+     if(nc != nullptr && nc->allWallsVisible()) {
        result.add(nc);
      }
   }
@@ -42,7 +42,7 @@ void MazeCell::mark(CDC &dc) {
   int index = 0;
   for(size_t i = 0; i < m_walls.size(); i++) {
     const MazeWall *wall = m_walls[i];
-    if(wall == NULL) {
+    if(wall == nullptr) {
       continue;
     }
     wall->paint(dc, wall->isVisible() ? colors[index] : Gray);
@@ -51,11 +51,11 @@ void MazeCell::mark(CDC &dc) {
 }
 
 MazeWall *MazeCell::getRightMostVerticalOuterWall() const {
-  MazeWall *result = NULL;
+  MazeWall *result = nullptr;
   for(size_t i = 0; i < m_walls.size(); i++) {
     MazeWall *wall = m_walls[i];
-    if((wall != NULL) && wall->m_visible && (wall->m_c1 == NULL || wall->m_c2 == NULL) && (wall->m_p1.y != wall->m_p2.y)) {
-      if(result == NULL) {
+    if((wall != nullptr) && wall->m_visible && (wall->m_c1 == nullptr || wall->m_c2 == nullptr) && (wall->m_p1.y != wall->m_p2.y)) {
+      if(result == nullptr) {
         result = wall;
       } else {
         const int sr = result->m_p1.x + result->m_p2.x;
@@ -70,11 +70,11 @@ MazeWall *MazeCell::getRightMostVerticalOuterWall() const {
 }
 
 MazeWall *MazeCell::getLeftMostVerticalOuterWall() const {
-  MazeWall *result = NULL;
+  MazeWall *result = nullptr;
   for(size_t i = 0; i < m_walls.size(); i++) {
     MazeWall *wall = m_walls[i];
-    if((wall != NULL) && wall->m_visible && (wall->m_c1 == NULL || wall->m_c2 == NULL) && (wall->m_p1.y != wall->m_p2.y)) {
-      if(result == NULL) {
+    if((wall != nullptr) && wall->m_visible && (wall->m_c1 == nullptr || wall->m_c2 == nullptr) && (wall->m_p1.y != wall->m_p2.y)) {
+      if(result == nullptr) {
         result = wall;
       } else {
         const int sr = result->m_p1.x + result->m_p2.x;

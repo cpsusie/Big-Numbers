@@ -51,8 +51,8 @@ void CellMaze::connectNeighbours() {
       const WallArray &wa = cell.getWalls();
       for(size_t w = 0; w < wa.size(); w++) {
         MazeWall *wall = wa[w];
-        if(wall != NULL) {
-          if(wall->m_c1 == NULL) {
+        if(wall != nullptr) {
+          if(wall->m_c1 == nullptr) {
             wall->m_c1 = &cell;
           } else {
             wall->m_c2 = &cell;
@@ -107,11 +107,11 @@ void CellMaze::reduceWallMatrix2(MazeWallMatrix &m) {
       }
       MazeCell *c1 = w.m_c1;
       MazeCell *c2 = w.m_c2;
-      const bool c1Complete = (c1 != NULL) && c1->allWallsVisible();
-      const bool c2Complete = (c2 != NULL) && c2->allWallsVisible();
+      const bool c1Complete = (c1 != nullptr) && c1->allWallsVisible();
+      const bool c2Complete = (c2 != nullptr) && c2->allWallsVisible();
       if(c1Complete && c2Complete
-      || c1 == NULL && c2Complete
-      || c2 == NULL && c1Complete) {
+      || c1 == nullptr && c2Complete
+      || c2 == nullptr && c1Complete) {
         continue;
       }
       if(!c1Complete && !c2Complete) {

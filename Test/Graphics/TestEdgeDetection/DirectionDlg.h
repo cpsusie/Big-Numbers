@@ -4,7 +4,7 @@
 
 class CDirectionDlg : public CDialog {
 public:
-    CDirectionDlg(Direction dir, CWnd *pParent = NULL);
+    CDirectionDlg(Direction dir, CWnd *pParent = nullptr);
 
     Direction getDirection() const {
       return m_dir;

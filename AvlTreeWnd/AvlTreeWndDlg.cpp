@@ -57,7 +57,7 @@ BOOL CAvlTreeWndDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if (pSysMenu != NULL) {
+  if (pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if (!strAboutMenu.IsEmpty()) {
@@ -205,7 +205,7 @@ void CAvlTreeWndDlg::OnEditInsertmany() {
   CGetIntDlg dlg(_T("Insert many"), _T("Enter number of keys:"), &IntInterval(0,300));
   if(dlg.DoModal() == IDOK) {
     int count = dlg.getValue();
-    int start = (m_testTree.getLast() == NULL) ? 0 : *m_testTree.getLast();
+    int start = (m_testTree.getLast() == nullptr) ? 0 : *m_testTree.getLast();
     for(int key = (int)trunc(start + 10,-1); count >= 0; count--, key += 10) {
       m_testTree.insert(key);
     }
@@ -237,7 +237,7 @@ void CAvlTreeWndDlg::OnHelpAboutavtree() {
 
 void CAvlTreeWndDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
   m_selectedNode = m_testTree.findNodeByPosition(point);
-  if(m_selectedNode == NULL) {
+  if(m_selectedNode == nullptr) {
     return;
   }
   CMenu menu;

@@ -28,7 +28,7 @@ TemplateWriter::TemplateWriter(const String &templateName, const String &implOut
   m_templateName    = templateName;
   m_implOutputDir   = implOutputDir;
   m_headerOutputDir = headerOutputDir;
-  m_output          = NULL;
+  m_output          = nullptr;
   m_outputIsTemp    = false;
   openOutput(_T("stdout"));
 
@@ -142,8 +142,8 @@ String TemplateWriter::expandMacroes(const String &line) const {
       const TCHAR  *macStart = s.cstr() + dollarPos,*cp = macStart;
       const String  macroName   = parseMacro(cp);
       const size_t  macroLength = cp - macStart;
-      const String *value       = (macroName.length() == 0) ? NULL : m_macroes.get(macroName);
-      if(value == NULL) {
+      const String *value       = (macroName.length() == 0) ? nullptr : m_macroes.get(macroName);
+      if(value == nullptr) {
         incr = macroLength;
       } else {
         s.remove(dollarPos, macroLength);
@@ -178,8 +178,8 @@ void TemplateWriter::outputText(const String &text) {
     for(intptr_t dollar = line.find('$'); dollar >= 0; dollar = line.find('$', dollar+incr)) {
       const TCHAR  *macStart = line.cstr() + dollar, *cp = macStart;
       const String  keyword  = parseMacro(cp);
-      KeywordTrigger * const *trigger = (keyword.length() == 0) ? NULL : m_keywords.get(keyword);
-      if(trigger == NULL) {
+      KeywordTrigger * const *trigger = (keyword.length() == 0) ? nullptr : m_keywords.get(keyword);
+      if(trigger == nullptr) {
         incr = cp - macStart;
         continue;
       }

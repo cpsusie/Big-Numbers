@@ -272,7 +272,7 @@ int _tmain(int argc, TCHAR **argv) {
         }
       }
     }
-    if (*argv == NULL) {
+    if (*argv == nullptr) {
       resultName = _T("result");
     } else {
       resultName = *argv;

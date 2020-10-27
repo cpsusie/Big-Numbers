@@ -26,19 +26,19 @@ scanner::scanner( char *fname ) {
   m_next = m_line;
 
   input = fopen(m_inputfname,"r");
-  if(input == NULL) {
+  if(input == nullptr) {
     error(SQL_FILE_OPEN_ERROR,"cannot open %s",m_inputfname);
     return;
   }
 }
 
 scanner::~scanner() {
-  if(input != NULL)
+  if(input != nullptr)
     fclose(input);
 }
 
 void scanner::readline( void ) {
-  if( fgets( m_line, sizeof(m_line), input ) == NULL )
+  if( fgets( m_line, sizeof(m_line), input ) == nullptr )
     m_line[0] = '\0';
   else
     m_yylineno++;

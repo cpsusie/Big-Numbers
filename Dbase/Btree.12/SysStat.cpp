@@ -64,8 +64,8 @@ void Database::updateStatistics( const IndexDefinition &indexDef) {
 
   KeyFileDefinition keydef(indexfile);
   KeyCursor cursor(indexfile,
-                   RELOP_TRUE, NULL, 0,
-                   RELOP_TRUE, NULL, 0,
+                   RELOP_TRUE, nullptr, 0,
+                   RELOP_TRUE, nullptr, 0,
                    SORT_ASCENDING
                   );
   int nfields = min(4,keydef.getKeyFieldCount() - 1); // dont use DbAddr-field
@@ -125,8 +125,8 @@ void Database::updateStatistics(const String &tableName) {
 void Database::updateStatistics() {
   KeyFile  indexfile( *this, SYSTEM_TABLEKEY1_FNAME, DBFMODE_READONLY);
   KeyCursor cursor(indexfile,
-                   RELOP_TRUE, NULL, 0,
-                   RELOP_TRUE, NULL, 0,
+                   RELOP_TRUE, nullptr, 0,
+                   RELOP_TRUE, nullptr, 0,
                    SORT_ASCENDING
                   );
   KeyFileDefinition keydef(indexfile);

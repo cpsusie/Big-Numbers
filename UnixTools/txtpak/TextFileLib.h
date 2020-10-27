@@ -11,7 +11,7 @@ private:
 
 public:
   TextFileLib(const String &libName) : AbstractLib(libName) {
-    m_libFile = NULL;
+    m_libFile = nullptr;
   }
   ~TextFileLib();
   void           open(OpenMode mode, bool checkSubDirCount = true);
@@ -20,7 +20,7 @@ public:
 
   bool           checkIntegrity(const Array<FileInfo> &list);
   static void    removeLib(const String &libName);
-  // list can be NULL. return number of elements in lib, matching argv
+  // list can be nullptr. return number of elements in lib, matching argv
   size_t         getInfoList(Array<FileInfo> *list) const;
   LibType        getType() const {
     return LT_TEXTFILE;

@@ -4,7 +4,7 @@
 #pragma comment(lib, "netapi32.lib")
 
 int _tmain(int argc, TCHAR **argv) {
-   LPSESSION_INFO_10 pBuf = NULL;
+   LPSESSION_INFO_10 pBuf = nullptr;
    LPSESSION_INFO_10 pTmpBuf;
    DWORD dwLevel = 10;
    DWORD dwPrefMaxLen = MAX_PREFERRED_LENGTH;
@@ -13,9 +13,9 @@ int _tmain(int argc, TCHAR **argv) {
    DWORD dwResumeHandle = 0;
    DWORD i;
    DWORD dwTotalCount = 0;
-   LPTSTR pszServerName = NULL;
-   LPTSTR pszClientName = NULL;
-   LPTSTR pszUserName = NULL;
+   LPTSTR pszServerName = nullptr;
+   LPTSTR pszClientName = nullptr;
+   LPTSTR pszUserName = nullptr;
    NET_API_STATUS nStatus;
    //
    // Check command line arguments.
@@ -50,15 +50,15 @@ int _tmain(int argc, TCHAR **argv) {
       // If the call succeeds,
       //
       if ((nStatus == NERR_Success) || (nStatus == ERROR_MORE_DATA)) {
-         if ((pTmpBuf = pBuf) != NULL)
+         if ((pTmpBuf = pBuf) != nullptr)
          {
             //
             // Loop through the entries.
             //
             for (i = 0; (i < dwEntriesRead); i++) {
-               assert(pTmpBuf != NULL);
+               assert(pTmpBuf != nullptr);
 
-               if (pTmpBuf == NULL) {
+               if (pTmpBuf == nullptr) {
                   _ftprintf(stderr, _T("An access violation has occurred\n"));
                   break;
                }
@@ -83,9 +83,9 @@ int _tmain(int argc, TCHAR **argv) {
       //
       // Free the allocated memory.
       //
-      if (pBuf != NULL) {
+      if (pBuf != nullptr) {
          NetApiBufferFree(pBuf);
-         pBuf = NULL;
+         pBuf = nullptr;
       }
    }
    //
@@ -96,7 +96,7 @@ int _tmain(int argc, TCHAR **argv) {
 
    // Check again for an allocated buffer.
    //
-   if (pBuf != NULL)
+   if (pBuf != nullptr)
       NetApiBufferFree(pBuf);
    //
    // Print the final count of sessions enumerated.

@@ -11,7 +11,7 @@ CExpressionTreeDlg::CExpressionTreeDlg(const Expression &expr, CWnd *pParent)
 , m_expr(expr)
 , m_node(expr.getRoot())
 , m_extendedInfo(FALSE)
-, m_selectedNode(NULL)
+, m_selectedNode(nullptr)
 {
 }
 
@@ -20,7 +20,7 @@ CExpressionTreeDlg::CExpressionTreeDlg(const ExpressionNode *n, CWnd *pParent)
 , m_expr(n->getExpression())
 , m_node(n)
 , m_extendedInfo(FALSE)
-, m_selectedNode(NULL)
+, m_selectedNode(nullptr)
 {
 }
 
@@ -88,7 +88,7 @@ void CExpressionTreeDlg::updateNodeText(const ExpressionNode *n) {
 
 void CExpressionTreeDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
   setSelectedNode(getNodeFromPoint(point));
-  if(m_selectedNode == NULL) return;
+  if(m_selectedNode == nullptr) return;
   CMenu menu;
   if(!menu.LoadMenu(IDR_CONTEXTMENU_TREE)) {
     showWarning(_T("LoadMenu failed"));
@@ -111,7 +111,7 @@ const ExpressionNode *CExpressionTreeDlg::getNodeFromPoint(CPoint p) {
     const ExpressionNode *n = (const ExpressionNode*)m_treeCtrl.GetItemData(item);
     return n;
   }
-  return NULL;
+  return nullptr;
 }
 
 HTREEITEM CExpressionTreeDlg::findItemFromNode(const ExpressionNode *n) {
@@ -121,7 +121,7 @@ HTREEITEM CExpressionTreeDlg::findItemFromNode(const ExpressionNode *n) {
       return item;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 void CExpressionTreeDlg::OnSetBreakPoint() {

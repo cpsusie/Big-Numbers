@@ -27,7 +27,7 @@ BOOL CShowStateThread::InitInstance() {
 }
 
 int CShowStateThread::ExitInstance() {
-  ((CParserDemoDlg*)m_maindialog)->m_showStateThread = NULL;
+  ((CParserDemoDlg*)m_maindialog)->m_showStateThread = nullptr;
   return CWinThread::ExitInstance();
 }
 

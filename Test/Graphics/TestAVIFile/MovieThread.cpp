@@ -9,9 +9,9 @@ MovieThread::MovieThread(FrameGenerator *frameGenerator) : m_frameGenerator(*fra
 unsigned int MovieThread::run() {
   const TCHAR *fileName = _T("test.avi");
   CAviFile avi(fileName, true, 0, 15);
-  HDC     dc        = NULL;
-  HBITMAP bitmap    = NULL;
-  HGDIOBJ oldBitmap = NULL;
+  HDC     dc        = nullptr;
+  HBITMAP bitmap    = nullptr;
+  HGDIOBJ oldBitmap = nullptr;
 
   try {
     HDC screenDC = getScreenDC();
@@ -27,7 +27,7 @@ unsigned int MovieThread::run() {
     unlink(fileName);
 
     PixRect *pr;
-    while((pr = m_frameGenerator.nextFrame()) != NULL) {
+    while((pr = m_frameGenerator.nextFrame()) != nullptr) {
       PixRect::bitBlt(dc, 0,0,size.cx,size.cy, SRCCOPY, pr, 0, 0);
       avi.appendNewFrame(bitmap);
     }
@@ -37,17 +37,17 @@ unsigned int MovieThread::run() {
     showError(_T("Unknown Exception"));
   }
 
-  if(oldBitmap != NULL) {
+  if(oldBitmap != nullptr) {
     SelectObject(dc, oldBitmap);
-    oldBitmap = NULL;
+    oldBitmap = nullptr;
   }
-  if(dc != NULL) {
+  if(dc != nullptr) {
     DeleteDC(dc);
-    dc = NULL;
+    dc = nullptr;
   }
-  if(bitmap != NULL) {
+  if(bitmap != nullptr) {
     DeleteObject(bitmap);
-    bitmap = NULL;
+    bitmap = nullptr;
   }
   return 0;
 }

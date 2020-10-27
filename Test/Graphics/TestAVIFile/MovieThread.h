@@ -5,7 +5,7 @@
 class FrameGenerator {
 public:
   virtual CSize    getFrameSize()  = 0;
-  virtual PixRect *nextFrame()     = 0; // should return NULL when no more frames.
+  virtual PixRect *nextFrame()     = 0; // should return nullptr when no more frames.
 };
 
 class MovieThread : public Thread {

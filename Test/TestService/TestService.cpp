@@ -9,9 +9,9 @@ void mainloop() {
   }
 }
 
-HANDLE  hServerStopEvent = NULL;
+HANDLE  hServerStopEvent = nullptr;
 VOID ServiceStart(DWORD dwArgc, LPTSTR *lpszArgv) {
-  HANDLE hEvents[2] = {NULL, NULL};
+  HANDLE hEvents[2] = {nullptr, nullptr};
 
   if(!ReportStatusToSCMgr(
     SERVICE_START_PENDING, // service state
@@ -20,12 +20,12 @@ VOID ServiceStart(DWORD dwArgc, LPTSTR *lpszArgv) {
     goto cleanup;
 
   hServerStopEvent = CreateEvent(
-    NULL,    // no security attributes
+    nullptr,    // no security attributes
     TRUE,    // manual reset event
     FALSE,   // not-signalled
-    NULL);   // no name
+    nullptr);   // no name
 
-  if( hServerStopEvent == NULL)
+  if( hServerStopEvent == nullptr)
     goto cleanup;
 
   hEvents[0] = hServerStopEvent;
@@ -37,12 +37,12 @@ VOID ServiceStart(DWORD dwArgc, LPTSTR *lpszArgv) {
     goto cleanup;
 
   hEvents[1] = CreateEvent(
-    NULL,    // no security attributes
+    nullptr,    // no security attributes
     TRUE,    // manual reset event
     FALSE,   // not-signalled
-    NULL);   // no name
+    nullptr);   // no name
 
-  if( hEvents[1] == NULL)
+  if( hEvents[1] == nullptr)
     goto cleanup;
 
   if(!ReportStatusToSCMgr(

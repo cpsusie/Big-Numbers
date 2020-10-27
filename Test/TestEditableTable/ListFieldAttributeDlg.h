@@ -39,7 +39,7 @@ private:
   void                 setFieldsEnabled(const int *idArray, int n, bool enabled);
   void paramFromWindow(ListFieldAttribute &attr);
 public:
-  CListFieldAttributeDlg(const ListFieldAttribute &attr, CWnd *pParent = NULL);
+  CListFieldAttributeDlg(const ListFieldAttribute &attr, CWnd *pParent = nullptr);
   const ListFieldAttribute &getAttribute() const {
     return m_attr;
   }

@@ -2,7 +2,7 @@
 
 PlayerState::PlayerState() {
   for(int i = 0; i < ARRAYSIZE(m_pieces); i++) {
-    m_pieces[i] = NULL;
+    m_pieces[i] = nullptr;
   }
 }
 
@@ -49,7 +49,7 @@ PlayerState &PlayerState::operator=(const PlayerState &src) {
     p->m_onBoard     = srcP->m_onBoard;
     p->m_position    = srcP->m_position;
     p->m_pinnedState = srcP->m_pinnedState;
-    p->m_next        = NULL;
+    p->m_next        = nullptr;
   }
   return makeLinks();
 }
@@ -65,14 +65,14 @@ void PlayerState::clear() {
   m_bishopFlags         = 0;
 #endif
   m_kingAttackState     = 0;
-  m_first               = NULL;
+  m_first               = nullptr;
 }
 
 PlayerState &PlayerState::makeLinks() {
 
 #if defined(TABLEBASE_BUILDER)
 
-  Piece *next = NULL;
+  Piece *next = nullptr;
   for(int i = ARRAYSIZE(m_pieces); i--;) {
     Piece *piece = m_pieces[i];
     if(piece->getType() == King) {
@@ -87,8 +87,8 @@ PlayerState &PlayerState::makeLinks() {
 
 #else
 
-  Piece *next         = NULL;
-  m_king              = NULL;
+  Piece *next         = nullptr;
+  m_king              = nullptr;
 
   m_totalMaterial     = 0;
   m_bishopFlags       = 0;
@@ -98,7 +98,7 @@ PlayerState &PlayerState::makeLinks() {
   for(int i = ARRAYSIZE(m_pieces); i--;) {
     Piece *piece = m_pieces[i];
     if(piece->getType() == King) {
-      if(m_king != NULL) {
+      if(m_king != nullptr) {
         throwException(_T("Internal error. Two kings in PlayerState for %s"), toLowerCase(getPlayerName(m_player)).cstr());
       } else {
         m_king = piece;
@@ -131,7 +131,7 @@ PlayerState &PlayerState::makeLinks() {
   }
   m_first = next;
 
-  if(m_king == NULL) {
+  if(m_king == nullptr) {
     throwException(_T("Internal error. No king in PlayerState for %s"), toLowerCase(getPlayerName(m_player)).cstr());
   }
   if(m_bishopFlags == BISHOPPAIR) {
@@ -216,7 +216,7 @@ Piece *PlayerState::findUnusedPiece(PieceType pieceType) {
     }
   }
   throwUserException(IDS_MSG_CANNOT_ADD_ANOTHER_s_s, toLowerCase(getPlayerName(m_player)).cstr(), toLowerCase(getPieceTypeName(pieceType)).cstr());
-  return NULL;
+  return nullptr;
 }
 
 #if !defined(TABLEBASE_BUILDER)
@@ -395,7 +395,7 @@ const Piece *PlayerState::getNonKingPieceOnBoardByIndex(int n) const {
       }
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 static int pieceKeyCmp(const PieceKey &k1, const PieceKey &k2) {

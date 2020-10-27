@@ -4,7 +4,7 @@
 #pragma comment(lib, "netapi32.lib")
 
 static StringArray getUserAccounts(const TCHAR *serverName) {
-  LPUSER_INFO_0 buf = NULL;
+  LPUSER_INFO_0 buf = nullptr;
 
   try {
     DWORD          level           = 0;
@@ -24,7 +24,7 @@ static StringArray getUserAccounts(const TCHAR *serverName) {
                           ,&totalEntryCount
                           ,&resumeHandle);
       if(status == NERR_Success || status == ERROR_MORE_DATA) {
-        if(buf == NULL) {
+        if(buf == nullptr) {
           throwException(_T("An access violation has occurred"));
         }
         for(DWORD i = 0; i < entryCount; i++) {
@@ -33,16 +33,16 @@ static StringArray getUserAccounts(const TCHAR *serverName) {
       } else {
         throwException(_T("getUserAccounts:NetUserEnum failed:errorCode=%#lx"),status);
       }
-      if(buf != NULL) {
+      if(buf != nullptr) {
         NetApiBufferFree(buf);
-        buf = NULL;
+        buf = nullptr;
       }
     } while(status == ERROR_MORE_DATA);
 
     return result;
 
   } catch(Exception e) {
-    if(buf != NULL) {
+    if(buf != nullptr) {
       NetApiBufferFree(buf);
     }
     throw;

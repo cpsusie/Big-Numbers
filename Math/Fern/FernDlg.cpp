@@ -265,7 +265,7 @@ BOOL CFernDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -327,7 +327,7 @@ void CFernDlg::startTimer() {
   if(m_timerIsRunning) {
     return;
   }
-  if(SetTimer(1,0,NULL) == 0) {
+  if(SetTimer(1,0,nullptr) == 0) {
     showWarning(_T("Cannot install timer"));
   } else {
     m_timerIsRunning = true;

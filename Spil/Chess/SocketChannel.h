@@ -11,11 +11,11 @@ private:
   SocketPair *m_socketPair;
   void read(void        *dst, size_t size) const;
   void write(const void *src, size_t size) const;
-  void addref();  // if(m_socketPair != NULL) then call m_socketPair->addref()
-  void release(); // if(m_socketPair != NULL) then call m_socketPair->release()
+  void addref();  // if(m_socketPair != nullptr) then call m_socketPair->addref()
+  void release(); // if(m_socketPair != nullptr) then call m_socketPair->release()
                   // and return-value = 0 then delete m_socketPair
 public:
-  SocketChannel() : m_socketPair(NULL) {
+  SocketChannel() : m_socketPair(nullptr) {
   }
   SocketChannel(int portnr, const String &serverName); // call tcpOpen   twice
   SocketChannel(SOCKET listener);                      // call tcpAccept twice
@@ -26,9 +26,9 @@ public:
   SocketChannel &operator=(const SocketChannel &src);
 
   inline bool isOpen() const {
-    return m_socketPair != NULL;
+    return m_socketPair != nullptr;
   }
-  void clear(); // call release() and and set m_socketPair = NULL
+  void clear(); // call release() and and set m_socketPair = nullptr
 
   void    write(const String   &s     ) const;
   String &read(       String   &s     ) const;

@@ -2,7 +2,7 @@
 
 class CFrameCountDlg : public CDialog {
 public:
-    CFrameCountDlg(UINT frameCount, CWnd *pParent = NULL);
+    CFrameCountDlg(UINT frameCount, CWnd *pParent = nullptr);
 
     enum { IDD = IDD_FRAMECOUNT_DIALOG };
     UINT    m_frameCount;

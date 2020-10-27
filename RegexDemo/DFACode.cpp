@@ -20,10 +20,10 @@ void DFATables::init() {
   m_stateCount        = 0;
   m_rowCount          = 0;
   m_columnCount       = 0;
-  m_charMap           = NULL;
-  m_stateMap          = NULL;
-  m_transitionMatrix  = NULL;
-  m_acceptTable       = NULL;
+  m_charMap           = nullptr;
+  m_stateMap          = nullptr;
+  m_transitionMatrix  = nullptr;
+  m_acceptTable       = nullptr;
 }
 
 void DFATables::copy(const DFATables &src) {

@@ -33,7 +33,7 @@ void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CRegneTesterDlg::CRegneTesterDlg(CWnd *pParent /*=NULL*/) : CDialog(CRegneTesterDlg::IDD, pParent) {
+CRegneTesterDlg::CRegneTesterDlg(CWnd *pParent /*=nullptr*/) : CDialog(CRegneTesterDlg::IDD, pParent) {
   randomize();
   m_result = EMPTYSTRING;
   m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
@@ -84,7 +84,7 @@ BOOL CRegneTesterDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu* pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -99,11 +99,11 @@ BOOL CRegneTesterDlg::OnInitDialog() {
   SetIcon(m_hIcon, FALSE);
 
   m_watchBitmap.LoadBitmap(IDB_BITMAPTIMEWATCH);
-  m_watchDC.CreateCompatibleDC(NULL);
-  m_watchWorkDC.CreateCompatibleDC(NULL);
+  m_watchDC.CreateCompatibleDC(nullptr);
+  m_watchWorkDC.CreateCompatibleDC(nullptr);
 
   m_watchBitmap.GetObject(sizeof(BITMAP), &m_watchInfo);
-  m_watchWorkBitmap.CreateBitmap(m_watchInfo.bmWidth, m_watchInfo.bmHeight, m_watchInfo.bmPlanes, m_watchInfo.bmBitsPixel, NULL);
+  m_watchWorkBitmap.CreateBitmap(m_watchInfo.bmWidth, m_watchInfo.bmHeight, m_watchInfo.bmPlanes, m_watchInfo.bmBitsPixel, nullptr);
   m_watchWorkDC.SelectObject(&m_watchWorkBitmap);
   setEinsteinBitmap();
   setTableNumber(randInt(1,10));
@@ -264,7 +264,7 @@ void CRegneTesterDlg::stopExecise(bool checkHighScore) {
 }
 
 void CRegneTesterDlg::startTimer() {
-  if(!m_timerIsRunning && SetTimer(1,100,NULL)) {
+  if(!m_timerIsRunning && SetTimer(1,100,nullptr)) {
     m_timerIsRunning = true;
     m_startTime      = Timestamp();
     m_watchTime      = 0;

@@ -7,7 +7,7 @@ IMPLEMENT_DYNAMIC(CExpressionTreeCtrl, CTreeCtrl)
 
 CExpressionTreeCtrl::CExpressionTreeCtrl() {
   m_extendedText = false;
-  m_tree         = NULL;
+  m_tree         = nullptr;
 }
 
 CExpressionTreeCtrl::~CExpressionTreeCtrl() {
@@ -20,7 +20,7 @@ void CExpressionTreeCtrl::substituteControl(CWnd *parent, int id) {
   DEFINEMETHODNAME;
 
   CTreeCtrl *ctrl = (CTreeCtrl*)parent->GetDlgItem(id);
-  if(ctrl == NULL) {
+  if(ctrl == nullptr) {
     showError(_T("%s:Control with id=%d does not exist"), method, id);
     return;
   }
@@ -31,7 +31,7 @@ void CExpressionTreeCtrl::substituteControl(CWnd *parent, int id) {
   DWORD       exStyle = ctrl->GetExStyle();
   const CRect rect    = getWindowRect(ctrl);
   CFont      *font    = ctrl->GetFont();
-  if(font == NULL) {
+  if(font == nullptr) {
     font = parent->GetFont();
   }
   ctrl->DestroyWindow();
@@ -47,8 +47,8 @@ void CExpressionTreeCtrl::substituteControl(CWnd *parent, int id) {
 
 void CExpressionTreeCtrl::showTree(const ExpressionNode *n, bool extendedText) {
   DeleteAllItems();
-  m_tree = NULL;
-  if(n != NULL) {
+  m_tree = nullptr;
+  if(n != nullptr) {
     m_extendedText = extendedText;
     traverse(TVI_ROOT, n);
     expandAllNodes();

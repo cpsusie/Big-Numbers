@@ -65,7 +65,7 @@ static void set2DProjection(LPDIRECT3DDEVICE device, const CSize &winSize) {
 
 static D3DXMATRIX create2DRotationWorld(const D3DXVECTOR2 &center, double rad) {
   D3DXMATRIX m;
-  return *D3DXMatrixAffineTransformation2D(&m, 1, &center, (float)rad, NULL);
+  return *D3DXMatrixAffineTransformation2D(&m, 1, &center, (float)rad, nullptr);
 }
 
 static void setWorldMatrix(LPDIRECT3DDEVICE device, const D3DXMATRIX &m) {
@@ -110,7 +110,7 @@ static void alphaBlend(LPDIRECT3DDEVICE device, LPDIRECT3DTEXTURE texture, const
 
 static void render(LPDIRECT3DDEVICE device, LPDIRECT3DTEXTURE texture, const CSize &bmSize, HBITMAP result, const CSize &trSize) {
   ULONG clearColor = 0xffffffff;
-  V(device->Clear(0, NULL, D3DCLEAR_TARGET, clearColor, 1.0f, 0));
+  V(device->Clear(0, nullptr, D3DCLEAR_TARGET, clearColor, 1.0f, 0));
 
   LPDIRECT3DSURFACE renderTarget;
   V(device->GetRenderTarget(0, &renderTarget)); TRACE_REFCOUNT(renderTarget);
@@ -127,7 +127,7 @@ static void render(LPDIRECT3DDEVICE device, LPDIRECT3DTEXTURE texture, const CSi
   HDC renderDC;
   V(renderTarget->GetDC(&renderDC));
 
-  HDC resultDC = CreateCompatibleDC(NULL);
+  HDC resultDC = CreateCompatibleDC(nullptr);
   HGDIOBJ oldGdi = SelectObject(resultDC, result);
   BOOL ret = BitBlt(resultDC, 0,0,trSize.cx,trSize.cy, renderDC, 0,0, SRCCOPY);
   SelectObject(resultDC, oldGdi);
@@ -136,7 +136,7 @@ static void render(LPDIRECT3DDEVICE device, LPDIRECT3DTEXTURE texture, const CSi
   V(renderTarget->ReleaseDC(renderDC));
   SAFERELEASE(renderTarget);
 
-//  V(device->Present(NULL, NULL, NULL, NULL));
+//  V(device->Present(nullptr, nullptr, nullptr, nullptr));
 }
 
 static Rectangle2D getTransformedRectangle(const D3DXMATRIX &m, const CSize bmSize) {
@@ -189,7 +189,7 @@ HBITMAP bitmapRotate(LPDIRECT3DDEVICE device, HBITMAP b0, double degree) {
     worldMatrix   = rotationMatrix * translateMatrix;
   }
 
-  HBITMAP result = CreateBitmap(trSize.cx, trSize.cy, b0Info.bmPlanes, b0Info.bmBitsPixel, NULL);
+  HBITMAP result = CreateBitmap(trSize.cx, trSize.cy, b0Info.bmPlanes, b0Info.bmBitsPixel, nullptr);
 
   setWorldMatrix(device, worldMatrix);
 

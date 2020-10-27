@@ -19,7 +19,7 @@ private:
   void sliderTypeToRadiobutton();
   void showSliderValue();
 public:
-    CTestSliderWithTransformationDlg(CWnd *pParent = NULL);   // standard constructor
+    CTestSliderWithTransformationDlg(CWnd *pParent = nullptr);   // standard constructor
     virtual ~CTestSliderWithTransformationDlg();
 
 // Dialog Data

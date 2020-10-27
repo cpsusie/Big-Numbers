@@ -4,7 +4,7 @@ class CTesttooltipDlg : public CDialog {
 private:
 	HICON m_hIcon;
 public:
-	CTesttooltipDlg(CWnd *pParent = NULL);
+	CTesttooltipDlg(CWnd *pParent = nullptr);
 
 	enum { IDD = IDD_TESTTOOLTIP_DIALOG };
 

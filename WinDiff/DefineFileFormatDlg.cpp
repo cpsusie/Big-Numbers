@@ -228,7 +228,7 @@ bool CDefineFileFormatDlg::validate() {
     showWarning(_T("No columns specified"));
     return false;
   }
-  if((param.m_textQualifier != 0) && _tcschr(param.m_delimiters.cstr(),param.m_textQualifier) != NULL) {
+  if((param.m_textQualifier != 0) && _tcschr(param.m_delimiters.cstr(),param.m_textQualifier) != nullptr) {
     gotoEditBox(this, IDC_EDITTEXTQUALIFIER);
     showWarning(_T("The textqualifier is member of the set of fielddelimiters"));
     return false;

@@ -18,7 +18,7 @@ private:
   bool   winToParam(      ExprFunctionR2R1SurfaceParameters &param);
   void   enableTimeFields();
 public:
-  CExprFunctionR2R1SurfaceParametersDlg(const ExprFunctionR2R1SurfaceParameters &param, AbstractTextureFactory &atf, CWnd *pParent = NULL);
+  CExprFunctionR2R1SurfaceParametersDlg(const ExprFunctionR2R1SurfaceParameters &param, AbstractTextureFactory &atf, CWnd *pParent = nullptr);
 
   enum { IDD = IDR_FUNCTIONR2R1SURFACE };
 

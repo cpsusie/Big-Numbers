@@ -55,7 +55,7 @@ private:
 public:
   inline GraphPointType()
     : m_type(MPT_UNDEFINED)
-    , m_graph(NULL)
+    , m_graph(nullptr)
   {
   }
   inline GraphPointType(MoveablePointType type, const Graph *graph)

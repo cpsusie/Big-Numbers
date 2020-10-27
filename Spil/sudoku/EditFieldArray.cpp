@@ -65,7 +65,7 @@ MarkableEditField *EditFieldArray::findField(const CPoint &p) {
       }
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 MarkableEditField::MarkableEditField() {

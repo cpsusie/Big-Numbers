@@ -71,7 +71,7 @@ BOOL CChessApp::InitInstance() {
       OptionsSaver saveOptions(m_options);
       saveOptionsTimer.startTimer(10000, saveOptions, true);
       dlg.DoModal();
-      m_pMainWnd = NULL;
+      m_pMainWnd = nullptr;
       saveOptionsTimer.stopTimer();
       saveOptions.saveIfDirty();
     }

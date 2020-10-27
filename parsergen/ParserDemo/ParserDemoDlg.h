@@ -30,7 +30,7 @@ public:
   CWinThread           *m_showStateThread;
   TestParser            m_parser;
 
-  CParserDemoDlg(CWnd *pParent = NULL);
+  CParserDemoDlg(CWnd *pParent = nullptr);
   ~CParserDemoDlg();
   void             showLastDebugLine();
   void             showStatus(bool gotoLastDebug = true);

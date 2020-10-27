@@ -16,7 +16,7 @@ namespace TestStringSearch {
       const String saveTarget = target;
       int          ret;
 
-      m_strSearch->compilePattern(pattern.cstr(), pattern.length(), true, ignoreCase ? String::upperCaseTranslate : NULL);
+      m_strSearch->compilePattern(pattern.cstr(), pattern.length(), true, ignoreCase ? String::upperCaseTranslate : nullptr);
   #if defined(_DEBUG)
       OUTPUT(_T("Pattern:<%s>%s"), pattern.cstr(), ignoreCase ? _T(" Ignore case") : EMPTYSTRING);
   #endif

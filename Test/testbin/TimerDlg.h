@@ -2,7 +2,7 @@
 
 class CTimerDlg : public CDialog {
 public:
-    CTimerDlg(UINT timerInterval, CWnd *pParent = NULL);
+    CTimerDlg(UINT timerInterval, CWnd *pParent = nullptr);
 
     enum { IDD = IDD_TIMER_DIALOG };
     UINT    m_timerInterval;

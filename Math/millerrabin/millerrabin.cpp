@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
           Console::clear();
         }
         MRHandler handler(threadCount, winH);
-        const Array<BigInt> primeArray = findRandomPrimes(count, digits, threadCount, NULL, verbose?&handler:NULL);
+        const Array<BigInt> primeArray = findRandomPrimes(count, digits, threadCount, nullptr, verbose?&handler:nullptr);
         Console::clear();
         for(size_t i = 0; i < primeArray.size(); i++) {
           tcout << primeArray[i] << endl;

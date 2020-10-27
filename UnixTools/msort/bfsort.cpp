@@ -23,7 +23,7 @@ void BalancedFileSort::sortAndFlush(StringArray &lines, FILE *output) {
 
   lines.sort(m_comparator);
 
-  if(output != NULL) {
+  if(output != nullptr) {
     VERBOSE(_T("Writing result\n"));
     for(size_t i = 0; i < n; i++) {
       writeLine(output, lines[i]);
@@ -99,8 +99,8 @@ void BalancedFileSort::makeRuns(int input) {
   for(m_blockCount = 0; l0 || l1; m_blockCount++) {
     VERBOSE(_T("Merge (%s,%s) -> %s..."), in0.getName(),in1.getName(),m_currentHelpFile->getName());
     const UINT64 blockStartLine = m_currentHelpFile->getLineCount();
-    bool Continue0 = (l0 != NULL);
-    bool Continue1 = (l1 != NULL);
+    bool Continue0 = (l0 != nullptr);
+    bool Continue1 = (l1 != nullptr);
     while(Continue0 || Continue1) {
       if(!Continue1)      MOVE(0)
       else if(!Continue0) MOVE(1)

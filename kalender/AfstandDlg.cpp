@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CAfstandDlg::CAfstandDlg(CWnd *pParent /*=NULL*/)
+CAfstandDlg::CAfstandDlg(CWnd *pParent /*=nullptr*/)
 : CDialog(IDD, pParent) {
   m_afstand = 0;
   m_dag1    = EMPTYSTRING;

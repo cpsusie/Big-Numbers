@@ -88,7 +88,7 @@ public:
   int                findEquationIndexByCtrlId(UINT id) const;
   CDiffEquationEdit *findEquationByCtrlId(     UINT id) const;
   inline CDiffEquationEdit *getLastEquationEdit() const {
-    return size() ? last() : NULL;
+    return size() ? last() : nullptr;
   }
   void addEquation(CWnd *wnd, CFont &font);
   void remove(size_t index);

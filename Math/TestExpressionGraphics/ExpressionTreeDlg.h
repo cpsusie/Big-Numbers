@@ -24,8 +24,8 @@ private:
   void setSelectedNode(const ExpressionNode *m_selectedNode); // property
   void updateNodeText(const ExpressionNode *n);
 public:
-    CExpressionTreeDlg(const Expression     &expr, CWnd *pParent = NULL);
-    CExpressionTreeDlg(const ExpressionNode *n   , CWnd *pParent = NULL);
+    CExpressionTreeDlg(const Expression     &expr, CWnd *pParent = nullptr);
+    CExpressionTreeDlg(const ExpressionNode *n   , CWnd *pParent = nullptr);
 
     enum { IDD = IDD_EXPRESSIONTREE_DIALOG };
 

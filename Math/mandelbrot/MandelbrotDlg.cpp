@@ -37,12 +37,12 @@ CMandelbrotDlg::CMandelbrotDlg(DigitPool *digitPool, CWnd *pParent)
   m_hIcon                     = theApp.LoadIcon(IDR_MAINFRAME);
   m_precisionMode             = ID_OPTIONS_AUTOPRECISION;
   m_state                     = STATE_IDLE;
-  m_frameGenerator            = NULL;
-  m_colorMapEditThread        = NULL;
-  m_ccMatrix                  = NULL;
-  m_cca                       = NULL;
-  m_imageDC                   = NULL;
-  m_imageCopy                 = NULL;
+  m_frameGenerator            = nullptr;
+  m_colorMapEditThread        = nullptr;
+  m_ccMatrix                  = nullptr;
+  m_cca                       = nullptr;
+  m_imageDC                   = nullptr;
+  m_imageCopy                 = nullptr;
   setDigits();
 }
 
@@ -121,7 +121,7 @@ BOOL CMandelbrotDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -389,7 +389,7 @@ void CMandelbrotDlg::startColorMapEditor() {
 void CMandelbrotDlg::stopColorMapEditor() {
   m_gate.wait();
   if(hasColorMapEditor()) {
-    m_colorMapEditThread = NULL;
+    m_colorMapEditThread = nullptr;
     remoteUpdateWindowState();
   }
   m_gate.notify();
@@ -481,7 +481,7 @@ void CMandelbrotDlg::OnLButtonDown(UINT nFlags, CPoint point) {
 #if defined(SAVE_CALCULATORINFO)
     if(nFlags & MK_CONTROL) {
       const CalculatorInfo *info = m_calculatorPool->findInfo(m_mouseDownPoint);
-      if(info != NULL) {
+      if(info != nullptr) {
         paintPointSet(info->getEdgeSet() , RGB(255,255,255));
         paintPointSet(info->getInnerSet(), RGB(255,255,0));
         showInformation(info->toString());
@@ -726,7 +726,7 @@ void CMandelbrotDlg::dumpHistogram() {
 void CMandelbrotDlg::flushCCM() {
 //  dumpHistogram();
   m_gate.wait();
-  PixRect *pr = NULL;
+  PixRect *pr = nullptr;
   try {
     clearCCA();
     pr = newPixRect(m_ccMatrix->getSize());
@@ -793,7 +793,7 @@ void CMandelbrotDlg::setSuspendingMenuText(bool isSuspendingText) {
 
 static String changeFlagsToString(int flags) {
   String result;
-  TCHAR *delim = NULL;
+  TCHAR *delim = nullptr;
 #define ADDFLAG(f)                                 \
 if(flags & f##_CHANGED) {                          \
   if(delim) result += delim; else delim = _T(" "); \
@@ -926,9 +926,9 @@ void CMandelbrotDlg::createImageDC(const CSize &size) {
 }
 
 void CMandelbrotDlg::destroyImageDC() {
-  if(m_imageDC != NULL) {
+  if(m_imageDC != nullptr) {
     ::ReleaseDC(m_imageWindow->m_hWnd, m_imageDC);
-    m_imageDC = NULL;
+    m_imageDC = nullptr;
   }
 }
 
@@ -943,7 +943,7 @@ void CMandelbrotDlg::createCCM(const CSize &size) {
 void CMandelbrotDlg::destroyCCM() {
   if(hasCCM()) {
     deleteCCM(m_ccMatrix);
-    m_ccMatrix = NULL;
+    m_ccMatrix = nullptr;
   }
 }
 
@@ -1173,7 +1173,7 @@ void CMandelbrotDlg::removeDragRect() {
 }
 
 void CMandelbrotDlg::paintMovedImage(const CSize &dp) {
-  PixRect *tmp = NULL;
+  PixRect *tmp = nullptr;
   try {
     tmp = newPixRect(m_imageCopy->getSize());
     copyVisiblePart(tmp, m_imageCopy, dp);
@@ -1298,7 +1298,7 @@ CellCountAccessor *CMandelbrotDlg::getCCA() {
 void CMandelbrotDlg::clearCCA() {
   if(hasCCA()) {
     m_ccMatrix->releaseCCA();
-    m_cca = NULL;
+    m_cca = nullptr;
     DEBUGLOG(_T("ccMatrix unlocked\n"));
   }
 }
@@ -1503,7 +1503,7 @@ void CMandelbrotDlg::updateMovieMenuItem() {
 // --------------------------------------------------------------------------------------------------
 
 void CMandelbrotDlg::startTimer(TimerId id, int msec) {
-  if(!m_runningTimerSet.contains(id) && SetTimer(id,msec,NULL)) {
+  if(!m_runningTimerSet.contains(id) && SetTimer(id,msec,nullptr)) {
     m_runningTimerSet.add(id);
   }
 }

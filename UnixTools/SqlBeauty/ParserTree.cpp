@@ -95,7 +95,7 @@ SqlParser::SqlParser()
 
   insertIndentCount( expr       ,5, set_expr_list  , 4);
   insertIndentCount( constsymbol,5, opt_pivotlist  , 4);
-  m_root   = NULL;
+  m_root   = nullptr;
   m_indent = 0;
 }
 
@@ -153,11 +153,11 @@ SyntaxNode::SyntaxNode(int token, const TCHAR *symbol, UINT sons, bool terminal)
   m_childCount = sons;
   m_terminal   = terminal;
   if(m_childCount == 0) {
-    m_children = NULL;
+    m_children = nullptr;
   } else {
     m_children = new SyntaxNode*[sons];
     for(UINT i = 0; i < m_childCount; i++) {
-      m_children[i] = NULL;
+      m_children[i] = nullptr;
     }
   }
 }

@@ -8,11 +8,11 @@ SyntaxNode::SyntaxNode(const TCHAR *symbol, UINT childCount, bool terminal, Test
   m_childCount = childCount;
   m_terminal   = terminal;
   if(m_childCount == 0) {
-    m_children = NULL;
+    m_children = nullptr;
   } else {
     m_children = new SyntaxNodep[childCount]; TRACE_NEW(m_children);
     for(UINT i = 0; i < m_childCount; i++) {
-      m_children[i] = NULL;
+      m_children[i] = nullptr;
     }
   }
   parser->addSyntaxNode(this);
@@ -80,7 +80,7 @@ UINT YaccJob::safeRun() {
 TestParser::TestParser() : LRparser(*tablesToTest), m_grammar(CPP, *tablesToTest) {
   m_scanner    = new TestScanner(*this);          TRACE_NEW(m_scanner  );
   setScanner(m_scanner);
-  m_root       = NULL;
+  m_root       = nullptr;
   m_userStack  = new SyntaxNodep[getStackSize()]; TRACE_NEW(m_userStack);
   m_yaccJob    = new YaccJob(*this);              TRACE_NEW(m_yaccJob  );
   ThreadPool::executeNoWait(*m_yaccJob);
@@ -100,7 +100,7 @@ void TestParser::deleteNodeList() {
     SAFEDELETE(m_nodeList[i]);
   }
   m_nodeList.clear();
-  m_root = NULL;
+  m_root = nullptr;
 }
 
 void TestParser::buildLegalInputArray() {
@@ -143,7 +143,7 @@ const String &TestParser::getStateItems(UINT state) {
 void TestParser::userStackInit() {
   m_cycleCount = 0;
   m_stacktop   = m_userStack;
-  m_root       = NULL;
+  m_root       = nullptr;
   deleteNodeList();
 }
 
@@ -157,7 +157,7 @@ void TestParser::setNewInput(const TCHAR *string) {
   m_inputStream.open(string);
   m_scanner->newStream(&m_inputStream, 1);
   m_ok   = true;
-  m_root = NULL;
+  m_root = nullptr;
 }
 
 void TestParser::verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) {

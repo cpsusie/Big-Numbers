@@ -28,7 +28,7 @@ private:
   void showCounters(bool show);
   String getToolTipText() const;
 public:
-    CHeatCPUDlg(CWnd *pParent = NULL);
+    CHeatCPUDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_HEATCPU_DIALOG };
 

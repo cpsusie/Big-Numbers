@@ -19,7 +19,7 @@ FieldSet Game::getMatingPositions() const {
     if(p && p->getPlayer() == PLAYERINTURN) {
       continue; // king cannot go to this field, because one of his own pieces occupy the field
     }
-    if((p = findAttackingPiece(winner, squareNextToKing, NULL)) != NULL) {
+    if((p = findAttackingPiece(winner, squareNextToKing, nullptr)) != nullptr) {
       result.add(p->getPosition());
     }
   }
@@ -39,7 +39,7 @@ const Piece *Game::findAttackingPiece(Player player, int pos, FieldSet *result) 
             continue;
           }
           const Piece *pinningPiece = findPinningPiece(defender, piece->m_position);
-          if(pinningPiece == NULL) {
+          if(pinningPiece == nullptr) {
             goto NextPiece; // found a not pinned defender
           }
           pinningPiecePositions.add(pinningPiece->m_position);
@@ -54,7 +54,7 @@ const Piece *Game::findAttackingPiece(Player player, int pos, FieldSet *result) 
                 continue;
               }
               const Piece *pinningPiece = findPinningPiece(defender, pos1);
-              if(pinningPiece == NULL) {
+              if(pinningPiece == nullptr) {
                 goto NextPiece;
               }
               pinningPiecePositions.add(pinningPiece->m_position);
@@ -70,12 +70,12 @@ NextPiece:;
   if(result) {
     throwException(_T("findAttackingPiece:No %s piece is attacking %s"), getPlayerNameEnglish(player), getFieldName(pos));
   }
-  return NULL;
+  return nullptr;
 }
 
 const Piece *Game::findPinningPiece(const Piece *piece, int wantedDestination) const {
   if(piece->m_pinnedState == NOT_PINNED) {
-    return NULL;
+    return nullptr;
   }
   switch(piece->getType()) { // cannot be King
   case Queen :
@@ -83,7 +83,7 @@ const Piece *Game::findPinningPiece(const Piece *piece, int wantedDestination) c
   case Bishop:
   case Pawn  :
     if(!MoveTable::uncoversKing[piece->m_pinnedState][getMoveDirection(piece->m_position, wantedDestination)]) {
-      return NULL;
+      return nullptr;
     }
     // continue case
   case Knight:
@@ -91,7 +91,7 @@ const Piece *Game::findPinningPiece(const Piece *piece, int wantedDestination) c
                                     ,getOppositeDirection(KING_DIRECTION(piece->m_playerState, piece->m_position)));
   default:
     throwInvalidArgumentException(__TFUNCTION__, _T("piece.type=%d"), piece->getType());
-    return NULL;
+    return nullptr;
   }
 }
 

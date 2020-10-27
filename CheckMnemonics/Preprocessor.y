@@ -6,7 +6,7 @@
 
 class PreprocessorParser : public LRparser {
 public:
-  PreprocessorParser(ParserTree &tree, PreprocessorLex *lex = NULL) : m_tree(tree), LRparser(*PreprocessorTables,lex) {
+  PreprocessorParser(ParserTree &tree, PreprocessorLex *lex = nullptr) : m_tree(tree), LRparser(*PreprocessorTables,lex) {
   }
   void  verror(const SourcePosition &pos, const char *format,va_list argptr);
 private:

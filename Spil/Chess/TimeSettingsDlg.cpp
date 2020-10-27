@@ -343,7 +343,7 @@ CComboBox *CTimeSettingsDlg::getPlayerCombo(ClockTab tab) {
   case TAB_SPEEDCHESS: return (CComboBox*)GetDlgItem(IDC_COMBO_SPEEDPLAYER);
   default            : throwInvalidArgumentException(__TFUNCTION__, _T("tab=%d"), tab);
   }
-  return NULL;
+  return nullptr;
 }
 
 void CTimeSettingsDlg::OnGotoMoveCount() {

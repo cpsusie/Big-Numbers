@@ -28,7 +28,7 @@ void TableRecord::putVarChar(USHORT col, const varchar &vchar) {
   }
 
   varchar *vcp = m_varchar.get(col);
-  if(vcp == NULL) {
+  if(vcp == nullptr) {
     m_varchar.put(col,vchar);
   } else {
     *vcp = vchar;
@@ -37,7 +37,7 @@ void TableRecord::putVarChar(USHORT col, const varchar &vchar) {
 
 const varchar &TableRecord::getVarChar(USHORT col) const {
   const varchar *vcp = m_varchar.get(col);
-  if(vcp == NULL) {
+  if(vcp == nullptr) {
     throwSqlError(SQL_FATAL_ERROR,_T("No varchar defined for col %d"),col);
   }
   return *vcp;
@@ -45,7 +45,7 @@ const varchar &TableRecord::getVarChar(USHORT col) const {
 
 varchar &TableRecord::getVarChar(USHORT col) {
   varchar *vcp = m_varchar.get(col);
-  if(vcp == NULL) {
+  if(vcp == nullptr) {
     throwSqlError(SQL_FATAL_ERROR,_T("No varchar defined for col %d"),col);
   }
   return *vcp;

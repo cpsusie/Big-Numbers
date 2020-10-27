@@ -155,7 +155,7 @@ void TurnableRect::stretch(const Point2D &dp, Point2DRefArray &pointArray) {
 }
 
 void TurnableRect::rotate(const Point2D &dp, Point2DRefArray &pointArray) {
-  FunctionR2R2 *f = NULL;
+  FunctionR2R2 *f = nullptr;
   switch(getSelectedMark()) {
   case TL:
   case TR:

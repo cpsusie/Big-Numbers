@@ -49,7 +49,7 @@ BOOL CTestMediaPlayerDlg::OnInitDialog() {
     ASSERT(IDM_ABOUTBOX < 0xF000);
 
     CMenu *pSysMenu = GetSystemMenu(FALSE);
-    if (pSysMenu != NULL) {
+    if (pSysMenu != nullptr) {
         CString strAboutMenu;
         strAboutMenu.LoadString(IDS_ABOUTBOX);
         if (!strAboutMenu.IsEmpty()) {

@@ -25,7 +25,7 @@ public:
   void setImage(HBITMAP bitmap);
   void save(const String &fileName);
   inline bool hasImage() const {
-    return m_bitmap != NULL;
+    return m_bitmap != nullptr;
   }
 
   inline const CSize &getSize() const { // in pixels

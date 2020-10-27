@@ -36,7 +36,7 @@
 #define isAppActive()    isControlFlagSet(CTRL_APPACTIVE   )
 
 int              CChessDlg::s_instanceCount = 0;
-CTraceDlgThread *CChessDlg::s_traceThread   = NULL;
+CTraceDlgThread *CChessDlg::s_traceThread   = nullptr;
 
 CChessDlg::CChessDlg(const String &startupFileName, CWnd *pParent)
 : CDialog(CChessDlg::IDD, pParent)
@@ -73,7 +73,7 @@ bool CChessDlg::hasSamePartialHistory() const {
 
 void CChessDlg::commonInit() {
   m_hIcon          = theApp.LoadIcon(IDR_MAINFRAME);
-  m_graphics       = NULL;
+  m_graphics       = nullptr;
   m_gameResult     = NORESULT;
   m_selectedPiece  = m_removedPiece = EMPTYPIECEKEY;
   forEachPlayer(p) { m_chessPlayer[p]  = new ChessPlayer(p); TRACE_NEW(m_chessPlayer[p]); }
@@ -91,7 +91,7 @@ CChessDlg::~CChessDlg() {
 
   if(--s_instanceCount == 0) {
     s_traceThread->kill();
-    s_traceThread = NULL;
+    s_traceThread = nullptr;
   }
   SAFEDELETE(m_graphics);
 }
@@ -328,7 +328,7 @@ BOOL CChessDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -1263,7 +1263,7 @@ void CChessDlg::save(Game &game, const String &name) {
 
 static FILE *openChessFile(const String &name) {
   FILE *f = fopen(name,_T("r"));
-  if(f != NULL) {
+  if(f != nullptr) {
     return f;
   } else {
     FileNameSplitter info(name);
@@ -1484,7 +1484,7 @@ void CChessDlg::OnLButtonDownPlayMode(UINT nFlags, CPoint point) {
   }
 
   const Piece *selectedPiece = m_graphics->getSelectedPiece();
-  if(selectedPiece == NULL) {
+  if(selectedPiece == nullptr) {
     m_graphics->markSelectedPiece(m_selectedPosition);
   } else if(game.getLegalDestinationFields(selectedPiece).contains(m_selectedPosition)) {
     const int from = selectedPiece->getPosition();
@@ -1867,7 +1867,7 @@ void CChessDlg::startTimer(UINT timerId, UINT milliSeconds) {
   if(isTimerRunning(timerId)) {
     return;
   }
-  if(SetTimer(timerId, milliSeconds, NULL)) {
+  if(SetTimer(timerId, milliSeconds, nullptr)) {
     m_timersRunning.add(timerId);
     ajourMenuItemsEnableStatus();
   } else {
@@ -1909,7 +1909,7 @@ void CChessDlg::editUndo(UndoMode mode) {
       { const int plyCount = getPlyCount();
         if(plyCount > 0) {
           if(!getChessPlayer(getComputerPlayer()).acceptUndoMove()) {
-            MessageBox(loadString(IDS_MSG_UNDOREFUSED).cstr(), NULL, MB_OK | MB_ICONEXCLAMATION);
+            MessageBox(loadString(IDS_MSG_UNDOREFUSED).cstr(), nullptr, MB_OK | MB_ICONEXCLAMATION);
             return;
           }
           stopAllBackgroundActivity(true);
@@ -2581,7 +2581,7 @@ void CChessDlg::setLanguage(int index) {
       getOptions().setLangID(langID);
 
       const String programName = getModuleFileName();
-      if(_tspawnlp(_P_NOWAITO, programName.cstr(), programName.cstr(), NULL) == -1) {
+      if(_tspawnlp(_P_NOWAITO, programName.cstr(), programName.cstr(), nullptr) == -1) {
         errorMessage(_T("spawn %s failed. %s"), programName.cstr(), _sys_errlist[errno]);
       } else {
         setTraceWindowVisible(false);
@@ -2627,7 +2627,7 @@ void CChessDlg::OnLButtonDownDebugMode(UINT nFlags, CPoint point) {
 #if defined(TABLEBASE_BUILDER)
   if(isMenuItemChecked(this, ID_TEST_MOVEBACKWARDS)) {
     game.setEndGameKeyDefinition();
-    if(selectedPiece == NULL) {
+    if(selectedPiece == nullptr) {
       m_graphics->markSelectedPiece(m_selectedPosition);
     } else if(game.getLegalSourceFields(selectedPiece).contains(m_selectedPosition)) {
       const int to = selectedPiece->getPosition();
@@ -2650,7 +2650,7 @@ void CChessDlg::OnLButtonDownDebugMode(UINT nFlags, CPoint point) {
   } else if(nFlags & MK_CONTROL) {
     annotation = BAD_MOVE;
   }
-  if(selectedPiece == NULL) {
+  if(selectedPiece == nullptr) {
     m_graphics->markSelectedPiece(m_selectedPosition);
   } else if(game.getLegalDestinationFields(selectedPiece).contains(m_selectedPosition)) {
     const int from = selectedPiece->getPosition();
@@ -2719,7 +2719,7 @@ void CChessDlg::enableTestMenu(bool enabled) {
   if(enabled != menuItemExists(this, ID_TEST_DEBUG)) {
     if(enabled) {
       HMENU testmenu = LoadMenu(theApp.m_hInstance,MAKEINTRESOURCE(IDR_TEST_MENU));
-      if(testmenu == NULL) {
+      if(testmenu == nullptr) {
         errorMessage(_T("LoadMenu failed:%s"), getLastErrorText().cstr());
         return;
       }
@@ -2845,7 +2845,7 @@ void CChessDlg::OnTestTransformEndGamePosition() {
     if(game.getPositionType() == TABLEBASE_POSITION) {
       bool swapPlayers;
       EndGameTablebase *tb = EndGameTablebase::getInstanceBySignature(game.getPositionSignature(), swapPlayers);
-      if(tb == NULL) {
+      if(tb == nullptr) {
         errorMessage(_T("No tablebase registered for positionsignature %s"), game.getPositionSignature().toString().cstr());
       } else {
         const EndGameKeyDefinition &keydef = tb->getKeyDefinition();
@@ -2868,7 +2868,7 @@ void CChessDlg::OnTestNormalizeEndGamePosition() {
     if(game.getPositionType() == TABLEBASE_POSITION) {
       bool swapPlayers;
       EndGameTablebase *tb = EndGameTablebase::getInstanceBySignature(game.getPositionSignature(), swapPlayers);
-      if(tb == NULL) {
+      if(tb == nullptr) {
         errorMessage(_T("No tablebase registered for positionsignature %s"), game.getPositionSignature().toString().cstr());
       } else {
         const EndGameKeyDefinition &keydef = tb->getKeyDefinition();

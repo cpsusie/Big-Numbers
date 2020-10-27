@@ -48,7 +48,7 @@ void CSelectOpeningDlg::OnCancel() {
 }
 
 const TCHAR *CSelectOpeningDlg::getSelectedName() const {
-  return m_selectedIndex < 0 ? NULL : m_names[m_selectedIndex].cstr();
+  return m_selectedIndex < 0 ? nullptr : m_names[m_selectedIndex].cstr();
 }
 
 void CSelectOpeningDlg::OnDblclkNamelist() {

@@ -12,15 +12,15 @@ typedef unsigned __int32  uint32_t;
 #include <Myutil.h>
 
 GifFileType *allocateGifFile(int w, int h) {
-  GifFileType        *GifFile = NULL;
-  GifFilePrivateType *Private = NULL;
+  GifFileType        *GifFile = nullptr;
+  GifFilePrivateType *Private = nullptr;
 
   try {
     GifFile = MALLOC(GifFileType,1);
     memset(GifFile, 0, sizeof(GifFileType));
 
-    GifFile->SavedImages = NULL;
-    GifFile->SColorMap   = NULL;
+    GifFile->SavedImages = nullptr;
+    GifFile->SColorMap   = nullptr;
 
     Private = MALLOC(GifFilePrivateType, 1);
     memset(Private, 0, sizeof(GifFilePrivateType));
@@ -28,11 +28,11 @@ GifFileType *allocateGifFile(int w, int h) {
     GifFile->SWidth           = w;
     GifFile->SHeight          = h;
     GifFile->SColorResolution = 8;
-    GifFile->UserData         = NULL;
+    GifFile->UserData         = nullptr;
     GifFile->Error            = 0;
     GifFile->Private          = Private;
     Private->FileHandle       = 0;
-    Private->File             = NULL;
+    Private->File             = nullptr;
     Private->FileState        = 0;
     Private->gif89            = true;
 
@@ -51,17 +51,17 @@ GifFileType *allocateGifFile(int w, int h) {
 void deallocateGif(GifFileType *gif) {
   if(gif->Image.ColorMap) {
     GifFreeMapObject(gif->Image.ColorMap);
-    gif->Image.ColorMap = NULL;
+    gif->Image.ColorMap = nullptr;
   }
 
   if(gif->SColorMap) {
     GifFreeMapObject(gif->SColorMap);
-    gif->SColorMap = NULL;
+    gif->SColorMap = nullptr;
   }
 
   if(gif->SavedImages) {
     GifFreeSavedImages(gif);
-    gif->SavedImages = NULL;
+    gif->SavedImages = nullptr;
   }
 
   GifFreeExtensions(&gif->ExtensionBlockCount, &gif->ExtensionBlocks);
@@ -78,16 +78,16 @@ SavedImage *allocateSavedImage(int w, int h, unsigned int colorCount) {
   image->ImageDesc.Width     = w;
   image->ImageDesc.Height    = h;
   image->ImageDesc.Interlace = false;
-  image->ImageDesc.ColorMap  = colorCount ? GifMakeMapObject(colorCount, NULL) : NULL;
+  image->ImageDesc.ColorMap  = colorCount ? GifMakeMapObject(colorCount, nullptr) : nullptr;
   image->RasterBits          = MALLOC(GifByteType, w*h);
   image->ExtensionBlockCount = 0;     // TODO
-  image->ExtensionBlocks     = NULL;
+  image->ExtensionBlocks     = nullptr;
 
   return image;
 }
 
 void deallocateSavedImage(SavedImage *image) {
-  if(image->ImageDesc.ColorMap != NULL) {
+  if(image->ImageDesc.ColorMap != nullptr) {
     GifFreeMapObject(image->ImageDesc.ColorMap);
   }
   FREE(image->RasterBits);

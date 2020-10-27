@@ -2,7 +2,7 @@
 
 int main(int argc, char **argv) {
   int   portnr   = 3742;
-  char *hostName = NULL;
+  char *hostName = nullptr;
 
   argv++;
   if(*argv) hostName = *(argv++);

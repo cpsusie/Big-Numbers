@@ -2,7 +2,7 @@
 
 class CEnterTextDlg : public CDialog {
 public:
-    CEnterTextDlg(const String &str, CWnd *pParent = NULL);
+    CEnterTextDlg(const String &str, CWnd *pParent = nullptr);
 
     enum { IDD = IDD_ENTERTEXT_DIALOG };
     CString m_text;

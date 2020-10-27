@@ -90,7 +90,7 @@ private:
   ListCtrlModelSchema m_schema;
   BaseTableModel      m_model;
 public:
-  CEditModelSchemaDlg(const ListCtrlModelSchema &schema, CWnd *pParent = NULL);
+  CEditModelSchemaDlg(const ListCtrlModelSchema &schema, CWnd *pParent = nullptr);
 
   const ListCtrlModelSchema &getSchema() const {
     return m_schema;

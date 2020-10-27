@@ -24,7 +24,7 @@ private:
   void startTimer(int msec);
   void stopTimer();
 public:
-  COneOrTwoDlg(CWnd *pParent = NULL);
+  COneOrTwoDlg(CWnd *pParent = nullptr);
   void toggleShowMoveList();
   bool isShowingMoveList() const {
     return m_showMoveList;

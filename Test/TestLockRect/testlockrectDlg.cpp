@@ -35,7 +35,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-CtestlockrectDlg::CtestlockrectDlg(CWnd *pParent /*=NULL*/)
+CtestlockrectDlg::CtestlockrectDlg(CWnd *pParent /*=nullptr*/)
   : CDialogEx(IDD_TESTLOCKRECT_DIALOG, pParent)
 {
   m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
@@ -63,7 +63,7 @@ BOOL CtestlockrectDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if (pSysMenu != NULL) {
+  if (pSysMenu != nullptr) {
     BOOL bNameValid;
     CString strAboutMenu;
     bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -180,7 +180,7 @@ void CtestlockrectDlg::OnClickedButtonstart() {
           try {
             PixelAccessor *pa = pr.getPixelAccessor(flags);
             String fs;
-            TCHAR *delim = NULL;
+            TCHAR *delim = nullptr;
             for (int f = 0; f < ARRAYSIZE(lockFlags); f++) {
               if (lock & (1 << f)) {
                 if (delim) fs += delim; else delim = _T(" ");

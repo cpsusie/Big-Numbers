@@ -18,7 +18,7 @@ void overWriteCurrentChar(CDialog *dlg, TCHAR ascii) {
   setCaretPos(e, pos + 1);
 }
 
-UINT64 getDecValueByOverwriteCurrent(CEdit *e, TCHAR ch, String *newString = NULL) {
+UINT64 getDecValueByOverwriteCurrent(CEdit *e, TCHAR ch, String *newString = nullptr) {
   String buf, *tmp = newString ? newString : &buf;
   *tmp = createStringByOverwriteCurrent(e, ch);
   UINT64 v = -1;
@@ -26,7 +26,7 @@ UINT64 getDecValueByOverwriteCurrent(CEdit *e, TCHAR ch, String *newString = NUL
   return v;
 }
 
-UINT64 getHexValueByOverwriteCurrent(CEdit *e, TCHAR ch, String *newString = NULL) {
+UINT64 getHexValueByOverwriteCurrent(CEdit *e, TCHAR ch, String *newString = nullptr) {
   String buf, *tmp = newString ? newString : &buf;
   *tmp = createStringByOverwriteCurrent(e, ch);
   UINT64 v = -1;

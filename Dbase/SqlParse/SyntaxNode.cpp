@@ -2,7 +2,7 @@
 
 void SyntaxNode::init(int token) {
   m_token = token;
-  m_userattributes.m_data = NULL;
+  m_userattributes.m_data = nullptr;
 }
 
 SyntaxNode::SyntaxNode(const TCHAR *s, int token) {
@@ -36,7 +36,7 @@ SyntaxNode::SyntaxNode(int token, va_list argptr) {
   int n = 0;
   for(help = va_arg(argptr,SyntaxNode *); help; help = va_arg(argptr,SyntaxNode *))
     tmp[n++] = help;
-  children = n ? new SyntaxNode*[n] : NULL;
+  children = n ? new SyntaxNode*[n] : nullptr;
   for(int i = 0; i < n; i++)
     children[i] = tmp[i];
   m_attributes.m_children.m_count = n;
@@ -71,7 +71,7 @@ SyntaxNode::SyntaxNode(const SyntaxNode *src) {
     n = src->childCount();
     m_attributes.m_children.m_count = n;
     if(n == 0)
-      m_attributes.m_children.m_child = NULL;
+      m_attributes.m_children.m_child = nullptr;
     else {
       m_attributes.m_children.m_child = new SyntaxNode*[n];
       for(i = 0; i < n; i++)
@@ -234,7 +234,7 @@ SyntaxNode *SyntaxNode::findChild(int searchtoken) const {
     if(p->token() == searchtoken)
       return p;
   }
-  return NULL;
+  return nullptr;
 }
 
 UINT SyntaxNode::childCount() const {

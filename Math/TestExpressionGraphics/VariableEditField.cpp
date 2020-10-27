@@ -11,7 +11,7 @@ void VariableEditFieldArray::putValues(const ExpressionVariableArray &variables)
   for(size_t i = 0; i < variables.size(); i++) {
     const ExpressionVariableWithValue &v = variables[i];
     VariableEditField *f = findFieldByName(v.getName());
-    if(f == NULL) {
+    if(f == nullptr) {
       throwInvalidArgumentException(method, _T("Variable with name <%s> not found"), v.getName().cstr());
     }
     f->putValue(v.getValue());
@@ -54,7 +54,7 @@ VariableEditField *VariableEditFieldArray::findFieldByName(const String &name) {
       return m_fields[i];
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 void VariableEditFieldArray::Create(CWnd *parent, const Expression &expr) {

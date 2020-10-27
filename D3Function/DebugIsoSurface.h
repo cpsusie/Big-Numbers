@@ -116,7 +116,7 @@ public:
   bool OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) override;
   void draw()                                           override;
   LPD3DXMESH getMesh()                            const override {
-    return m_meshObject ? m_meshObject->getMesh() : NULL;
+    return m_meshObject ? m_meshObject->getMesh() : nullptr;
   }
   bool hasFillMode()                              const override {
     return true;

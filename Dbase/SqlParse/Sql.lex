@@ -9,7 +9,7 @@
 class SqlLex : public Scanner {
   LRparser *m_parser; // redirect errors to parser
 public:
-  SqlLex(LRparser *parser=NULL);
+  SqlLex(LRparser *parser = nullptr);
   int  getNextLexeme() override;
   void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) override;
   static void findBestHashMapSize();
@@ -212,7 +212,7 @@ SqlLex::SqlLex(LRparser *parser) {
 }
 
 void SqlLex::verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) {
-  if(m_parser != NULL) {
+  if(m_parser != nullptr) {
     m_parser->verror(pos, format, argptr); // redirect to parser
   } else {
     _vtprintf(format, argptr);

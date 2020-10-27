@@ -36,7 +36,7 @@ HeapObjectPool<NFAState> NFAState::s_stateManager;
 
 NFAState *NFAState::fetch(int edge) {  // static
   NFAState *s = s_stateManager.fetch();
-  s->m_next = NULL;
+  s->m_next = nullptr;
   assert(s->m_edge == EDGE_UNUSED);
   assert(!s->isMarked());
   s->setEdge(edge);
@@ -67,8 +67,8 @@ NFAState::NFAState() { // private
   m_startState = false;
   m_marked     = false;
   m_edge       = EDGE_UNUSED;
-  m_charClass  = NULL;
-  m_next       = m_next2 = NULL;
+  m_charClass  = nullptr;
+  m_next       = m_next2 = nullptr;
   incrCount();
 }
 
@@ -98,7 +98,7 @@ void NFAState::copy(const NFAState &src) {
     m_charClass = new CharacterSet(*src.m_charClass); TRACE_NEW(m_charClass);
   } else {
     assert(src.m_edge != EDGE_CHCLASS);
-    m_charClass = NULL;
+    m_charClass = nullptr;
   }
 #if defined(_DEBUG)
   m_patternCharIndex = src.m_patternCharIndex;
@@ -110,7 +110,7 @@ void NFAState::cleanup() {
   if(m_charClass) {
     assert(m_edge == EDGE_CHCLASS);
     SAFEDELETE(m_charClass);
-    m_charClass = NULL;
+    m_charClass = nullptr;
   } else {
     assert(m_edge != EDGE_CHCLASS);
   }
@@ -118,7 +118,7 @@ void NFAState::cleanup() {
   m_id                       = -1;
   m_startState               = false;
   m_edge                     = EDGE_EPSILON;
-  m_next                     = m_next2 = NULL;
+  m_next                     = m_next2 = nullptr;
   m_accept.m_acceptAttribute = 0;
 }
 
@@ -126,7 +126,7 @@ void NFAState::setEdge(int edge) {
   if(edge != m_edge) {
     if(m_edge == EDGE_CHCLASS) {
       SAFEDELETE(m_charClass);
-      m_charClass = NULL;
+      m_charClass = nullptr;
     }
   }
   m_edge = edge;
@@ -140,7 +140,7 @@ void NFAState::setAccepting(BYTE anchor) {
 }
 
 NFAState *NFAState::getSuccessor(int c) const {
-  return ((m_edge == c) || ((m_edge == EDGE_CHCLASS) && m_charClass->contains(c))) ? m_next : NULL;
+  return ((m_edge == c) || ((m_edge == EDGE_CHCLASS) && m_charClass->contains(c))) ? m_next : nullptr;
 }
 
 CharacterSet &NFAState::getCharacterSet() const {
@@ -152,7 +152,7 @@ CharacterSet &NFAState::getCharacterSet() const {
 String NFAState::toString() const {
   String result = format(_T("NFA state %3d "), m_id);
 
-  if(m_next != NULL) {
+  if(m_next != nullptr) {
     result += format(_T("Goto %3d"), m_next->m_id);
     if(m_next2) {
       result += format(_T(" or %3d"), m_next2->m_id);

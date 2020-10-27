@@ -7,7 +7,7 @@
 #define new DEBUG_NEW
 #endif
 
-CNameDlg::CNameDlg(CWnd *pParent /*=NULL*/) : CDialog(CNameDlg::IDD, pParent) {
+CNameDlg::CNameDlg(CWnd *pParent /*=nullptr*/) : CDialog(CNameDlg::IDD, pParent) {
   m_name = EMPTYSTRING;
 }
 

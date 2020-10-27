@@ -2,7 +2,7 @@
 #include "ParametricR1R3SurfaceParametersDlg.h"
 #include <D3DGraphics/Profile2D.h>
 
-CParametricR1R3SurfaceParametersDlg::CParametricR1R3SurfaceParametersDlg(const ExprParametricR1R3SurfaceParameters &param, AbstractTextureFactory &atf, CWnd *pParent /*=NULL*/)
+CParametricR1R3SurfaceParametersDlg::CParametricR1R3SurfaceParametersDlg(const ExprParametricR1R3SurfaceParameters &param, AbstractTextureFactory &atf, CWnd *pParent /*=nullptr*/)
 : SaveLoadExprWithCommonParametersDlg(IDD, pParent, param, atf, _T("Parametric Surface"), _T("parR1R3"))
 , m_tStepCount(0)
 , m_profileFileName(_T("")) {

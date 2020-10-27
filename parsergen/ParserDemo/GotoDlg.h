@@ -4,7 +4,7 @@ class GotoDlg : public CDialog {
 private:
   UINT    m_line;
 public:
-  GotoDlg(CWnd *pParent = NULL);
+  GotoDlg(CWnd *pParent = nullptr);
 
   enum { IDD = IDD_DIALOGGOTO };
 

@@ -13,7 +13,7 @@ private:
   bool  findField(const CPoint &point, int &r, int &c) const;
   void  showWinner();
 public:
-  CThinkDlg(CWnd *pParent = NULL);
+  CThinkDlg(CWnd *pParent = nullptr);
   enum { IDD = IDD_THINK_DIALOG };
 
 protected:

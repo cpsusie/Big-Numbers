@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
     if(isatty(in)) {
       usage();
     }
-    setvbuf(in,NULL,_IOFBF,0x10000);
+    setvbuf(in,nullptr,_IOFBF,0x10000);
     switch(command) {
     case RemoveDuplicates  :
       removeDuplicates(in,compare);

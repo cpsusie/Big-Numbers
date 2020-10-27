@@ -102,7 +102,7 @@ static UINT indicators[] = {
 };
 
 CMainFrame::CMainFrame() {
-  m_fitThread = NULL;
+  m_fitThread = nullptr;
   m_flushLevel = 0;
 }
 
@@ -682,7 +682,7 @@ LRESULT CMainFrame::OnMsgPopMouseTool(WPARAM wp, LPARAM lp) {
 
 LRESULT CMainFrame::OnMsgSearchZeroesInInterval(WPARAM wp, LPARAM lp) {
   const GraphItem *item = getDoc()->getGraphArray().getSelectedGraphItem();
-  if(item != NULL) {
+  if(item != nullptr) {
     const DoubleInterval   interval = wlParamToInterval(wp, lp);
     GraphZeroesResultArray result(item->getGraph());
     result.addAll(item->getGraph().findZeroes(interval));
@@ -698,7 +698,7 @@ LRESULT CMainFrame::OnMsgSearchZeroesInInterval(WPARAM wp, LPARAM lp) {
 
 void CMainFrame::showExtremaInInterval(WPARAM wp, LPARAM lp, ExtremaType extremaType) {
   const GraphItem *item = getDoc()->getGraphArray().getSelectedGraphItem();
-  if(item != NULL) {
+  if(item != nullptr) {
     const DoubleInterval    interval = wlParamToInterval(wp, lp);
     GraphExtremaResultArray result(item->getGraph(), extremaType);
     result.addAll(item->getGraph().findExtrema(interval, extremaType));
@@ -870,7 +870,7 @@ static COLORREF getShiftedColor(COLORREF c) {
 
 void CMainFrame::makeExpoFit() {
   const GraphItem *item = getDoc()->getSelectedGraphItem();
-  if(item == NULL) {
+  if(item == nullptr) {
     showWarning(_T("No data selected"));
     return;
   }
@@ -908,7 +908,7 @@ void CMainFrame::makeExpoFit() {
 
 void CMainFrame::makePotensFit() {
   const GraphItem *item = getDoc()->getSelectedGraphItem();
-  if(item == NULL) {
+  if(item == nullptr) {
     showWarning(_T("No data selected"));
     return;
   }
@@ -957,7 +957,7 @@ void CMainFrame::makePotensFit() {
 void CMainFrame::stopFitThread() {
   if(m_fitThread) {
     m_fitThread->PostThreadMessage(WM_QUIT,0,0);
-    m_fitThread = NULL;
+    m_fitThread = nullptr;
   }
 }
 

@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CViewDlg::CViewDlg(CWnd *pParent /*=NULL*/) : CDialog(CViewDlg::IDD, pParent) {
+CViewDlg::CViewDlg(CWnd *pParent /*=nullptr*/) : CDialog(CViewDlg::IDD, pParent) {
   const Options &options = getOptions();
 
   m_animateCheckmate = options.getAnimateCheckmate();

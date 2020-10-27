@@ -25,7 +25,7 @@ LexScanner::~LexScanner() {
 
 bool LexScanner::nextLine() {
   bool ret = true;
-  if(_fgetts(m_lineBuffer, ARRAYSIZE(m_lineBuffer), m_input) == NULL) {
+  if(_fgetts(m_lineBuffer, ARRAYSIZE(m_lineBuffer), m_input) == nullptr) {
     _tcscpy(m_lineBuffer, EMPTYSTRING);
     ret = false;
   } else {
@@ -193,7 +193,7 @@ bool LexScanner::nextExpr() {
   collectInit();
   for(;;) {
     TCHAR *nl;
-    if((nl = _tcschr(m_lineBuffer, '\n')) != NULL) *nl = '\0'; // terminate the line at '\n'
+    if((nl = _tcschr(m_lineBuffer, '\n')) != nullptr) *nl = '\0'; // terminate the line at '\n'
     if(m_lineBuffer[0] != 0) { // only collect nonempty lines
       for(TCHAR *cp = m_lineBuffer; *cp; cp++) {
         collectChar(*cp);
@@ -276,7 +276,7 @@ MacroDefinition &LexScanner::parseMacro() {
     *p++ = '}';                                 // restore '}'
     MacroDefinition *mac = m_macros.get(tmp);
 //    printf(_T("expanding macro:<%s>\n"), tmp.cstr());
-    if(mac == NULL) {
+    if(mac == nullptr) {
       error(_T("Macro {%s} doesn't exist"), tmp.cstr());
     }
     if(mac->m_inUse) {

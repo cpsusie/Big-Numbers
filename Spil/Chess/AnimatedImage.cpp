@@ -17,8 +17,8 @@ AnimatedImage::AnimatedImage(int resId, UINT imageCount) {
     m_imageArray.add(frame);
   }
   setSecondsPerCycle(0.25 * imageCount);
-  m_wnd        = NULL;
-  m_background = NULL;
+  m_wnd        = nullptr;
+  m_background = nullptr;
 }
 
 AnimatedImage::~AnimatedImage() {
@@ -29,8 +29,8 @@ AnimatedImage::~AnimatedImage() {
 }
 
 void AnimatedImage::startAnimation(CWnd *wnd, const CPoint &p, double scale, bool removeWhenDone, int loopCount) {
-  if(wnd == NULL) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("wnd == NULL"));
+  if(wnd == nullptr) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("wnd == nullptr"));
   }
   m_wnd            = wnd;
   m_point          = p;

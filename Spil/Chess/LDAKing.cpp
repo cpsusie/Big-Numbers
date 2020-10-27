@@ -367,7 +367,7 @@ void Game::updateKingDirMovingLeft(      const Move &m) {
     case MD_NONE       :
       break;
     case MD_LEFT       :
-      { if(m.m_capturedPiece == NULL) {
+      { if(m.m_capturedPiece == nullptr) {
           for(int pos = fromInfo.m_pos; pos != m.m_to; pos += DPOS_LEFT ) {
             KING_DIRECTION(state, pos) = MD_NONE;
           }
@@ -388,7 +388,7 @@ void Game::updateKingDirMovingLeft(      const Move &m) {
     case MD_UPDIAG2    : IF_BLOCKABLE_SET_KING_UPDIAG2(    state, fromInfo); break;
     }
   }
-  if(m.m_capturedPiece == NULL) {
+  if(m.m_capturedPiece == nullptr) {
     const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     forEachPlayer(p) {
       PlayerState &state = m_playerState[p];
@@ -420,7 +420,7 @@ void Game::updateKingDirMovingRight(     const Move &m) {
     case MD_NONE       :
       break;
     case MD_RIGHT      :
-      { if(m.m_capturedPiece == NULL) {
+      { if(m.m_capturedPiece == nullptr) {
           for(int pos = fromInfo.m_pos; pos != m.m_to; pos += DPOS_RIGHT) {
             KING_DIRECTION(state, pos) = MD_NONE;
           }
@@ -441,7 +441,7 @@ void Game::updateKingDirMovingRight(     const Move &m) {
     case MD_UPDIAG2    : IF_BLOCKABLE_SET_KING_UPDIAG2(    state, fromInfo); break;
     }
   }
-  if(m.m_capturedPiece == NULL) {
+  if(m.m_capturedPiece == nullptr) {
     const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     forEachPlayer(p) {
       PlayerState &state = m_playerState[p];
@@ -475,7 +475,7 @@ void Game::updateKingDirMovingDown(      const Move &m) {
     case MD_LEFT       : IF_BLOCKABLE_SET_KING_LEFT(       state, fromInfo); break;
     case MD_RIGHT      : IF_BLOCKABLE_SET_KING_RIGHT(      state, fromInfo); break;
     case MD_DOWN       :
-      { if(m.m_capturedPiece == NULL) {
+      { if(m.m_capturedPiece == nullptr) {
           for(int pos = fromInfo.m_pos; pos != m.m_to; pos += DPOS_DOWN) {
             KING_DIRECTION(state, pos) = MD_NONE;
           }
@@ -494,7 +494,7 @@ void Game::updateKingDirMovingDown(      const Move &m) {
     case MD_UPDIAG2    : IF_BLOCKABLE_SET_KING_UPDIAG2(    state, fromInfo); break;
     }
   }
-  if(m.m_capturedPiece == NULL) {
+  if(m.m_capturedPiece == nullptr) {
     const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     forEachPlayer(p) {
       PlayerState &state = m_playerState[p];
@@ -528,7 +528,7 @@ void Game::updateKingDirMovingUp(        const Move &m) {
     case MD_LEFT       : IF_BLOCKABLE_SET_KING_LEFT(       state, fromInfo); break;
     case MD_RIGHT      : IF_BLOCKABLE_SET_KING_RIGHT(      state, fromInfo); break;
     case MD_UP         :
-      { if(m.m_capturedPiece == NULL) {
+      { if(m.m_capturedPiece == nullptr) {
           for(int pos = fromInfo.m_pos; pos != m.m_to; pos += DPOS_UP) {
             KING_DIRECTION(state, pos) = MD_NONE;
           }
@@ -547,7 +547,7 @@ void Game::updateKingDirMovingUp(        const Move &m) {
     case MD_UPDIAG2    : IF_BLOCKABLE_SET_KING_UPDIAG2(    state, fromInfo); break;
     }
   }
-  if(m.m_capturedPiece == NULL) {
+  if(m.m_capturedPiece == nullptr) {
     const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     forEachPlayer(p) {
       PlayerState &state = m_playerState[p];
@@ -583,7 +583,7 @@ void Game::updateKingDirMovingDownDiag1( const Move &m) {
     case MD_DOWN       : IF_BLOCKABLE_SET_KING_DOWN(       state, fromInfo); break;
     case MD_UP         : IF_BLOCKABLE_SET_KING_UP(         state, fromInfo); break;
     case MD_DOWNDIAG1:
-      { if(m.m_capturedPiece == NULL) {
+      { if(m.m_capturedPiece == nullptr) {
           for(int pos = fromInfo.m_pos; pos != m.m_to; pos += DPOS_DOWNDIAG1) {
             KING_DIRECTION(state, pos) = MD_NONE;
           }
@@ -600,7 +600,7 @@ void Game::updateKingDirMovingDownDiag1( const Move &m) {
     case MD_UPDIAG2    : IF_BLOCKABLE_SET_KING_UPDIAG2(    state, fromInfo); break;
     }
   }
-  if(m.m_capturedPiece == NULL) {
+  if(m.m_capturedPiece == nullptr) {
     const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     forEachPlayer(p) {
       PlayerState &state = m_playerState[p];
@@ -636,7 +636,7 @@ void Game::updateKingDirMovingUpDiag1(   const Move &m) {
     case MD_DOWN       : IF_BLOCKABLE_SET_KING_DOWN(       state, fromInfo); break;
     case MD_UP         : IF_BLOCKABLE_SET_KING_UP(         state, fromInfo); break;
     case MD_UPDIAG1    :
-      { if(m.m_capturedPiece == NULL) {
+      { if(m.m_capturedPiece == nullptr) {
           for(int pos = fromInfo.m_pos; pos != m.m_to; pos += DPOS_UPDIAG1  ) {
             KING_DIRECTION(state, pos) = MD_NONE;
           }
@@ -653,7 +653,7 @@ void Game::updateKingDirMovingUpDiag1(   const Move &m) {
     case MD_UPDIAG2    : IF_BLOCKABLE_SET_KING_UPDIAG2(    state, fromInfo); break;
     }
   }
-  if(m.m_capturedPiece == NULL) {
+  if(m.m_capturedPiece == nullptr) {
     const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     forEachPlayer(p) {
       PlayerState &state = m_playerState[p];
@@ -691,7 +691,7 @@ void Game::updateKingDirMovingDownDiag2( const Move &m) {
     case MD_DOWNDIAG1  : IF_BLOCKABLE_SET_KING_DOWNDIAG1(  state, fromInfo); break;
     case MD_UPDIAG1    : IF_BLOCKABLE_SET_KING_UPDIAG1(    state, fromInfo); break;
     case MD_DOWNDIAG2:
-      { if(m.m_capturedPiece == NULL) {
+      { if(m.m_capturedPiece == nullptr) {
           for(int pos = fromInfo.m_pos; pos != m.m_to; pos += DPOS_DOWNDIAG2) {
             KING_DIRECTION(state, pos) = MD_NONE;
           }
@@ -706,7 +706,7 @@ void Game::updateKingDirMovingDownDiag2( const Move &m) {
       break;
     }
   }
-  if(m.m_capturedPiece == NULL) {
+  if(m.m_capturedPiece == nullptr) {
     const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     forEachPlayer(p) {
       PlayerState &state = m_playerState[p];
@@ -744,7 +744,7 @@ void Game::updateKingDirMovingUpDiag2(   const Move &m) {
     case MD_DOWNDIAG1  : IF_BLOCKABLE_SET_KING_DOWNDIAG1(  state, fromInfo); break;
     case MD_UPDIAG1    : IF_BLOCKABLE_SET_KING_UPDIAG1(    state, fromInfo); break;
     case MD_UPDIAG2    :
-      { if(m.m_capturedPiece == NULL) {
+      { if(m.m_capturedPiece == nullptr) {
           for(int pos = fromInfo.m_pos; pos != m.m_to; pos += DPOS_UPDIAG2) {
             KING_DIRECTION(state, pos) = MD_NONE;
           }
@@ -759,7 +759,7 @@ void Game::updateKingDirMovingUpDiag2(   const Move &m) {
       break;
     }
   }
-  if(m.m_capturedPiece == NULL) {
+  if(m.m_capturedPiece == nullptr) {
     const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     forEachPlayer(p) {
       PlayerState &state = m_playerState[p];
@@ -800,7 +800,7 @@ void Game::updateKingDirMovingKnight(    const Move &m) {
     case MD_UPDIAG2    : IF_BLOCKABLE_SET_KING_UPDIAG2(    state, fromInfo); break;
     }
   }
-  if(m.m_capturedPiece == NULL) {
+  if(m.m_capturedPiece == nullptr) {
     const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     forEachPlayer(p) {
       PlayerState &state = m_playerState[p];
@@ -834,7 +834,7 @@ void Game::updateKingDirKingMove(const Move &m) {
   }
 }
 
-#define IF_NOCAPTURE_SET_NOKING_FROM(state,m) { if(m.m_capturedPiece == NULL) KING_DIRECTION(state, m.m_from) = MD_NONE; }
+#define IF_NOCAPTURE_SET_NOKING_FROM(state,m) { if(m.m_capturedPiece == nullptr) KING_DIRECTION(state, m.m_from) = MD_NONE; }
 
 void Game::updateKingDirKingMovingLeft(      const Move &m) {
   const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
@@ -851,7 +851,7 @@ void Game::updateKingDirKingMovingLeft(      const Move &m) {
   case MD_DOWNDIAG2: IF_BLOCKABLE_SET_KING_DOWNDIAG2(    state, fromInfo); break;
   case MD_UPDIAG2  : IF_BLOCKABLE_SET_KING_UPDIAG2(      state, fromInfo); break;
   }
-  if(m.m_capturedPiece == NULL) {
+  if(m.m_capturedPiece == nullptr) {
     const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     switch(KING_DIRECTION(state, m.m_to)) {
     case MD_NONE     :
@@ -904,7 +904,7 @@ void Game::updateKingDirKingMovingRight(     const Move &m) {
   case MD_DOWNDIAG2: IF_BLOCKABLE_SET_KING_DOWNDIAG2(    state, fromInfo); break;
   case MD_UPDIAG2  : IF_BLOCKABLE_SET_KING_UPDIAG2(      state, fromInfo); break;
   }
-  if(m.m_capturedPiece == NULL) {
+  if(m.m_capturedPiece == nullptr) {
     const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     switch(KING_DIRECTION(state, m.m_to)) {
     case MD_NONE     :
@@ -957,7 +957,7 @@ void Game::updateKingDirKingMovingDown(      const Move &m) {
   case MD_DOWNDIAG2: IF_BLOCKABLE_SET_KING_DOWNDIAG2(    state, fromInfo); break;
   case MD_UPDIAG2  : IF_BLOCKABLE_SET_KING_UPDIAG2(      state, fromInfo); break;
   }
-  if(m.m_capturedPiece == NULL) {
+  if(m.m_capturedPiece == nullptr) {
     const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     switch(KING_DIRECTION(state, m.m_to)) {
     case MD_NONE     : break;
@@ -1010,7 +1010,7 @@ void Game::updateKingDirKingMovingUp(        const Move &m) {
   case MD_DOWNDIAG2: IF_BLOCKABLE_SET_KING_DOWNDIAG2(    state, fromInfo); break;
   case MD_UPDIAG2  : IF_BLOCKABLE_SET_KING_UPDIAG2(      state, fromInfo); break;
   }
-  if(m.m_capturedPiece == NULL) {
+  if(m.m_capturedPiece == nullptr) {
     const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     switch(KING_DIRECTION(state, m.m_to)) {
     case MD_NONE     : break;
@@ -1063,7 +1063,7 @@ void Game::updateKingDirKingMovingDownDiag1( const Move &m) {
   case MD_DOWNDIAG2: IF_BLOCKABLE_SET_KING_DOWNDIAG2(    state, fromInfo); break;
   case MD_UPDIAG2  : IF_BLOCKABLE_SET_KING_UPDIAG2(      state, fromInfo); break;
   }
-  if(m.m_capturedPiece == NULL) {
+  if(m.m_capturedPiece == nullptr) {
     const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     switch(KING_DIRECTION(state, m.m_to)) {
     case MD_NONE     : break;
@@ -1116,7 +1116,7 @@ void Game::updateKingDirKingMovingUpDiag1(   const Move &m) {
   case MD_DOWNDIAG2: IF_BLOCKABLE_SET_KING_DOWNDIAG2(    state, fromInfo); break;
   case MD_UPDIAG2  : IF_BLOCKABLE_SET_KING_UPDIAG2(      state, fromInfo); break;
   }
-  if(m.m_capturedPiece == NULL) {
+  if(m.m_capturedPiece == nullptr) {
     const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     switch(KING_DIRECTION(state, m.m_to)) {
     case MD_NONE     : break;
@@ -1169,7 +1169,7 @@ void Game::updateKingDirKingMovingDownDiag2( const Move &m) {
   case MD_DOWNDIAG2: IF_NOCAPTURE_SET_NOKING_FROM(state, m);               break;
   case MD_UPDIAG2  : KING_DIRECTION(state, m.m_to) = MD_UPDIAG2;           break;
   }
-  if(m.m_capturedPiece == NULL) {
+  if(m.m_capturedPiece == nullptr) {
     const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     switch(KING_DIRECTION(state, m.m_to)) {
     case MD_NONE     : break;
@@ -1222,7 +1222,7 @@ void Game::updateKingDirKingMovingUpDiag2(   const Move &m) {
   case MD_DOWNDIAG2: KING_DIRECTION(state, m.m_to) = MD_DOWNDIAG2;         break;
   case MD_UPDIAG2  : IF_NOCAPTURE_SET_NOKING_FROM(state, m);               break;
   }
-  if(m.m_capturedPiece == NULL) {
+  if(m.m_capturedPiece == nullptr) {
     const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     switch(KING_DIRECTION(state, m.m_to)) {
     case MD_NONE     : break;

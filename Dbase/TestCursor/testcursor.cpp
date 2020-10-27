@@ -157,7 +157,7 @@ static void closeCursor() {
 #endif
 #line 75 "C:/mytools2015/Dbase/testcursor/testcursor.sqc"
 {
-  sqlapi_call(7,1,sqlapi_program_id,0,0,NULL,sqlca);
+  sqlapi_call(7,1,sqlapi_program_id,0,0,nullptr,sqlca);
 #line 75 "C:/mytools2015/Dbase/testcursor/testcursor.sqc"
 }
 #line 74 "C:/mytools2015/Dbase/testcursor/testcursor.sqc"
@@ -205,7 +205,7 @@ static void dbDisconnect() {
 #endif
 #line 85 "C:/mytools2015/Dbase/testcursor/testcursor.sqc"
 {
-  sqlapi_call(1,3,sqlapi_program_id,0,0,NULL,sqlca);
+  sqlapi_call(1,3,sqlapi_program_id,0,0,nullptr,sqlca);
 #line 85 "C:/mytools2015/Dbase/testcursor/testcursor.sqc"
 }
 #line 84 "C:/mytools2015/Dbase/testcursor/testcursor.sqc"

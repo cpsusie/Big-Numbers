@@ -111,4 +111,3 @@
 
   typedef enum {
   } SqlNonTerminal;
-

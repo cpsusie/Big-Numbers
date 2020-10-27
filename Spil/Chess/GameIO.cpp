@@ -83,7 +83,7 @@ static PieceType decodePromoteChar(TCHAR ch) {
 }
 
 static bool isLegalPromoteChar(TCHAR ch) {
-  return ch != 0 && _tcschr(_T("QRBN"),ch) != NULL;
+  return ch != 0 && _tcschr(_T("QRBN"),ch) != nullptr;
 }
 
 typedef struct {

@@ -96,7 +96,7 @@ ReducedRasterMap::ReducedRasterMap(PixRect *pr, UINT colorCount) {
   const CSize            size = pr->getSize();
   const size_t           pixelCount = getArea(size);
   DimPointWithIndexArray a(pixelCount);
-  PixelAccessor         *pa = NULL;
+  PixelAccessor         *pa = nullptr;
   try {
     pa = pr->getPixelAccessor();
     CPoint p;
@@ -108,10 +108,10 @@ ReducedRasterMap::ReducedRasterMap(PixRect *pr, UINT colorCount) {
         a.add(dp);
       }
     }
-    pr->releasePixelAccessor(); pa = NULL;
+    pr->releasePixelAccessor(); pa = nullptr;
   } catch(...) {
     if(pa) {
-      pr->releasePixelAccessor(); pa = NULL;
+      pr->releasePixelAccessor(); pa = nullptr;
       throw;
     }
   }

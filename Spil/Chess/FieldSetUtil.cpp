@@ -133,7 +133,7 @@ FieldSetMatrix::FieldSetMatrix() {
       const FieldSet s = calculateFieldsBetween(p1, p2);
       if(s.isEmpty()) {
         sets[p1][p2] = &m_emptySet;
-      } else if(sets[p2][p1] != NULL) {
+      } else if(sets[p2][p1] != nullptr) {
         sets[p1][p2] = sets[p2][p1];
       } else {
         sets[p1][p2] = new FieldSet(s); TRACE_NEW(sets[p1][p2]);
@@ -149,7 +149,7 @@ FieldSetMatrix::~FieldSetMatrix() {
       if(s  && (s != &m_emptySet)) {
         SAFEDELETE(s);
       }
-      sets[p1][p2] = sets[p2][p1] = NULL;
+      sets[p1][p2] = sets[p2][p1] = nullptr;
     }
   }
 }

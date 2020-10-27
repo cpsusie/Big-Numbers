@@ -22,7 +22,7 @@ const DirectionArray *Piece::getMoveTable(PieceKey key) { // static
   case Knight : return MoveTable::knightMoves;
   case Pawn   : return (GET_PLAYER_FROMKEY(key) == WHITEPLAYER) ? MoveTable::whitePawnMoves : MoveTable::blackPawnMoves;
   default     : throwInvalidArgumentException(method, _T("key=%u"), key);
-                return NULL;
+                return nullptr;
   }
 }
 

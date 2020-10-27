@@ -38,7 +38,7 @@ private:
   BigReal         m_a, m_b;
   BigRealInterval m_toInterval;
 public:
-  ExpTransformation(const BigRealInterval &from, const BigRealInterval &to, DigitPool *digitPool=NULL);
+  ExpTransformation(const BigRealInterval &from, const BigRealInterval &to, DigitPool *digitPool=nullptr);
   inline BigReal transform(const BigReal &x) const {
     return m_b*rPow(m_a,x,20);
   }
@@ -95,7 +95,7 @@ public:
   inline int getFrameIndex() const {
     return m_frameIndex;
   }
-  // should return NULL when no more frames.
+  // should return nullptr when no more frames.
   HBITMAP nextBitmap();
 };
 
@@ -205,7 +205,7 @@ private:
   void                    createImageCopy(); // take a screenshot of m_imageDC, for dragging
   void                    destroyImageCopy();
   PixRect                *windowToPixRect();
-  void                    pixRectToWindow(PixRect *pr, HDC hdc=NULL);
+  void                    pixRectToWindow(PixRect *pr, HDC hdc=nullptr);
 
   static CellCountMatrix *newCCM(const CSize &size, UINT maxCount);
   static void             deleteCCM(CellCountMatrix *ccm);
@@ -228,7 +228,7 @@ private:
   void                    startColorMapEditor();
   void                    stopColorMapEditor();
   inline bool             hasColorMapEditor() const {
-    return m_colorMapEditThread != NULL;
+    return m_colorMapEditThread != nullptr;
   }
   inline DigitPool       *getDigitPool() {
     return m_digitPool;
@@ -257,10 +257,10 @@ private:
   void                    setRectangleToCalculate(const CRect &rectangle, bool splitLast=true);
   void                    setSuspendingMenuText(bool isSuspendingText);
   inline bool             hasCCM() const {
-    return m_ccMatrix != NULL;
+    return m_ccMatrix != nullptr;
   }
   inline bool             hasCCA() const {
-    return m_cca != NULL;
+    return m_cca != nullptr;
   }
   void                    clearCCA();
   void                    setState(DlgState newState);
@@ -274,7 +274,7 @@ private:
     return PERCENT(m_calculatorPool->getDoneCount(),m_totalPixelsInJob);
   }
 public:
-  CMandelbrotDlg(DigitPool *digitPool, CWnd *pParent = NULL);
+  CMandelbrotDlg(DigitPool *digitPool, CWnd *pParent = nullptr);
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 
   inline CWnd *getImageWindow() {
@@ -348,7 +348,7 @@ public:
     return m_animateCalculation;
   }
   inline bool isMakingMovie() const {
-    return m_frameGenerator != NULL;
+    return m_frameGenerator != nullptr;
   }
   void updateMovieMenuItem();
   void remoteStartCalculation();

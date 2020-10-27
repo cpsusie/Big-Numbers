@@ -131,7 +131,7 @@ void Game::updateGameCapturePawn(const Move &m) {
 // ------------------------------------------------ normal Pawn move ---------------------------------------
 
 void Game::updateGameNormalPawnMove(const Move &m) {
-  if(m.m_capturedPiece != NULL) {
+  if(m.m_capturedPiece != nullptr) {
     capturePiece(m);
   } else if(((m.m_from^m.m_to) == 0x10) && hasEnemyPawnBeside(m.m_to)) { // 2-step move
     m_gameKey.d.m_EPSquare = m.m_to;
@@ -742,7 +742,7 @@ void Game::updateGamePromotion(const Move &m) {
   switch(promoteTo) {
   case Queen :
   case Rook  :
-    { if(m.m_capturedPiece == NULL) {
+    { if(m.m_capturedPiece == nullptr) {
         pawnLeaveField(m);
         pawn->setType(promoteTo);
         SET_PIECE(m.m_to, pawn);
@@ -760,7 +760,7 @@ void Game::updateGamePromotion(const Move &m) {
     break;
 
   case Bishop:
-    { if(m.m_capturedPiece == NULL) {
+    { if(m.m_capturedPiece == nullptr) {
         pawnLeaveField(m);
         pawn->setType(Bishop,m.m_to);
         SET_PIECE(m.m_to, pawn);
@@ -787,7 +787,7 @@ void Game::updateGamePromotion(const Move &m) {
     break;
 
   case Knight:
-    { if(m.m_capturedPiece == NULL) {
+    { if(m.m_capturedPiece == nullptr) {
         pawnLeaveField(m);
         pawn->setType(Knight);
         SET_PIECE(m.m_to, pawn);

@@ -89,7 +89,7 @@ public:
   virtual void        selfTest();
   void                dumpAll();
   void                dumpAsCodeTable(const String &fileName = EMPTYSTRING) const;
-  virtual String      getTestLabel() const = NULL;
+  virtual String      getTestLabel() const = nullptr;
 };
 
 void ExperimentalPow10Calculator::selfTest() {
@@ -158,7 +158,7 @@ void TestData::listTestResult(ExperimentalPow10Calculator *calc) const {
       const Double80 &v = (*this)[i];
       char buf[100];
       d80toa(buf, v);
-      Double80 v1 = strtod80(buf, NULL);
+      Double80 v1 = strtod80(buf, nullptr);
       if (v1 != v) {
         errorCount++;
         const Double80 relError = getRelativeError(v1, v);

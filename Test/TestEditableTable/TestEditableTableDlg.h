@@ -45,7 +45,7 @@ private:
   SimpleLayoutManager m_layoutManager;
 
 public:
-  CTestEditableTableDlg(CWnd *pParent = NULL);
+  CTestEditableTableDlg(CWnd *pParent = nullptr);
   TestTableModel m_model;
 
   enum { IDD = IDD_TESTEDITABLETABLE_DIALOG };

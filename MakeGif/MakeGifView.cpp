@@ -30,7 +30,7 @@ const PixRectArray *CMakeGifView::getVisiblePrArray() {
   case SHOW_RAW      : return &pDoc->getRawPrArray();
   case SHOW_SCALED   : return &pDoc->getScaledPrArray();
   case SHOW_QUANTIZED: return &pDoc->getQuantizedPrArray();
-  default            : return NULL;
+  default            : return nullptr;
   }
 }
 

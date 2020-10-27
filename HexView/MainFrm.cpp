@@ -118,7 +118,7 @@ static UINT indicators[] = {
 CMainFrame::CMainFrame() {
   m_settingsActivated  = false;
   m_statusPanesVisible = true;
-  m_searchMachine      = NULL;
+  m_searchMachine      = nullptr;
 }
 
 CMainFrame::~CMainFrame() {
@@ -260,7 +260,7 @@ void CMainFrame::OnFileSaveDocAs() {
     }
     TCHAR fileName[256];
     _tcscpy(fileName, docName.cstr());
-    CFileDialog dlg(FALSE, NULL, fileName);
+    CFileDialog dlg(FALSE, nullptr, fileName);
     dlg.m_ofn.lpstrTitle = _T("Save file");
     if((dlg.DoModal() == IDOK) && _tcslen(dlg.m_ofn.lpstrFile)) {
       const String name = dlg.m_ofn.lpstrFile;

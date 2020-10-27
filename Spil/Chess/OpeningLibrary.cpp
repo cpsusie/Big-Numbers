@@ -101,7 +101,7 @@ LibraryTransition *LibraryState::findTransitionByMove(const PrintableMove &m, bo
       return t;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 const LibraryTransition *LibraryState::findTransitionByMove(const PrintableMove &m) const {
@@ -114,7 +114,7 @@ const LibraryTransition *LibraryState::findTransitionByMove(const PrintableMove 
       return t;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 int LibraryState::findTransitionIndexByNameIndex(int nameIndex) const {
@@ -223,7 +223,7 @@ void OpeningLibrary::addGame(const String &name) {
       const PrintableMove &m = history[i];
       LibraryTransition *t = m_stateArray[state].findTransitionByMove(m, true);
       game.executeMove(m);
-      if(t != NULL) {
+      if(t != nullptr) {
         t->m_nameIndex.add(currentNameIndex);
         state = t->m_nextState;
       } else {
@@ -231,7 +231,7 @@ void OpeningLibrary::addGame(const String &name) {
         const GameKeyWithRepeatCount key(game);
         int *stateP = gameKeyStateMap.get(key);
         LibraryTransition tr(m.getFrom(), m.getTo(), m.isGoodMove(), currentNameIndex);
-        if(stateP != NULL) {
+        if(stateP != nullptr) {
           nextState = *stateP;
         } else {
           nextState = (int)m_stateArray.size();

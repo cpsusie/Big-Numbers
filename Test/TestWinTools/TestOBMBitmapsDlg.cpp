@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CTestOBMBitmapsDlg::CTestOBMBitmapsDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestOBMBitmapsDlg::IDD, pParent) {
+CTestOBMBitmapsDlg::CTestOBMBitmapsDlg(CWnd *pParent /*=nullptr*/) : CDialog(CTestOBMBitmapsDlg::IDD, pParent) {
 }
 
 void CTestOBMBitmapsDlg::DoDataExchange(CDataExchange *pDX) {
@@ -88,7 +88,7 @@ const CSize CTestOBMBitmapsDlg::paintOBMBitmap(const OBMResource &res, const CPo
     return tsize;
   } else {
     CDC bmDC;
-    bmDC.CreateCompatibleDC(NULL);
+    bmDC.CreateCompatibleDC(nullptr);
     bmDC.SelectObject(&bm);
     CSize size = getBitmapSize(bm);
     dc.BitBlt(p.x,p.y,size.cx, size.cy,  &bmDC, 0,0, SRCCOPY);

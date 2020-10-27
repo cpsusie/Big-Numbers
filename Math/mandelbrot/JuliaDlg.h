@@ -22,7 +22,7 @@ class CJuliaDlg : public CDialog {
   JuliaCalculatorJob           *m_job;
   void adjustToRectangle();
 public:
-  CJuliaDlg(const RealPoint2D &point, CWnd *pParent = NULL);
+  CJuliaDlg(const RealPoint2D &point, CWnd *pParent = nullptr);
  ~CJuliaDlg();
 
   const RealPoint2D &getC() const {

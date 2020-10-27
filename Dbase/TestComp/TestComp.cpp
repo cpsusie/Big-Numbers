@@ -41,7 +41,7 @@ static String getCommand(FILE *f) { // reads command from f
       _tprintf(_T(">"));
     }
     TCHAR line[4000];
-    if(FGETS(line,ARRAYSIZE(line),f) == NULL && !isatty(f)) {
+    if(FGETS(line,ARRAYSIZE(line),f) == nullptr && !isatty(f)) {
       break;
     }
     if(userbreak) {
@@ -100,7 +100,7 @@ void Session::testTableCursor(const String &tableName) {
     param.m_fieldSet.add(i);
 
   Tuple tuple(tableDef.getColumnCount());
-  TableCursor cursor(m_db, param, NULL, NULL );
+  TableCursor cursor(m_db, param, nullptr, nullptr );
   while(cursor.hasNext()) {
     cursor.next(tuple);
     if(userbreak) throw UserBreak();
@@ -125,13 +125,13 @@ void Session::dumpData(const String &tableName) {
 
 void Session::dumpKeyFile(const String &indexName) {
   const IndexDefinition &indexDef = m_db.getIndexDefinition(indexName);
-  KeyFile index(indexDef.m_fileName,DBFMODE_READONLY,NULL);
+  KeyFile index(indexDef.m_fileName,DBFMODE_READONLY,nullptr);
   index.dump(m_output,FULL_DUMP);
 }
 
 void Session::dumpKeydef(const String &indexName) {
   const IndexDefinition &indexDef = m_db.getIndexDefinition(indexName);
-  KeyFile index(indexDef.m_fileName,DBFMODE_READONLY,NULL);
+  KeyFile index(indexDef.m_fileName,DBFMODE_READONLY,nullptr);
   KeyFileDefinition keydef(index);
   keydef.dump(m_output);
 }
@@ -143,7 +143,7 @@ void Session::setOutput(const String &fname) {
   }
   if(fname.length() != 0) {
     m_output = fopen(fname,_T("w"));
-    if(m_output == NULL) {
+    if(m_output == nullptr) {
       _tperror(fname.cstr());
       m_output = stdout;
     }
@@ -405,7 +405,7 @@ bool Session::trySpecialCommand(const String &stmt) {
 
   String cmd = tok.next();
   String arg1String,arg2String;
-  TCHAR *arg1 = NULL,*arg2 = NULL;
+  TCHAR *arg1 = nullptr,*arg2 = nullptr;
   if(tok.hasNext()) {
     arg1String = tok.next();
     arg1 = arg1String.cstr();
@@ -417,7 +417,7 @@ bool Session::trySpecialCommand(const String &stmt) {
 
   switch(findCommand(cmd.cstr())) {
   case COMMAND_OUT:
-    if(arg1 == NULL)
+    if(arg1 == nullptr)
       setOutput(EMPTYSTRING);
     else
       setOutput(arg1);
@@ -428,7 +428,7 @@ bool Session::trySpecialCommand(const String &stmt) {
     return true;
 
   case COMMAND_CD:
-    if(arg1 != NULL) {
+    if(arg1 != nullptr) {
       chdir(arg1);
       return true;
     }
@@ -436,66 +436,66 @@ bool Session::trySpecialCommand(const String &stmt) {
 
   case COMMAND_DBDUMP:
     { bool dumpall = false;
-      if(arg1 != NULL && _tcsicmp(arg1,_T("all")) == 0)
+      if(arg1 != nullptr && _tcsicmp(arg1,_T("all")) == 0)
         dumpall = true;
       m_db.dump(m_output,dumpall);
       return true;
     }
 
   case COMMAND_LIST:
-    { if(arg1 == NULL)
+    { if(arg1 == nullptr)
         error(_T("Invalid syntax. Usage:list <filename>"));
       _tprintf(_T("%s"), readTextFile(arg1).cstr());
       return true;
     }
 
   case COMMAND_INVOKE:
-    if(arg1 == NULL)
+    if(arg1 == nullptr)
       error(_T("Invalid syntax. Usage:invoke <tablename>"));
     invoke(arg1);
     return true;
 
   case COMMAND_DUMP1:
-    if(arg1 == NULL)
+    if(arg1 == nullptr)
       error(_T("Invalid syntax. Usage:dump1 <tablename>"));
     testTableCursor(arg1);
     return true;
 
   case COMMAND_DUMPKEY:
-    if(arg1 == NULL)
+    if(arg1 == nullptr)
       error(_T("Invalid syntax. Usage:dumpkey <indexname>"));
     dumpKeyFile(arg1);
     return true;
 
   case COMMAND_DUMPKEYDEF:
-    if(arg1 == NULL)
+    if(arg1 == nullptr)
       error(_T("Invalid syntax. Usage:dumpkeydef <indexname>"));
     dumpKeydef(arg1);
     return true;
 
   case COMMAND_DUMPDATA:
-    if(arg1 == NULL)
+    if(arg1 == nullptr)
       error(_T("Invalid syntax. Usage:dumpdata <tablename>"));
     dumpData(arg1);
     return true;
 
   case COMMAND_RUN:
-    if(arg1 == NULL)
+    if(arg1 == nullptr)
       error(_T("Invalid syntax. Usage:run <filename>"));
     run(arg1);
     return true;
 
   case COMMAND_COMPILE:
-    if(arg1 == NULL)
+    if(arg1 == nullptr)
       error(_T("Invalid syntax. Usage:compile <filename>"));
     compile(readTextFile(arg1));
     return true;
 
   case COMMAND_UPDATE:
-    if(arg1 == NULL)
+    if(arg1 == nullptr)
       return false;
     if(_tcsicmp(arg1,_T("statistics")) == 0) {
-      if(arg2 == NULL)
+      if(arg2 == nullptr)
         m_db.updateStatistics();
       else
         m_db.updateStatistics(arg2);
@@ -504,17 +504,17 @@ bool Session::trySpecialCommand(const String &stmt) {
     return false;
 
   case COMMAND_HELP:
-    if(arg1 == NULL)
+    if(arg1 == nullptr)
       showhelp(EMPTYSTRING);
     else
       showhelp(arg1);
     return true;
 
   case COMMAND_DUMP:
-    if(arg1 == NULL)
+    if(arg1 == nullptr)
       error(_T("Invalid syntax. Usage:dump [index] <name>"));
     if(_tcsicmp(arg1,_T("index")) == 0) {
-      if(arg2 == NULL)
+      if(arg2 == nullptr)
         error(_T("Invalid syntax. Usage:dump index <name>"));
       m_db.KeyFiledump(arg2,m_output);
     }
@@ -523,17 +523,17 @@ bool Session::trySpecialCommand(const String &stmt) {
     return true;
 
   case COMMAND_CREATE:
-    if(arg1 == NULL || _tcsicmp(arg1,_T("Database")) != 0)
+    if(arg1 == nullptr || _tcsicmp(arg1,_T("Database")) != 0)
       return false;
-    if(arg2 == NULL)
+    if(arg2 == nullptr)
       error(_T("Invalid syntax. Usage:create Database <name>"));
     createDatabase(arg2);
     return true;
 
   case COMMAND_DROP:
-    if(arg1 == NULL || _tcsicmp(arg1,_T("Database")) != 0)
+    if(arg1 == nullptr || _tcsicmp(arg1,_T("Database")) != 0)
       return false;
-    if(arg2 == NULL)
+    if(arg2 == nullptr)
       error(_T("Invalid syntax. Usage:drop Database <name>"));
     Database::destroy(arg2);
     return true;
@@ -576,7 +576,7 @@ void Session::doCommand(const String &stmt) {
 
 void Session::run(const String &fname) {
   FILE *f = fopen(fname,_T("r"));
-  if(f == NULL) {
+  if(f == nullptr) {
     throwErrNoOnNameException(fname);
   }
   try {
@@ -625,7 +625,7 @@ static void usage() {
 
 int _tmain(int argc, TCHAR **argv) {
   TCHAR *cp;
-  TCHAR *dbname     = NULL;
+  TCHAR *dbname     = nullptr;
 
 //  SqlLex::findBestHashMapSize();
 //  testTupleField();
@@ -646,7 +646,7 @@ int _tmain(int argc, TCHAR **argv) {
       }
     }
 
-    if(dbname == NULL) {
+    if(dbname == nullptr) {
       if(!*argv) {
         usage();
       }

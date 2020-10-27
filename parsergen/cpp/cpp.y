@@ -12,7 +12,7 @@ class CppParser : public LRparser, public ParserTree {
 private:
   static const ParserTables *CppTables;
 public:
-  CppParser(CppLex *lex = NULL) : LRparser(*CppTables,lex) {
+  CppParser(CppLex *lex = nullptr) : LRparser(*CppTables,lex) {
   }
   SyntaxNode *newNode( int token, ... );
   void  appendError(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
@@ -89,7 +89,7 @@ protected:
 								/* entry for that typedef.						  */
 %nonassoc CLASS					/* extern register auto static typedef. Attribute */
 								/* is the first character of the lexeme.		  */
-%nonassoc NAME					/* Identifier or typedef name. Attribute is NULL  */
+%nonassoc NAME					/* Identifier or typedef name. Attribute is nullptr  */
 								/* if the symbol doesn't exist, a pointer to the  */
 								/* associated "symbol" structure, otherwise.	  */
 

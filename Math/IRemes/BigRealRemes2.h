@@ -329,7 +329,7 @@ public:
     return s_extremaMap;
   }
   void        getCurrentApproximation(RationalFunction &approx) const;
-  void        getErrorPlot(RationalFunction &approx, UINT n, Point2DArray &pa, DigitPool *digitPool, float *progressPct=NULL) const;
+  void        getErrorPlot(RationalFunction &approx, UINT n, Point2DArray &pa, DigitPool *digitPool, float *progressPct=nullptr) const;
 
   String      getCFunctionString(bool useDouble80) const;
   String      getJavaFunctionString() const;

@@ -115,7 +115,7 @@ void KeyFile::pageDel(KeyPageAddr p, KeyPage &a, int r, bool &h) {
       pageUnderflow(q, ppage, ppage.getItemCount(), h);
       writePage(p, ppage);
     }
-  } else { // q == NULL => we are at a leafpage. a.key[r] = ppage.lastkey, and remove lastkey from ppage
+  } else { // q == nullptr => we are at a leafpage. a.key[r] = ppage.lastkey, and remove lastkey from ppage
     logPage(p, ppage);
     a.setKey(r, ppage.getLastKey());
     h = ppage.itemCountDecr();

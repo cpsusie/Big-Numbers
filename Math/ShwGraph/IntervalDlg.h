@@ -2,7 +2,7 @@
 
 class IntervalDlg : public CDialog {
 public:
-    IntervalDlg(CWnd *pParent = NULL);
+    IntervalDlg(CWnd *pParent = nullptr);
 
     double m_minx, m_maxx, m_miny, m_maxy;
 

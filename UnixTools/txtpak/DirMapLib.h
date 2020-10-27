@@ -11,7 +11,7 @@ private:
   static void copyFile(const String &srcName, const String &dstName);
 public:
   DirMapLib(const String &libName) : AbstractLib(libName) {
-    m_guidMap = NULL;
+    m_guidMap = nullptr;
   }
   ~DirMapLib();
   void           open(OpenMode mode, bool checkSubDirCount = true);
@@ -21,7 +21,7 @@ public:
   bool           checkIntegrity(const Array<FileInfo> &list);
   static void    removeLib(const String &libName);
 
-  // list can be NULL. return number of elements in lib, matching argv
+  // list can be nullptr. return number of elements in lib, matching argv
   size_t         getInfoList(Array<FileInfo> *list) const;
   size_t         getUnpackCount() const;
   LibType        getType() const {

@@ -3,7 +3,7 @@
 class CTestProgressWindowDlg : public CDialog {
 private:
 public:
-    CTestProgressWindowDlg(CWnd *pParent = NULL);
+    CTestProgressWindowDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_TESTPROGRESSWINDOW_DIALOG };
     BOOL    m_hasMessageBox;

@@ -21,7 +21,7 @@ TCHAR *HashElement::getVariantStr(TCHAR *dst) const {
       *(cp++) = ' ';
       cp += hp->getMoveStr(cp);
       const HashElement *next = hp->m_next;
-      if(next == NULL || (next->m_depth != hp->m_depth-1)) {
+      if(next == nullptr || (next->m_depth != hp->m_depth-1)) {
         break;
       }
       hp = next;
@@ -48,7 +48,7 @@ Move::Move(const String &str) {
   d.m_to   = DECODEFIELD(str.cstr()+2);
   if(str.length() > 4) {
     const TCHAR *cp = _tcschr(promoteIndexToShortNameEnglish, tolower(str[4]));
-    if(cp == NULL) {
+    if(cp == nullptr) {
       throwException(_T("Illegal promotion:<%s>"), str.cstr());
     } else {
       d.m_promoteIndex = cp - promoteIndexToShortNameEnglish;

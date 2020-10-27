@@ -17,7 +17,7 @@ private:
   BigReal getRandomDividend(int length);
 public:
   BigRealTestClass() : m_rnd(*RandomGenerator::s_stdGenerator) {
-    m_digitPool = NULL;
+    m_digitPool = nullptr;
   }
   ~BigRealTestClass();
   RandomGenerator &getRandomGenerator() {

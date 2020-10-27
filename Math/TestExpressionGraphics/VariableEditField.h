@@ -23,7 +23,7 @@ private:
   VariableEditField *findFieldByName(const String &name);
 public:
   VariableEditFieldArray() {
-    m_parent = NULL;
+    m_parent = nullptr;
     m_fieldsCreated = m_fontIsSet = false;
   }
   ~VariableEditFieldArray();

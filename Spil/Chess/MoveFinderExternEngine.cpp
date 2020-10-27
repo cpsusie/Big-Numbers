@@ -10,7 +10,7 @@ MoveFinderExternEngine::MoveFinderExternEngine(Player player, ChessPlayerRequest
 {
   m_externEngine.start(this);
   m_externEngine.setParameters(getOptions().getEngineOptionValues(player, getOptions().getPlayerOptions(player).m_engineName));
-  m_optionsDlgThread = NULL;
+  m_optionsDlgThread = nullptr;
 }
 
 MoveFinderExternEngine::~MoveFinderExternEngine() {
@@ -31,7 +31,7 @@ void MoveFinderExternEngine::handlePropertyChanged(const PropertyContainer *sour
   if((source == m_optionsDlgThread) && (id == ENGINEOPIONDIALOG_RUNNING)) {
     const bool isRunning = *(const bool*)newValue;
     if(!isRunning) {
-      m_optionsDlgThread = NULL;
+      m_optionsDlgThread = nullptr;
     }
   }
 }

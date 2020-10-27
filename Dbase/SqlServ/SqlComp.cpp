@@ -23,7 +23,7 @@ void SqlCompiler::syntaxError(const SyntaxNode *n, long sqlcode, _In_z_ _Printf_
 }
 
 void SqlCompiler::findHostVarIndex(SyntaxNode *expr, int &hostvarcounter, int flags ) {
-  if(expr == NULL) return;
+  if(expr == nullptr) return;
   switch(expr->token()) {
   case HOSTVAR:
     if(!(flags & HOSTVARSCANNERFLAG_ALLBUTINTO) && (flags & HOSTVARSCANNERFLAG_INTO)) break;
@@ -61,14 +61,14 @@ void SqlCompiler::findHostVarIndex(SyntaxNode *expr, int &hostvarcounter, int fl
 }
 
 StatementSymbolInfo *SqlCompiler::getInfo(const SyntaxNode *n) const {
-  if(n == NULL) throwSqlError(SQL_FATAL_ERROR,_T("getInfo:SyntaxNode is NULL"));
+  if(n == nullptr) throwSqlError(SQL_FATAL_ERROR,_T("getInfo:SyntaxNode is nullptr"));
   if(n->token() == NAME)
     return (StatementSymbolInfo*)(n->getData());
   else
     if(n->token() == DOT)
       return (StatementSymbolInfo*)(n->child(1)->getData());
   stopcomp(n);
-  return NULL; // just to make compiler happy
+  return nullptr; // just to make compiler happy
 }
 
 void SqlCompiler::genUpdate(SyntaxNode *n) {
@@ -671,7 +671,7 @@ SqlCompiler::SqlCompiler(const Database            &db,
 #if defined(TRACECOMP)
   if(ok()) {
     FILE *mm = fopen(_T("c:\\temp\\testcode.txt"),_T("a"));
-	  if(mm != NULL) {
+	  if(mm != nullptr) {
 		  _ftprintf(mm,_T("statement:%s\n"),bndstmt.m_stmt);
 		  m_code.dump(mm);
 		  fclose(mm);

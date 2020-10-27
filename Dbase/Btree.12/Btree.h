@@ -640,7 +640,7 @@ protected:
   void appendLog(UINT64 offset, const void *buffer, ULONG size) const;
   friend class LogFile;
 public:
-  DbFile(const String &fileName, DbFileMode mode, LogFile *lf); // lf can be NULL
+  DbFile(const String &fileName, DbFileMode mode, LogFile *lf); // lf can be nullptr
   DbFile(const Database &db, const String &fileName, DbFileMode mode, bool systemFile);
   const String &getName() const { return m_fileName;        }
   DbFileMode    getMode() const { return m_mode;            }
@@ -648,7 +648,7 @@ public:
   // size of file in bytes
   UINT64        getSize();
   void          truncate();
-  inline bool   isBackLogged()       const { return m_logFile != NULL; }
+  inline bool   isBackLogged()       const { return m_logFile != nullptr; }
 
   // write size bytes at offset from buffer to file
   void          write(UINT64 offset, const void *buffer, UINT size) const;

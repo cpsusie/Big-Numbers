@@ -10,11 +10,11 @@
 #define foreachPanel(p)      if(m_panels.size()) for(SortPanelWnd **_##p = &m_panels[0], *p = *_##p; _##p <= &m_panels.last(); p = *(++_##p))
 #define foreachConstPanel(p) if(m_panels.size()) for(const SortPanelWnd * const *_##p = &m_panels[0], *p = *_##p; _##p <= &m_panels.last(); p = *(++_##p))
 
-CSortDemoDlg::CSortDemoDlg(CWnd *pParent /*=NULL*/) : CDialog(IDD, pParent) {
+CSortDemoDlg::CSortDemoDlg(CWnd *pParent /*=nullptr*/) : CDialog(IDD, pParent) {
   m_hIcon            = theApp.LoadIcon(IDR_MAINFRAME);
   m_ctrlId           = WM_USER;
   m_movingPanelIndex = -1;
-  m_selectedPanel    = NULL;
+  m_selectedPanel    = nullptr;
 }
 
 void CSortDemoDlg::DoDataExchange(CDataExchange *pDX) {
@@ -89,7 +89,7 @@ BOOL CSortDemoDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -440,7 +440,7 @@ bool CSortDemoDlg::isAnimatedSort() {
 
 void CSortDemoDlg::OnRButtonDown(UINT nFlags, CPoint point) {
   m_selectedPanel = findPanelFromPoint(point);
-  if(m_selectedPanel == NULL) {
+  if(m_selectedPanel == nullptr) {
     return;
   }
   CMenu menu;
@@ -453,7 +453,7 @@ void CSortDemoDlg::OnRButtonDown(UINT nFlags, CPoint point) {
 
 SortPanelWnd *CSortDemoDlg::findPanelFromPoint(const CPoint &p) {
   const int index = findPanelIndexFromPoint(p);
-  return (index < 0) ? NULL  : m_panels[index];
+  return (index < 0) ? nullptr  : m_panels[index];
 }
 
 int CSortDemoDlg::findPanelIndexFromPoint(const CPoint &p) {
@@ -521,7 +521,7 @@ void CSortDemoDlg::startDragRect(CPoint &p) {
   m_dragRect = getWindowRect(m_panels[m_movingPanelIndex]);
   CClientDC dc(this);
   const CSize sz(2,2);
-  dc.DrawDragRect(&m_dragRect, sz, NULL,sz);
+  dc.DrawDragRect(&m_dragRect, sz, nullptr,sz);
 }
 
 void CSortDemoDlg::dragRect(CPoint &p) {
@@ -536,6 +536,6 @@ void CSortDemoDlg::dragRect(CPoint &p) {
 void CSortDemoDlg::endDragRect() {
   CClientDC dc(this);
   const CSize sz(2,2);
-  dc.DrawDragRect(m_dragRect, sz, NULL, sz);
+  dc.DrawDragRect(m_dragRect, sz, nullptr, sz);
   m_movingPanelIndex = -1;
 }

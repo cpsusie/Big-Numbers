@@ -152,7 +152,7 @@ BOOL CAboutDlg::PreTranslateMessage(MSG *pMsg) {
           const char *browser = browsers[i];
           String fileName = FileNameSplitter(browser).getFileName();
           const char *fileNameA = T2A(fileName.cstr());
-          if(_spawnlp(_P_NOWAITO,browser,fileNameA,urlA,NULL) >= 0) {
+          if(_spawnlp(_P_NOWAITO,browser,fileNameA,urlA,nullptr) >= 0) {
             break;
           }
         }

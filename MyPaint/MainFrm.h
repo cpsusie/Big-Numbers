@@ -36,12 +36,12 @@ private:
   void applyFilter(PixRectFilter &filter);
   void applyMirror(bool vertical);
   inline CMyPaintView *getView() {
-    return m_created ? (CMyPaintView*)GetActiveView() : NULL;
+    return m_created ? (CMyPaintView*)GetActiveView() : nullptr;
   }
 
   inline CMyPaintDoc *getDocument() {
     CMyPaintView *view = getView();
-    return view ? view->GetDocument() : NULL;
+    return view ? view->GetDocument() : nullptr;
   }
 
 protected:

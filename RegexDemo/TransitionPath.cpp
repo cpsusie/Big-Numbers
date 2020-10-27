@@ -9,8 +9,8 @@ String toString(const GridElement &ge) {
 
 static MatrixDimension getGridSize(const CSize winSize) {
   Point2D e = Point2D(CIRCLE_RADIUS/3, CIRCLE_RADIUS/3);
-  const int gridWidth  = (int)ceil((double)winSize.cx / e.x) + 4;
-  const int gridHeight = (int)ceil((double)winSize.cy / e.y) + 4;
+  const int gridWidth  = (int)ceil((double)winSize.cx / e.x()) + 4;
+  const int gridHeight = (int)ceil((double)winSize.cy / e.y()) + 4;
   return MatrixDimension(gridHeight, gridWidth);
 }
 
@@ -23,11 +23,11 @@ TransitionGrid::TransitionGrid(const CSize winSize)
 
   m_edgeMarkStep = 2;
 
-  Point2D d1 = m_tr.backwardTransform(0,0);
-  Point2D d2 = m_tr.backwardTransform(1,1);
+  Point2D d1 = m_tr.backwardTransform(Point2D(0,0));
+  Point2D d2 = m_tr.backwardTransform(Point2D(1,1));
 
-  m_horzDist = (int)((d2.x - d1.x)   * 1000);
-  m_vertDist = (int)((d2.y - d1.y)   * 1000);
+  m_horzDist = (int)((d2.x() - d1.x())   * 1000);
+  m_vertDist = (int)((d2.y() - d1.y())   * 1000);
   m_diagDist = (int)(distance(d1,d2) * 1000);
 
   m_distMatrix[1][1] = 0;
@@ -49,7 +49,7 @@ void TransitionGrid::markCircle(int cx, int cy) {
   int x = CIRCLE_RADIUS;
   int y = 0;
   int gy[4] = { -1,-1,-1,-1};
-  const IntervalTransformation &trX = m_tr.getXTransformation();
+  const IntervalTransformation &trX = m_tr[0];
 
   while(x >= y) {
     CPoint gp = winToGrid(cx - x, cy - y);

@@ -94,7 +94,7 @@ static void dbDisconnect() {
 #endif
 #line 28 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
 {
-  sqlapi_call(1,3,sqlapi_program_id,0,0,NULL,sqlca);
+  sqlapi_call(1,3,sqlapi_program_id,0,0,nullptr,sqlca);
 #line 28 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
 }
 #line 27 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
@@ -262,7 +262,7 @@ typedef enum {
 
 int _tmain( int argc, TCHAR **argv ) {
   TCHAR *cp;
-  TCHAR *dbname = NULL;
+  TCHAR *dbname = nullptr;
   command cmd;
 
   argvExpand(argc, argv);
@@ -296,7 +296,7 @@ int _tmain( int argc, TCHAR **argv ) {
     }
   }
 
-  if(dbname == NULL || _tcslen(dbname) == 0) usage();
+  if(dbname == nullptr || _tcslen(dbname) == 0) usage();
   try {
     switch(cmd) {
     case BINDPROGRAM:

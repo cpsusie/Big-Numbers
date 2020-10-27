@@ -3,7 +3,7 @@
 Database::Database(const String &dbName) {
   SysTableDbData  dbdef;
 
-  m_logFile = NULL;
+  m_logFile = nullptr;
 
   if(dbName.length() > SQLAPI_MAXDBNAME) {
     throwSqlError(SQL_DBNAME_TOO_LONG,_T("Database name <%s> too long"),dbName.cstr());
@@ -35,12 +35,12 @@ void Database::close() {
         trabort();
       } catch(sqlca) {
         delete m_logFile;
-        m_logFile = NULL;
+        m_logFile = nullptr;
         throw;
       }
     }
     delete m_logFile;
-    m_logFile = NULL;
+    m_logFile = nullptr;
   }
 }
 

@@ -23,7 +23,7 @@ CRegexDemoDlg::CRegexDemoDlg(CWnd *pParent) : CDialogWithDynamicLayout(IDD, pPar
   m_pattern         = EMPTYSTRING;
   m_target          = EMPTYSTRING;
   m_hIcon           = theApp.LoadIcon(IDR_MAINFRAME);
-  m_debugger        = NULL;
+  m_debugger        = nullptr;
   m_timerIsRunning  = false;
   m_blinkersVisible = true;
 }
@@ -92,7 +92,7 @@ BOOL CRegexDemoDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -469,7 +469,7 @@ void CRegexDemoDlg::startTimer() {
   if(m_timerIsRunning) {
     stopTimer();
   }
-  if(SetTimer(1,500,NULL)) {
+  if(SetTimer(1,500,nullptr)) {
     m_timerIsRunning = true;
   } else {
     showWarning(_T("Cannot install timer"));
@@ -849,7 +849,7 @@ void CRegexDemoDlg::showEmacsMatchState() {
 
   unmarkAllCharacters(SEARCH_POSMARK);
   markCurrentChar(    MATCH_STARTMARK, state.getPos());
-  if(state.m_sp == NULL) {
+  if(state.m_sp == nullptr) {
     unmarkAllCharacters(MATCH_DMARK);
   } else {
     const intptr_t fromEnd   = state.m_spEnd - state.m_sp;

@@ -49,7 +49,7 @@ ChessPlayerRequest::ChessPlayerRequest(ChessPlayerRequestType type) {
   case REQUEST_DISCONNECT   :
   case REQUEST_KILL         :
     m_type  = type;
-    m_param = NULL;
+    m_param = nullptr;
     break;
   default                   :
     throwInvalidArgumentException(__TFUNCTION__,_T("type=%s"), getRequestName(type));
@@ -68,7 +68,7 @@ ChessPlayerRequest::~ChessPlayerRequest() {
 }
 
 void ChessPlayerRequest::addref() {
-  if(m_param != NULL) {
+  if(m_param != nullptr) {
     const int refCount = m_param->addref();
 #if defined(TEST_REFCOUNT)
     verbose(_T("request(%s).addRef(). refCount=%d\n"), toString().cstr(), refCount);
@@ -77,12 +77,12 @@ void ChessPlayerRequest::addref() {
 }
 
 void ChessPlayerRequest::release() {
-  if(m_param != NULL) {
+  if(m_param != nullptr) {
     const int refCount = m_param->release();
     if(refCount == 0) {
       SAFEDELETE(m_param);
     }
-    m_param = NULL;
+    m_param = nullptr;
 #if defined(TEST_REFCOUNT)
     verbose(_T("request(%s).release(). refCount=%d\n"), toString().cstr(), refCount);
 #endif

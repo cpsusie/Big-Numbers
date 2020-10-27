@@ -164,7 +164,7 @@ private:
   ByteCount printLeftSideTableCpp(           MarginFile &output) const;                                              // return size in bytes
   ByteCount printRightSideTableCpp(          MarginFile &output) const;                                              // return size in bytes
   ByteCount printSymbolNameTableCpp(         MarginFile &output) const;                                              // return size in bytes
-  ByteCount printByteArray(                  MarginFile &output, const String &name, const ByteArray &ba, UINT bytesPerLine = 20, const StringArray *linePrefix = NULL) const;
+  ByteCount printByteArray(                  MarginFile &output, const String &name, const ByteArray &ba, UINT bytesPerLine = 20, const StringArray *linePrefix = nullptr) const;
   void      newLine(MarginFile &output, String &comment = String(_T("")), int minColumn=0) const;
 public:
   GrammarTables(const Grammar &g, const String &tableClassName, const String &parserClassName);

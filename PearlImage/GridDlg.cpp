@@ -6,9 +6,9 @@
 
 IMPLEMENT_DYNAMIC(CGridDlg, CDialog)
 
-CGridDlg::CGridDlg(CWnd* pParent /*=NULL*/)
+CGridDlg::CGridDlg(CWnd* pParent /*=nullptr*/)
   : CPropertyDialog<GridParameters>(IDD, PROP_GRIDPARAM, pParent)
-  , m_image(NULL)
+  , m_image(nullptr)
 {
   GridParameters defaultValue;
   m_cellSize        = defaultValue.m_cellSize;
@@ -175,18 +175,18 @@ void CGridDlg::OnBnClickedButtonDiagram() {
   SAFEDELETE(tmp);
 
   const String dumpFileName = createTempFileName(_T("txt"));
-  FILE *f = NULL;
+  FILE *f = nullptr;
   try {
     const String dstr = diagram.toString();
     f = MKFOPEN(dumpFileName,_T("w"));
 
     _ftprintf(f, _T("%s"), dstr.cstr());
-    fclose(f); f = NULL;
+    fclose(f); f = nullptr;
 
-    ExternProcess::run(false, _T("c:\\windows\\system32\\notepad.exe"), dumpFileName.cstr(), NULL);
+    ExternProcess::run(false, _T("c:\\windows\\system32\\notepad.exe"), dumpFileName.cstr(), nullptr);
     UNLINK(dumpFileName);
   } catch (Exception e) {
-    if(f) { fclose(f); f = NULL; }
+    if(f) { fclose(f); f = nullptr; }
     showException(e);
   }
 }
@@ -291,7 +291,7 @@ void CGridDlg::OnGotoColorCount() {
 }
 
 bool CGridDlg::validate() {
-  if(m_image == NULL) {
+  if(m_image == nullptr) {
     showWarning(_T("No image"));
     return false;
   }

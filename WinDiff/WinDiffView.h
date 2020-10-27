@@ -21,7 +21,7 @@ public:
 public:
   CWinDiffDoc  *GetDocument();
   CWinDiffView *getPartner();
-  bool hasPartner() { return getPartner() != NULL; }
+  bool hasPartner() { return getPartner() != nullptr; }
   void setScrollPos();
   void setScrollRange(bool redraw);
   void handleAnchor();

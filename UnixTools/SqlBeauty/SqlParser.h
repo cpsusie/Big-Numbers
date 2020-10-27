@@ -6,5 +6,4 @@
 #line 5 "C:\\Mytools2015\\UnixTools\\sqlbeauty\\Sql.y"
 #include "ParserTree.h"
 
-#line 22 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
-
+#line 17 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"

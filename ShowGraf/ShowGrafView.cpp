@@ -55,7 +55,7 @@ bool CShowGrafView::paintAll(CDC &dc, const CRect &rect) {
   CWnd *systemPanel = GetDlgItem(IDC_SYSTEMPANEL);
   CWnd *buttonPanel = GetDlgItem(IDC_BUTTONPANEL);
 
-  if(systemPanel == NULL || buttonPanel == NULL) {
+  if(systemPanel == nullptr || buttonPanel == nullptr) {
     return false;
   }
   const GraphArray &ga = getDoc()->getGraphArray();

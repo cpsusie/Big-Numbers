@@ -40,7 +40,7 @@ private:
   void dragRect(CPoint &p);
   void endDragRect();
 public:
-    CSortDemoDlg(CWnd *pParent = NULL);
+    CSortDemoDlg(CWnd *pParent = nullptr);
     const InitializeParameters &getInitParameters() const {
       return m_parameters;
     }

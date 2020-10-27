@@ -85,7 +85,7 @@ String VirtualCode::toString() const {
     casepr0(TIME           )  /* push(Time((top-2),(top-1),top))                               */
     casepr0(TIMESTAMP      )  /*3push(Timestamp((top-5),(top-4),(top-3),(top-2),(top-1),top))  */
     casepr1(CAST           )  /* top = cast(castparam(adr))top                                 */
-    casepr0(PUSHNULL       )  /* push(NULL)                                                    */
+    casepr0(PUSHNULL       )  /* push(nullptr)                                                    */
     casepr0(PUSHCURRENTDATE)  /* push currentdate                                              */
     casepr0(PUSHCURRENTTIME)  /* push currenttime                                              */
     casepr0(PUSHCURRENTTIMESTAMP) /* push currenttimestamp                                     */

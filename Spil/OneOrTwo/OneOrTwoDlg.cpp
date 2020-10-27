@@ -42,7 +42,7 @@ void CAboutDlg::OnLButtonDblClk(UINT nFlags, CPoint point) {
 
 COneOrTwoDlg::COneOrTwoDlg(CWnd *pParent) : CDialog(COneOrTwoDlg::IDD, pParent) {
   m_hIcon         = theApp.LoadIcon(IDR_MAINFRAME);
-  m_game          = NULL;
+  m_game          = nullptr;
   m_showMoveList  = false;
   m_timerInterval = 0;
 }
@@ -80,7 +80,7 @@ BOOL COneOrTwoDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -107,7 +107,7 @@ void COneOrTwoDlg::OnSysCommand(UINT nID, LPARAM lParam) {
 }
 
 void COneOrTwoDlg::startTimer(int msec) {
-  if(!m_timerInterval && SetTimer(1, msec, NULL)) {
+  if(!m_timerInterval && SetTimer(1, msec, nullptr)) {
     m_timerInterval = msec;
   }
 }
@@ -231,10 +231,10 @@ void COneOrTwoDlg::newGame() {
 }
 
 void COneOrTwoDlg::newGame(Player starter) {
-  if(m_game == NULL || (m_game->getGameType() != getSelectedGameType())) {
-    if(m_game != NULL) {
+  if(m_game == nullptr || (m_game->getGameType() != getSelectedGameType())) {
+    if(m_game != nullptr) {
       delete m_game;
-      m_game = NULL;
+      m_game = nullptr;
     }
     switch(getSelectedGameType()) {
     case PENTAGON : m_game = new GamePentagon(); break;

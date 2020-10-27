@@ -89,22 +89,22 @@ static AutoRegister dummy;
 
 static void vlog(int wtype, const char *format, va_list argptr) {
 
-  HANDLE eventSource = RegisterEventSource(NULL, AutoRegister::getSrcName().cstr());
+  HANDLE eventSource = RegisterEventSource(nullptr, AutoRegister::getSrcName().cstr());
 
   String msg = vformat(format, argptr);
 
-  const char *stringArray[2] = { msg.cstr(), NULL };
+  const char *stringArray[2] = { msg.cstr(), nullptr };
 
-  if(eventSource != NULL) {
+  if(eventSource != nullptr) {
     ReportEvent(eventSource       // Handle of event source
                ,wtype             // Event type
                ,0                 // Event category
                ,MYMSG             // Event ID
-               ,NULL              // Current user's SID
+               ,nullptr              // Current user's SID
                ,1                 // Number of strings in stringArray
                ,0                 // No bytes of raw data
                ,stringArray       // Array of error strings
-               ,NULL);            // No raw data
+               ,nullptr);            // No raw data
 
     DeregisterEventSource(eventSource);
   }

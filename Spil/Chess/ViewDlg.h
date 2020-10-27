@@ -2,7 +2,7 @@
 
 class CViewDlg : public CDialog, OptionsAccessor {
 public:
-    CViewDlg(CWnd *pParent = NULL);
+    CViewDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_VIEW_DIALOG };
     BOOL    m_animateCheckmate;

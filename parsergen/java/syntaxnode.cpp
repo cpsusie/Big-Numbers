@@ -71,7 +71,7 @@ SyntaxNode::SyntaxNode(int token, va_list argptr) {
   int n = 0;
   for(SyntaxNode *help = va_arg(argptr,SyntaxNode *); help; help = va_arg(argptr,SyntaxNode *))
     tmp[n++] = help;
-  SyntaxNode **children = n ? new SyntaxNode*[n] : NULL;
+  SyntaxNode **children = n ? new SyntaxNode*[n] : nullptr;
   for(int i = 0; i < n; i++)
     children[i] = tmp[i];
   u.m_children.m_count = n;

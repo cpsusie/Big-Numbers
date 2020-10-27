@@ -350,7 +350,7 @@ private:
   void   checkGroupedOrAggregatedPredicate(           const SyntaxNode *pred, const TCHAR *clause);
   bool   isInGroupBy(                                 const SyntaxNode *expr) const;
   bool   isTreeEqual(                                 const SyntaxNode *t1  , const SyntaxNode *t2) const;
-  const  SyntaxNode *findUnGroupedUnAggregatedColumn( const SyntaxNode *expr);  // returns a NAME-syntax-node with attr.m_ingroup = false and not contained in an aggregate-func. NULL if none
+  const  SyntaxNode *findUnGroupedUnAggregatedColumn( const SyntaxNode *expr);  // returns a NAME-syntax-node with attr.m_ingroup = false and not contained in an aggregate-func. nullptr if none
   const  SyntaxNode *findUnAggregatedSyntaxNode(      const SyntaxNode *expr, const FromTable *table, int colIndex);
   const  SyntaxNode *findUnAggregatedSelectNode(      const FromTable *table, int colIndex); // find the syntaxnode in m_selectexpr   that is not aggregated and SSIMap match table,colindex
   const  SyntaxNode *findUnAggregatedHavingNode(      const FromTable *table, int colIndex); // find the syntaxnode in m_havingclause that is not aggregated and SSIMap match table,colindex

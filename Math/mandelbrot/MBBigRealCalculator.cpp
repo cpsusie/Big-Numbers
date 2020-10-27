@@ -48,8 +48,8 @@ UINT MBBigRealCalculator::findCountPaintOrbit(const BigReal &X, const BigReal &Y
   return count;
 }
 
-const BigRealIntervalTransformation *MBBigRealCalculator::s_xtr    = NULL;
-const BigRealIntervalTransformation *MBBigRealCalculator::s_ytr    = NULL;
+const BigRealIntervalTransformation *MBBigRealCalculator::s_xtr    = nullptr;
+const BigRealIntervalTransformation *MBBigRealCalculator::s_ytr    = nullptr;
 Array<BigReal>                       MBBigRealCalculator::s_xValue;
 Array<BigReal>                       MBBigRealCalculator::s_yValue;
 

@@ -157,14 +157,14 @@ private:
 
   // convert window point to grid point
   inline CPoint winToGrid(int x, int y) const {
-    return m_tr.forwardTransform(x, y);
+    return (CPoint)(Point2D)m_tr.forwardTransform(Point2D(x, y));
   }
   // convert window point to grid point
   inline CPoint winToGrid(const CPoint &p) const {
-    return m_tr.forwardTransform(p.x, p.y);
+    return (CPoint)(Point2D)m_tr.forwardTransform((Point2D)p);
   }
   inline CPoint gridToWin(const CPoint &p) const {
-    return m_tr.backwardTransform(p);
+    return (CPoint)(Point2D)m_tr.backwardTransform((Point2D)p);
   }
   // x,y in window space
   void markCircle(int x, int y);
@@ -224,14 +224,14 @@ private:
   static CWnd           *s_wnd;
   TransitionGrid         m_grid;
 
-  void paint(                   const DFAPointArray &pointArray                                                , HDC hdc = NULL);
-  void paintStates(             const DFAPointArray &pointArray                                                , HDC hdc = NULL);
-  void paintState(              const DFAPointArray &pointArray, size_t index                                  , HDC hdc = NULL);
-  void paintOutgoingTransitions(const DFAPointArray &pointArray                                                , HDC hdc = NULL);
-  void paintOutgoingTransition( const DFAPointArray &pointArray, size_t index , const DFATransition &transition, HDC hdc = NULL);
-  void paintLoopTransitions(    const DFAPointArray &pointArray                                                , HDC hdc = NULL);
-  void paintLoopTransition(     const DFAStatePoint *sp                                                        , HDC hdc = NULL);
-  void markCurrentState(        int state                                                                      , HDC hdc = NULL);
+  void paint(                   const DFAPointArray &pointArray                                                , HDC hdc = nullptr);
+  void paintStates(             const DFAPointArray &pointArray                                                , HDC hdc = nullptr);
+  void paintState(              const DFAPointArray &pointArray, size_t index                                  , HDC hdc = nullptr);
+  void paintOutgoingTransitions(const DFAPointArray &pointArray                                                , HDC hdc = nullptr);
+  void paintOutgoingTransition( const DFAPointArray &pointArray, size_t index , const DFATransition &transition, HDC hdc = nullptr);
+  void paintLoopTransitions(    const DFAPointArray &pointArray                                                , HDC hdc = nullptr);
+  void paintLoopTransition(     const DFAStatePoint *sp                                                        , HDC hdc = nullptr);
+  void markCurrentState(        int state                                                                      , HDC hdc = nullptr);
   void decimateEdgeMarkings(    const DFAPointArray &pointArray);
   BitMatrix createGridMatrix(const CSize gridSize) const;
 public:

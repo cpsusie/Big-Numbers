@@ -80,7 +80,7 @@ void DFA::makeTransitions() {
 
       int nextDFAState = FAILURE;         // go to nextDFAState on char c
       BitSet *newSet = transition(transitionSet, current.m_NFAset, c);
-      if(newSet != NULL) {
+      if(newSet != nullptr) {
         AcceptType accept;                // if current DFA state is an acceptstate, this is the AcceptAction
         epsClosure(*newSet, accept);
 
@@ -101,7 +101,7 @@ void DFA::makeTransitions() {
 
 // NFAset  is the set of start states to examine. also used as output
 // *accept is modified to point to the AcceptAction associated with an accepting
-//         state (or NULL if the state isn't an accepting state).
+//         state (or nullptr if the state isn't an accepting state).
 //
 // Computes the epsilon closure set for the NFAset. This set will contain all states
 // that can be reached by making epsilon transitions from all NFA states in the original set.
@@ -158,16 +158,16 @@ void DFA::epsClosure(BitSet &NFAset, AcceptType &accept) const {
 }
 
 // Return a set that contains all NFA states that can be reached by making
-// transitions on "c" from any NFA state in NFAset. Returns NULL if no
+// transitions on "c" from any NFA state in NFAset. Returns nullptr if no
 // such transition exist.
 BitSet *DFA::transition(BitSet &dst, BitSet &NFAset, int c) const {
-  BitSet *result = NULL;
+  BitSet *result = nullptr;
 
   for(Iterator<size_t> it = NFAset.getIterator(); it.hasNext();) {
     int i = (int)it.next();
     const NFAState *p = m_NFA[i]->getSuccessor(c);
     if(p) {
-      if(result == NULL) {
+      if(result == nullptr) {
         dst.clear();
         result = &dst;
       }
@@ -237,7 +237,7 @@ void DFA::makeInitialGroups() {
       // accepting String as the current state. If so, add the current
       // state to the already existing group and skip past the code that
       // would create a new group. Note that since all nonAccepting states
-      // have NULL accept strings, this loop puts all of these together
+      // have nullptr accept strings, this loop puts all of these together
       // into a single group.
 
       if(m_states[i].m_accept == m_states[j].m_accept) {

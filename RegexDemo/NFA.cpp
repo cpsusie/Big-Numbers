@@ -3,7 +3,7 @@
 
 NFA::NFA(NFAState *start) {
 #if defined(_DEBUG)
-  m_stepHandler = NULL;
+  m_stepHandler = nullptr;
 #endif
   create(start);
 }

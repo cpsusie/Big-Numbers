@@ -34,12 +34,12 @@ void GameKeyHashStack::init(UINT stackCapacity) {
 
   m_hashTable = new GameKeyHashElement*[m_hashCapacity]; TRACE_NEW(m_hashTable);
   for(UINT i = 0; i < m_hashCapacity; i++) {
-    m_hashTable[i] = NULL;
+    m_hashTable[i] = nullptr;
   }
 
   m_stack = new GameKeyHashElement*[m_stackCapacity]; TRACE_NEW(m_stack);
   for(UINT i = 0; i < m_stackCapacity; i++) {
-    m_stack[i] = NULL;
+    m_stack[i] = nullptr;
   }
   initFreeList();
 }
@@ -52,7 +52,7 @@ void GameKeyHashStack::cleanUp() {
 }
 
 void GameKeyHashStack::initFreeList() {
-  m_freeList = NULL;
+  m_freeList = nullptr;
   for(int i = 0; i < 100; i++) {
     GameKeyHashElement *p = new GameKeyHashElement; TRACE_NEW(p);
     p->m_next = m_freeList;
@@ -61,15 +61,15 @@ void GameKeyHashStack::initFreeList() {
 }
 
 void GameKeyHashStack::deleteFreeList() {
-  for(GameKeyHashElement *p = m_freeList, *next = NULL; p; p = next) {
+  for(GameKeyHashElement *p = m_freeList, *next = nullptr; p; p = next) {
     next = p->m_next;
     SAFEDELETE(p);
   }
-  m_freeList = NULL;
+  m_freeList = nullptr;
 }
 
 GameKeyHashElement *GameKeyHashStack::fetchElement() {
-  if(m_freeList != NULL) {
+  if(m_freeList != nullptr) {
     GameKeyHashElement *result = m_freeList;
     m_freeList = result->m_next;
     return result;
@@ -95,13 +95,13 @@ int GameKeyHashStack::push(const GameKey &gameKey) {
     }
   }
 
-  if(n == NULL) {
+  if(n == nullptr) {
     n = fetchElement();
     (GameKey&)(*n) = gameKey;
 
     m_hashTable[index] = n;
     n->m_next          = q;
-    if(q != NULL) {
+    if(q != nullptr) {
       q->m_prev = &n->m_next;
     }
     n->m_prev = &m_hashTable[index];
@@ -137,7 +137,7 @@ void GameKeyHashStack::pop() {
     if(next) {
       next->m_prev = n->m_prev;
     }
-    *n->m_prev = next; // n->m_prev always != NULL !
+    *n->m_prev = next; // n->m_prev always != nullptr !
 
     n->m_next = m_freeList;
     m_freeList = n;

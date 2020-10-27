@@ -153,12 +153,12 @@ BitSet ResourceFile::getAltLetterSet(const StringArray &a, const String &contain
 }
 
 void ResourceFile::analyzeDialog(const DialogDefinition &dialog) const {
-  const MenuDefinition *menu = NULL;
+  const MenuDefinition *menu = nullptr;
   if(dialog.hasMenu()) {
     menu = m_currentSection->findMenu(dialog.getMenuId());
-    if(menu == NULL) {
+    if(menu == nullptr) {
       menu = findMenu(dialog.getMenuId());
-      if(menu == NULL) {
+      if(menu == nullptr) {
         error(_T("Dialog %s:Menu %s not defined")
              ,dialog.getId().cstr()
              ,dialog.getMenuId().cstr());
@@ -187,7 +187,7 @@ void ResourceFile::analyzeDialog(const DialogDefinition &dialog) const {
 
   if(menu) {
     const AcceleratorsDefinition *accel = m_currentSection->findMatchingAccelerator(dialog, menu);
-    if(accel == NULL) {
+    if(accel == nullptr) {
       accel = findMatchingAccelerator(dialog, menu);
     }
     if(accel) {
@@ -245,7 +245,7 @@ const MenuDefinition *ResourceFile::findMenu(const String &id) const {
       return menu;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 StringHashSet ResourceFile::getAllMenuIds() const {
@@ -277,7 +277,7 @@ const AcceleratorsDefinition *ResourceFile::findMatchingAccelerator(const Dialog
       return accel;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 void ResourceFile::analyzeAccelerator(const AcceleratorsDefinition &accel) const {

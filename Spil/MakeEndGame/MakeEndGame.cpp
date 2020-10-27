@@ -59,7 +59,7 @@ public:
 };
 
 CurrentWork::CurrentWork() {
-  m_currentTablebase  = NULL;
+  m_currentTablebase  = nullptr;
 }
 
 void CurrentWork::setTablebase(const EndGameTablebase *tablebase) {
@@ -74,7 +74,7 @@ void CurrentWork::handlePropertyChanged(const PropertyContainer *source, int id,
 }
 
 void CurrentWork::update() {
-  if(m_currentTablebase == NULL) {
+  if(m_currentTablebase == nullptr) {
     updateMessageField(0, EMPTYSTRING);
   } else {
     updateMessageField(0
@@ -282,7 +282,7 @@ static String makeTabebaseNameList() {
   return result;
 }
 
-static void usage(TCHAR *arg = NULL) {
+static void usage(TCHAR *arg = nullptr) {
   if(arg) {
     _tprintf(_T("Invalid argument:%s\n"), arg);
   }
@@ -706,7 +706,7 @@ int _tmain(int argc, TCHAR **argv) {
           }
         }
         verbose(_T("%s new manual keys added to %s\n"), format1000(keysAdded).cstr(), tb.getName().cstr());
-        currentWork.setTablebase(NULL);
+        currentWork.setTablebase(nullptr);
       }
       amp.save();
       commands &= ~CMD_ADDUNDEFINEDKEYS;
@@ -722,7 +722,7 @@ int _tmain(int argc, TCHAR **argv) {
         EndGameTablebase &tb = *tablebaseList[it.next()];
         bool *done = keyIndexDone.get(tb.getKeyDefinition().getIndexSize());
         if(!done) {
-          throwException(_T("keyIndexDone.get(%s) == NULL!\n"), tb.getName().cstr());
+          throwException(_T("keyIndexDone.get(%s) == nullptr!\n"), tb.getName().cstr());
         }
         if(*done) {
           continue;
@@ -732,7 +732,7 @@ int _tmain(int argc, TCHAR **argv) {
                                          ,(commands & CMD_LISTUNUSEDSEQEUENCES ) != 0
                                          ,(commands & CMD_ORDERSEQUENCEBYLENGTH) != 0
                                          );
-        currentWork.setTablebase(NULL);
+        currentWork.setTablebase(nullptr);
         *done = true;
       }
       commands &= ~(CMD_CHECKKEYDEF | CMD_CHECKSYMMETRIES);
@@ -758,9 +758,9 @@ int _tmain(int argc, TCHAR **argv) {
       try {
         currentWork.setTablebase(&tb);
         processTablebase(tb, commands, plies);
-        currentWork.setTablebase(NULL);
+        currentWork.setTablebase(nullptr);
       } catch(MissingPositionException e) {
-        currentWork.setTablebase(NULL);
+        currentWork.setTablebase(nullptr);
         verbose(_T("%s\n"), e.what());
       }
     }

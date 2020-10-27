@@ -23,7 +23,7 @@ public:
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CIRemesDlg::CIRemesDlg(CWnd *pParent /*=NULL*/)
+CIRemesDlg::CIRemesDlg(CWnd *pParent /*=nullptr*/)
 : CDialogWithDynamicLayout(IDD, pParent)
 , m_name(EMPTYSTRING)
 , m_maxSearchEIterations(0)
@@ -53,10 +53,10 @@ CIRemesDlg::CIRemesDlg(CWnd *pParent /*=NULL*/)
   m_skipExisting           = FALSE;
 */
   m_hIcon                  = theApp.LoadIcon(IDR_MAINFRAME);
-  m_remes                  = NULL;
+  m_remes                  = nullptr;
   m_allowRemesProperties   = false;
-  m_debugger               = NULL;
-  m_errorPlotter           = NULL;
+  m_debugger               = nullptr;
+  m_errorPlotter           = nullptr;
   m_errorPlotTimerRunning  = false;
   m_reduceToInterpolate    = false;
   m_runMenuState           = RUNMENU_EMPTY;
@@ -147,7 +147,7 @@ BOOL CIRemesDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -412,7 +412,7 @@ void CIRemesDlg::removeErrorPlot() {
 }
 
 void CIRemesDlg::startErrorPlotTimer() {
-  if(!m_errorPlotTimerRunning && SetTimer(1, 1000, NULL)) {
+  if(!m_errorPlotTimerRunning && SetTimer(1, 1000, nullptr)) {
     m_errorPlotTimerRunning = true;
   }
 }
@@ -552,7 +552,7 @@ static const int runMenuPausedItems[] = {
 };
 
 static const int * const runMenuItems[] = {
-  NULL
+  nullptr
  ,runMenuIdleItems
  ,runMenuRunningItems
  ,runMenuPausedItems
@@ -568,7 +568,7 @@ void CIRemesDlg::setRunMenuState(RunMenuState menuState) {
   if(runMenu == 0) return;
   removeAllMenuItems(runMenu);
   const int *menuItems = runMenuItems[menuState];
-  if(menuItems == NULL) return;
+  if(menuItems == nullptr) return;
   int count = 0;
   for(const int *item = menuItems; *item >= 0; item++,count++) {
     if(*item == ITEM_SEPARATOR) {
@@ -657,7 +657,7 @@ static void showText(const String &str) {
   FILE *f = MKFOPEN(fileName, _T("w"));
   _ftprintf(f, _T("%s"), str.cstr());
   fclose(f);
-  ExternProcess::run(false, _T("c:\\windows\\system32\\notepad.exe"), fileName.cstr(), NULL);
+  ExternProcess::run(false, _T("c:\\windows\\system32\\notepad.exe"), fileName.cstr(), nullptr);
 }
 
 void CIRemesDlg::OnGenerateCcodeD64() {
@@ -747,7 +747,7 @@ void CIRemesDlg::handlePropertyChanged(const PropertyContainer *source, int id, 
       break;
     case REMES_PROPERTY:
       if(!m_allowRemesProperties) break;
-      { const RemesPropertyData &data = *(RemesPropertyData*)newValue; // oldValue = NULL
+      { const RemesPropertyData &data = *(RemesPropertyData*)newValue; // oldValue = nullptr
         handleRemesProperty(data.m_src, data.m_id, data.m_oldValue, data.m_newValue);
         break;
       }

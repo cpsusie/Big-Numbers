@@ -8,7 +8,7 @@ private:
 public:
   DrawToolPolygon(ProfileEditor *editor)
     : DrawTool(editor)
-    , m_pp(NULL)
+    , m_pp(nullptr)
   {
   }
   bool OnLButtonDown(  UINT nFlags, CPoint point) override;

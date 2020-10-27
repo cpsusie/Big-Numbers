@@ -190,7 +190,7 @@ CWinDiffView *CWinDiffSplitterWnd::getDiffView(int index) {
   if((index >= 0) && (index < getPanelCount())) {
     return (CWinDiffView*)GetPane(0,index);
   } else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -221,8 +221,8 @@ CWinDiffView *CMainFrame::getActiveDiffView() {
 
 TextView *CMainFrame::getActiveTextView() {
   CWinDiffView *view = getActiveDiffView();
-  if(view == NULL) {
-    return NULL;
+  if(view == nullptr) {
+    return nullptr;
   }
   return &view->m_textView;
 }
@@ -250,9 +250,9 @@ void CMainFrame::updateLoadOptionsMenu() {
   const String saveOptionsMenuPath = _T("3/11");
   int index;
   HMENU optionsMenu = findMenuByString(m_hMenuDefault, saveOptionsMenuPath, &index);
-  HMENU loadMenu    = (optionsMenu && (index >= 0)) ? getSubMenu(optionsMenu, _T("load options")) : NULL;
+  HMENU loadMenu    = (optionsMenu && (index >= 0)) ? getSubMenu(optionsMenu, _T("load options")) : nullptr;
 
-  if(loadMenu == NULL) {
+  if(loadMenu == nullptr) {
     if(optionNames.size() > 0) {
       loadMenu = insertSubMenu(optionsMenu, 12, _T("&Load options"));
     } else {
@@ -294,7 +294,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy) {
   }
 
   TextView *view1 = getActiveTextView();
-  TextView *view2 = view1 ? view1->getPartner() : NULL;
+  TextView *view2 = view1 ? view1->getPartner() : nullptr;
   if(view1) view1->savePositionState();
   if(view2) view2->savePositionState();
 
@@ -388,7 +388,7 @@ void CMainFrame::OnCtrlEnd()       { APPLY_TO_ACTIVE_TEXTVIEW(ctrlEnd()      ) }
 
 void CMainFrame::refreshDoc(bool recomp) {
   TextView *view = getActiveTextView();
-  if(view == NULL) {
+  if(view == nullptr) {
     return;
   }
 
@@ -477,7 +477,7 @@ void CMainFrame::showStatusBarPanes(bool show) {
 
 void CMainFrame::ajourMenuItems() {
   TextView    *view    = getActiveTextView();
-  bool         hasView = view != NULL;
+  bool         hasView = view != nullptr;
   CWinDiffDoc *doc     = getDoc();
   const Diff &diff     = doc->m_diff;
 
@@ -596,13 +596,13 @@ BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
 BOOL CMainFrame::doPreTranslateMessage(MSG *pMsg) {
   const BOOL ret  = __super::PreTranslateMessage(pMsg);
   TextView  *view = getActiveTextView();
-  if(view == NULL) return ret;
+  if(view == nullptr) return ret;
 
   const TextPosition pos = view->getCurrentPos();
 
   m_wndStatusBar.SetPaneText(4, format(_T("Ln %d, Col %d"), pos.m_line+1, pos.m_column+1).cstr());
 
-  const TCHAR *msgStr = NULL;
+  const TCHAR *msgStr = nullptr;
   switch(pMsg->message) {
   case WM_PAINT      : msgStr = _T("WM_PAINT")      ; break;
   case WM_NCMOUSEMOVE: msgStr = _T("WM_NCMOUSEMOVE"); break;
@@ -679,7 +679,7 @@ void CMainFrame::OnFileOpenPanel1() {
 
 void CMainFrame::OnFileOpen(int id) {
   TextView *view = getActiveTextView();
-  if(view == NULL) {
+  if(view == nullptr) {
     showWarning(_T("No active view"));
     return;
   }
@@ -725,7 +725,7 @@ void CMainFrame::OnFileMruFile16() { onFileMruFile(15);}
 
 void CMainFrame::onFileMruFile(int index) {
   TextView *view = getActiveTextView();
-  if(view == NULL) return;
+  if(view == nullptr) return;
   try {
     const String fname = theApp.getRecentFile(index);
 
@@ -771,7 +771,7 @@ void CMainFrame::OnEditCopy() {
 
 void CMainFrame::OnEditPaste() {
   TextView *view = getActiveTextView();
-  if(view == NULL) {
+  if(view == nullptr) {
     return;
   }
   const String t = getClipboardText();
@@ -853,7 +853,7 @@ void CMainFrame::OnEditShowDetails() {
     return;
   }
   TextView *view = getActiveTextView();
-  if(view == NULL) {
+  if(view == nullptr) {
     return;
   }
   if(!view->hasPartner()) {
@@ -888,11 +888,11 @@ void CMainFrame::OnEditRefreshFiles() {
 
 void CMainFrame::OnEditSwapPanels() {
   TextView *view1 = getActiveTextView();
-  if(view1 == NULL) {
+  if(view1 == nullptr) {
     return;
   }
   TextView *view2 = view1->getPartner();
-  if(view2 == NULL) {
+  if(view2 == nullptr) {
     return;
   }
   view1->savePositionState();
@@ -916,7 +916,7 @@ void CMainFrame::OnViewShowWhiteSpace() {
 
 void CMainFrame::OnViewTabSize() {
   TextView *view = getActiveTextView();
-  if(view == NULL) {
+  if(view == nullptr) {
     return;
   }
   CWinDiffDoc *doc = view->getDocument();
@@ -984,7 +984,7 @@ void CMainFrame::OnOptionsStripComments() {
 
 void CMainFrame::OnOptionsIgnoreColumns() {
   TextView *view = getActiveTextView();
-  if(view == NULL) {
+  if(view == nullptr) {
     return;
   }
 
@@ -1002,7 +1002,7 @@ void CMainFrame::OnOptionsIgnoreColumns() {
 
 void CMainFrame::OnOptionsDefineColumns() {
   TextView *view = getActiveTextView();
-  if(view == NULL) {
+  if(view == nullptr) {
     return;
   }
 
@@ -1019,7 +1019,7 @@ void CMainFrame::OnOptionsDefineColumns() {
 
 void CMainFrame::OnOptionsIgnoreRegex() {
   TextView *view = getActiveTextView();
-  if(view == NULL) {
+  if(view == nullptr) {
     return;
   }
   if(!isMenuItemChecked(this, ID_OPTIONS_IGNOREREGEX)) {
@@ -1036,7 +1036,7 @@ void CMainFrame::OnOptionsIgnoreRegex() {
 
 void CMainFrame::OnOptionsDefineRegex() {
   TextView *view = getActiveTextView();
-  if(view == NULL) {
+  if(view == nullptr) {
     return;
   }
   RegexFilter param = getOptions().m_regexFilter;
@@ -1082,7 +1082,7 @@ void CMainFrame::loadOptions(int id) {
 
 void CMainFrame::activateOptions() {
   TextView *view = getActiveTextView();
-  if(view == NULL) {
+  if(view == nullptr) {
     return;
   }
   view->setOptions(getOptions());

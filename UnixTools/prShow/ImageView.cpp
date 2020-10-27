@@ -20,7 +20,7 @@ END_MESSAGE_MAP()
 
 CImageView::CImageView() {
   m_currentZoomFactor = 1;
-  m_printInfo = NULL;
+  m_printInfo = nullptr;
 }
 
 CImageView::~CImageView() {
@@ -85,7 +85,7 @@ void CImageView::OnBeginPrinting(CDC *pDC, CPrintInfo *pInfo) {
 }
 
 void CImageView::OnEndPrinting(CDC *pDC, CPrintInfo *pInfo) {
-  m_printInfo = NULL;
+  m_printInfo = nullptr;
 }
 
 #if defined(_DEBUG)

@@ -14,7 +14,7 @@ public:
 
 class CSelectBreakSymbolsDlg : public CDialog {
 public:
-  CSelectBreakSymbolsDlg(const ParserTables &tables, BitSet &symbolSet, CWnd *pParent = NULL);
+  CSelectBreakSymbolsDlg(const ParserTables &tables, BitSet &symbolSet, CWnd *pParent = nullptr);
 
   enum { IDD = IDD_DIALOGBREAKSYMBOLS };
 

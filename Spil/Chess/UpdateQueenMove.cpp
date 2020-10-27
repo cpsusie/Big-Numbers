@@ -3,7 +3,7 @@
 void Game::updateGameMoveQueen(const Move &m) {
   Piece *piece = m.m_piece;
 
-  if(m.m_capturedPiece == NULL) {
+  if(m.m_capturedPiece == nullptr) {
     queenLeaveField(m);
     SET_PIECE(m.m_to, piece);
     setNonCapturingQueen(m);

@@ -4,7 +4,7 @@ class CTestzorderDlg : public CDialog {
 private:
     HICON m_hIcon;
 public:
-    CTestzorderDlg(CWnd *pParent = NULL);
+    CTestzorderDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_TESTZORDER_DIALOG };
 

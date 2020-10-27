@@ -176,7 +176,7 @@ int D3ViewArray::findIndex(HWND hwnd) const {
 
 C3DSceneView *D3ViewArray::findViewByHwnd(HWND hwnd) const {
   const int index = findIndex(hwnd);
-  return (index < 0) ? NULL : (*this)[index];
+  return (index < 0) ? nullptr : (*this)[index];
 }
 
 void D3ViewArray::remove(C3DSceneView *view) {

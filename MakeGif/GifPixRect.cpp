@@ -96,7 +96,7 @@ void GifPixRect::copyImage(const PixRect *src) {
 void GifPixRect::copyRasterBits(GifPixelType *rasterBits, const GifColorType *colorMap) {
   const int      w  = getWidth();
   const int      h  = getHeight();
-  PixelAccessor *pa = NULL;
+  PixelAccessor *pa = nullptr;
   try {
     PixelAccessor *pa = getPixelAccessor();
     for (CPoint p(0, 0); p.y < h; p.y++) {

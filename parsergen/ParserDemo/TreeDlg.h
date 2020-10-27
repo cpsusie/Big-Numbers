@@ -13,7 +13,7 @@ private:
   void       getDerivation(CTreeCtrl *ctrl, HTREEITEM item, String &derivation, int maxlen);
   String     getDerivation(CTreeCtrl *ctrl, HTREEITEM item,int maxlen);
 public:
-	TreeDlg(SyntaxNodep tree, CWnd *pParent = NULL);
+	TreeDlg(SyntaxNodep tree, CWnd *pParent = nullptr);
 	enum { IDD = IDD_DIALOGTREE };
 public:
 	virtual void OnOK();

@@ -39,7 +39,7 @@ bool Options::save() const {
   }
 
   HANDLE exeHandle = BeginUpdateResource(outFileName.cstr(), FALSE);
-  if(exeHandle == NULL) {
+  if(exeHandle == nullptr) {
     unlink(outFileName);
     showWarning(getLastErrorText());
     return false;
@@ -58,7 +58,7 @@ bool Options::save() const {
     return false;
   }
 
-  if(_tspawnl(_P_NOWAIT, outFileName.cstr(), outFileName.cstr(), _T("-c"), getMD5Password().cstr(), fileName.cstr(), NULL) < 0) {
+  if(_tspawnl(_P_NOWAIT, outFileName.cstr(), outFileName.cstr(), _T("-c"), getMD5Password().cstr(), fileName.cstr(), nullptr) < 0) {
     showWarning(_T("spawn failed:%s"), getErrnoText().cstr());
     return false;
   }

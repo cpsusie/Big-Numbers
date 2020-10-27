@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CTestGIFDlg::CTestGIFDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestGIFDlg::IDD, pParent) {
+CTestGIFDlg::CTestGIFDlg(CWnd *pParent /*=nullptr*/) : CDialog(CTestGIFDlg::IDD, pParent) {
 }
 
 void CTestGIFDlg::DoDataExchange(CDataExchange *pDX) {

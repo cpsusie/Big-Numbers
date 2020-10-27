@@ -2,7 +2,7 @@
 
 class CGotoDlg: public CDialog {
 public:
-  CGotoDlg(CWnd *pParent = NULL);
+  CGotoDlg(CWnd *pParent = nullptr);
 
   enum { IDD = IDD_DIALOGGOTO };
   UINT  m_line;

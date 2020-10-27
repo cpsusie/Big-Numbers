@@ -24,7 +24,7 @@ void MouseTool::clipCursor() {
 }
 
 void MouseTool::unClipCursor() {
-  ClipCursor(NULL);
+  ClipCursor(nullptr);
 }
 
 void MouseTool::beginDragRect(UINT nFlags, const CPoint &point) {
@@ -46,12 +46,12 @@ void MouseTool::beginMarkInterval(UINT nFlags, const CPoint &point) {
   m_dragging       = true;
   CRect cr         = getSystemClientRect();
   m_dragRect       = CRect(m_mouseDownPoint.x, cr.bottom, m_mouseDownPoint.x, cr.top);
-  CClientDC(&getSystem()).DrawDragRect(&m_dragRect, CSize(1,1), NULL, CSize(1,1));
+  CClientDC(&getSystem()).DrawDragRect(&m_dragRect, CSize(1,1), nullptr, CSize(1,1));
   clipCursor();
 }
 
 void MouseTool::endMarkInterval() {
-  CClientDC(&getSystem()).DrawDragRect(&m_dragRect, CSize(1,1), NULL, CSize(1,1));
+  CClientDC(&getSystem()).DrawDragRect(&m_dragRect, CSize(1,1), nullptr, CSize(1,1));
   m_dragging = false;
   unClipCursor();
 }
@@ -144,7 +144,7 @@ void MovePointTool::beginMovePoint(const CPoint &point) {
   m_dragging           = true;
   m_ga                 = &getDoc()->getGraphArray();
   m_mp                 = m_ga->getSelectedPoint();
-  if(m_mp == NULL) {
+  if(m_mp == nullptr) {
     postMsg(ID_MSG_POPMOUSETOOL);
   } else {
     m_offset = point - m_mp->getTrLocation();

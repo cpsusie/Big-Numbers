@@ -147,7 +147,7 @@ const EngineOptionDescription *EngineOptionDescriptionArray::findOptionByName(co
       return &option;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 EngineOptionValueArray EngineOptionDescriptionArray::createDefaultValueArray(const String &engineName) const {
@@ -179,7 +179,7 @@ EngineOptionValueArray EngineOptionDescriptionArray::pruneDefaults(const EngineO
     const EngineOptionValue       &v      = result[i];
     const EngineOptionDescription *option = findOptionByName(v.getName());
     bool prune = false;
-    if(option == NULL) {
+    if(option == nullptr) {
       prune = true;
     } else {
       switch(option->getType()) {

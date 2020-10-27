@@ -7,7 +7,7 @@
 #endif
 
 CEditColorMapDlg::CEditColorMapDlg(CEditColorMapDlgThread *thread)
-: CDialog(IDD, NULL)
+: CDialog(IDD, nullptr)
 , m_thread(*thread)
 , m_selectedRectIndex(-1)
 , m_state(IDLE)
@@ -125,7 +125,7 @@ void CEditColorMapDlg::setState(EditState state) {
     switch (state) {
     case IDLE       :
       if(m_state == MOVING_RECT) {
-        ClipCursor(NULL);
+        ClipCursor(nullptr);
       }
       break;
     case MOVING_RECT:

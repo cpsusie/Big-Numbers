@@ -4,7 +4,7 @@
 #include "Util.h"
 
 void AbstractLib::prepareArgvPattern(const TCHAR **argv) {
-  if((argv == NULL) || (*argv == NULL)) {
+  if((argv == nullptr) || (*argv == nullptr)) {
     m_matchAll = true;
   } else {
     m_matchAll = false;
@@ -63,7 +63,7 @@ void AbstractLib::checkFirstLineIsInfoLine(const String &fileName) { // static
 
 LibraryContent AbstractLib::getAllContent() {
   open(READ_MODE, false);
-  prepareArgvPattern(NULL);
+  prepareArgvPattern(nullptr);
   Array<FileInfo> list;
   getInfoList(&list);
   close();
@@ -72,7 +72,7 @@ LibraryContent AbstractLib::getAllContent() {
 
 size_t AbstractLib::pack(const StringArray &names, bool verbose) {
   m_verbose = verbose;
-  return addFiles(names, NULL);
+  return addFiles(names, nullptr);
 }
 
 size_t AbstractLib::update(const StringArray &names, bool verbose) {
@@ -97,7 +97,7 @@ void AbstractLib::list(const TCHAR **argv, bool sorting) {
 }
 
 bool AbstractLib::checkIntegrity() {
-  prepareArgvPattern(NULL);
+  prepareArgvPattern(nullptr);
   Array<FileInfo> list;
   getInfoList(&list);
   return checkIntegrity(list);

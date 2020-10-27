@@ -61,7 +61,7 @@ public:
   }
 
   inline const TCHAR *getTranslateTable() const {
-    return m_ignoreCase ? String::upperCaseTranslate : NULL;
+    return m_ignoreCase ? String::upperCaseTranslate : nullptr;
   }
 
   inline bool operator==(const CompileParameters &cp) const {

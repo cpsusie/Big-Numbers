@@ -2,7 +2,7 @@
 
 class RulesDialog : public CDialog {
 public:
-    RulesDialog(CWnd *pParent = NULL);
+    RulesDialog(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_RULES_DIALOG };
 

@@ -244,7 +244,7 @@ int CDiffEquationEditArray::findEquationIndexByCtrlId(UINT id) const {
 
 CDiffEquationEdit *CDiffEquationEditArray::findEquationByCtrlId(UINT id) const {
   const int index = findEquationIndexByCtrlId(id);
-  return (index < 0) ? NULL : (*this)[index];
+  return (index < 0) ? nullptr : (*this)[index];
 }
 
 void CDiffEquationEditArray::addEquation(CWnd *wnd, CFont &font) {

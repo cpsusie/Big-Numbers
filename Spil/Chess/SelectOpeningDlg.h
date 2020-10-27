@@ -6,7 +6,7 @@ private:
     int               m_selectedIndex;
 
 public:
-    CSelectOpeningDlg(const StringArray &names, CWnd *pParent = NULL);
+    CSelectOpeningDlg(const StringArray &names, CWnd *pParent = nullptr);
     const TCHAR *getSelectedName() const;
     int getSelectedIndex() const {
       return m_selectedIndex;

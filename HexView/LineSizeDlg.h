@@ -7,7 +7,7 @@ private:
   void enableLineSize();
   void gotoLineSize();
 public:
-  CLineSizeDlg(CWnd *pParent = NULL);
+  CLineSizeDlg(CWnd *pParent = nullptr);
 
   enum { IDD = IDD_DIALOGLINESIZE };
   UINT  m_lineSize;

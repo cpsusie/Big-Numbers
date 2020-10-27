@@ -17,7 +17,7 @@ static void usage() {
 
 int main(int argc,char **argv) {
   char *cp;
-  Polynomial *poly = NULL;
+  Polynomial *poly = nullptr;
   Real        eps                 = 1e-15;
   bool        verbose             = false;
   bool        displayCoefficients = false;
@@ -27,7 +27,7 @@ int main(int argc,char **argv) {
     for(cp++;*cp;cp++) {
       switch(*cp) {
       case 'e':
-        eps = strtor(cp + 1, NULL);
+        eps = strtor(cp + 1, nullptr);
         if(errno != 0) usage();
         if(eps <= 0) {
           tcerr << _T("Eps must be > 0. (=") << eps << _T(").") << endl;
@@ -71,7 +71,7 @@ int main(int argc,char **argv) {
     }
   }
 
-  if(poly == NULL) {
+  if(poly == nullptr) {
     _ftprintf(stderr, _T("No coefficients specified\n"));
     usage();
   }

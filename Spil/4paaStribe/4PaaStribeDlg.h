@@ -4,7 +4,7 @@
 
 class C4PaaStribeDlg : public CDialog {
 public:
-    C4PaaStribeDlg(CWnd *pParent = NULL);
+    C4PaaStribeDlg(CWnd *pParent = nullptr);
     CRect getHoleRect(int r, int c);
     void paintFieldValues();
     void paintHole(int r, int c, COLORREF color);

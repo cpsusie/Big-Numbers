@@ -13,7 +13,7 @@ BEGIN_MESSAGE_MAP(CCaptureView, CScrollView)
 END_MESSAGE_MAP()
 
 CCaptureView::CCaptureView() {
-  m_printInfo = NULL;
+  m_printInfo = nullptr;
 }
 
 CCaptureView::~CCaptureView() {
@@ -78,7 +78,7 @@ void CCaptureView::OnBeginPrinting(CDC *pDC, CPrintInfo *pInfo) {
 }
 
 void CCaptureView::OnEndPrinting(CDC *pDC, CPrintInfo *pInfo) {
-  m_printInfo = NULL;
+  m_printInfo = nullptr;
 }
 
 #if defined(_DEBUG)

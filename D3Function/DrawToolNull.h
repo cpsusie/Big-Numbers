@@ -5,7 +5,7 @@
 class DrawToolNull : public DrawTool {
 public:
   DrawToolNull()
-    : DrawTool(NULL)
+    : DrawTool(nullptr)
   {
   }
 };

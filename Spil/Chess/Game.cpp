@@ -90,7 +90,7 @@ void Game::allocateMemory(int stackCapacity) {
   m_setupMode   = false;
 
 #if defined(TABLEBASE_BUILDER)
-  m_keydef                      = NULL;
+  m_keydef                      = nullptr;
   m_swapPlayers                 = false;
   m_generateFictivePawnCaptures = false;
 #else
@@ -169,7 +169,7 @@ Game &Game::setGameAfterPly(const GameKey &startKey, const GameHistory &history,
 }
 
 Piece *Game::getPiecePointer(const Game &src, const Piece *piece) {
-  return piece ? m_playerState[piece->getPlayer()].m_pieces[piece->m_index] : NULL;
+  return piece ? m_playerState[piece->getPlayer()].m_pieces[piece->m_index] : nullptr;
 }
 
 GameUpdateFunction Game::getMoveFunction(PieceType pieceType) { // static
@@ -181,7 +181,7 @@ GameUpdateFunction Game::getMoveFunction(PieceType pieceType) { // static
   case Knight : return &updateGameMoveKnight;
   case Pawn   : return &updateGameMovePawn;
   default     : throwInvalidArgumentException(__TFUNCTION__, _T("pieceType=%d"), pieceType);
-                return NULL;
+                return nullptr;
   }
 }
 
@@ -195,7 +195,7 @@ GameUpdateFunction Game::getBackMoveFunction(PieceType pieceType) { // static
   case Knight : return &updateGameBackMoveKnight;
   case Pawn   : return &updateGameBackMovePawn;
   default     : throwInvalidArgumentException(__TFUNCTION__, _T("pieceType=%d"), pieceType);
-                return NULL;
+                return nullptr;
   }
 }
 #endif
@@ -209,7 +209,7 @@ GameUpdateFunction Game::getCaptureFunction(PieceType pieceType) { // static
   case Knight : return &updateGameCaptureKnight;
   case Pawn   : return &updateGameCapturePawn;
   default     : throwInvalidArgumentException(__TFUNCTION__, _T("pieceType=%d"), pieceType);
-                return NULL;
+                return nullptr;
   }
 }
 
@@ -224,7 +224,7 @@ const String Game::getDisplayName() const {
 
 const Piece *Game::findFirstPieceInDirection(int pos, MoveDirection dir) const {
   switch(dir) {
-  case MD_NONE      : return NULL;
+  case MD_NONE      : return nullptr;
   case MD_LEFT      : return findFirstPieceInDirection(s_fieldInfo[pos].m_rowLine.m_lower  );
   case MD_RIGHT     : return findFirstPieceInDirection(s_fieldInfo[pos].m_rowLine.m_upper  );
   case MD_DOWN      : return findFirstPieceInDirection(s_fieldInfo[pos].m_colLine.m_lower  );
@@ -234,13 +234,13 @@ const Piece *Game::findFirstPieceInDirection(int pos, MoveDirection dir) const {
   case MD_DOWNDIAG2 : return findFirstPieceInDirection(s_fieldInfo[pos].m_diag2Line.m_lower);
   case MD_UPDIAG2   : return findFirstPieceInDirection(s_fieldInfo[pos].m_diag2Line.m_upper);
   default           : throwInvalidArgumentException(__TFUNCTION__, _T("dir=%d"), dir);
-                      return NULL;
+                      return nullptr;
   }
 }
 
 const Piece *Game::findFirstPieceInDirection(PositionArray dir) const {
-  if(dir == NULL) {
-    return NULL;
+  if(dir == nullptr) {
+    return nullptr;
   }
   for(int count = *(dir++); count--;) {
     const Piece *p = m_board[*(dir++)];
@@ -248,7 +248,7 @@ const Piece *Game::findFirstPieceInDirection(PositionArray dir) const {
       return p;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 #if !defined(TABLEBASE_BUILDER)
@@ -358,7 +358,7 @@ void Game::undoLongCastling() {
 
 void Game::undoEnpassant(const Move &m) {
   m_board[m.m_piece->m_position = m.m_from] = m.m_piece;
-  m_board[m.m_to]                           = NULL;
+  m_board[m.m_to]                           = nullptr;
   m_board[m.m_capturedPiece->m_position]    = m.m_capturedPiece;
   m.m_capturedPiece->m_onBoard              = true;
 }
@@ -406,7 +406,7 @@ void Game::unTryBackMove() {
   const GameStackElement &top = restoreState();
   Piece *piece = top.m_piece;
   m_board[piece->m_position = top.m_to] = piece;
-  m_board[top.m_from] = NULL;
+  m_board[top.m_from] = nullptr;
 }
 #endif
 

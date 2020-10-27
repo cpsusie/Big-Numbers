@@ -96,7 +96,7 @@ private:
   void ajourDialogItems();
   void callNotepad(const String &s);
   inline bool hasDebugger() const {
-    return m_debugger != NULL;
+    return m_debugger != nullptr;
   }
   inline bool isDebuggerState(DebuggerState state) const {
     return hasDebugger() && (m_debugger->getState() == state);
@@ -113,15 +113,15 @@ private:
   void                               setContextRect(  int winId, const ExpressionRectangle *rect, const ExpressionRectangle *leastRect);
   void                               clearContextWindow();
   inline bool                        hasContextWindow()          const { return getContextWindowId() != -1; }
-  inline bool                        hasContextImage()                 { return getContextImage() != NULL;  }
-  inline bool                        hasContextRect()            const { return m_contextRect     != NULL;  }
+  inline bool                        hasContextImage()                 { return getContextImage() != nullptr;  }
+  inline bool                        hasContextRect()            const { return m_contextRect     != nullptr;  }
   inline int                         getContextWindowId()        const { return m_contextWinId;             }
-  inline bool                        hasContextNode()            const { return getContextNode()  != NULL;  }
+  inline bool                        hasContextNode()            const { return getContextNode()  != nullptr;  }
                Expression           *getContextExpression();
                ExpressionImage      *getContextImage();
   inline const ExpressionRectangle  *getContextRect()            const { return m_contextRect;              }
-  inline       ExpressionNode       *getContextNode()            const { return hasContextRect() ? m_contextRect->getNode() : NULL; }
-  inline       String                getContextNodeName()        const { return hasContextNode() ? getContextNode()->getSymbolName()  : _T("NULL"); }
+  inline       ExpressionNode       *getContextNode()            const { return hasContextRect() ? m_contextRect->getNode() : nullptr; }
+  inline       String                getContextNodeName()        const { return hasContextNode() ? getContextNode()->getSymbolName()  : _T("nullptr"); }
   inline       bool                  isContextNodeExpandable()   const { return hasContextNode() ? getContextNode()->isExpandable()   : false; }
   inline       bool                  isContextNodeMultiplyable() const { return hasContextNode() ? getContextNode()->isMultiplyable() : false; }
   void                               updateContextWinImage();
@@ -131,7 +131,7 @@ private:
   static void startViewPhoto(const String &dir, const String &fileName);
 
 public:
-  CTestExpressionGraphicsDlg(CWnd *pParent = NULL);
+  CTestExpressionGraphicsDlg(CWnd *pParent = nullptr);
  ~CTestExpressionGraphicsDlg();
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
   enum { IDD = IDD_TESTEXPRESSIONGRAPHICS_DIALOG };

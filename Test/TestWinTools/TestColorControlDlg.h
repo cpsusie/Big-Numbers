@@ -8,7 +8,7 @@ private:
   SimpleLayoutManager m_layoutManager;
   bool                m_pickingColor;
 public:
-    CTestColorControlDlg(CWnd *pParent = NULL);
+    CTestColorControlDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_TESTCOLORCONTROL_DIALOG };
     CString m_caption;

@@ -46,7 +46,7 @@ public:
     return m_flags & SPLFMASK_CHILDCOUNT;
   }
   // Expect this contains 2 child-windows (either 2x1 or 1x2)
-  // Return NULL if wnd is not one of them
+  // Return nullptr if wnd is not one of them
   CWnd *findNeighbor(CWnd *wnd) const;
 };
 

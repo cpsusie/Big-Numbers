@@ -37,7 +37,7 @@ typedef enum {
   ,CODETIME                   /* push(Time((top-2),(top-1),top))                               */
   ,CODETIMESTAMP              /*3push(Timestamp((top-5),(top-4),(top-3),(top-2),(top-1),top))  */
   ,CODECAST                   /* top = cast(CastParameter(adr))top                             */
-  ,CODEPUSHNULL               /* push(NULL)                                                    */
+  ,CODEPUSHNULL               /* push(nullptr)                                                    */
   ,CODEPUSHCURRENTDATE        /* push currentdate                                              */
   ,CODEPUSHCURRENTTIME        /* push currenttime                                              */
   ,CODEPUSHCURRENTTIMESTAMP   /* push currenttimestamp                                         */

@@ -68,7 +68,7 @@ namespace TestCompactHashMap {
         const size_t   index = randSizet(list.size());
         MapEntry<K,V> &a     = list[index];
         const V       *e     = map.get(a.m_key);
-        verify( e != NULL);
+        verify( e != nullptr);
         verify(*e == a.m_value);
         verify( map.remove(a.m_key));
         list.remove(index);
@@ -109,7 +109,7 @@ namespace TestCompactHashMap {
     for(size_t i = 0; i < list.size(); i++) {
       const MapEntry<K,V> &e = list[i];
       const V *v = map.get(e.m_key);
-      verify(v != NULL);
+      verify(v != nullptr);
       verify(*v == e.m_value);
     }
 
@@ -171,7 +171,7 @@ namespace TestCompactHashMap {
       const Entry<K,V> &e     = it.next();
       const K          &key   = e.getKey();
       const V          *value = map2.get(key);
-      verify(value != NULL);
+      verify(value != nullptr);
       verify(*value == e.getValue());
       count++;
     }

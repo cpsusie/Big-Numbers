@@ -7,7 +7,7 @@ private:
   HICON         m_hIcon;
   LexFileStream m_stream;
 public:
-  CTestLexStreamDlg(CWnd *pParent = NULL);
+  CTestLexStreamDlg(CWnd *pParent = nullptr);
 
     enum { IDD = IDD_TESTLEXSTREAM_DIALOG };
     UINT      m_count;

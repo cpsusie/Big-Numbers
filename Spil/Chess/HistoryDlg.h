@@ -29,7 +29,7 @@ private:
   }
 
 public:
-  CHistoryDlg(Game &game, CWnd *pParent = NULL);
+  CHistoryDlg(Game &game, CWnd *pParent = nullptr);
 
   bool isChanged() const;
   MoveAnnotation getAnnotation(int ply) const {

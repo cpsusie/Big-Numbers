@@ -56,7 +56,7 @@ LPTSTR      GetLastErrorText(LPTSTR lpszBuf, DWORD dwSize);
 void main(int argc, char **argv) {
   SERVICE_TABLE_ENTRY dispatchTable[] = {
     { TEXT(SZSERVICENAME), (LPSERVICE_MAIN_FUNCTION)serviceMain },
-    { NULL, NULL }
+    { nullptr, nullptr }
   };
 
   if((argc > 1) && ((*argv[1] == '-') || (*argv[1] == '/'))) {
@@ -210,22 +210,22 @@ void AddToMessageLog(LPTSTR lpszMsg) {
     dwErr = GetLastError();
 
     // Use event logging to log the error.
-    hEventSource = RegisterEventSource(NULL, TEXT(SZSERVICENAME));
+    hEventSource = RegisterEventSource(nullptr, TEXT(SZSERVICENAME));
 
     _stprintf(szMsg, _T("%s error: %d"), TEXT(SZSERVICENAME), dwErr);
     lpszStrings[0] = szMsg;
     lpszStrings[1] = lpszMsg;
 
-    if(hEventSource != NULL) {
+    if(hEventSource != nullptr) {
       ReportEvent(hEventSource              // handle of event source
                  ,EVENTLOG_ERROR_TYPE       // event type
                  ,0                         // event category
                  ,0                         // event ID
-                 ,NULL                      // current user's SID
+                 ,nullptr                      // current user's SID
                  ,2                         // strings in lpszStrings
                  ,0                         // no bytes of raw data
                  ,(LPCWSTR*)lpszStrings     // Array of error strings
-                 ,NULL);                    // no raw data
+                 ,nullptr);                    // no raw data
 
       DeregisterEventSource(hEventSource);
     }
@@ -241,13 +241,13 @@ void CmdInstallService() {
   SC_HANDLE schSCManager;
   TCHAR     szPath[512];
 
-  if(GetModuleFileName( NULL, szPath, 512 ) == 0) {
+  if(GetModuleFileName( nullptr, szPath, 512 ) == 0) {
     _tprintf(TEXT("Unable to install %s - %s\n"), TEXT(SZSERVICEDISPLAYNAME), GetLastErrorText(szErr, 256));
     return;
   }
 
-  schSCManager = OpenSCManager(NULL                   // machine (NULL == local)
-                              ,NULL                   // database (NULL == default)
+  schSCManager = OpenSCManager(nullptr                   // machine (nullptr == local)
+                              ,nullptr                   // database (nullptr == default)
                               ,SC_MANAGER_ALL_ACCESS  // access required
                               );
   if(!schSCManager) {
@@ -261,11 +261,11 @@ void CmdInstallService() {
                               ,SERVICE_DEMAND_START       // start type
                               ,SERVICE_ERROR_NORMAL       // error control type
                               ,szPath                     // service's binary
-                              ,NULL                       // no load ordering group
-                              ,NULL                       // no tag identifier
+                              ,nullptr                       // no load ordering group
+                              ,nullptr                       // no tag identifier
                               ,TEXT(SZDEPENDENCIES)       // dependencies
-                              ,NULL                       // LocalSystem account
-                              ,NULL);                     // no password
+                              ,nullptr                       // LocalSystem account
+                              ,nullptr);                     // no password
 
     if(!schService) {
       _tprintf(TEXT("CreateService failed - %s\n"), GetLastErrorText(szErr, 256));
@@ -283,8 +283,8 @@ void CmdRemoveService() {
   SC_HANDLE schService;
   SC_HANDLE schSCManager;
 
-  schSCManager = OpenSCManager(NULL                    // machine (NULL == local)
-                              ,NULL                    // database (NULL == default)
+  schSCManager = OpenSCManager(nullptr                    // machine (nullptr == local)
+                              ,nullptr                    // database (nullptr == default)
                               ,SC_MANAGER_ALL_ACCESS   // access required
                               );
   if(!schSCManager) {
@@ -381,17 +381,17 @@ BOOL WINAPI ControlHandler(DWORD dwCtrlType) {
 //    destination buffer
 LPTSTR GetLastErrorText(LPTSTR lpszBuf, DWORD dwSize) {
   DWORD  dwRet;
-  LPTSTR lpszTemp = NULL;
+  LPTSTR lpszTemp = nullptr;
 
   dwRet = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER
                       | FORMAT_MESSAGE_FROM_SYSTEM
                       | FORMAT_MESSAGE_ARGUMENT_ARRAY
-                       ,NULL
+                       ,nullptr
                        ,GetLastError()
                        ,LANG_NEUTRAL
                        ,(LPTSTR)&lpszTemp
                        ,0
-                       ,NULL );
+                       ,nullptr );
 
   // supplied buffer is not long enough
   if( !dwRet || ( (long)dwSize < (long)dwRet+14 ) ) {

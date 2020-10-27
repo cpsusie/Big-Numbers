@@ -13,7 +13,7 @@ private:
   void enableLayoutMenues();
   void showLayout();
 public:
-    CRunLayoutManagerDlg(int windowFlags, int list1Flags, int list2Flags, int buttonFlags, CWnd *pParent = NULL);
+    CRunLayoutManagerDlg(int windowFlags, int list1Flags, int list2Flags, int buttonFlags, CWnd *pParent = nullptr);
 
     enum { IDD = IDD_RUNTLAYOUTMANAGER_DIALOG };
 

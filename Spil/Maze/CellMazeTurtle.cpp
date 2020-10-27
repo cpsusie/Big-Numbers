@@ -31,5 +31,5 @@ void CellMazeTurtle::walkBack() {
 bool CellMazeTurtle::lookingAtDoor() const {
   const MazeCell *cell = m_cellStack.top();
   const int       dir  = getCurrentDirection();
-  return !cell->getWall(dir)->isVisible() && (cell->getNeighbor(dir) != NULL);
+  return !cell->getWall(dir)->isVisible() && (cell->getNeighbor(dir) != nullptr);
 }

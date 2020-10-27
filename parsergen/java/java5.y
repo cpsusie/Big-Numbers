@@ -29,11 +29,11 @@ private:
   }
 
   int *getStackTop(int fromtop) {
-    return NULL;
+    return nullptr;
   }
   String m_fileName;
 public:
-  Java5Parser(const TCHAR *fileName, Scanner *lex=NULL, UINT stacksize = 1000) : LRparser(*Java5Tables,lex,stacksize) {
+  Java5Parser(const TCHAR *fileName, Scanner *lex=nullptr, UINT stacksize = 1000) : LRparser(*Java5Tables,lex,stacksize) {
     m_fileName = fileName;
   }
   ~Java5Parser() override {

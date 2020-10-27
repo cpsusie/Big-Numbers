@@ -24,7 +24,7 @@ END_MESSAGE_MAP()
 void CDebugTextWindow::substituteControl(CWnd *parent, int id) {
   DEFINEMETHODNAME;
   CListBox *oldCtrl = (CListBox*)parent->GetDlgItem(id);
-  if(oldCtrl == NULL) {
+  if(oldCtrl == nullptr) {
     showError(_T("%s:Control with id=%d does not exist"), method,id);
     return;
   }
@@ -38,7 +38,7 @@ void CDebugTextWindow::substituteControl(CWnd *parent, int id) {
   const DWORD exStyle = oldCtrl->GetExStyle();
 
   CFont *font = oldCtrl->GetFont();
-  if(font == NULL) {
+  if(font == nullptr) {
     font = parent->GetFont();
   }
 
@@ -205,7 +205,7 @@ void CDebugTextWindow::redrawItem(UINT index) {
   GetItemRect(index, &ir);
   CRect r2;
   if(r2.IntersectRect(&cr, &ir)) {
-    RedrawWindow(&ir); // , NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE | RDW_FRAME);
+    RedrawWindow(&ir); // , nullptr, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE | RDW_FRAME);
   }
 }
 
@@ -247,7 +247,7 @@ void CDebugTextWindow::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) {
                         || (index == m_lastAcceptLine)
                         || m_breakPoints.contains(index))) {
       CDC tmpDC;
-      tmpDC.CreateCompatibleDC(NULL);
+      tmpDC.CreateCompatibleDC(nullptr);
 
       if(index == m_currentLine) {
         CBitmap  *oldBitmap = tmpDC.SelectObject(&m_lineMarkBitmap);

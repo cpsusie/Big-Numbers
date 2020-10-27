@@ -53,7 +53,7 @@ public:
   }
 
   bool isOpen() const {
-    return m_file != NULL;
+    return m_file != nullptr;
   }
 
   const String &getFileName() const {

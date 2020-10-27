@@ -24,7 +24,7 @@ static char *blob3      = "s1=1/max(sqr(x+1)+sqr(y  )+sqr(z  ),0.00001);"
 
 */
 
-CIsoSurfaceParametersDlg::CIsoSurfaceParametersDlg(const ExprIsoSurfaceParameters &param, AbstractTextureFactory &atf, CWnd *pParent /*=NULL*/)
+CIsoSurfaceParametersDlg::CIsoSurfaceParametersDlg(const ExprIsoSurfaceParameters &param, AbstractTextureFactory &atf, CWnd *pParent /*=nullptr*/)
 : SaveLoadExprWithCommonParametersDlg(IDD, pParent, param, atf, _T("implicit surface"), _T("imp"))
 {
   m_debugPolygonizer = false;

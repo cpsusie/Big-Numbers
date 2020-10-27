@@ -287,7 +287,7 @@ void DecideGameTrainingSet::save() {
 
 Array<DecideGameTrainingSet> DecideGameTrainingSet::loadTrainingData() { // static
   Array<DecideGameTrainingSet> result;
-  FILE *f = NULL;
+  FILE *f = nullptr;
   try {
     f = FOPEN(getFileName(),_T("r"));
     String line;
@@ -295,14 +295,14 @@ Array<DecideGameTrainingSet> DecideGameTrainingSet::loadTrainingData() { // stat
       result.add(DecideGameTrainingSet(line));
     }
     fclose(f);
-    f = NULL;
+    f = nullptr;
     if(result.size() == 0) {
       throwException(_T("No trainingdata."));
     }
   } catch(...) {
-    if(f != NULL) {
+    if(f != nullptr) {
       fclose(f);
-      f = NULL;
+      f = nullptr;
     }
     throw;
   }

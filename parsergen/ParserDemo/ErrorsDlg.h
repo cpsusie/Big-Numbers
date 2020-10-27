@@ -5,7 +5,7 @@ private:
   UINT   m_maxErrorCount;
   UINT   m_cascadeCount;
 public:
-  ErrorsDlg(int maxErrorCount, int cascadeCount, CWnd *pParent = NULL);
+  ErrorsDlg(int maxErrorCount, int cascadeCount, CWnd *pParent = nullptr);
 
   enum { IDD = IDD_DIALOGERRORS };
 

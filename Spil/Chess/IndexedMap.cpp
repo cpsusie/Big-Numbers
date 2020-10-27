@@ -347,7 +347,7 @@ double EndGameEntryIterator::getMilliSecondsUsed() const {
 void EndGameEntryIterator::setLog(bool log) {
   if(m_logFile) {
     fclose(m_logFile);
-    m_logFile = NULL;
+    m_logFile = nullptr;
   }
   if(log) {
     const String name = getTempFileName(format(_T("iterator%s.log"), Timestamp().toString(_T("yyyyMMddhhmmss")).cstr()));

@@ -64,8 +64,8 @@ int main(int argc, char **argv) {
     switch(command) {
     case COMPRESSFILES:
       { gzFile lib = gzopen(libNameA, "wb");
-        if(lib == NULL) {
-          if(errno == NULL) {
+        if(lib == nullptr) {
+          if(errno == nullptr) {
             throwException(_T("Out of memory"));
           } else {
             throwErrNoOnSysCallException(libName.cstr());
@@ -89,8 +89,8 @@ int main(int argc, char **argv) {
       break;
     case DECOMPRESSFILES:
       { gzFile lib = gzopen(libNameA, "rb");
-        if(lib == NULL) {
-          if(errno == NULL) {
+        if(lib == nullptr) {
+          if(errno == nullptr) {
             throwException("out of memory");
           } else {
             throwErrNoOnSysCallException(libName.cstr());

@@ -444,7 +444,7 @@ public:
                                ,PositionArray attackingBlackPawnPositions);
 #endif
 
-// Each PositionArray in the argumentlist to the constructor can be NULL, if no elements in the given direction.
+// Each PositionArray in the argumentlist to the constructor can be nullptr, if no elements in the given direction.
   FieldInfo(int           pos
            ,const TCHAR   *name
            ,PositionArray leftRow
@@ -1421,14 +1421,14 @@ public:
   String toString() const;
   Game &newGame(const String &name = EMPTYSTRING);
   Game &clearBoard();
-  void initState(bool validate=false, const GameKey *key=NULL);
+  void initState(bool validate=false, const GameKey *key=nullptr);
   inline Game &beginSetup() {                // return *this
     checkSetupMode(false);
     m_setupMode = true;
     return *this;
   }
 
-  Game &endSetup(const GameKey *key = NULL); // return *this
+  Game &endSetup(const GameKey *key = nullptr); // return *this
   inline bool isSetupMode() const {
     return m_setupMode;
   }
@@ -1709,7 +1709,7 @@ String secondsToString(double msec, bool showMilliSeconds=true);
 #define UPDATE_BLACKPAWNATTACKS(     fieldInfo, delta) UPDATE_SDA(BLACKPLAYER , fieldInfo.m_blackPawnAttacks, delta)
 
 #define SET_EMPTYFIELD(pos)                           \
-{ m_board[pos]                   = NULL;              \
+{ m_board[pos]                   = nullptr;              \
   m_gameKey.m_pieceKey[pos]      = EMPTYPIECEKEY;     \
 }
 
@@ -1720,7 +1720,7 @@ String secondsToString(double msec, bool showMilliSeconds=true);
 
 #define MOVEPIECE_NOUPDATEKEY(from, to)               \
 { Piece *piece                   = m_board[from];     \
-  m_board[from]                  = NULL;              \
+  m_board[from]                  = nullptr;              \
   m_board[piece->m_position=to]  = piece;             \
 }
 

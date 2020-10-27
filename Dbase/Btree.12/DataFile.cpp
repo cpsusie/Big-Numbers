@@ -34,7 +34,7 @@ void DataFile::create(const String &name) {
   header.init();
 
   DbFile::create(name);
-  DbFile file(name, DBFMODE_READWRITE, NULL);
+  DbFile file(name, DBFMODE_READWRITE, nullptr);
 
   try {
     file.write(0,&header, sizeof(header));

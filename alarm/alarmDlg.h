@@ -10,7 +10,7 @@
 
 class CAlarmDlg : public CDialog {
 public:
-  CAlarmDlg(CWnd *pParent = NULL);
+  CAlarmDlg(CWnd *pParent = nullptr);
 private:
   HICON     m_hIcon;
   CString   m_soundFileName;

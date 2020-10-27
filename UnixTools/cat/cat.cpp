@@ -27,7 +27,7 @@ FileCat::FileCat(FILE *output, bool verbose)
 {
   m_output  = output;
   m_oldmode = setFileMode(m_output, _O_BINARY);
-  setvbuf(m_output,NULL,_IOFBF,BUFSIZE);
+  setvbuf(m_output,nullptr,_IOFBF,BUFSIZE);
   m_buffer = new char[BUFSIZE];
 }
 
@@ -40,7 +40,7 @@ FileCat::~FileCat() {
 void FileCat::cat(const TCHAR *fname) {
   FILE *input = FOPEN(fname, _T("rb"));
   try {
-    setvbuf(input,NULL,_IOFBF,BUFSIZE);
+    setvbuf(input,nullptr,_IOFBF,BUFSIZE);
     if(m_verbose) {
       _ftprintf(stderr, _T("%-*.*s\r"), m_screenWidth, m_screenWidth, fname);
     }

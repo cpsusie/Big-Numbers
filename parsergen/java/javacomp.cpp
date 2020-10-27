@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
 
   TestJavaParser test(testLex);
   if(recurse) {
-    TCHAR *argv[] = { _T("*.java"), NULL };
+    TCHAR *argv[] = { _T("*.java"), nullptr };
     FileTreeWalker::walkFileTree(dir,test,argv);
   } else {
     argvExpand(argc, argv);

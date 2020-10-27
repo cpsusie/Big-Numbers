@@ -871,7 +871,7 @@ static int nameOrKeyWord(TCHAR *lexeme) {
 }
 
 void CppLex::verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) {
-  if(m_parser==NULL) {
+  if(m_parser==nullptr) {
     Scanner::verror(pos, format, argptr);
   } else {
     m_parser->verror(pos, format, argptr);

@@ -9,8 +9,8 @@ bool Database::searchDbName(const String &dbName, SysTableDbData &dbdef) {
     return false;
   }
 
-  DataFile dataFile(  SYSTEM_DBDATA_FNAME, DBFMODE_READONLY, NULL);
-  KeyFile  indexFile( SYSTEM_DBKEY_FNAME,  DBFMODE_READONLY, NULL);
+  DataFile dataFile(  SYSTEM_DBDATA_FNAME, DBFMODE_READONLY, nullptr);
+  KeyFile  indexFile( SYSTEM_DBKEY_FNAME,  DBFMODE_READONLY, nullptr);
   KeyType  key;
 
   KeyFileDefinition keydef(indexFile);

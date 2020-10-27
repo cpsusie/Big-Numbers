@@ -25,7 +25,7 @@ void FileToucher::touch(const TCHAR *name) {
   }
 }
 
-static void usage(const char *cp = NULL) {
+static void usage(const char *cp = nullptr) {
   if(cp) {
     fprintf(stderr,"Invalid argument:%s\n", cp);
   }
@@ -63,7 +63,7 @@ int main(int argc, const char **argv) {
       }
     }
 
-    if(*argv == NULL) {
+    if(*argv == nullptr) {
       usage();
     }
     FileTreeWalker::traverseArgv(argv, FileToucher(touchTime), recurse);

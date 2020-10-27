@@ -9,7 +9,7 @@ private:
 
   void setCurrentFont(CFont *newfont);
 public:
-  CAsciiwDlg(CWnd *pParent = NULL);
+  CAsciiwDlg(CWnd *pParent = nullptr);
 
   enum { IDD = IDD_ASCIIW_DIALOG };
 

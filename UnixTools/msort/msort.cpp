@@ -53,7 +53,7 @@ static int numericCompare(const TCHAR *s1, const TCHAR *s2) {
   return (d2 > d1) ? -1 : (d2 < d1) ? 1 : 0;
 }
 
-static BalancedFileSort *bfsp = NULL;
+static BalancedFileSort *bfsp = nullptr;
 
 static void interruptHandler(int s) {
   if(bfsp && bfsp->isVerbose()) {
@@ -108,8 +108,8 @@ int main(int argc, char **argv) {
     if(isatty(inputFile)) {
       usage();
     }
-    setvbuf(inputFile,NULL,_IOFBF,BUF_SIZE);
-    setvbuf(stdout,NULL,_IOFBF,BUF_SIZE);
+    setvbuf(inputFile,nullptr,_IOFBF,BUF_SIZE);
+    setvbuf(stdout,nullptr,_IOFBF,BUF_SIZE);
     bfsp = new BalancedFileSort(*currentComparator,verbose); TRACE_NEW(bfsp);
     signal(SIGINT,interruptHandler);
     bfsp->sort(inputFile,stdout);

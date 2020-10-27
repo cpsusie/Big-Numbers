@@ -49,15 +49,15 @@ int main(int argc, char **argv) {
   try {
     FILE *input = FOPEN(inputFileName,"r");
     TCHAR line[10000];
-    FILE *output = NULL;
+    FILE *output = nullptr;
     UINT fileCount = 0;
     UINT lineCount = 0;
-    while(FGETS(line, ARRAYSIZE(line), input) != NULL) {
+    while(FGETS(line, ARRAYSIZE(line), input) != nullptr) {
       lineCount++;
-      if(output == NULL || lineCount >= maxLines) {
-        if(output != NULL) {
+      if(output == nullptr || lineCount >= maxLines) {
+        if(output != nullptr) {
           fclose(output);
-          output = NULL;
+          output = nullptr;
         }
         String outputFileName = info.setFileName(format(_T("%s%03d"),fileName.cstr(), ++fileCount)).getFullPath();
         if(verbose) {

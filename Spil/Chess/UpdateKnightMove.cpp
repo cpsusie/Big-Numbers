@@ -4,7 +4,7 @@ void Game::updateGameMoveKnight(const Move &m) {
   Piece       *piece = m.m_piece;
   PlayerState &state = piece->m_playerState;
 
-  if(m.m_capturedPiece == NULL) {
+  if(m.m_capturedPiece == nullptr) {
     knightLeaveField(m);
     SET_PIECE(m.m_to, piece);
     setNonCapturingKnight(m);

@@ -227,7 +227,7 @@ FunctionFitter::FunctionFitter(const String &expr, const Point2DArray &data) : m
   if(!isOk()) {
     return;
   }
-  m_x = NULL;
+  m_x = nullptr;
   const ExpressionVariableArray va = getSymbolTable().getAllVariables();
   for(size_t i = 0; i < va.size(); i++) {
     const ExpressionVariableWithValue &v = va[i];

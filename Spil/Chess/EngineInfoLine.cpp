@@ -61,7 +61,7 @@ EngineInfoLine &EngineInfoLine::operator+=(Tokenizer &tok) {
 
   while(tok.hasNext()) {
     EngineInfoField *field = keywords.get(tok.next().cstr());
-    if(field == NULL) {
+    if(field == nullptr) {
       continue;
     }
     switch(*field) {

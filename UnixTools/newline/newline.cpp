@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
   int count = 1;
 
   argv++;
-  if(*argv != NULL) {
+  if(*argv != nullptr) {
     if(sscanf(*argv,"%u",&count) != 1) {
       usage();
     }

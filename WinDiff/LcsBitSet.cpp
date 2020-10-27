@@ -3,9 +3,9 @@
 #include "LcsBitSet.h"
 
 LcsBitSet::LcsBitSet(const LineArray &a, const LineArray &b, LcsComparator &cmp)
-: Lcs(cmp, NULL)
+: Lcs(cmp, nullptr)
 {
-  m_X = m_Y = NULL;
+  m_X = m_Y = nullptr;
   init(a, b);
 }
 
@@ -51,8 +51,8 @@ void LcsBitSet::init1(const LineArray &a, const LineArray &b) { // assume b.size
 
   m_X = new UINT[m_m+1]; TRACE_NEW(m_X);
   m_Y = new UINT[m_n+1]; TRACE_NEW(m_Y);
-  LcsElement *lastA = NULL;
-  LcsElement *lastB = NULL;
+  LcsElement *lastA = nullptr;
+  LcsElement *lastB = nullptr;
 
 #define samesymbol(e) ((lastA && e.m_s == lastA->m_s) || (lastB && e.m_s == lastB->m_s))
 
@@ -240,7 +240,7 @@ void LcsBitSet::findLcs(ElementPairArray &result) {
     }
   }
   CompactArray<Link*> pairs;
-  for(Link *ptr = m_link[k]; ptr != NULL; ptr = ptr->m_next) {
+  for(Link *ptr = m_link[k]; ptr != nullptr; ptr = ptr->m_next) {
     pairs.add(ptr);
   }
 

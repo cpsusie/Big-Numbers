@@ -77,7 +77,7 @@ SocketChannel &SocketChannel::operator=(const SocketChannel &src) {
 
 void SocketChannel::clear() {
   release();
-  m_socketPair = NULL;
+  m_socketPair = nullptr;
 }
 
 void SocketChannel::addref() {

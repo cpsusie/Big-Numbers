@@ -16,7 +16,7 @@ void AllManualPositions::load() {
   clear();
 
   const String fileName  = getFileName();
-  FILE        *f         = NULL;
+  FILE        *f         = nullptr;
   int          lineCount = 0;
   try {
     if(ACCESS(fileName,0) == 0) {
@@ -28,11 +28,11 @@ void AllManualPositions::load() {
         get(name).load(f, lineCount);
       }
       fclose(f);
-      f = NULL;
+      f = nullptr;
     }
   } catch(Exception e) {
     verbose(_T("Error in line %s line %d:%s\n"), fileName.cstr(), lineCount, e.what());
-    if(f != NULL) {
+    if(f != nullptr) {
       fclose(f);
     }
     throw e;
@@ -115,9 +115,9 @@ static int endGameKeyComparator5Men(const EndGameKey &k1, const EndGameKey &k2) 
 typedef int (*EndGameKeyComparator)(const EndGameKey &k1, const EndGameKey &key2);
 
 static const EndGameKeyComparator comparators[] = {
-  NULL
- ,NULL
- ,NULL
+  nullptr
+ ,nullptr
+ ,nullptr
  ,endGameKeyComparator3Men
  ,endGameKeyComparator4Men
  ,endGameKeyComparator5Men
@@ -177,7 +177,7 @@ bool EndGameManualPositions::addKey(const EndGameKey &key) {
 void EndGameManualPositions::load() {
   const String fileName  = AllManualPositions::getFileName();
   const String name      = getName();
-  FILE        *f         = NULL;
+  FILE        *f         = nullptr;
   int          lineCount = 0;
 
   try {
@@ -196,7 +196,7 @@ void EndGameManualPositions::load() {
     }
   } catch(Exception e) {
     verbose(_T("Error in %s line %d while loading %s:%s\n"), fileName.cstr(), lineCount, name.cstr(), e.what());
-    if(f != NULL) {
+    if(f != nullptr) {
       fclose(f);
     }
     throw e;
@@ -227,7 +227,7 @@ EndGameKeyIterator EndGameManualPositions::getKeyIterator() {
 
 CompactArray<EndGameKey> EndGameManualPositions::readUndefinedKeysLog(const String &fileName) const {
   CompactArray<EndGameKey> result;
-  FILE *f = NULL;
+  FILE *f = nullptr;
   try {
     f = FOPEN(fileName, _T("r"));
     TCHAR line[1000];

@@ -33,7 +33,7 @@ private:
   CRect getWindowRect(int id);
 
 public:
-  CSelectGlyphDlg(const LOGFONT &logFont, CWnd *pParent = NULL);
+  CSelectGlyphDlg(const LOGFONT &logFont, CWnd *pParent = nullptr);
   ~CSelectGlyphDlg();
   const GlyphCurveData &getSelectedGlyphCurveData() const { return m_selectedGlyphCurveData; }
 

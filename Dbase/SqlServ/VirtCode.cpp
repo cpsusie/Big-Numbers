@@ -57,7 +57,7 @@ BYTE Instruction::s_insSizeTable[] = {
  ,1/* CODETIME            push(Time((top-2),(top-1),top))                              */
  ,1/*3CODETIMESTAMP       push(Timestamp((top-5),(top-4),(top-3),(top-2),(top-1),top))  */
  ,3/* CODECAST            top = cast(CastParameter(adr))top                                 */
- ,1/* CODEPUSHNULL        push(NULL)                                                    */
+ ,1/* CODEPUSHNULL        push(nullptr)                                                    */
  ,1/* CODEPUSHCURRENTDATE push currentdate                                              */
  ,1/* CODEPUSHCURRENTTIME push currenttime                                              */
  ,1/* CODEPUSHCURRENTTIMESTAMP push currenttimestamp                                    */

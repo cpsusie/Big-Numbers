@@ -6,8 +6,8 @@
 #endif
 
 CTestMouseDlg::CTestMouseDlg(CWnd *pParent) : CDialog(CTestMouseDlg::IDD, pParent) {
-  m_systemCursor  = NULL;
-  m_createdCursor = NULL;
+  m_systemCursor  = nullptr;
+  m_createdCursor = nullptr;
 }
 
 CTestMouseDlg::~CTestMouseDlg() {
@@ -66,7 +66,7 @@ BOOL CTestMouseDlg::OnInitDialog() {
       ::MessageBox("Error GetClassInfo:%s",getLastErrorText().cstr());
   if(::UnregisterClass(classname,theApp.m_hInstance) == 0)
       ::MessageBox("Error UnregisterClass(%s):%s",classname,getLastErrorText().cstr());
-  wc.hCursor = NULL;
+  wc.hCursor = nullptr;
   if(::RegisterClass(&wc) == 0)
     ::MessageBox("Error RegisterClass:%s",getLastErrorText().cstr());
   */
@@ -178,7 +178,7 @@ void CTestMouseDlg::OnClipCursor() {
 }
 
 void CTestMouseDlg::OnUnclipCursor() {
-  ClipCursor(NULL);
+  ClipCursor(nullptr);
 }
 
 void CTestMouseDlg::OnCreateCursor() {
@@ -194,7 +194,7 @@ void CTestMouseDlg::OnCreateCursor() {
 void CTestMouseDlg::releaseCreatedCursor() {
   if(m_createdCursor) {
     DestroyCursor(m_createdCursor);
-    m_createdCursor = NULL;
+    m_createdCursor = nullptr;
   }
 }
 
@@ -280,7 +280,7 @@ void CTestMouseDlg::OnLoadAnimatedCursor() {
     releaseCreatedCursor();
     m_createdCursor = (HCURSOR)CreateIconFromResourceEx((BYTE*)cursorData.getData(), (DWORD)cursorData.size(), FALSE, 0x00030000, 0, 0, LR_DEFAULTSIZE);
 //    m_createdCursor = (HCURSOR)CreateIconFromResource((BYTE*)cursorData.getData(), cursorData.size(), FALSE, 0x00030000);
-    if (m_createdCursor == NULL) {
+    if (m_createdCursor == nullptr) {
       throwLastErrorOnSysCallException(__TFUNCTION__);
     }
     setWindowCursor(this, m_createdCursor);

@@ -220,7 +220,7 @@ void CMainFrame::OnDestroy() {
 
 void CMainFrame::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
-  if(getView() != NULL && !hasDrawTool()) {
+  if(getView() != nullptr && !hasDrawTool()) {
     OnToolsPen();
   }
 }
@@ -333,7 +333,7 @@ void CMainFrame::OnEditCopy() {
 
 void CMainFrame::OnEditPaste() {
   HBITMAP bitmap = getClipboardBitmap();
-  if(bitmap != NULL) {
+  if(bitmap != nullptr) {
     PixRect *pr = new PixRect(theApp.m_device, bitmap); TRACE_NEW(pr);
     pushTool(new InsertImageTool(getView(),pr));
   }

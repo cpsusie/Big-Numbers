@@ -246,7 +246,7 @@ private:
   SavedImageRect(           const SavedImageRect &src); // not implemented
   SavedImageRect &operator=(const SavedImageRect &src);
 public:
-  SavedImageRect() : m_pr(NULL), m_rect(0, 0, 0, 0) {
+  SavedImageRect() : m_pr(nullptr), m_rect(0, 0, 0, 0) {
   }
   ~SavedImageRect() {
     cleanup();
@@ -432,7 +432,7 @@ public:
   Rectangle2D getFieldRect(    int pos     , bool scaled) const;
 
   inline bool isDragging() const {
-    return m_pieceDragger != NULL;
+    return m_pieceDragger != nullptr;
   }
   PieceKey getDraggedPiece() const;
   const Image *getPieceImage(int pos) const;

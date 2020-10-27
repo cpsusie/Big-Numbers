@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
     RasterOp op = findRasterOp(*(argv++));
 
     FILE *f1 = stdin;
-    FILE *f2 = NULL;
+    FILE *f2 = nullptr;
 
     if(*argv) {
       f1 = FOPEN(*argv,"rb");
@@ -105,7 +105,7 @@ int main(int argc, char **argv) {
       }
     }
 
-    if(op != ROP_NOT && f2 == NULL) {
+    if(op != ROP_NOT && f2 == nullptr) {
       usage();
     }
 
@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
     device.attach(Console::getWindow());
 
     PixRect *p1 = PixRect::load(device, ByteInputFile(f1));
-    PixRect *p2 = (f2 != NULL) ? PixRect::load(device, ByteInputFile(f2)) : p1->clone(true, PIXRECT_PLAINSURFACE);
+    PixRect *p2 = (f2 != nullptr) ? PixRect::load(device, ByteInputFile(f2)) : p1->clone(true, PIXRECT_PLAINSURFACE);
 
     const int w = p1->getWidth();
     const int h = p1->getHeight();

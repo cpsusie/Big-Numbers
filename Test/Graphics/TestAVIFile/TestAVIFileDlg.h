@@ -35,7 +35,7 @@ private:
     void nextColorComponent(int &cc, int &step);
     void showState();
 public:
-    CTestAVIFileDlg(CWnd *pParent = NULL);
+    CTestAVIFileDlg(CWnd *pParent = nullptr);
 
     CSize    getFrameSize();
     PixRect *nextFrame();

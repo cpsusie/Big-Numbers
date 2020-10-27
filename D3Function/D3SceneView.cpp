@@ -22,7 +22,7 @@ END_MESSAGE_MAP()
 D3ViewArray C3DSceneView::s_3DViewArray;
 
 C3DSceneView::C3DSceneView() {
-  m_camera = NULL;
+  m_camera = nullptr;
 }
 
 C3DSceneView::~C3DSceneView() {
@@ -70,11 +70,11 @@ CD3FunctionDoc* C3DSceneView::GetDocument() { // non-debug version is inline
 
 D3Camera *C3DSceneView::findCamera() const {
   const D3Scene *scene = getScene();
-  return scene ? scene->getCameraArray().findCamera(*this) : NULL;
+  return scene ? scene->getCameraArray().findCamera(*this) : nullptr;
 }
 
 D3Camera *C3DSceneView::getCamera() {
-  if((m_camera == NULL) || (m_camera->getHwnd() != *this)) {
+  if((m_camera == nullptr) || (m_camera->getHwnd() != *this)) {
     m_camera = findCamera();
   }
   return m_camera;
@@ -82,7 +82,7 @@ D3Camera *C3DSceneView::getCamera() {
 
 D3Scene *C3DSceneView::getScene() const {
   CMainFrame *mainFrm = theApp.getMainFrame();
-  return mainFrm ? &mainFrm->getScene() : NULL;
+  return mainFrm ? &mainFrm->getScene() : nullptr;
 }
 
 void C3DSceneView::OnDraw(CDC *pDC) {

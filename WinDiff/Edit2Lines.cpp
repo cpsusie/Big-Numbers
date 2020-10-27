@@ -7,7 +7,7 @@
 #endif
 
 CEdit2Lines::CEdit2Lines() {
-  m_diff = NULL;
+  m_diff = nullptr;
 }
 
 CEdit2Lines::~CEdit2Lines() {
@@ -21,7 +21,7 @@ void CEdit2Lines::substituteControl(CWnd *parent, int id, const StrDiff &diff) {
   DEFINEMETHODNAME;
   m_diff = &diff;
   CEdit *oldCtrl = (CEdit*)parent->GetDlgItem(id);
-  if(oldCtrl == NULL) {
+  if(oldCtrl == nullptr) {
     showError(_T("%s:Control with id=%d does not exist"), method, id);
     return;
   }
@@ -30,7 +30,7 @@ void CEdit2Lines::substituteControl(CWnd *parent, int id, const StrDiff &diff) {
   const DWORD style   = oldCtrl->GetStyle();
   const DWORD exStyle = oldCtrl->GetExStyle();
   CFont      *font    = oldCtrl->GetFont();
-  if(font == NULL) {
+  if(font == nullptr) {
     font = parent->GetFont();
   }
   const TabOrder tabOrder(parent);
@@ -60,8 +60,8 @@ void CEdit2Lines::OnPaint() {
   CDC tmpDC;
   CBitmap bm;
   CSize sz = getClientRect(this).Size();
-  tmpDC.CreateCompatibleDC(NULL);
-  bm.CreateBitmap(sz.cx, sz.cy, 1, 32, NULL);
+  tmpDC.CreateCompatibleDC(nullptr);
+  bm.CreateBitmap(sz.cx, sz.cy, 1, 32, nullptr);
   tmpDC.SelectObject(&bm);
   tmpDC.FillSolidRect(0,0,sz.cx,sz.cy,colors[0]);
 

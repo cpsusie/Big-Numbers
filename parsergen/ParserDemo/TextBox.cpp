@@ -8,11 +8,11 @@ CTextBox::CTextBox(CString &str) : m_str(str) {
 
 #pragma warning(disable:4312)
 BOOL CTextBox::CreateEx(DWORD dwStyle, DWORD dwExStyle, const RECT& rect, CWnd *pParentWnd, UINT nID) {
-  BOOL ret = CWnd::CreateEx(0, _T("EDIT"), NULL
+  BOOL ret = CWnd::CreateEx(0, _T("EDIT"), nullptr
 	                         ,dwStyle | WS_CHILD
 	                         ,rect.left, rect.top
 	                         ,rect.right - rect.left, rect.bottom - rect.top
-	                         ,pParentWnd->GetSafeHwnd(), (HMENU)nID, NULL);
+	                         ,pParentWnd->GetSafeHwnd(), (HMENU)nID, nullptr);
   if(ret) {
     ret = ModifyStyleEx(0, dwExStyle);
   }
@@ -56,7 +56,7 @@ static int findColumn(const TCHAR *s, SourcePosition &pos) {
 }
 
 void CTextBox::markPos(SourcePosition *pos) {
-  if(pos == NULL) {
+  if(pos == nullptr) {
     m_marked = false;
     draw(CClientDC(this));
   } else {

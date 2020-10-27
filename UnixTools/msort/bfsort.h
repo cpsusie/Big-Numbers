@@ -26,7 +26,7 @@ private:
     return m_comparator.compare(*s1,*s2) <= 0;
   }
   void destroyHelpFiles();
-  void sortAndFlush(StringArray &lines, FILE *output = NULL);
+  void sortAndFlush(StringArray &lines, FILE *output = nullptr);
   void distributeLines(int i, FILE *f);
   void makeRuns(int input);
   void finalMerge(int input);

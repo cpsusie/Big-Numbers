@@ -4,7 +4,7 @@
 
 class CTextDlg : public CDialog {
 public:
-  CTextDlg(FontParameters &fontParameters, String &text, CWnd *pParent = NULL);   // standard constructor
+  CTextDlg(FontParameters &fontParameters, String &text, CWnd *pParent = nullptr);   // standard constructor
 
   FontParameters m_fontParameters;
   enum { IDD = IDD_TEXTDIALOG };

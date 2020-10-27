@@ -28,7 +28,7 @@ CWordsepgraphDlg::CWordsepgraphDlg(CWnd *pParent) : CDialog(CWordsepgraphDlg::ID
   m_ord            = EMPTYSTRING;
   m_details        = EMPTYSTRING;
   m_hIcon          = theApp.LoadIcon(IDR_MAINFRAME);
-  m_trainerJob     = NULL;
+  m_trainerJob     = nullptr;
   m_timerIsRunning = false;
 }
 
@@ -65,7 +65,7 @@ BOOL CWordsepgraphDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -206,7 +206,7 @@ void CWordsepgraphDlg::OnOptionsTrainingParameters() {
 }
 
 void CWordsepgraphDlg::startTimer() {
-  if(!m_timerIsRunning && SetTimer(1,1000,NULL)) {
+  if(!m_timerIsRunning && SetTimer(1,1000,nullptr)) {
     m_timerIsRunning = true;
   }
 }
@@ -238,13 +238,13 @@ void CWordsepgraphDlg::stopTraining() {
 
 void CWordsepgraphDlg::setTrainingPriority(int p) {
   m_threadPriority = p;
-  if(m_trainerJob != NULL) {
+  if(m_trainerJob != nullptr) {
     m_trainerJob->setPriority(p);
   }
 }
 
 void CWordsepgraphDlg::OnFileStopTraining() {
-  if(m_trainerJob == NULL) {
+  if(m_trainerJob == nullptr) {
     return;
   }
   stopTraining();
@@ -258,7 +258,7 @@ void CWordsepgraphDlg::showMessage(_In_z_ _Printf_format_string_ TCHAR const * c
 }
 
 void CWordsepgraphDlg::OnTimer(UINT_PTR nIDEvent) {
-  if(m_trainerJob == NULL) {
+  if(m_trainerJob == nullptr) {
     return;
   }
   showMessage(_T("%s"), m_trainerJob->getMessage().cstr());
@@ -274,7 +274,7 @@ BOOL CWordsepgraphDlg::PreTranslateMessage(MSG *pMsg) {
 }
 
 static void showfile(char *fname) {
-  if(_spawnl(_P_NOWAIT,"c:\\windows\\system32\\notepad.exe","notepad.exe",fname, NULL ) < 0) {
+  if(_spawnl(_P_NOWAIT,"c:\\windows\\system32\\notepad.exe","notepad.exe",fname, nullptr ) < 0) {
     showWarning(_T("Kan ikke starte notepad"));
   }
 }

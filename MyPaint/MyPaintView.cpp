@@ -23,9 +23,9 @@ END_MESSAGE_MAP()
 
 CMyPaintView::CMyPaintView() {
   m_currentZoomFactor = 1;
-  m_printInfo         = NULL;
+  m_printInfo         = nullptr;
   m_initialized       = false;
-  m_currentEdgeMark   = NULL;
+  m_currentEdgeMark   = nullptr;
   resetResizingFrame();
 }
 
@@ -141,7 +141,7 @@ void CMyPaintView::OnBeginPrinting(CDC *pDC, CPrintInfo *pInfo) {
 }
 
 void CMyPaintView::OnEndPrinting(CDC *pDC, CPrintInfo *pInfo) {
-  m_printInfo = NULL;
+  m_printInfo = nullptr;
 }
 
 #if defined(_DEBUG)
@@ -230,7 +230,7 @@ BOOL CMyPaintView::PreTranslateMessage(MSG *pMsg) {
   const CPoint    docPoint = viewToDoc(p);
   switch(pMsg->message) {
   case WM_LBUTTONDOWN:
-    if(mm != NULL) {
+    if(mm != nullptr) {
       resetResizingFrame();
       m_currentEdgeMark = mm;
       return TRUE;
@@ -239,11 +239,11 @@ BOOL CMyPaintView::PreTranslateMessage(MSG *pMsg) {
     }
     break;
   case WM_LBUTTONUP  :
-    if(m_currentEdgeMark != NULL) {
+    if(m_currentEdgeMark != nullptr) {
       resizeDocument();
       resetResizingFrame();
-      m_currentEdgeMark = NULL;
-      if(mm != NULL) {
+      m_currentEdgeMark = nullptr;
+      if(mm != nullptr) {
         setCursor(mm->getCursorId());
       } else if(getViewRect().PtInRect(p)) {
         setCursor(getCurrentToolCursor());
@@ -258,10 +258,10 @@ BOOL CMyPaintView::PreTranslateMessage(MSG *pMsg) {
     break;
 
   case WM_MOUSEMOVE  :
-    if(m_currentEdgeMark != NULL) {
+    if(m_currentEdgeMark != nullptr) {
       paintResizingFrame(docPoint);
       return TRUE;
-    } else if(mm != NULL) {
+    } else if(mm != nullptr) {
       setCursor(mm->getCursorId());
       return TRUE;
     } else if(getViewRect().PtInRect(p)) {
@@ -275,7 +275,7 @@ BOOL CMyPaintView::PreTranslateMessage(MSG *pMsg) {
 }
 
 void CMyPaintView::resetResizingFrame() {
-  m_lastDragRect  = NULL;
+  m_lastDragRect  = nullptr;
   m_dragRect.left = m_dragRect.top = m_dragRect.right = m_dragRect.bottom = 0;
 }
 
@@ -300,7 +300,7 @@ void CMyPaintView::paintResizingFrame(const CPoint &docp) {
 }
 
 void CMyPaintView::resizeDocument() {
-  if(m_lastDragRect != NULL) {
+  if(m_lastDragRect != nullptr) {
     const CPoint vp      = m_lastDragRect->Size();
     const CSize  newSize = viewToDoc(vp);
     if(newSize.cx != 0 && newSize.cy != 0) {

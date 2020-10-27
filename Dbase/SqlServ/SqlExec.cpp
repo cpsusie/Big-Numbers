@@ -152,8 +152,8 @@ TupleField VirtualMachine::isLike(UINT adr, const TupleField &str, const TupleFi
 }
 
 VirtualMachine::VirtualMachine(DbEngine &engine) : m_engine(engine) {
-  m_tuplereg[0] = m_tuplereg[1] = NULL;
-  m_cursor[0]   = m_cursor[1]   = NULL;
+  m_tuplereg[0] = m_tuplereg[1] = nullptr;
+  m_cursor[0]   = m_cursor[1]   = nullptr;
 }
 
 VirtualMachine::~VirtualMachine() {
@@ -166,9 +166,9 @@ VirtualMachine::~VirtualMachine() {
 }
 
 void VirtualMachine::closeCursor(int reg) {
-  if(m_cursor[reg] != NULL) {
+  if(m_cursor[reg] != nullptr) {
     delete m_cursor[reg];
-    m_cursor[reg] = NULL;
+    m_cursor[reg] = nullptr;
   }
 }
 
@@ -235,9 +235,9 @@ static void executeIndexCreate(Database &db, const void *adr) {
 }
 
 void VirtualMachine::tupleDestroy(int reg) {
-  if(m_tuplereg[reg] != NULL) {
+  if(m_tuplereg[reg] != nullptr) {
     delete m_tuplereg[reg];
-    m_tuplereg[reg] = NULL;
+    m_tuplereg[reg] = nullptr;
   }
 }
 
@@ -703,7 +703,7 @@ void sqlExecute(   Database                  &db        ,
 }
 
 SqlCursor::SqlCursor(Database &db, const String &stmt) : m_db(db) {
-  m_cursor = NULL;
+  m_cursor = nullptr;
   try {
     sqlCompile(db, stmt, m_vc, m_errmsg, m_sqlca);
     if(m_sqlca.sqlcode == SQL_OK) {
@@ -719,7 +719,7 @@ SqlCursor::~SqlCursor() {
 }
 
 bool SqlCursor::fetch(Tuple &tuple) {
-  if(m_cursor != NULL) {
+  if(m_cursor != nullptr) {
     if(m_cursor->m_sqlca.sqlcode != SQL_OK) {
       m_sqlca = m_cursor->m_sqlca;
       return false;

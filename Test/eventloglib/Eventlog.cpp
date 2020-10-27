@@ -98,7 +98,7 @@ bool registereventsource() {
   TCHAR dir[_MAX_DIR];
   TCHAR ext[_MAX_EXT];
 
-  GetModuleFileName(NULL,path,ARRAYSIZE(path));
+  GetModuleFileName(nullptr,path,ARRAYSIZE(path));
   _tsplitpath(path, drive, dir, modulefilename, ext);
   return AddEventSource(_T("Application"),modulefilename,path,1)?true:false;
 }
@@ -120,21 +120,21 @@ static void vlog(int wtype, _In_z_ _Printf_format_string_ TCHAR const * const fo
   HANDLE  hEventSource;
   LPTSTR  lpszStrings[2];
 
-  hEventSource = RegisterEventSource(NULL, modulefilename);
+  hEventSource = RegisterEventSource(nullptr, modulefilename);
 
   String msg = vformat(format, argptr);
   lpszStrings[0] = msg.cstr();
 
-  if(hEventSource != NULL) {
+  if(hEventSource != nullptr) {
     ReportEvent(hEventSource               // handle of event source
                ,wtype                      // event type
                ,0                          // event category
                ,MYMSG                      // event ID
-               ,NULL                       // current user's SID
+               ,nullptr                    // current user's SID
                ,1                          // strings in lpszStrings
                ,0                          // no bytes of raw data
                ,(const TCHAR**)lpszStrings // Array of error strings
-               ,NULL);                     // no raw data
+               ,nullptr);                     // no raw data
 
     DeregisterEventSource(hEventSource);
   }

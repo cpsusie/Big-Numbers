@@ -25,9 +25,9 @@ static String getStmt() {
 }
 
 static void testParser(const TCHAR *fileName) {
-  String stmt = (fileName == NULL) ? getStmt() : readTextFile(fileName);
+  String stmt = (fileName == nullptr) ? getStmt() : readTextFile(fileName);
 
-  const TCHAR *dispFileName = fileName != NULL ? fileName : _T("stdin");
+  const TCHAR *dispFileName = fileName != nullptr ? fileName : _T("stdin");
 
   SqlParser parser;
   _tprintf(_T("Now parsing <%s>                            \r"), dispFileName);
@@ -38,7 +38,7 @@ static void testParser(const TCHAR *fileName) {
     parser.listErrors();
     pause();
   } else {
-    FILE *out = (fileName == NULL) ? stdout : fopen(FileNameSplitter(fileName).setExtension("dmp").getFullPath(),"w");
+    FILE *out = (fileName == nullptr) ? stdout : fopen(FileNameSplitter(fileName).setExtension("dmp").getFullPath(),"w");
     if(out) {
       _ftprintf(out, _T("%s\n"), parser.beautify().cstr());
       if(out != stdout)
@@ -48,7 +48,7 @@ static void testParser(const TCHAR *fileName) {
 }
 
 static void testScanner(const TCHAR *fileName) {
-  String stmt = (fileName == NULL) ? getStmt() : readTextFile(fileName);
+  String stmt = (fileName == nullptr) ? getStmt() : readTextFile(fileName);
 
   _tprintf(_T("Now scanning <%s>\n"), stmt.cstr());
 
@@ -69,8 +69,8 @@ static void testScanner(const TCHAR *fileName) {
 }
 
 static void runTest(TCHAR **argv, void (*tester)(const TCHAR *)) {
-  if(*argv == NULL) {
-    for(;;) tester(NULL);
+  if(*argv == nullptr) {
+    for(;;) tester(nullptr);
   } else {
     for(;*argv;argv++) tester(*argv);
   }
@@ -100,7 +100,7 @@ static int beautifyClipboard() {
   if(!parser.ok()) {
     return -1;
   }
-  putClipboard(NULL,parser.beautify());
+  putClipboard(nullptr,parser.beautify());
   return 0;
 }
 
@@ -116,7 +116,7 @@ static void usage() {
 int _tmain(int argc, TCHAR **argv) {
   TCHAR *cp;
   bool   testLex      = false;
-  TCHAR *outFileName  = NULL;
+  TCHAR *outFileName  = nullptr;
   bool   useClipboard = false;
 
   argvExpand(argc,argv);
@@ -147,7 +147,7 @@ int _tmain(int argc, TCHAR **argv) {
     return beautifyClipboard();
   }
 
-  if(outFileName != NULL && *argv) {
+  if(outFileName != nullptr && *argv) {
     return beautify(*argv, outFileName);
   }
 

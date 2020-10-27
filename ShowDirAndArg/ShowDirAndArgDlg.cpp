@@ -35,7 +35,7 @@ BOOL CShowDirAndArgDlg::OnInitDialog() {
   String wd = GETCWD();
 
   String argStr;
-  TCHAR *delim = NULL;
+  TCHAR *delim = nullptr;
   for(TCHAR **argv = __targv; *argv; argv++) {
     if(delim) {
       argStr += delim;

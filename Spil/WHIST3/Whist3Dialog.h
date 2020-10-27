@@ -10,7 +10,7 @@ class CWhist3Dialog : public CDialog, public Whist3PlayerCallback, public Option
 private:
     HICON             m_hIcon;
 public:
-    CWhist3Dialog(CWnd *pParent = NULL);
+    CWhist3Dialog(CWnd *pParent = nullptr);
 
     Whist3Player     *m_player;
     Whist3EPlayer     m_autoPlayer;

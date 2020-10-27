@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CSettingsDlg::CSettingsDlg(const ImageSettings &settings, CWnd *pParent /*=NULL*/) : CDialog(CSettingsDlg::IDD, pParent) {
+CSettingsDlg::CSettingsDlg(const ImageSettings &settings, CWnd *pParent /*=nullptr*/) : CDialog(CSettingsDlg::IDD, pParent) {
   m_colorCount  = settings.m_colorCount;
   m_scaleFactor = (UINT)(settings.m_imageScaleFactor * 100);
 }

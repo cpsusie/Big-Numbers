@@ -3,7 +3,7 @@
 void Game::updateGameMoveRook(const Move &m) {
   Piece *piece = m.m_piece;
 
-  if(m.m_capturedPiece == NULL) {
+  if(m.m_capturedPiece == nullptr) {
     rookLeaveField(m);
     SET_PIECE(m.m_to, piece);
     setNonCapturingRook(m);

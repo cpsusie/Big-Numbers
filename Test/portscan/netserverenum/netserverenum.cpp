@@ -137,7 +137,7 @@ String ServerInfo101::toString() const {
 }
 
 Array<ServerInfo101> getServerInfoLevel101(int serverTypes = SV_TYPE_SERVER) {
-  SERVER_INFO_101   *buf = NULL;
+  SERVER_INFO_101   *buf = nullptr;
 
   try {
     const DWORD    level        = 101;
@@ -151,17 +151,17 @@ Array<ServerInfo101> getServerInfoLevel101(int serverTypes = SV_TYPE_SERVER) {
 
     do {
 
-       status = NetServerEnum(NULL
+       status = NetServerEnum(nullptr
                              ,level
                              ,(LPBYTE*)&buf
                              ,MAX_PREFERRED_LENGTH
                              ,&entryCount
                              ,&totalEntries
                              ,serverTypes
-                             ,NULL
+                             ,nullptr
                              ,&resumeHandle);
       if(status == NERR_Success || status == ERROR_MORE_DATA) {
-        if(buf == NULL) {
+        if(buf == nullptr) {
           throwException(_T("An access violation has occurred"));
         }
         for(DWORD i = 0; i < entryCount; i++) {
@@ -170,14 +170,14 @@ Array<ServerInfo101> getServerInfoLevel101(int serverTypes = SV_TYPE_SERVER) {
       } else {
         throwException(_T("getServerInfoLevel101:NetServerEnum failed:ErrorCode=%#lx"),status);
       }
-      if(buf != NULL) {
+      if(buf != nullptr) {
         NetApiBufferFree(buf);
-        buf = NULL;
+        buf = nullptr;
       }
     } while(status == ERROR_MORE_DATA);
     return result;
   } catch(Exception e) {
-    if(buf != NULL) {
+    if(buf != nullptr) {
       NetApiBufferFree(buf);
     }
     throw;

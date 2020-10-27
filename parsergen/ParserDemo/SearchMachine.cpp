@@ -94,7 +94,7 @@ SearchMachine::SearchMachine(const FindParameter &param) {
   }
 
 //  printf(_T("tmp:<%s>\n"), tmp.cstr());
-  m_reg.compilePattern(tmp, m_param.m_matchCase ? NULL : String::upperCaseTranslate);
+  m_reg.compilePattern(tmp, m_param.m_matchCase ? nullptr : String::upperCaseTranslate);
 }
 
 int SearchMachine::findIndex(const String &s, int startPos) {

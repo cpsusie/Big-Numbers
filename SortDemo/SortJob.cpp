@@ -83,7 +83,7 @@ public:
 };
 
 SortJob::SortJob(SortPanelWnd *wnd)
-: m_thread(NULL)
+: m_thread(nullptr)
 , m_wnd(*wnd)
 {
 }

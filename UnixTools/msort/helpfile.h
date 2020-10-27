@@ -17,13 +17,13 @@ private:
   void makeName();
 public:
   inline String *readLine(String &s) {
-    return ::readLine(m_f, s) ? &s : NULL;
+    return ::readLine(m_f, s) ? &s : nullptr;
   }
   inline void writeLine(const String &s) {
     ::writeLine(m_f, s); m_lineCount++;
   }
 
-  inline HelpFile() : m_f(NULL), m_lineCount(0) {
+  inline HelpFile() : m_f(nullptr), m_lineCount(0) {
   }
 
   inline ~HelpFile() {
@@ -33,7 +33,7 @@ public:
   void open(FileMode mode);
   void close();
   inline bool isOpen() const {
-    return m_f != NULL;
+    return m_f != nullptr;
   }
   inline const TCHAR *getName() const {
     return m_name.cstr();

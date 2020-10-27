@@ -103,7 +103,7 @@ LR1Item *LR1State::findItem(const LR1Item &item) {
       return &m_items[i];
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 static int itemCmp(const LR1Item &e1, const LR1Item &e2) {
@@ -159,7 +159,7 @@ Grammar::~Grammar() {
 
 int Grammar::findSymbol(const String &name) const {
   const int *id = m_symbolMap.get(name);
-  return id != NULL ? *id : -1;
+  return id != nullptr ? *id : -1;
 }
 
 int Grammar::addSymbol(const GrammarSymbol &symbol) {
@@ -444,7 +444,7 @@ void Grammar::computeClosure(LR1State &state, bool allowNewItems) {
         for(size_t p = 0; p < B.m_leftSideOf.size(); p++) {
           const LR1Item newItem(false, B.m_leftSideOf[p], 0, la); // newItem is B -> . gamma [first1(beta la)] (nonkernelitem)
           LR1Item *oldItem = state.findItem(newItem);
-          if(oldItem == NULL) {
+          if(oldItem == nullptr) {
             if(!allowNewItems) {
               throwException(_T("Grammar::computeClosure:No new items allowed"));
             }

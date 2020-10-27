@@ -3,15 +3,15 @@
 #include "ScreenCapture.h"
 
 static HBITMAP captureDC(HDC dc, int x, int y, const CSize &size) {
-  HDC     memDC  = NULL;
-  HBITMAP bitmap = NULL;
+  HDC     memDC  = nullptr;
+  HBITMAP bitmap = nullptr;
 
   try {
-    if((memDC = CreateCompatibleDC(dc)) == NULL) {
+    if((memDC = CreateCompatibleDC(dc)) == nullptr) {
       throwException(_T("CreateCompatibleDC(%08x) failed:%s"), dc, getLastErrorText().cstr());
     }
 
-    if((bitmap = CreateCompatibleBitmap(dc, size.cx, size.cy)) == NULL) {
+    if((bitmap = CreateCompatibleBitmap(dc, size.cx, size.cy)) == nullptr) {
       throwException(_T("CreateCompatibleBitmap(%08x) failed:%s"), dc, getLastErrorText().cstr());
     }
 
@@ -25,10 +25,10 @@ static HBITMAP captureDC(HDC dc, int x, int y, const CSize &size) {
     DeleteDC(memDC);
     return bitmap;
   } catch(...) {
-    if(bitmap != NULL) {
+    if(bitmap != nullptr) {
       DeleteObject(bitmap);
     }
-    if(memDC != NULL) {
+    if(memDC != nullptr) {
       DeleteDC(memDC);
     }
     throw;
@@ -67,7 +67,7 @@ HBITMAP captureWindow(HWND hwnd) {
 /*
 // giver forkert resultat
 CSize getScreenSizeInMillimeters1() {
-  HDC screenDC = CreateDC(_T("DISPLAY"), NULL, NULL, NULL);
+  HDC screenDC = CreateDC(_T("DISPLAY"), nullptr, nullptr, nullptr);
   int w = GetDeviceCaps(screenDC,HORZSIZE);
   int h = GetDeviceCaps(screenDC,VERTSIZE);
   DeleteDC(screenDC);

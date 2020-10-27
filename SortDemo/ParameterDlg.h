@@ -14,7 +14,7 @@ private:
     CComboBox *getComboElementSize() const;
     CComboBox *getComboRandomize()   const;
 public:
-    CParameterDlg(const InitializeParameters &parameters, CWnd *pParent = NULL);
+    CParameterDlg(const InitializeParameters &parameters, CWnd *pParent = nullptr);
     const InitializeParameters &getParameters() const {
       return m_parameters;
     }

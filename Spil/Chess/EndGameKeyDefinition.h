@@ -164,7 +164,7 @@ typedef void (EndGameKeyDefinition::*PositionScanner)(EndGameKeyWithOccupiedPosi
 
   virtual void         selfCheck(EndGameKeyWithOccupiedPositions &key) const;
   virtual String       getCodecName() const;
-  void                 sym8PositionScanner(EndGameKeyWithOccupiedPositions &key, int pIndex, bool allPreviousOnDiag, PositionScanner nextScanner = NULL) const;
+  void                 sym8PositionScanner(EndGameKeyWithOccupiedPositions &key, int pIndex, bool allPreviousOnDiag, PositionScanner nextScanner = nullptr) const;
   void                 checkForBothPlayers(EndGameKey key) const;
   void                 checkKey(EndGameKey key) const;
 #endif
@@ -227,7 +227,7 @@ public:
   virtual EndGameKey getEndGameKey(      const GameKey    &gameKey) const = 0;
   EndGameKey         transformGameKey(   const GameKey    &gameKey) const;
   EndGameKey         getTransformedKey(  EndGameKey key, SymmetricTransformation st) const;
-  EndGameKey         getNormalizedKey(   EndGameKey key, EndGamePosIndex *index = NULL) const; // will return keys' index in index if != NULL
+  EndGameKey         getNormalizedKey(   EndGameKey key, EndGamePosIndex *index = nullptr) const; // will return keys' index in index if != nullptr
   void               validateKey(        EndGameKey key, const TCHAR *msg) const;
 
 #if defined(TABLEBASE_BUILDER)
@@ -598,7 +598,7 @@ protected:
     return m_pawnOwner.getOwner(0);
   }
 typedef void (EndGameKeyDefinition1Pawn::*PositionScanner1Pawn)(EndGameKeyWithOccupiedPositions &key, int pIndex) const;
-  void scanPositions(EndGameKeyWithOccupiedPositions &key, int pIndex, PositionScanner1Pawn nextScanner = NULL) const;
+  void scanPositions(EndGameKeyWithOccupiedPositions &key, int pIndex, PositionScanner1Pawn nextScanner = nullptr) const;
 #endif
 
 public:
@@ -688,7 +688,7 @@ protected:
     return m_pawnOwner.getOwner(index);
   }
 typedef void (EndGameKeyDefinition2Pawns::*PositionScanner2Pawns)(EndGameKeyWithOccupiedPositions &key, int pIndex) const;
-  void scanPositions(EndGameKeyWithOccupiedPositions &key, int pIndex, PositionScanner2Pawns nextScanner = NULL) const;
+  void scanPositions(EndGameKeyWithOccupiedPositions &key, int pIndex, PositionScanner2Pawns nextScanner = nullptr) const;
 #endif
 
 public:

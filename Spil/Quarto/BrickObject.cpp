@@ -133,7 +133,7 @@ D3DXMATRIX &BrickObject::getWorld() {
 }
 
 void BrickObject::draw() {
-  getDevice().setSpecularHighlights(true).setTexture(0, NULL);
+  getDevice().setSpecularHighlights(true).setTexture(0, nullptr);
   __super::draw();
   if(m_marked) {
     m_brickMarker->draw();

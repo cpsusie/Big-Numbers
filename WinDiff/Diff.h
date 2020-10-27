@@ -90,7 +90,7 @@ public:
   ~DiffDoc();
   void setToFile(const TCHAR *fname);
   void setToBuf( const TCHAR *buf  );
-  void getLines(DiffFilter &filter, LineArray &s, InterruptableRunnable *runnable = NULL) const;
+  void getLines(DiffFilter &filter, LineArray &s, InterruptableRunnable *runnable = nullptr) const;
 
   inline const String &getName() const {
     return m_name;

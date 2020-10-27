@@ -17,7 +17,7 @@ public:
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CAsciiwDlg::CAsciiwDlg(CWnd *pParent /*=NULL*/) : CDialog(CAsciiwDlg::IDD, pParent) {
+CAsciiwDlg::CAsciiwDlg(CWnd *pParent /*=nullptr*/) : CDialog(CAsciiwDlg::IDD, pParent) {
   m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
@@ -47,7 +47,7 @@ BOOL CAsciiwDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if (pSysMenu != NULL) {
+  if (pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if (!strAboutMenu.IsEmpty()) {
@@ -59,7 +59,7 @@ BOOL CAsciiwDlg::OnInitDialog() {
   SetIcon(m_hIcon, TRUE);         // Set big icon
   SetIcon(m_hIcon, FALSE);        // Set small icon
 
-  m_currentFont = NULL;
+  m_currentFont = nullptr;
   m_defaultFont.CreateFont(10, 8, 0, 0, 400, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS,
                          CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
                          DEFAULT_PITCH | FF_MODERN,

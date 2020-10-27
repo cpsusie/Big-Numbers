@@ -3,7 +3,7 @@
 class CTabSizeDlg: public CDialog {
 private:
 public:
-  CTabSizeDlg(int tabSize, CWnd *pParent = NULL);
+  CTabSizeDlg(int tabSize, CWnd *pParent = nullptr);
 
   enum { IDD = IDD_DIALOGTABSIZE };
   UINT  m_tabSize;

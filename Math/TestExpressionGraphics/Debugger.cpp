@@ -73,7 +73,7 @@ void Debugger::stop(bool onReturn) {
   suspend();
 }
 
-#define ISPOP(to,tn) (to && ((tn==NULL) || ((tn)->getIndex() < (to)->getIndex())))
+#define ISPOP(to,tn) (to && ((tn==nullptr) || ((tn)->getIndex() < (to)->getIndex())))
 #define ISPOPFROMSAVEDPOP(to,tn) ISPOP(to,tn) && ((to)->getIndex() == m_breakOnTopIndex)
 
 void Debugger::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
@@ -162,7 +162,7 @@ void Debugger::handlePropertyChanged(const PropertyContainer *source, int id, co
 }
 
 String Debugger::getFlagNames(BYTE flags) { // static
-  const TCHAR *delim = NULL;
+  const TCHAR *delim = nullptr;
   String result;
 #define ADDFLAG(f) if(flags & (FL_##f)) { if(delim) result += delim; else delim = _T(" "); result += _T(#f); }
   ADDFLAG(BREAKSTEP      )

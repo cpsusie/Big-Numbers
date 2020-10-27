@@ -24,7 +24,7 @@ void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestLexStreamDlg::CTestLexStreamDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestLexStreamDlg::IDD, pParent) {
+CTestLexStreamDlg::CTestLexStreamDlg(CWnd *pParent /*=nullptr*/) : CDialog(CTestLexStreamDlg::IDD, pParent) {
     m_count = 0;
     m_text  = EMPTYSTRING;
     m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
@@ -53,7 +53,7 @@ BOOL CTestLexStreamDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if(pSysMenu != NULL) {
+  if(pSysMenu != nullptr) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
     if(!strAboutMenu.IsEmpty()) {
@@ -127,7 +127,7 @@ void CTestLexStreamDlg::OnOpen() {
 }
 
 void CTestLexStreamDlg::OnButtonRead() {
-  TCHAR *buf = NULL;
+  TCHAR *buf = nullptr;
   try {
     if(!UpdateData()) {
       return;

@@ -11,7 +11,7 @@ private:
     void ajourButtons(int selected = -1);
     bool anythingChanged() const;
 public:
-    CFileFormatsDlg(CWnd *pParent = NULL);
+    CFileFormatsDlg(CWnd *pParent = nullptr);
     String      m_selected;
     CListCtrl   m_nameListCtrl;
 

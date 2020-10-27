@@ -8,28 +8,28 @@ DbFileTester::DbFileTester(bool useTransaction) {
     DbFile::create(LOGFILENAME);
     m_logFile = new LogFile(LOGFILENAME);
   } else {
-    m_logFile = NULL;
+    m_logFile = nullptr;
   }
 }
 
 DbFileTester::~DbFileTester() {
-  if(m_logFile != NULL) {
+  if(m_logFile != nullptr) {
     delete m_logFile;
     DbFile::destroy(LOGFILENAME);
   }
 }
 
 void DbFileTester::beginTrans() {
-  verify(m_logFile != NULL);
+  verify(m_logFile != nullptr);
   m_logFile->begin();
 }
 
 void DbFileTester::commitTrans() {
-  verify(m_logFile != NULL);
+  verify(m_logFile != nullptr);
   m_logFile->commit();
 }
 
 void DbFileTester::abortTrans() {
-  verify(m_logFile != NULL);
+  verify(m_logFile != nullptr);
   m_logFile->abort();
 }
