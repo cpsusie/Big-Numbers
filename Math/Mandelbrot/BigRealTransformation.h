@@ -5,19 +5,17 @@
 
 #define AUTOPRECISION 0
 
-class BigRealSize2D : public Size2DTemplate<BigReal> {
-  inline BigRealSize2D(DigitPool *digitPool=nullptr)
-    : Size2DTemplate(BigReal(0,digitPool),BigReal(0,digitPool))
-  {
-  }
-  inline BigRealSize2D(const BigReal &cx, const BigReal &cy, DigitPool *digitPool=nullptr)
-    : Size2DTemplate(BigReal(cx,digitPool?digitPool:cx.getDigitPool())
-                    ,BigReal(cy,digitPool?digitPool:cx.getDigitPool()))
+class BigRealSize2D : public SizeTemplate<BigReal, 2> {
+private:
+public:
+  template<typename X, typename Y> BigRealSize2D(const X &cx, const Y &cy, DigitPool *digitPool=nullptr)
+    : SizeTemplate(digitPool?BigReal(cx,digitPool):cx)
+                  ,digitPool?BigReal(cy,digitPool),digitPool:cx.getDigitPool()))
   {
   }
   inline BigRealSize2D(const BigRealSize2D &src, DigitPool *digitPool=nullptr)
-    : Size2DTemplate(BigReal(src.cx(),digitPool?digitPool:src.getDigitPool())
-                    ,BigReal(src.cy(),digitPool?digitPool:src.getDigitPool()))
+    : SizeTemplate(BigReal(src[0],digitPool?digitPool:src.getDigitPool())
+                  ,BigReal(src[1],digitPool?digitPool:src.getDigitPool()))
   {
   }
   inline DigitPool *getDigitPool() const {
@@ -28,9 +26,6 @@ class BigRealSize2D : public Size2DTemplate<BigReal> {
     cx() = BigReal(src.cx(),dp);
     cy() = BigReal(src.cy(),dp);
     return *this;
-  }
-  template<typename T> inline explicit operator Size2DTemplate<T>() const {
-    return Size2DTemplate<T>((T)cx(), (T)cy());
   }
 #if defined(__ATLTYPES_H__)
   inline BigRealSize2D(const CSize &s, DigitPool *digitPool=nullptr)
@@ -172,7 +167,7 @@ public:
 };
 
 
-class BigRealRectangle2D : public Rectangle2DTemplate<BigReal> {
+class BigRealRectangle2D : public Rectangle2DTemplate<BigRealPoint2D, BigRealSize2D, BigReal> {
 public:
   inline BigRealRectangle2D(DigitPool *digitPool = nullptr)
     : Rectangle2DTemplate(BigReal(0,digitPool), BigReal(0,digitPool), BigReal(0, digitPool), BigReal(0, digitPool))
@@ -193,10 +188,9 @@ public:
   {
   }
   inline BigRealRectangle2D(const BigRealPoint2D &p, const BigRealSize2D &size, DigitPool *digitPool = nullptr)
-    : Rectangle2DTemplate(BigReal(p.x()    ,digitPool?digitPool:p.getDigitPool())
-                         ,BigReal(p.y()    ,digitPool?digitPool:p.getDigitPool())
-                         ,BigReal(size.cx(),digitPool?digitPool:p.getDigitPool())
-                         ,BigReal(size.cy(),digitPool?digitPool:p.getDigitPool()))
+    : Rectangle2DTemplate(BigRealPoint2D(p   ,digitPool)
+                         ,BigRealSize2D( size,digitPool)
+                         )
   {
   }
   inline DigitPool *getDigitPool() const {
