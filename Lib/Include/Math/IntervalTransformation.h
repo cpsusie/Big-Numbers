@@ -47,8 +47,11 @@ public:
     }
   }
 
-  IntervalScale getScaleType() const {
+  inline IntervalScale getScaleType() const {
     return m_scaleType;
+  }
+  inline bool isLinear() const {
+    return getScaleType() == LINEAR;
   }
   const NumberInterval<T> &getFromInterval() const {
     return m_fromInterval;
@@ -110,7 +113,6 @@ public:
     return !(*this == rhs);
   }
   virtual IntervalTransformationTemplate *clone()    const = 0;
-  virtual bool                            isLinear() const = 0;
   virtual ~IntervalTransformationTemplate() {
   }
 };
@@ -135,9 +137,6 @@ public:
   IntervalTransformationTemplate<T> *clone() const override {
     IntervalTransformationTemplate<T> *t = new LinearTransformationTemplate(*this); TRACE_NEW(t);
     return t;
-  }
-  bool isLinear() const override {
-    return true;
   }
 };
 
@@ -164,9 +163,6 @@ public:
   IntervalTransformationTemplate<T> *clone() const override {
     IntervalTransformationTemplate<T> *t = new LogarithmicTransformationTemplate(*this); TRACE_NEW(t);
     return t;
-  }
-  bool isLinear() const override {
-    return false;
   }
 };
 typedef LogarithmicTransformationTemplate<float   > FloatLogarithmicTransformation;
@@ -203,9 +199,6 @@ public:
     IntervalTransformationTemplate<T> *t = new NormalDistributionTransformationTemplate(*this); TRACE_NEW(t);
     return t;
   }
-  bool isLinear() const override {
-    return false;
-  }
 };
 
 typedef NormalDistributionTransformationTemplate<float   > FloatNormalDistributionTransformation;
@@ -217,13 +210,12 @@ typedef NormalDistributionTransformationTemplate<Real    > RealNormalDistributio
 #define Z_AXIS 4 /* only used for CubeTransformationTemplate */
 
 template<typename T> IntervalTransformationTemplate<T> *allocateIntervalTransformation(const NumberInterval<T> &from, const NumberInterval<T> &to, IntervalScale scale) {
-  IntervalTransformationTemplate<T> *result;
+  IntervalTransformationTemplate<T> *result = nullptr;
   switch(scale) {
   case LINEAR             : result = new LinearTransformationTemplate<T>(            from, to); TRACE_NEW(result); break;
   case LOGARITHMIC        : result = new LogarithmicTransformationTemplate<T>(       from, to); TRACE_NEW(result); break;
   case NORMAL_DISTRIBUTION: result = new NormalDistributionTransformationTemplate<T>(from, to); TRACE_NEW(result); break;
   default                 : throwInvalidArgumentException(__TFUNCTION__, _T("scale=%d"), scale);
-                            return nullptr;
   }
   return result;
 }

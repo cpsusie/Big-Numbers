@@ -4,22 +4,24 @@
 #include "ProfileEditor.h"
 
 typedef enum {
-  TL // top-left-corner
- ,TR // top-right-corner
- ,BL // bottom-left-corner
+  BL // bottom-left-corner
  ,BR // bottom-right-corner
- ,TC // top-center
+ ,TR // top-right-corner
+ ,TL // top-left-corner
  ,BC // bottom-center
- ,LC // left-center
  ,RC // right-center
+ ,TC // top-center
+ ,LC // left-center
  ,C  // center
  ,UNKNOWN
 } MarkId;
 
+MarkId getOppositeMarkId(MarkId id);
+
 class RectMark : public CRect { // screen rect
 public:
-  CBitmap          *m_image;
-  MarkId            m_markId;
+  MarkId    m_markId;
+  CBitmap  *m_image;
   RectMark() : m_image(nullptr), m_markId(UNKNOWN) {
   }
   RectMark(MarkId markId, const CPoint &p, int imageId, int degree);
@@ -28,44 +30,74 @@ public:
 class TurnableRect : public Polygon2D {
 private:
   CompactArray<RectMark> m_marks;
-  int                    m_selectedMarkIndex;
-  void addMarkRect(Viewport2D &vp, MarkId id, int imageId, int degree);
-  Point2D getMarkPoint(MarkId id);
-  FunctionR2R2 *getMoveTransformation(   const Point2D &dp);
-  FunctionR2R2 *getStretchTransformation(const Point2D &dp);
-  FunctionR2R2 *getRotateTransformation( const Point2D &dp);
-  FunctionR2R2 *getSkewTransformation(   const Point2D &dp);
-  FunctionR2R2 *getMirrorTransformation( bool horizontal );
+  mutable int            m_selectedMarkIndex;
+  void           addMarkRect(Viewport2D &vp, MarkId id, int imageId, int degree);
+  Point2D        getMarkPoint(MarkId id) const;
+  FunctionR2R2  *getMoveTransformation(   const Point2D &dp) const;
+  FunctionR2R2  *getStretchTransformation(const Point2D &dp) const;
+  FunctionR2R2  *getRotateTransformation( const Point2D &dp) const;
+  FunctionR2R2  *getSkewTransformation(   const Point2D &dp) const;
+  FunctionR2R2  *getMirrorTransformation( bool horizontal  ) const;
+  // Apply f to all points in a + all points in m_marks, then delete f
+  void           applyFunction(FunctionR2R2 *fp, Point2DRefArray &a);
 
-  Point2D getStretchOrigin();
-  Point2D getStretchDir();
-  Point2D getSkewDir();
-  Point2D getRotateDir();
-  Point2D getU1() { return getTopRight()   - getTopLeft(); }
-  Point2D getU2() { return getBottomLeft() - getTopLeft(); }
-  void applyFunction(FunctionR2R2 *f, Point2DRefArray &pointArray);
+  inline Point2D getStretchOrigin() const {
+    return getMarkPoint(getOppositeMarkId(getSelectedMark()));
+  }
+  inline Point2D getStretchDir()    const {
+    return getSelectedMarkPoint() - getCenter();
+  }
+
+  Point2D        getSkewDir()       const;
+  Point2D        getRotateDir()     const;
+  // Return Vector parallel to bottom edge
+  inline Point2D getU1()            const {
+    return getBottomRight() - getBottomLeft();
+  }
+  // Return Vector parallel to left edge
+  inline Point2D getU2()            const {
+    return getTopLeft()     - getBottomLeft();
+  }
 public:
-  Point2D m_rotationCenter;
-  Point2D &getTopLeft()     { return (Point2D&)((*this)[0]); }
-  Point2D &getTopRight()    { return (Point2D&)((*this)[1]); }
-  Point2D &getBottomRight() { return (Point2D&)((*this)[2]); }
-  Point2D &getBottomLeft()  { return (Point2D&)((*this)[3]); }
-  Point2D getCenter();
-  Point2D getTopCenter();
-  Point2D getBottomCenter();
-  Point2D getLeftCenter();
-  Point2D getRightCenter();
-  TurnableRect(const Rectangle2D &r);
   TurnableRect();
-  double width()  { return getU1().length(); }
-  double height() { return getU2().length(); }
-  void move(   const Point2D &dp, Point2DRefArray &pointArray);
-  void stretch(const Point2D &dp, Point2DRefArray &pointArray);
-  void rotate( const Point2D &dp, Point2DRefArray &pointArray);
-  void mirror( bool  horizontal , Point2DRefArray &pointArray);
-  Point2D getSelectedMarkPoint() ;
-  void scale(double factor);
-  void repaint(Viewport2D &vp, ProfileEditorState state);
-  bool pointOnMarkRect(const CPoint &p);
-  MarkId getSelectedMark() const { return m_selectedMarkIndex >= 0 ? m_marks[m_selectedMarkIndex].m_markId : UNKNOWN; }
+  TurnableRect(const Rectangle2D &r);
+  Point2D m_rotationCenter;
+  inline const Point2D &getBottomLeft()   const { return (*this)[0]; }
+  inline const Point2D &getBottomRight()  const { return (*this)[1]; }
+  inline const Point2D &getTopRight()     const { return (*this)[2]; }
+  inline const Point2D &getTopLeft()      const { return (*this)[3]; }
+  inline       Point2D &getBottomLeft()         { return (*this)[0]; }
+  inline       Point2D &getBottomRight()        { return (*this)[1]; }
+  inline       Point2D &getTopRight()           { return (*this)[2]; }
+  inline       Point2D &getTopLeft()            { return (*this)[3]; }
+  inline       Point2D  getBottomCenter() const { return (getBottomLeft()  + getBottomRight()) / 2; }
+  inline       Point2D  getTopCenter()    const { return (getTopLeft()     + getTopRight()   ) / 2; }
+  inline       Point2D  getLeftCenter()   const { return (getBottomLeft()  + getTopLeft()    ) / 2; }
+  inline       Point2D  getRightCenter()  const { return (getBottomRight() + getTopRight()   ) / 2; }
+  inline       Point2D  getCenter()       const { return (getBottomLeft()  + getTopRight()   ) / 2; }
+  inline       double   getWidth()        const { return getU1().length(); }
+  inline       double   getHeight()       const { return getU2().length(); }
+
+  inline       void     move(   const Point2D &dp, Point2DRefArray &pointArray) {
+    applyFunction(getMoveTransformation(dp), pointArray);
+  }
+  inline       void     stretch(const Point2D &dp, Point2DRefArray &pointArray) {
+    applyFunction(getStretchTransformation(dp), pointArray);
+  }
+  inline       void     mirror( bool  horizontal , Point2DRefArray &pointArray) {
+    applyFunction(getMirrorTransformation(horizontal), pointArray);
+  }
+  void                  rotate( const Point2D &dp, Point2DRefArray &pointArray);
+  void                  scale(double factor);
+
+  inline       Point2D  getSelectedMarkPoint() const {
+    return getMarkPoint(getSelectedMark());
+  }
+  void                  repaint(Viewport2D &vp, ProfileEditorState state);
+  bool                  isPointOnMarkRect(const CPoint &p) const;
+  inline MarkId         getSelectedMark() const {
+    return (m_selectedMarkIndex >= 0)
+         ? m_marks[m_selectedMarkIndex].m_markId
+         : UNKNOWN;
+  }
 };

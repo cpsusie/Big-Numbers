@@ -15,21 +15,22 @@ protected:
   ProfileEditorState     m_state;
 
   DrawTool &drawState();
-  DrawTool &paintBox(            const Point2D        &p, bool selected);
-  DrawTool &paintPoints(         const ProfilePolygon2D &p, bool selected);
-  DrawTool &repaintPolygon(      const ProfilePolygon2D &p, bool selected);
-  DrawTool &selectPolygonsInRect(const Rectangle2D    &r);
-  DrawTool &selectPointsInRect(  const Rectangle2D    &r);
+  DrawTool &paintBox(                  Point2D          *p, bool selected);
+  DrawTool &paintPoints(               ProfilePolygon2D *p, bool selected);
+  DrawTool &repaintPolygon(            ProfilePolygon2D *p, bool selected);
+  DrawTool &selectPolygonsInRect(const Rectangle2D      &r);
+  DrawTool &selectPointsInRect(  const Rectangle2D      &r);
   DrawTool &select(                    ProfilePolygon2D *p);
-  DrawTool &select(                    Point2D          *p);
   DrawTool &unselect(                  ProfilePolygon2D *p);
+  bool      isSelected(                ProfilePolygon2D *p) const;
+  DrawTool &select(                    Point2D          *p);
   DrawTool &unselect(                  Point2D          *p);
-  bool isSelected(                     ProfilePolygon2D *p) const;
-  bool isSelected(               const Point2D          *p) const;
+  bool      isSelected(                Point2D          *p) const;
 public:
   DrawTool(ProfileEditor *editor);
-  virtual ~DrawTool();
-  bool OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+  virtual ~DrawTool() {
+  }
+  bool OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) override;
   bool      canConnect() const;
   DrawTool &connect();
   bool      canInvertNormals() const;
@@ -43,7 +44,9 @@ public:
   bool      canCut();
   DrawTool &cutSelected();
   DrawTool &paste();
-  void      initState() { m_state = IDLE; }
+  inline void initState() {
+    m_state = IDLE;
+  }
   DrawTool &unselectAll();
   DrawTool &repaintProfile();
   DrawTool &repaintScreen();

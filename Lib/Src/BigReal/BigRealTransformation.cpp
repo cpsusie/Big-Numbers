@@ -32,11 +32,12 @@ void BigRealIntervalTransformation::checkFromInterval(const TCHAR *method, const
   }
 }
 
-BigRealIntervalTransformation::BigRealIntervalTransformation(const BigRealInterval &fromInterval, const BigRealInterval &toInterval, UINT precision, DigitPool *digitPool)
+BigRealIntervalTransformation::BigRealIntervalTransformation(const BigRealInterval &fromInterval, const BigRealInterval &toInterval, IntervalScale scaleType, UINT precision, DigitPool *digitPool)
 : m_a(0,         digitPool?digitPool:fromInterval.getDigitPool())
 , m_b(0,         digitPool?digitPool:fromInterval.getDigitPool())
 , m_fromInterval(digitPool?digitPool:fromInterval.getDigitPool())
 , m_toInterval(  digitPool?digitPool:fromInterval.getDigitPool())
+, m_scaleType(scaleType)
 {
   setPrecision(     precision);
   checkFromInterval(__TFUNCTION__, fromInterval);
@@ -147,8 +148,8 @@ BigRealRectangle2D  BigRealRectangleTransformation::getToRectangle()   const {
 }
 
 void BigRealRectangleTransformation::setScale(IntervalScale newScale, int flags) {
-  IntervalScale xScale = getXTransformation().getScale();
-  IntervalScale yScale = getYTransformation().getScale();
+  IntervalScale xScale = getXTransformation().getScaleType();
+  IntervalScale yScale = getYTransformation().getScaleType();
   if((flags & X_AXIS) != 0) {
     xScale = newScale;
   }

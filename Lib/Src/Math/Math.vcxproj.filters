@@ -502,9 +502,6 @@
     <ClInclude Include="..\..\Include\Math\Point2D.h">
       <Filter>Source Files\Geometri\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\RectangleTransformation.h">
-      <Filter>Source Files\Geometri\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\Math\CubeTemplate.h">
       <Filter>Source Files\Geometri\Header Files</Filter>
     </ClInclude>
@@ -524,6 +521,9 @@
       <Filter>Source Files\Geometri\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\FixedSizeVector.h">
+      <Filter>Source Files\Geometri\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Rectangle2DTransformation.h">
       <Filter>Source Files\Geometri\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

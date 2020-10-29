@@ -8,7 +8,7 @@ protected:
   CRect                      m_dragRect;
   bool                       m_dragging;
   CPoint                     m_mouseDownPoint;
-  RectangleTransformation    m_mouseDownTransform;
+  Rectangle2DTransformation  m_mouseDownTransform;
 
   static void postMsg(int msg, WPARAM wp=0, LPARAM lp=0) {
     theApp.getMainWindow()->PostMessage(msg,wp,lp);

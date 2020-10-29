@@ -1,13 +1,13 @@
 #pragma once
 
-#include <Math/RectangleTransformation.h>
+#include <Math/Rectangle2DTransformation.h>
 
 class CIntervalDlg : public CDialog {
 private:
-  RectangleTransformation m_tr;
-  HACCEL                  m_accelTable;
+  Rectangle2DTransformation m_tr;
+  HACCEL                    m_accelTable;
 public:
-  CIntervalDlg(const RectangleTransformation &tr, CWnd *pParent = nullptr);
+  CIntervalDlg(const Rectangle2DTransformation &tr, CWnd *pParent = nullptr);
   Rectangle2D getDataRange();
 
   enum { IDD = IDR_INTERVAL };

@@ -101,10 +101,10 @@ public:
     return *m_objectArray[index];
   }
 
-  inline const RectangleTransformation &getTransformation() const {
+  inline const Rectangle2DTransformation &getTransformation() const {
     return m_vp.getTransformation();
   }
-  inline RectangleTransformation &getTransformation() {
+  inline Rectangle2DTransformation &getTransformation() {
     return m_vp.getTransformation();
   }
   void setOccupiedPoint(          const Point2D      &p );

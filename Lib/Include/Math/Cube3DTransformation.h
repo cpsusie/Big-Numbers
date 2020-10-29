@@ -38,7 +38,7 @@ public:
     : CubeTransformationTemplate<T, 3>(src)
   {
   }
-  template<typename T1, typename T2> Cube3DTransformationTemplate(const CubeTemplate<T1, 3> &from, const const CubeTemplate<T2, 3> &to, IntervalScale xScale = LINEAR, IntervalScale yScale = LINEAR, IntervalScale zScale = LINEAR) {
+  template<typename T1, typename T2> Cube3DTransformationTemplate(const CubeTemplate<T1, 3> &from, const CubeTemplate<T2, 3> &to, IntervalScale xScale = LINEAR, IntervalScale yScale = LINEAR, IntervalScale zScale = LINEAR) {
     setFromCube(from).setToCube(to).setScaleType(0, xScale).setScaleType(1, yScale).setScaleType(2, zScale);
   }
 

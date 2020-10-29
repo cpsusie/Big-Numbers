@@ -36,8 +36,7 @@ void PolygonSet::stretch(const Point2D &dp) {
 }
 
 void PolygonSet::rotate(const Point2D &dp) {
-  Point2DRefArray pa = getPointRefArray();
-  m_boundingBox.rotate(dp, pa);
+  m_boundingBox.rotate(dp, getPointRefArray());
 }
 
 void PolygonSet::mirror(bool horizontal) {
@@ -53,15 +52,20 @@ void PolygonSet::invertNormals() {
 
 void PolygonSet::evaluateBox() {
   if(!isEmpty()) {
-    Rectangle2D box = first()->getBoundingBox();
-    for(size_t i = 1; i < size(); i++) {
-      box = getUnion(box,(*this)[i]->getBoundingBox());
+    bool        firstTime = true;
+    Rectangle2D box;
+    for(auto it = getIterator(); it.hasNext();) {
+      if(firstTime) {
+        box = it.next()->getBoundingBox();
+        firstTime     = false;
+      } else {
+        box = getUnion(box, it.next()->getBoundingBox());
+      }
     }
     m_boundingBox = box;
-//    m_boundingBox.scale(1.2);
   }
 }
 
-bool PolygonSet::pointOnMarkRect(const CPoint &p) {
-  return m_boundingBox.pointOnMarkRect(p);
+bool PolygonSet::isPointOnMarkRect(const CPoint &p) {
+  return m_boundingBox.isPointOnMarkRect(p);
 }

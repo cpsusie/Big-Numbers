@@ -3,9 +3,26 @@
 #include "TurnableRect.h"
 #include "BitmapRotate.h"
 
-RectMark::RectMark(MarkId markId, const CPoint &p, int imageId, int degree) {
-  m_markId = markId;
-  m_image  = getRotatedBitmapResource(imageId, degree);
+MarkId getOppositeMarkId(MarkId id) {
+  switch(id) {
+  case BL: return TR;
+  case BR: return TL;
+  case TR: return BL;
+  case TL: return BR;
+  case BC: return TC;
+  case RC: return LC;
+  case TC: return BC;
+  case LC: return RC;
+  case C : return C;
+  }
+  throwInvalidArgumentException(__TFUNCTION__, _T("id=%d"), id);
+  return C;
+}
+
+RectMark::RectMark(MarkId markId, const CPoint &p, int imageId, int degree)
+: m_markId(markId)
+, m_image(getRotatedBitmapResource(imageId, degree))
+{
   const CSize bmSize = getBitmapSize(*m_image);
   left   = p.x  - bmSize.cx/2;
   top    = p.y  - bmSize.cy/2;
@@ -13,65 +30,46 @@ RectMark::RectMark(MarkId markId, const CPoint &p, int imageId, int degree) {
   bottom = top  + bmSize.cy;
 }
 
-TurnableRect::TurnableRect() {
+TurnableRect::TurnableRect()
+: m_selectedMarkIndex(-1)
+{
   Point2D p(0,0);
-  for(int i = 0; i < 4; i++) add(p);
-  m_selectedMarkIndex = -1;
-  m_rotationCenter = getCenter();
+  for(int i = 0; i < 4; i++) {
+    add(p);
+  }
+  m_rotationCenter    = getCenter();
 }
 
-TurnableRect::TurnableRect(const Rectangle2D &r) {
-  add(r.LT());
-  add(r.RT());
-  add(r.RB());
+TurnableRect::TurnableRect(const Rectangle2D &r)
+: m_selectedMarkIndex(-1)
+{
   add(r.LB());
-  m_selectedMarkIndex = -1;
+  add(r.RB());
+  add(r.RT());
+  add(r.LT());
   m_rotationCenter = getCenter();
 }
 
-Point2D TurnableRect::getMarkPoint(MarkId id) {
+Point2D TurnableRect::getMarkPoint(MarkId id) const {
   switch(id) {
-  case TL: return getTopLeft();
-  case TR: return getTopRight();
   case BL: return getBottomLeft();
   case BR: return getBottomRight();
-  case TC: return getTopCenter();
+  case TR: return getTopRight();
+  case TL: return getTopLeft();
   case BC: return getBottomCenter();
-  case LC: return getLeftCenter();
   case RC: return getRightCenter();
+  case TC: return getTopCenter();
+  case LC: return getLeftCenter();
   case C : return m_rotationCenter;
-  default: throwException(_T("getMarkPoint:Invalid id:%d"),id);
   }
+  throwInvalidArgumentException(__TFUNCTION__, _T("id=%d"), id);
   return getTopLeft();
 }
 
-Point2D TurnableRect::getSelectedMarkPoint() {
-  return getMarkPoint(getSelectedMark());
-}
-
-Point2D TurnableRect::getStretchOrigin() {
+Point2D TurnableRect::getSkewDir() const {
   switch(getSelectedMark()) {
-  case TL: return getBottomRight();
-  case TR: return getBottomLeft();
-  case BL: return getTopRight();
-  case BR: return getTopLeft();
-  case TC: return getBottomCenter();
-  case BC: return getTopCenter();
-  case LC: return getRightCenter();
-  case RC: return getLeftCenter();
-  default: throwException(_T("StretchOrigin not defined for mark %d"),getSelectedMark());
-  }
-  return getBottomRight();
-}
-
-Point2D TurnableRect::getStretchDir() {
-  return getSelectedMarkPoint() - getCenter();
-}
-
-Point2D TurnableRect::getSkewDir() {
-  switch(getSelectedMark()) {
-  case TC:
-  case BC: return getU1();
+  case BC:
+  case TC: return getU1();
   case LC:
   case RC: return getU2();
   default:
@@ -80,13 +78,13 @@ Point2D TurnableRect::getSkewDir() {
   return getU1();
 }
 
-Point2D TurnableRect::getRotateDir() {
+Point2D TurnableRect::getRotateDir() const {
   switch(getSelectedMark()) {
-  case TL:
-  case TR:
   case BL:
   case BR:
-    return ::rotate(Point2D(getSelectedMarkPoint() - m_rotationCenter),M_PI/2);
+  case TR:
+  case TL:
+    return ::rotate(getSelectedMarkPoint() - m_rotationCenter, M_PI/2);
   default:
     throwException(_T("Rotatedir not defined for mark %d"), getSelectedMark());
   }
@@ -95,83 +93,65 @@ Point2D TurnableRect::getRotateDir() {
 
 // ----------------------------------- PointTransformations ----------------------------------
 
-FunctionR2R2 *TurnableRect::getMoveTransformation(const Point2D &dp) {
-  FunctionR2R2  *result = new MoveTransformation(dp); TRACE_NEW(result);
-  return result;
+FunctionR2R2 *TurnableRect::getMoveTransformation(const Point2D &dp) const {
+  return new MoveTransformation(dp);
 }
 
-FunctionR2R2 *TurnableRect::getStretchTransformation(const Point2D &dp) {
+FunctionR2R2 *TurnableRect::getStretchTransformation(const Point2D &dp) const {
   const Point2D  dir    = unitVector(getStretchDir());
   const Point2D  step   = (dp * dir) * dir;
-  FunctionR2R2  *result = new StretchTransformation(getStretchOrigin(),getU1(),getU2(),getSelectedMarkPoint(),step); TRACE_NEW(result);
-  return result;
+  return new StretchTransformation(getStretchOrigin(),getU1(),getU2(),getSelectedMarkPoint(),step);
 }
 
-FunctionR2R2 *TurnableRect::getRotateTransformation(const Point2D &dp) {
+FunctionR2R2 *TurnableRect::getRotateTransformation(const Point2D &dp) const {
   const Point2D  dir    = unitVector(getRotateDir());
   const Point2D  step   = (dp * dir) * dir;
-  const double   theta  = angle2D(Point2D(getSelectedMarkPoint() - m_rotationCenter), Point2D(getSelectedMarkPoint() + step - m_rotationCenter));
-  FunctionR2R2  *result = new RotateTransformation(m_rotationCenter, theta); TRACE_NEW(result);
-  return result;
+  const double   theta  = angle2D(getSelectedMarkPoint() - m_rotationCenter, getSelectedMarkPoint() + step - m_rotationCenter);
+  return new RotateTransformation(m_rotationCenter, theta);
 }
 
-FunctionR2R2 *TurnableRect::getSkewTransformation(const Point2D &dp) {
+FunctionR2R2 *TurnableRect::getSkewTransformation(const Point2D &dp) const {
   const Point2D  dir    = unitVector(getSkewDir());
   const Point2D  step   = (dp * dir) * dir;
-  FunctionR2R2  *result = new SkewTransformation(getStretchOrigin(),getU1(),getU2(),getSelectedMarkPoint(),step); TRACE_NEW(result);
-  return result;
+  return new SkewTransformation(getStretchOrigin(),getU1(),getU2(),getSelectedMarkPoint(),step);
 }
 
-FunctionR2R2 *TurnableRect::getMirrorTransformation(bool horizontal) {
-  FunctionR2R2  *result;
-  if(horizontal) {
-    result = new MirrorTransformation(getLeftCenter(),getRightCenter()); TRACE_NEW(result);
-  } else {
-    result = new MirrorTransformation(getTopCenter(),getBottomCenter()); TRACE_NEW(result);
+FunctionR2R2 *TurnableRect::getMirrorTransformation(bool horizontal) const {
+  return horizontal
+       ? new MirrorTransformation(getLeftCenter(),getRightCenter())
+       : new MirrorTransformation(getTopCenter(),getBottomCenter());
+}
+
+void TurnableRect::applyFunction(FunctionR2R2 *fp, Point2DRefArray &pointArray) {
+  try {
+    FunctionR2R2 &f = *fp;
+    for(Point2D *p = begin(), *endp = end(); p < endp; p++) {
+      *p = f(*p);
+    }
+    m_rotationCenter = f(m_rotationCenter);
+    for(Point2D **p = pointArray.begin(), **endp = pointArray.end(); p < endp; p++) {
+      **p = f(**p);
+    }
+    delete fp;
+  } catch(...) {
+    delete fp;
+    throw;
   }
-  return result;
-}
-
-void TurnableRect::applyFunction(FunctionR2R2 *f, Point2DRefArray &pointArray) {
-  for(size_t i = 0; i < size(); i++) {
-    (*this)[i] = (*f)((*this)[i]);
-  }
-  for(size_t i = 0; i < pointArray.size(); i++) {
-    *pointArray[i] = (*f)(*pointArray[i]);
-  }
-  m_rotationCenter = (*f)(m_rotationCenter);
-}
-
-void TurnableRect::move(const Point2D &dp, Point2DRefArray &pointArray) {
-  FunctionR2R2 *f = getMoveTransformation(dp);
-  applyFunction(f, pointArray);
-  SAFEDELETE(f);
-}
-
-void TurnableRect::stretch(const Point2D &dp, Point2DRefArray &pointArray) {
-  FunctionR2R2 *f = getStretchTransformation(dp);
-  applyFunction(f, pointArray);
-  SAFEDELETE(f);
 }
 
 void TurnableRect::rotate(const Point2D &dp, Point2DRefArray &pointArray) {
-  FunctionR2R2 *f = nullptr;
   switch(getSelectedMark()) {
-  case TL:
-  case TR:
   case BL:
   case BR:
-    f = getRotateTransformation(dp);
-    applyFunction(f, pointArray);
-    SAFEDELETE(f);
+  case TL:
+  case TR:
+    applyFunction(getRotateTransformation(dp), pointArray);
     break;
-  case TC:
-  case BC:
   case LC:
   case RC:
-    f = getSkewTransformation(dp);
-    applyFunction(f, pointArray);
-    SAFEDELETE(f);
+  case TC:
+  case BC:
+    applyFunction(getSkewTransformation(dp), pointArray);
     break;
   case C:
     m_rotationCenter += dp;
@@ -179,39 +159,13 @@ void TurnableRect::rotate(const Point2D &dp, Point2DRefArray &pointArray) {
   }
 }
 
-void TurnableRect::mirror(bool horizontal, Point2DRefArray &pointArray) {
-  FunctionR2R2 *f = getMirrorTransformation(horizontal);
-  applyFunction(f, pointArray);
-  SAFEDELETE(f);
-}
-
 void TurnableRect::scale(double factor) {
-  Point2D center = getCenter();
-  double f = (factor-1) / 2;
-  getTopLeft()     += (getTopLeft()     - center) * f;
-  getTopRight()    += (getTopRight()    - center) * f;
-  getBottomRight() += (getBottomRight() - center) * f;
+  const Point2D center = getCenter();
+  const double  f      = (factor-1) / 2;
   getBottomLeft()  += (getBottomLeft()  - center) * f;
-}
-
-Point2D TurnableRect::getCenter() {
-  return (getTopLeft() + getBottomRight())/2;
-}
-
-Point2D TurnableRect::getTopCenter() {
-  return (getTopLeft() + getTopRight())/2;
-}
-
-Point2D TurnableRect::getBottomCenter() {
-  return (getBottomLeft() + getBottomRight())/2;
-}
-
-Point2D TurnableRect::getLeftCenter() {
-  return (getTopLeft() + getBottomLeft())/2;
-}
-
-Point2D TurnableRect::getRightCenter() {
-  return (getTopRight() + getBottomRight())/2;
+  getBottomRight() += (getBottomRight() - center) * f;
+  getTopRight()    += (getTopRight()    - center) * f;
+  getTopLeft()     += (getTopLeft()     - center) * f;
 }
 
 void TurnableRect::addMarkRect(Viewport2D &vp, MarkId markId, int imageId, int degree) {
@@ -219,20 +173,19 @@ void TurnableRect::addMarkRect(Viewport2D &vp, MarkId markId, int imageId, int d
 }
 
 void TurnableRect::repaint(Viewport2D &vp, ProfileEditorState state) {
+  const Point2D e1(1, 0);
+#define DEGREE(v)              (int)RAD2GRAD(angle2D(e1, v))
+#define VDEGREE(from,toMarkId) DEGREE(Point2D(getMarkPoint(toMarkId))-from)
+#define VSTRETCH(    markId  ) VDEGREE(getCenter()     , markId)
+#define VROT(        markId  ) VDEGREE(m_rotationCenter, markId)
 
-#define DEGREE(v)     (int)RAD2GRAD(angle2D(v, Point2D(1,0)))
-#define VDEGREE(id,p) DEGREE(Point2D(getMarkPoint(id)-p))
-#define VSTRETCH(id)  VDEGREE(id, getCenter())
-#define VROT(id)      VDEGREE(id, m_rotationCenter)
+#define IDB_SQUARE             IDB_BLACKSQUAREBITMAP
+#define IDB_LRARROW            IDB_LEFTRIGHTARROWBITMAP
+#define IDB_CORNER             IDB_ROTATECORNERBITMAP
+#define IDB_CIRCLE             IDB_CIRCLEARROWBITMAP
 
-#define IDB_SQUARE  IDB_BLACKSQUAREBITMAP
-#define IDB_LRARROW IDB_LEFTRIGHTARROWBITMAP
-#define IDB_CORNER  IDB_ROTATECORNERBITMAP
-#define IDB_CIRCLE  IDB_CIRCLEARROWBITMAP
-
-
-  int v1 = DEGREE(getU1());
-  int v2 = DEGREE(getU2());
+  const int v1 = DEGREE(getU1());
+  const int v2 = DEGREE(getU2());
 
   m_marks.clear();
   switch(state) {
@@ -241,56 +194,57 @@ void TurnableRect::repaint(Viewport2D &vp, ProfileEditorState state) {
     return;
 
   case MOVING     :
-    addMarkRect(vp, TL, IDB_SQUARE   , v1          );
-    addMarkRect(vp, TC, IDB_SQUARE   , v1          );
-    addMarkRect(vp, TR, IDB_SQUARE   , v1          );
-    addMarkRect(vp, RC, IDB_SQUARE   , v1          );
-    addMarkRect(vp, BR, IDB_SQUARE   , v1          );
-    addMarkRect(vp, BC, IDB_SQUARE   , v1          );
     addMarkRect(vp, BL, IDB_SQUARE   , v1          );
+    addMarkRect(vp, BR, IDB_SQUARE   , v1          );
+    addMarkRect(vp, TR, IDB_SQUARE   , v1          );
+    addMarkRect(vp, TL, IDB_SQUARE   , v1          );
+    addMarkRect(vp, BC, IDB_SQUARE   , v1          );
+    addMarkRect(vp, RC, IDB_SQUARE   , v1          );
+    addMarkRect(vp, TC, IDB_SQUARE   , v1          );
     addMarkRect(vp, LC, IDB_SQUARE   , v1          );
     break;
 
   case STRETCHING  :
-    addMarkRect(vp, TL, IDB_LRARROW  , VSTRETCH(TL));
-    addMarkRect(vp, TC, IDB_LRARROW  , v2          );
-    addMarkRect(vp, TR, IDB_LRARROW  , VSTRETCH(TR));
-    addMarkRect(vp, RC, IDB_LRARROW  , v1          );
-    addMarkRect(vp, BR, IDB_LRARROW  , VSTRETCH(BR));
-    addMarkRect(vp, BC, IDB_LRARROW  , v2          );
     addMarkRect(vp, BL, IDB_LRARROW  , VSTRETCH(BL));
+    addMarkRect(vp, BR, IDB_LRARROW  , VSTRETCH(BR));
+    addMarkRect(vp, TR, IDB_LRARROW  , VSTRETCH(TR));
+    addMarkRect(vp, TL, IDB_LRARROW  , VSTRETCH(TL));
+    addMarkRect(vp, BC, IDB_LRARROW  , v2          );
+    addMarkRect(vp, RC, IDB_LRARROW  , v1          );
+    addMarkRect(vp, TC, IDB_LRARROW  , v2          );
     addMarkRect(vp, LC, IDB_LRARROW  , v1          );
     break;
 
   case ROTATING   :
-    addMarkRect(vp, TL, IDB_CORNER   , VROT(TL)    );
-    addMarkRect(vp, TC, IDB_LRARROW  , v1          );
-    addMarkRect(vp, TR, IDB_CORNER   , VROT(TR)    );
-    addMarkRect(vp, RC, IDB_LRARROW  , v2          );
-    addMarkRect(vp, BR, IDB_CORNER   , VROT(BR)    );
-    addMarkRect(vp, BC, IDB_LRARROW  , v1          );
     addMarkRect(vp, BL, IDB_CORNER   , VROT(BL)    );
+    addMarkRect(vp, BR, IDB_CORNER   , VROT(BR)    );
+    addMarkRect(vp, TR, IDB_CORNER   , VROT(TR)    );
+    addMarkRect(vp, TL, IDB_CORNER   , VROT(TL)    );
+    addMarkRect(vp, BC, IDB_LRARROW  , v1          );
+    addMarkRect(vp, RC, IDB_LRARROW  , v2          );
+    addMarkRect(vp, TC, IDB_LRARROW  , v1          );
     addMarkRect(vp, LC, IDB_LRARROW  , v2          );
     addMarkRect(vp, C , IDB_CIRCLE   , v1          );
     break;
   }
 
   CDC dc;
-  dc.CreateCompatibleDC(vp. getDC());
-
-  for(size_t i = 0; i < m_marks.size(); i++) {
-    RectMark &m = m_marks[i];
-    dc.SelectObject(m.m_image);
-    vp.getDC()->BitBlt(m.left, m.top, m.Width(), m.Height(), &dc, 0, 0, SRCAND);
+  dc.CreateCompatibleDC(vp.getDC());
+  for(const RectMark rm : m_marks) {
+    dc.SelectObject(rm.m_image);
+    vp.getDC()->BitBlt(rm.left, rm.top, rm.Width(), rm.Height(), &dc, 0, 0, SRCAND);
   }
   dc.DeleteDC();
 }
 
-bool TurnableRect::pointOnMarkRect(const CPoint &p) {
-  for(size_t i = 0; i < m_marks.size(); i++) {
-    if(m_marks[i].PtInRect(p)) {
-      m_selectedMarkIndex = (int)i;
+bool TurnableRect::isPointOnMarkRect(const CPoint &p) const {
+  int index = 0;
+  for(const RectMark rm : m_marks) {
+    if(rm.PtInRect(p)) {
+      m_selectedMarkIndex = index;
       return true;
+    } else {
+      index++;
     }
   }
   return false;

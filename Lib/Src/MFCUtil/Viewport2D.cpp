@@ -3,7 +3,7 @@
 #include <MFCUtil/Viewport2D.h>
 
 Viewport2D::Viewport2D(bool retainAspectRatio) {
-  m_tr                = new RectangleTransformation(); TRACE_NEW(m_tr);
+  m_tr                = new Rectangle2DTransformation(); TRACE_NEW(m_tr);
   m_ownTransformation = true;
   m_dc                = nullptr;
   m_retainAspectRatio = retainAspectRatio;
@@ -12,7 +12,7 @@ Viewport2D::Viewport2D(bool retainAspectRatio) {
 }
 
 Viewport2D::Viewport2D(CDC &dc, const Rectangle2D &from, const Rectangle2D &to, bool retainAspectRatio) : m_dc(&dc) {
-  m_tr                = new RectangleTransformation(from, to); TRACE_NEW(m_tr);
+  m_tr                = new Rectangle2DTransformation(from, to); TRACE_NEW(m_tr);
   m_ownTransformation = true;
   m_currentPenWidth   = 0;
   m_retainAspectRatio = retainAspectRatio;
@@ -22,7 +22,7 @@ Viewport2D::Viewport2D(CDC &dc, const Rectangle2D &from, const Rectangle2D &to, 
   }
 }
 
-Viewport2D::Viewport2D(CDC &dc, RectangleTransformation &tr, bool retainAspectRatio) : m_dc(&dc) {
+Viewport2D::Viewport2D(CDC &dc, Rectangle2DTransformation &tr, bool retainAspectRatio) : m_dc(&dc) {
   m_tr                = &tr;
   m_ownTransformation = false;
   m_currentPenWidth   = 0;

@@ -3,9 +3,11 @@
 #include "CubeTransformationTemplate.h"
 #include "Rectangle2D.h"
 
-template<typename T> class RectangleTransformationTemplate : public CubeTransformationTemplate<T, 2> {
+template<typename T> class Rectangle2DTransformationTemplate : public CubeTransformationTemplate<T, 2> {
 private:
-  RectangleTransformationTemplate(const IntervalTransformationTemplate<T> &tx, const IntervalTransformationTemplate<T> &ty) {
+  Rectangle2DTransformationTemplate(const IntervalTransformationTemplate<T> &tx
+                                   ,const IntervalTransformationTemplate<T> &ty
+                                   ) {
     setTransformation(0,tx);
     setTransformation(1,ty);
   }
@@ -18,29 +20,29 @@ private:
                                  );
   }
   static Rectangle2DTemplate<T> getDefaultToRectangle() {
-    return Rectangle2DTemplate<T>(0, 100, 100, -100);
+    return Rectangle2DTemplate<T>(0, 0, 10, 10);
   }
 
 public:
-  RectangleTransformationTemplate(IntervalScale xScale = LINEAR, IntervalScale yScale = LINEAR) {
+  Rectangle2DTransformationTemplate(IntervalScale xScale = LINEAR, IntervalScale yScale = LINEAR) {
     setFromCube(getDefaultFromRectangle(xScale, yScale));
     setToCube(getDefaultToRectangle());
     setScaleType(0, xScale);
     setScaleType(1, yScale);
   }
-  template<typename S> inline RectangleTransformationTemplate(const CubeTransformationTemplate<S, 2> &src) 
+  template<typename S> Rectangle2DTransformationTemplate(const CubeTransformationTemplate<S, 2> &src)
     : CubeTransformationTemplate<T,2>(src)
   {
   }
-  template<typename T1, typename T2> RectangleTransformationTemplate(const CubeTemplate<T1, 2> &from, const CubeTemplate<T2, 2> &to, IntervalScale xScale = LINEAR, IntervalScale yScale = LINEAR) {
+  template<typename T1, typename T2> Rectangle2DTransformationTemplate(const CubeTemplate<T1, 2> &from, const CubeTemplate<T2, 2> &to, IntervalScale xScale = LINEAR, IntervalScale yScale = LINEAR) {
     setFromCube(from).setToCube(to).setScaleType(0, xScale).setScaleType(1, yScale);
   }
 
-  template<typename S> RectangleTransformationTemplate &setFromRectangle(const CubeTemplate<S, 2> &rect) {
+  template<typename S> Rectangle2DTransformationTemplate &setFromRectangle(const CubeTemplate<S, 2> &rect) {
     setFromCube(rect);
     return *this;
   }
-  template<typename S> RectangleTransformationTemplate &setToRectangle(const CubeTemplate<S, 2> &rect) {
+  template<typename S> Rectangle2DTransformationTemplate &setToRectangle(const CubeTemplate<S, 2> &rect) {
     setToCube(rect);
     return *this;
   }
@@ -97,9 +99,9 @@ public:
     return changed;
   }
 
-  static RectangleTransformationTemplate<T> getId() {
-    return RectangleTransformationTemplate(Rectangle2DTemplate<T>::getUnit(), Rectangle2DTemplate<T>::getUnit());
+  static Rectangle2DTransformationTemplate<T> getId() {
+    return Rectangle2DTransformationTemplate(Rectangle2DTemplate<T>::getUnit(), Rectangle2DTemplate<T>::getUnit());
   }
 };
 
-typedef RectangleTransformationTemplate<double  > RectangleTransformation;
+typedef Rectangle2DTransformationTemplate<double  > Rectangle2DTransformation;

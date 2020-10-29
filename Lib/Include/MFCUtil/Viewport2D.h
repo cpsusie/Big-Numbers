@@ -1,13 +1,13 @@
 #pragma once
 
-#include <Math/RectangleTransformation.h>
+#include <Math/Rectangle2DTransformation.h>
 #include "WinTools.h"
 
 class Viewport2D {
 private:
-  RectangleTransformation *m_tr;
-  bool                     m_ownTransformation;
-  bool                     m_retainAspectRatio;
+  Rectangle2DTransformation *m_tr;
+  bool                       m_ownTransformation;
+  bool                       m_retainAspectRatio;
 
   mutable CDC             *m_dc;
   mutable CRgn             m_clipRgn;
@@ -39,7 +39,7 @@ private:
 public:
   Viewport2D(bool retainAspectRatio = false);
   Viewport2D(CDC &dc, const Rectangle2D &from, const Rectangle2D &to, bool retainAspectRatio = false);
-  Viewport2D(CDC &dc, RectangleTransformation &tr,  bool retainAspectRatio = false);
+  Viewport2D(CDC &dc, Rectangle2DTransformation &tr,  bool retainAspectRatio = false);
   virtual ~Viewport2D();
 
   inline CDC *getDC() {
@@ -50,10 +50,10 @@ public:
     CDC *old = m_dc; m_dc = dc; return old;
   }
 
-  inline const RectangleTransformation &getTransformation() const {
+  inline const Rectangle2DTransformation &getTransformation() const {
     return *m_tr;
   }
-  inline       RectangleTransformation &getTransformation() {
+  inline       Rectangle2DTransformation &getTransformation() {
     return *m_tr;
   }
 
@@ -103,7 +103,7 @@ public:
     return getTransformation().backwardTransform(r);
   }
 
-  void            setClipping(bool         clip) const;
+         void     setClipping(bool         clip) const;
          void     MoveTo(    const Point2D  &p) const;
          void     LineTo(    const Point2D  &p) const;
          void     SetPixel(  const Point2D  &p, COLORREF color) const;

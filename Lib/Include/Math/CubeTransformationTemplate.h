@@ -153,7 +153,7 @@ public:
   CubeTemplate<T, dimension> getFromCube() const {
     CubeTemplate<T, dimension> result;
     for(UINT d = 0; d < dimension; d++) {
-      result.setInterval(d,m_e[d]->getFromInterval());
+      result.setInterval(d, m_e[d]->getFromInterval());
     }
     return result;
   }

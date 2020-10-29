@@ -365,6 +365,31 @@ template<typename T1, typename T2, UINT dimension> double angle(const FixedSizeV
   }
 }
 
+template<typename T, UINT dimension> FixedSizeVectorTemplate<T, dimension> floor(const FixedSizeVectorTemplate<T, dimension> &v) {
+  FixedSizeVectorTemplate<T, dimension> result;
+  for(UINT i = 0; i < dimension; i++) {
+    result[i] = floor(v[i]);
+  }
+  return result;
+}
+
+template<typename T, UINT dimension> FixedSizeVectorTemplate<T, dimension> ceil(const FixedSizeVectorTemplate<T, dimension> &v) {
+  FixedSizeVectorTemplate<T, dimension> result;
+  for(UINT i = 0; i < dimension; i++) {
+    result[i] = ceil(v[i]);
+  }
+  return result;
+}
+
+template<typename T, UINT dimension> FixedSizeVectorTemplate<T, dimension> fraction(const FixedSizeVectorTemplate<T, dimension> &v) {
+  FixedSizeVectorTemplate<T, dimension> result;
+  for(UINT i = 0; i < dimension; i++) {
+    result[i] = fraction(v[i]);
+  }
+  return result;
+}
+
+
 // Special for 2D
 template<typename T1, typename T2> double det(const FixedSizeVectorTemplate<T1,2> &v0
                                              ,const FixedSizeVectorTemplate<T2,2> &v1) {

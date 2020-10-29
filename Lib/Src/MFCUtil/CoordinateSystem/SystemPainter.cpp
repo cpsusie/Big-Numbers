@@ -67,57 +67,61 @@ const AxisAttribute &SystemPainter::getAxisAttr(AxisIndex axis) const {
 const CPoint &SystemPainter::getOrigin() const {
   return m_origin;
 }
+
+static CPoint getProjection(const CPoint &p, const CRect &r) {
+  return CPoint(minMax(p.x, r.left, r.right), minMax(p.y, r.top, r.bottom));
+}
+
 CSize SystemPainter::getTextExtent(const String &s) {
   return getViewport().getDC()->GetTextExtent(s.cstr());
 }
 void SystemPainter::makeSpaceForText() {
-  const AbstractAxisPainter &xPainter = *m_axisPainter[XAXIS_INDEX], &yPainter = *m_axisPainter[YAXIS_INDEX];
-  const int leftMargin   = yPainter.getMaxTextOffset() + 2;
-  const int rightMargin  = AbstractAxisPainter::ARROW_SIZE / 2;
-  const int topMargin    = AbstractAxisPainter::ARROW_SIZE / 2;
-  const int bottomMargin = xPainter.getMaxTextOffset() + getTextExtent(yPainter.getMaxValueText()).cy + 1;
-
-  Rectangle2D fr = getViewport().getFromRectangle();
+  const AbstractAxisPainter    &xPainter     = *m_axisPainter[XAXIS_INDEX], &yPainter = *m_axisPainter[YAXIS_INDEX];
+  const int                     leftMargin   = yPainter.getMaxTextOffset() + 2;
+  const int                     rightMargin  = AbstractAxisPainter::ARROW_SIZE / 2;
+  const int                     topMargin    = AbstractAxisPainter::ARROW_SIZE / 2;
+  const int                     bottomMargin = xPainter.getMaxTextOffset() + getTextExtent(yPainter.getMaxValueText()).cy + 1;
+  const CRect                   toRect       = getToRectangle();
+  Rectangle2D                   fromRect     = getViewport().getFromRectangle();
   const IntervalTransformation &xtr = getViewport().getXTransformation();
   const IntervalTransformation &ytr = getViewport().getYTransformation();
-  bool adjustRectangle = false;
-  if(xtr.isLinear() && fr.getMinX() == 0) {
-    const double dx = -xtr.backwardTransform(getToRectangle().left + leftMargin);
-    fr.p0()[0]   += dx;
-    fr.size()[0] -= dx;
-    adjustRectangle = true;
+  bool                          adjustFromRect = false;
+  if(xtr.isLinear() && (fromRect.getMinX() == 0)) {
+    const double dx = -xtr.backwardTransform(toRect.left + leftMargin);
+    fromRect.p0()[0]   += dx;
+    fromRect.size()[0] -= dx;
+    adjustFromRect = true;
   }
-  if(ytr.isLinear() && fr.getMinY() == 0) {
-    const double dy = -ytr.backwardTransform(getToRectangle().top - bottomMargin);
-    fr.p0()[1]   += dy;
-    fr.size()[1] -= dy;
-    adjustRectangle = true;
+  if(ytr.isLinear() && (fromRect.getMinY() == 0)) {
+    const double dy = -ytr.backwardTransform(toRect.bottom + bottomMargin);
+    fromRect.p0()[1]   += dy;
+    fromRect.size()[1] -= dy;
+    adjustFromRect = true;
   }
 
-  if(adjustRectangle) {
-    getViewport().setFromRectangle(fr);
+  if(adjustFromRect) {
+    getViewport().setFromRectangle(fromRect);
   }
-  Rectangle2D innerRectangle = getToRectangle();
 
-  innerRectangle.p0()[0]   += leftMargin;
-  innerRectangle.size()[0] -= leftMargin + rightMargin;
-  innerRectangle.p0()[1]   -= bottomMargin;
-  innerRectangle.size()[1] += bottomMargin + topMargin;
+  CRect innerRect  = makePositiveRect(getToRectangle());
+  innerRect.left   += leftMargin;
+  innerRect.right  -= rightMargin;
+  innerRect.top    += topMargin;
+  innerRect.bottom -= bottomMargin;
 
-  Point2D orig = innerRectangle.getProjection(Point2D(xPainter.getAxisPoint(),yPainter.getAxisPoint()));
+  const CPoint orig = getProjection((CPoint)Point2D(xPainter.getAxisPoint(), yPainter.getAxisPoint()), innerRect);
 
-  const double dx = min(orig.x() - innerRectangle.p0()[0], leftMargin   - getTextExtent(xPainter.getMinValueText()).cx/2 - 1);
-  const double dy = min(innerRectangle.p0()[1] - orig.y(), bottomMargin - getTextExtent(yPainter.getMinValueText()).cy/2 - 1);
+  const int dx = min(orig.x - innerRect.left  , leftMargin   - getTextExtent(xPainter.getMinValueText()).cx/2 - 1);
+  const int dy = min(innerRect.bottom - orig.y, bottomMargin - getTextExtent(yPainter.getMinValueText()).cy/2 - 1);
 
   if(dx > 0) {
-    innerRectangle.p0()[0]   -= dx;
-    innerRectangle.size()[0] += dx;
+    innerRect.left   -= dx;
   }
   if(dy > 0) {
-    innerRectangle.p0()[1]   += dy;
-    innerRectangle.size()[1] -= dy;
+    innerRect.bottom += dy;
   }
-  m_origin = (CPoint)(Point2D)innerRectangle.getProjection(orig);
+
+  m_origin = getProjection(orig, innerRect);
 }
 
 CRect SystemPainter::getToRectangle() const {
@@ -125,14 +129,13 @@ CRect SystemPainter::getToRectangle() const {
 }
 
 AbstractAxisPainter *SystemPainter::createAxisPainter(AxisIndex axis, AxisType type) {
-  AbstractAxisPainter *result;
+  AbstractAxisPainter *result = nullptr;
   switch(type) {
   case AXIS_LINEAR             : result = new LinearAxisPainter(            *this, axis); TRACE_NEW(result); break;
   case AXIS_LOGARITHMIC        : result = new LogarithmicAxisPainter(       *this, axis); TRACE_NEW(result); break;
   case AXIS_NORMAL_DISTRIBUTION: result = new NormalDistributionAxisPainter(*this, axis); TRACE_NEW(result); break;
   case AXIS_DATE               : result = new DateAxisPainter(              *this, axis); TRACE_NEW(result); break;
   default                      : throwInvalidArgumentException(__TFUNCTION__, _T("type (=%d)"),type);
-                                 return nullptr;
   }
   return result;
 }

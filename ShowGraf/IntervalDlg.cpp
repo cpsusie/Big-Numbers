@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CIntervalDlg::CIntervalDlg(const RectangleTransformation &tr, CWnd *pParent) : m_tr(tr), CDialog(IDD, pParent) {
+CIntervalDlg::CIntervalDlg(const Rectangle2DTransformation &tr, CWnd *pParent) : m_tr(tr), CDialog(IDD, pParent) {
   m_minx = m_tr.getFromRectangle().getMinX();
   m_maxx = m_tr.getFromRectangle().getMaxX();
   m_miny = m_tr.getFromRectangle().getMinY();
@@ -52,7 +52,7 @@ void CIntervalDlg::OnOK() {
     return;
   }
   try {
-    RectangleTransformation tmp(m_tr);
+    Rectangle2DTransformation tmp(m_tr);
     tmp.setFromRectangle(getDataRange());
     m_tr = tmp;
     __super::OnOK();

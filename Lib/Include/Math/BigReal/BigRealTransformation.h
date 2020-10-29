@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Math/RectangleTransformation.h>
+#include <Math/Rectangle2DTransformation.h>
 #include "BigRealInterval.h"
 
 #define AUTOPRECISION 0
@@ -93,18 +93,25 @@ public:
 
 class BigRealIntervalTransformation {
 private:
-  BigRealInterval m_fromInterval, m_toInterval;
-  BigReal         m_a, m_b;
-  UINT            m_precision, m_digits;
+  const IntervalScale m_scaleType;
+  BigRealInterval     m_fromInterval, m_toInterval;
+  BigReal             m_a, m_b;
+  UINT                m_precision, m_digits;
 protected:
   virtual BigReal translate(       const BigReal &x) const = 0;
   virtual BigReal inverseTranslate(const BigReal &x) const = 0;
   void computeTransformation();
   void checkFromInterval(const TCHAR *method, const BigRealInterval &interval);
 public:
-  BigRealIntervalTransformation(const BigRealInterval &fromInterval, const BigRealInterval &toInterval, UINT precision=AUTOPRECISION, DigitPool *digitPool = nullptr);
+  BigRealIntervalTransformation(const BigRealInterval &fromInterval, const BigRealInterval &toInterval, IntervalScale scaleType, UINT precision=AUTOPRECISION, DigitPool *digitPool = nullptr);
   // Set number of decimal digits in calculations
   // Specify AUTOPRECISION to get 8 extra decimal digits whatever from- and toInterval are
+  inline IntervalScale getScaleType() const {
+    return m_scaleType;
+  }
+  inline bool isLinear() const {
+    return getScaleType() == LINEAR;
+  }
   UINT setPrecision(UINT precsion);
   inline UINT getPrecision() const {
     return m_precision;
@@ -141,10 +148,8 @@ public:
     return BigRealInterval(backwardTransform(interval.getFrom()),backwardTransform(interval.getTo()));
   }
 
-  virtual bool isLinear() const = 0;
   // Returns new fromInterval.
   const BigRealInterval &zoom(const BigReal &x, const BigReal &factor, bool xInToInterval=true);
-  virtual IntervalScale getScale() const = 0;
   virtual BigRealIntervalTransformation *clone(DigitPool *digitPool=nullptr) const = 0;
 };
 
@@ -157,15 +162,9 @@ protected:
     return BigReal(x, getDigitPool());
   }
 public:
-  bool isLinear() const override {
-    return true;
-  }
   BigRealLinearTransformation(const BigRealInterval &fromInterval, const BigRealInterval &toInterval, UINT precision=AUTOPRECISION, DigitPool *digitPool=nullptr)
-    : BigRealIntervalTransformation(fromInterval, toInterval, precision, digitPool) {
+    : BigRealIntervalTransformation(fromInterval, toInterval, LINEAR, precision, digitPool) {
     computeTransformation();
-  }
-  IntervalScale getScale() const override {
-    return LINEAR;
   }
   BigRealIntervalTransformation *clone(DigitPool *digitPool=nullptr) const override {
     return new BigRealLinearTransformation(getFromInterval(),getToInterval(),getPrecision(),digitPool);
@@ -281,10 +280,10 @@ public:
   }
 
   inline void setFromRectangle(const BigRealRectangle2D &rect) {
-    computeTransformation(rect,getToRectangle(),getXTransformation().getScale(),getYTransformation().getScale());
+    computeTransformation(rect,getToRectangle(),getXTransformation().getScaleType(),getYTransformation().getScaleType());
   }
   inline void setToRectangle(const BigRealRectangle2D &rect) {
-    computeTransformation(getFromRectangle(),rect,getXTransformation().getScale(),getYTransformation().getScale());
+    computeTransformation(getFromRectangle(),rect,getXTransformation().getScaleType(),getYTransformation().getScaleType());
   }
   BigRealRectangle2D  getFromRectangle() const;
   BigRealRectangle2D  getToRectangle()   const;

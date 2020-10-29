@@ -64,7 +64,7 @@ void CCoordinateSystem::substituteControl(CWnd *parent, int id) {
   tabOrder.restoreTabOrder();
   ModifyStyleEx(0, exStyle);
   SetFont(font, FALSE);
-  RectangleTransformation &tr = m_vp.getTransformation();
+  Rectangle2DTransformation &tr = m_vp.getTransformation();
   tr.setFromRectangle((Rectangle2D)getDefaultDataRange(AXIS_LINEAR,AXIS_LINEAR));
   tr.setToRectangle((Rectangle2D)rect);
 }
@@ -293,7 +293,7 @@ void CCoordinateSystem::setFromRectangle(const Rectangle2D &rectangle, int makeS
     r.p0()[1]   -= dh / 2;
     r.size()[1] += dh;
   }
-  RectangleTransformation &tr = getTransformation();
+  Rectangle2DTransformation &tr = getTransformation();
   tr.setFromRectangle(r);
   if(makeSpaceFlags) {
     tr.zoom(tr.getToRectangle().getCenter(), -0.08, makeSpaceFlags);

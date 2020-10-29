@@ -59,10 +59,10 @@ void PointGraph::clear() {
 }
 
 double PointGraph::distance(const CPoint &p) const {
-  const  Point2D                  tmpp(p);
-  const  Point2DArray            &data    = getProcessedData();
-  const  RectangleTransformation &tr      = getSystem().getTransformation();
-  double                          minDist = EMPTY_DISTANCE;
+  const  Point2D                    tmpp(p);
+  const  Point2DArray              &data     = getProcessedData();
+  const  Rectangle2DTransformation &tr       = getSystem().getTransformation();
+  double                             minDist = EMPTY_DISTANCE;
   switch(getParam().getGraphStyle()) {
   case GSCURVE:
     { UINT    count = 0;

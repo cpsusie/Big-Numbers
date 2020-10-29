@@ -89,7 +89,7 @@ public:
     void setRetainAspectRatio(bool retain) {
       m_coordinateSystem.setRetainAspectRatio(retain);
     }
-    RectangleTransformation &getTransformation() {
+    Rectangle2DTransformation &getTransformation() {
       return getCoordinateSystem().getTransformation();
     }
     DataRange getDataRange() {

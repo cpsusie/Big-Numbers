@@ -3,10 +3,10 @@
 #include <Math/Transformation.h>
 
 class Turtle {
-  Point2D                 m_currentp;
-  double                  m_currentdir;
-  RectangleTransformation m_tr;
-  CDialog                *m_dlg;
+  Point2D                   m_currentp;
+  double                    m_currentdir;
+  Rectangle2DTransformation m_tr;
+  CDialog                  *m_dlg;
 public:
   void init(CDialog *dlg, double minx, double maxx, double miny, double maxy);
   void move(  double l);

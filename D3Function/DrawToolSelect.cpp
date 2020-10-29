@@ -32,11 +32,11 @@ void DrawToolSelect::endDragRect() {
 class DistanceFinder: public CurveOperator {
 private:
   Viewport2D &m_vp;
-  CPoint    m_point;
+  CPoint      m_point;
 public:
-  double    m_minDist;
+  double      m_minDist;
   DistanceFinder(Viewport2D &vp, const CPoint &p);
-  void line(const Point2D &from, const Point2D &to);
+  void line(const Point2D &from, const Point2D &to) override;
 };
 
 DistanceFinder::DistanceFinder(Viewport2D &vp, const CPoint &p) : m_vp(vp) {
@@ -68,7 +68,7 @@ ProfilePolygon2D *DrawToolSelect::findNearestPolygon(const CPoint &p) {
       nearestPolygon = &polygon;
     }
   }
-  return minDist < MAXDIST ? nearestPolygon : nullptr;
+  return (minDist < MAXDIST) ? nearestPolygon : nullptr;
 }
 
 Point2D *DrawToolSelect::findNearestPoint(const CPoint &p) {
@@ -116,7 +116,7 @@ bool DrawToolSelect::OnLButtonDown(UINT nFlags, CPoint point) {
         m_state = IDLE;
       }
       repaintAll();
-    } else if(m_polygonSet.pointInRect(m_editor.getViewport().backwardTransform(point)) || m_polygonSet.pointOnMarkRect(point)) {
+    } else if(m_polygonSet.isPointInRect(m_editor.getViewport().backwardTransform(point)) || m_polygonSet.isPointOnMarkRect(point)) {
 //      m_polygonSet.evaluateBox();
       m_state = MOVING;
       repaintAll();
@@ -130,14 +130,14 @@ bool DrawToolSelect::OnLButtonDown(UINT nFlags, CPoint point) {
     break;
 
   case STRETCHING :
-    if(!m_polygonSet.pointOnMarkRect(point)) {
+    if(!m_polygonSet.isPointOnMarkRect(point)) {
       m_state = IDLE;
     }
     repaintAll();
     break;
 
   case ROTATING   :
-    if(!m_polygonSet.pointOnMarkRect(point)) {
+    if(!m_polygonSet.isPointOnMarkRect(point)) {
       m_state = IDLE;
     }
     repaintAll();
@@ -154,26 +154,24 @@ bool DrawToolSelect::OnLButtonDblClk(UINT nFlags, CPoint point) {
   switch(m_state) {
   case IDLE       :
     break;
-
   case MOVING     :
-    if(m_polygonSet.pointOnMarkRect(point)) {
+    if(m_polygonSet.isPointOnMarkRect(point)) {
       m_state = STRETCHING;
       repaintAll();
     }
     break;
   case STRETCHING :
-    if(m_polygonSet.pointOnMarkRect(point)) {
+    if(m_polygonSet.isPointOnMarkRect(point)) {
       m_state = ROTATING;
       repaintAll();
     }
     break;
   case ROTATING   :
-    if(m_polygonSet.pointOnMarkRect(point)) {
+    if(m_polygonSet.isPointOnMarkRect(point)) {
       m_state = MOVING;
       repaintAll();
     }
     break;
-
   case DRAGGING   :
     break;
   }
@@ -266,10 +264,10 @@ bool DrawToolSelect::OnMouseMove(UINT nFlags, CPoint point) {
     break;
 
   case MOVING     :
-    if(nFlags & MK_LBUTTON && !m_polygonSet.isEmpty()) {
+    if((nFlags & MK_LBUTTON) && !m_polygonSet.isEmpty()) {
       m_polygonSet.move(dp);
       repaintAll();
-    } else if(nFlags & MK_RBUTTON && !m_selectedPoints.isEmpty()) {
+    } else if((nFlags & MK_RBUTTON) && !m_selectedPoints.isEmpty()) {
       moveSelectedPoints(dp);
       repaintAll();
     }

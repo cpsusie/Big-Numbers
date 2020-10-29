@@ -12,9 +12,6 @@ DrawTool::DrawTool(ProfileEditor *editor) : m_editor(*editor) {
   m_infostr[0] = '\0';
 }
 
-DrawTool::~DrawTool() {
-}
-
 bool DrawTool::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
   _stprintf(m_infostr,_T("nchar:%c (#%x), nFlags:%08x     "),nChar,nChar,nFlags);
   switch(nChar) {
@@ -53,26 +50,26 @@ bool DrawTool::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
 
 #define BOXSIZE 2
 
-DrawTool &DrawTool::paintBox(const Point2D &point, bool selected) {
+DrawTool &DrawTool::paintBox(Point2D *point, bool selected) {
   Viewport2D  &vp = m_editor.getViewport();
-  const CPoint  p = (CPoint)vp.forwardTransform(point);
+  const CPoint  p = (CPoint)vp.forwardTransform(*point);
   CRect rect(p.x-BOXSIZE, p.y-BOXSIZE, p.x+BOXSIZE, p.y+BOXSIZE);
-  vp.getDC()->FillRect(&rect,(selected || isSelected(&point)) ? &m_redBrush : &m_blackBrush);
+  vp.getDC()->FillRect(&rect,(selected || isSelected(point)) ? &m_redBrush : &m_blackBrush);
   return *this;
 }
 
-DrawTool &DrawTool::paintPoints(const ProfilePolygon2D &p, bool selected) {
-  const Point2D *currentPoint = &p.m_start;
-  Viewport2D &vp = m_editor.getViewport();
-  paintBox(*currentPoint, selected);
-  for(auto it = p.m_curveArray.getIterator(); it.hasNext();) {
-    auto &curve = it.next();
+DrawTool &DrawTool::paintPoints(ProfilePolygon2D *p, bool selected) {
+  Viewport2D &vp           = m_editor.getViewport();
+  Point2D    *currentPoint = &p->m_start;
+  paintBox(currentPoint, selected);
+  for(auto it = p->m_curveArray.getIterator(); it.hasNext();) {
+    ProfileCurve2D &curve       = it.next();
+    Point2DArray   &curvePoints = curve.m_points;
     switch(curve.m_type) {
     case TT_PRIM_LINE   :
-      { for(size_t j = 0; j < curve.m_points.size(); j++) {
-          const Point2D &nextPoint = curve.m_points[j];
-          paintBox(nextPoint, selected);
-          currentPoint = &nextPoint;
+      { for(Point2D *p = curvePoints.begin(), *endp = curvePoints.end(); p < endp;) {
+          paintBox(p, selected);
+          currentPoint = p++;
         }
       }
       break;
@@ -82,21 +79,21 @@ DrawTool &DrawTool::paintPoints(const ProfilePolygon2D &p, bool selected) {
       }
       break;
     case TT_PRIM_CSPLINE:
-      { for(size_t j = 0; j < curve.m_points.size(); j+=3) {
-          const Point2D &beginBezier = *currentPoint;
-          const Point2D &p1          = curve.m_points[j];
-          const Point2D &p2          = curve.m_points[j+1];
-          const Point2D &endBezier   = curve.m_points[j+2];
+      { for(Point2D *p = curvePoints.begin(), *endp = curvePoints.end(); p < endp;) {
+          Point2D *beginBezier = currentPoint;
+          Point2D *p1          =  p++;
+          Point2D *p2          =  p++;
+          Point2D *endBezier   =  p++;
 
           paintBox(beginBezier, selected);
           paintBox(p1         , selected);
           paintBox(p2         , selected);
           paintBox(endBezier  , selected);
-          vp.MoveTo(beginBezier);
-          vp.LineTo(p1);
-          vp.MoveTo(endBezier);
-          vp.LineTo(p2);
-          currentPoint = &endBezier;
+          vp.MoveTo(*beginBezier);
+          vp.LineTo(*p1);
+          vp.MoveTo(*endBezier);
+          vp.LineTo(*p2);
+          currentPoint = endBezier;
         }
       }
       break;
@@ -105,8 +102,8 @@ DrawTool &DrawTool::paintPoints(const ProfilePolygon2D &p, bool selected) {
   return *this;
 }
 
-DrawTool &DrawTool::repaintPolygon(const ProfilePolygon2D &pp, bool selected) {
-  paintProfilePolygon(pp, m_editor.getViewport(), selected ? RED : BLACK);
+DrawTool &DrawTool::repaintPolygon(ProfilePolygon2D *pp, bool selected) {
+  paintProfilePolygon(*pp, m_editor.getViewport(), selected ? RED : BLACK);
   if(m_editor.getShowPoints()) {
     paintPoints(pp, selected);
   }
@@ -116,9 +113,9 @@ DrawTool &DrawTool::repaintPolygon(const ProfilePolygon2D &pp, bool selected) {
 DrawTool &DrawTool::repaintProfile() {
   m_editor.getViewport().clear(WHITE);
   Profile2D &p = m_editor.getProfile();
-  for(size_t i = 0; i < p.m_polygonArray.size(); i++) {
-    ProfilePolygon2D &polygon = p.m_polygonArray[i];
-    repaintPolygon(polygon, isSelected(&polygon));
+  for(auto it = p.m_polygonArray.getIterator(); it.hasNext();) {
+    ProfilePolygon2D &polygon = it.next();
+    repaintPolygon(&polygon, isSelected(&polygon));
   }
   switch(m_editor.getNormalsMode()) {
   case NORMALS_INVISIBLE:
@@ -195,6 +192,10 @@ DrawTool &DrawTool::unselect(ProfilePolygon2D *p) {
   return *this;
 }
 
+bool DrawTool::isSelected(ProfilePolygon2D *p) const {
+  return m_polygonSet.contains(p);
+}
+
 DrawTool &DrawTool::select(Point2D *p) {
   m_selectedPoints.add(p);
   return *this;
@@ -208,12 +209,8 @@ DrawTool &DrawTool::unselect(Point2D *p) {
   return *this;
 }
 
-bool DrawTool::isSelected(ProfilePolygon2D *p) const {
-  return m_polygonSet.contains(p);
-}
-
-bool DrawTool::isSelected(const Point2D *p) const {
-  return m_selectedPoints.contains((Point2D*)p);
+bool DrawTool::isSelected(Point2D *p) const {
+  return m_selectedPoints.contains(p);
 }
 
 bool DrawTool::canDelete() {

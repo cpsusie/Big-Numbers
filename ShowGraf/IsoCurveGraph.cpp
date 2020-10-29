@@ -175,9 +175,9 @@ double IsoCurveGraph::distance(const CPoint &p) const {
   if(isEmpty()) {
     return EMPTY_DISTANCE;
   }
-  const RectangleTransformation &tr = getSystem().getTransformation();
-  const size_t                   n  = m_lineArray.size();
-  const LineSegment             *ls = &m_lineArray.first();
+  const Rectangle2DTransformation &tr = getSystem().getTransformation();
+  const size_t                    n  = m_lineArray.size();
+  const LineSegment              *ls = &m_lineArray.first();
 
   switch(getParam().getGraphStyle()) {
   case GSCURVE:
