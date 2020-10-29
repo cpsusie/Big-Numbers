@@ -103,10 +103,10 @@ public:
     return addPoint(Point2D(x,y));
   }
   inline Point2D &getLastPoint() {
-    return (Point2D&)m_points.last();
+    return m_points.last();
   }
   inline const Point2D &getLastPoint() const {
-    return (Point2D&)m_points.last();
+    return m_points.last();
   }
   inline bool isEmpty() const {
     return m_points.isEmpty();

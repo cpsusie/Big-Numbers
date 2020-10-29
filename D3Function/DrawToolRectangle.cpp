@@ -17,9 +17,9 @@ bool DrawToolRectangle::OnLButtonDown(UINT nFlags, CPoint point) {
   ProfilePolygon2D &gp = profile.m_polygonArray.last();
   ProfileCurve2D   &pc = gp.m_curveArray.last();
   m_ul = &gp.m_start;
-  m_ur = &(Point2D&)pc.m_points[0];
-  m_lr = &(Point2D&)pc.m_points[1];
-  m_ll = &(Point2D&)pc.m_points[2];
+  m_ur = &pc.m_points[0];
+  m_lr = &pc.m_points[1];
+  m_ll = &pc.m_points[2];
 
   unselectAll();
   select(&gp);
