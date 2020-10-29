@@ -114,7 +114,7 @@ public:
   }
 };
 
-// Return minimal cube containg all points in the array
+// Return minimal cube containg all points returned by iterator
 template<typename PointType> void getMinMaxPoints(PointType &minP, PointType &maxP, const ConstIterator<PointType> &it) {
   minP.clear();
   maxP = minP;
