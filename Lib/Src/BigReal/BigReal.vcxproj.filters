@@ -182,9 +182,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="BigRealTransformation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FullFormatIO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -274,9 +271,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\BigReal\BigRealMatrix.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\BigReal\BigRealTransformation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\BigReal\BigRealConfig.h">

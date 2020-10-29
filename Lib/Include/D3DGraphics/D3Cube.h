@@ -7,7 +7,7 @@ class D3Cube : public FloatCube3D {
 public:
   inline D3Cube() {
   }
-  template<typename C> D3Cube(const CubeTemplate<C,3> &src)
+  template<typename PT, typename ST, typename T> D3Cube(const CubeTemplate<PT,ST,T, 3> &src)
     : FloatCube3D(src)
   {
   }

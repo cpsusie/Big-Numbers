@@ -3,7 +3,7 @@
 #include "IntervalTransformation.h"
 #include "CubeTemplate.h"
 
-template<typename T, UINT dimension> class CubeTransformationTemplate {
+template<typename CubeType, typename PointType, typename SizeType, typename T, UINT dimension> class CubeTransformationTemplate {
 private:
   IntervalTransformationTemplate<T> *m_e[dimension];
 
@@ -17,7 +17,7 @@ private:
       SAFEDELETE(m_e[i]);
     }
   }
-  template<typename S> void copyAll(const CubeTransformationTemplate<S, dimension> &src) {
+  template<typename CT, typename PT, typename ST, typename S> void copyAll(const CubeTransformationTemplate<CT, PT, ST, S, dimension> &src) {
     for(UINT i = 0; i < dimension; i++) {
       const IntervalTransformation<S> &si = src[i];
       m_e[i] = allocateIntervalTransformation(NumberInterval<T>(si.getFromInterval()), NumberInterval<T>(si.getToInterval()), si.getScaleType());
@@ -47,17 +47,17 @@ public:
     init();
     cloneAll(src);
   }
-  template<typename S> CubeTransformationTemplate(const CubeTransformationTemplate<S,dimension> &src) {
-    init();
+  template<typename CT, typename PT, typename ST, typename S> CubeTransformationTemplate(const CubeTransformationTemplate<CT, PT, ST, S,dimension> &src)
+  { init();
     copyAll(src);
   }
-  CubeTransformationTemplate &operator=(const CubeTransformationTemplate &src) {
-    cleanup();
+  CubeTransformationTemplate &operator=(const CubeTransformationTemplate &src)
+  { cleanup();
     cloneAll(src);
     return *this;
   }
-  template<typename S> CubeTransformationTemplate<T,dimension> &operator=(const CubeTransformationTemplate<S,dimension> &src) {
-    cleanup();
+  template<typename CT, typename PT, typename ST, typename S> CubeTransformationTemplate &operator=(const CubeTransformationTemplate<CT,PT,ST,S,dimension> &src)
+  { cleanup();
     copyAll(src);
     return *this;
   }
@@ -78,29 +78,29 @@ public:
     return !(*this == rhs);
   }
 
-  template<typename S> PointTemplate<T,dimension> forwardTransform(const FixedSizeVectorTemplate<S, dimension> &v) const {
-    PointTemplate<T, dimension> result;
+  template<typename S> PointType forwardTransform(const FixedSizeVectorTemplate<S, dimension> &v) const {
+    PointType result;
     for(UINT i = 0; i < dimension; i++) {
       result[i] = m_e[i]->forwardTransform(v[i]);
     }
     return result;
   }
-  template<typename S> PointTemplate<T,dimension> backwardTransform(const FixedSizeVectorTemplate<S, dimension> &v) const {
-    PointTemplate<T, dimension> result;
+  template<typename S> PointType backwardTransform(const FixedSizeVectorTemplate<S, dimension> &v) const {
+    PointType result;
     for(UINT i = 0; i < dimension; i++) {
       result[i] = m_e[i]->backwardTransform(v[i]);
     }
     return result;
   }
-  template<typename S> CubeTemplate<T, dimension> forwardTransform(const CubeTemplate<S, dimension> &c) const {
-    CubeTemplate<T, dimension> result;
+  template<typename PT, typename ST, typename S> CubeType forwardTransform(const CubeTemplate<PT,ST,S,dimension> &c) const {
+    CubeType result;
     for(UINT i = 0; i < dimension; i++) {
       result.setInterval(i, m_e[i]->forwardTransform(c.getInterval(i)));
     }
     return result;
   }
-  template<typename S> CubeTemplate<T, dimension> backwardTransform(const CubeTemplate<S, dimension> &c) const {
-    CubeTemplate<T, dimension> result;
+  template<typename PT, typename ST, typename S> CubeType backwardTransform(const CubeTemplate<PT,ST,S,dimension> &c) const {
+    CubeType result;
     for(UINT i = 0; i < dimension; i++) {
       result.setInterval(i, m_e[i]->backwardTransform(c.getInterval(i)));
     }
@@ -150,8 +150,8 @@ public:
     return *this;
   }
 
-  CubeTemplate<T, dimension> getFromCube() const {
-    CubeTemplate<T, dimension> result;
+  CubeType getFromCube() const {
+    CubeType result;
     for(UINT d = 0; d < dimension; d++) {
       result.setInterval(d, m_e[d]->getFromInterval());
     }
@@ -159,15 +159,15 @@ public:
   }
 
   // Return *this
-  template<typename S> CubeTransformationTemplate &setFromCube(const CubeTemplate<S, dimension> &cube) {
+  template<typename PT, typename ST, typename S> CubeTransformationTemplate &setFromCube(const CubeTemplate<PT,ST,S,dimension> &cube) {
     for(UINT d = 0; d < dimension; d++) {
       m_e[d]->setFromInterval(cube.getInterval(d));
     }
     return *this;
   }
 
-  CubeTemplate<T, dimension> getToCube() const {
-    CubeTemplate<T, dimension> result;
+  CubeType getToCube() const {
+    CubeType result;
     for(UINT d = 0; d < dimension; d++) {
       result.setInterval(d,m_e[d]->getToInterval());
     }
@@ -175,7 +175,7 @@ public:
   }
 
   // Return this
-  template<typename S> CubeTransformationTemplate &setToCube(const CubeTemplate<S, dimension> &cube) {
+  template<typename PT, typename ST, typename S> CubeTransformationTemplate &setToCube(const CubeTemplate<PT,ST,S,dimension> &cube) {
     for(UINT d = 0; d < dimension; d++) {
       m_e[d]->setToInterval(cube.getInterval(d));
     }

@@ -709,7 +709,6 @@
     <ClInclude Include="..\..\Include\Math\BigReal\BigRealInterval.h" />
     <ClInclude Include="..\..\Include\Math\BigReal\BigRealMatrix.h" />
     <ClInclude Include="..\..\Include\Math\BigReal\BigRealResourcePool.h" />
-    <ClInclude Include="..\..\Include\Math\BigReal\BigRealTransformation.h" />
     <ClInclude Include="..\..\Include\Math\BigReal\DigitPool.h" />
     <ClInclude Include="..\..\Include\Math\BigReal\MRisprime.h" />
     <ClInclude Include="BigRealInternal.h" />
@@ -756,7 +755,6 @@
     <ClCompile Include="BigRealToString.cpp" />
     <ClCompile Include="BigRealStream.cpp" />
     <ClCompile Include="BigRealResourcePool.cpp" />
-    <ClCompile Include="BigRealTransformation.cpp" />
     <ClCompile Include="BigRealValidate.cpp" />
     <ClCompile Include="BigRealVector.cpp" />
     <ClCompile Include="BigRealwIO.cpp" />
