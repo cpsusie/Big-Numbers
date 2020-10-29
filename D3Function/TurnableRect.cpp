@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <Math/Point2DToPoint2DFunctions.h>
+#include "Point2DToPoint2DFunctions.h"
 #include "TurnableRect.h"
 #include "BitmapRotate.h"
 

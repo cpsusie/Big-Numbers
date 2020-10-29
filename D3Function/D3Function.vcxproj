@@ -674,6 +674,7 @@
     <ClInclude Include="OptionsOrganizerDlg.h" />
     <ClInclude Include="ParametricR1R3SurfaceParametersDlg.h" />
     <ClInclude Include="ParametricR2R3SurfaceParametersDlg.h" />
+    <ClInclude Include="Point2DToPoint2DFunctions.h" />
     <ClInclude Include="PolygonSet.h" />
     <ClInclude Include="ProfileDlg.h" />
     <ClInclude Include="ProfilePainter.h" />
@@ -712,6 +713,7 @@
     <ClCompile Include="OptionsOrganizerDlg.cpp" />
     <ClCompile Include="ParametricR1R3SurfaceParametersDlg.cpp" />
     <ClCompile Include="ParametricR2R3SurfaceParametersDlg.cpp" />
+    <ClCompile Include="Point2DToPoint2DFunctions.cpp" />
     <ClCompile Include="PolygonSet.cpp" />
     <ClCompile Include="ProfileDlg.cpp" />
     <ClCompile Include="ProfileEditor.cpp" />

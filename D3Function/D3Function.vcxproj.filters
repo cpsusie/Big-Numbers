@@ -147,6 +147,9 @@
     <ClInclude Include="ParametricR1R3SurfaceParametersDlg.h">
       <Filter>Source Files\Dialogs\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Point2DToPoint2DFunctions.h">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp">
@@ -247,6 +250,9 @@
     </ClCompile>
     <ClCompile Include="ParametricR1R3SurfaceParametersDlg.cpp">
       <Filter>Source Files\Dialogs\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Point2DToPoint2DFunctions.cpp">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

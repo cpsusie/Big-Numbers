@@ -1222,7 +1222,6 @@
     <ClCompile Include="NumberToString.cpp" />
     <ClCompile Include="NumberwIO.cpp" />
     <ClCompile Include="NumberwStr.cpp" />
-    <ClCompile Include="Point2DToPoint2DFunctions.cpp" />
     <ClCompile Include="RationalaStr.cpp" />
     <ClCompile Include="RationalPacker.cpp" />
     <ClCompile Include="Matrix.cpp" />
@@ -1360,7 +1359,6 @@
     <ClInclude Include="..\..\Include\Math\Number.h" />
     <ClInclude Include="..\..\Include\Math\Point2D.h" />
     <ClInclude Include="..\..\Include\Math\Point2D3D.h" />
-    <ClInclude Include="..\..\Include\Math\Point2DToPoint2DFunctions.h" />
     <ClInclude Include="..\..\Include\Math\Point3D.h" />
     <ClInclude Include="..\..\Include\Math\PointTemplate.h" />
     <ClInclude Include="..\..\Include\Math\Polygon2D.h" />

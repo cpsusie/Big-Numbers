@@ -1,6 +1,6 @@
-#include "pch.h"
+#include "stdafx.h"
 #include <Math.h>
-#include <Math/Point2DToPoint2DFunctions.h>
+#include "Point2DToPoint2DFunctions.h"
 
 // ----------------------- MoveTransformation -----------------------
 MoveTransformation::MoveTransformation(const Point2D &dp) {

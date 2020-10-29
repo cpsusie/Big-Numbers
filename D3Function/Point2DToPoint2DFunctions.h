@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Point2D.h"
+#include <Math/Point2D.h>
 
 class MoveTransformation : public FunctionR2R2 {
 private:
