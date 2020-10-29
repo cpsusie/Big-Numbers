@@ -28,10 +28,13 @@ public:
     m_size.clear();
     return *this;
   }
-  inline       PointType &p0()         { return m_p0;   }
-  inline const PointType &p0()   const { return m_p0;   }
-  inline       SizeType  &size()       { return m_size; }
-  inline const SizeType  &size() const { return m_size; }
+  inline       PointType  &p0()         { return m_p0;    }
+  inline const PointType  &p0()   const { return m_p0;    }
+  inline       SizeType   &size()       { return m_size;  }
+  inline const SizeType   &size() const { return m_size;  }
+
+  inline const T          &getX() const { return p0()[0]; }
+  inline const T          &getY() const { return p0()[1]; }
 
   // Return *this
   template<typename S> CubeTemplate &setInterval(UINT index, const NumberInterval<S> &interval) {
@@ -43,6 +46,9 @@ public:
     const T &from = m_p0[index];
     return NumberInterval<T>(from, from + m_size[index]);
   }
+
+  inline NumberInterval<T> getXInterval() const { return getInterval(0); }
+  inline NumberInterval<T> getYInterval() const { return getInterval(1); }
 
   // Move this by offset +v
   // Return *this
@@ -71,6 +77,11 @@ public:
     const T &l = m_size[index];
     return (l <= 0) ? m_p0[index] : (m_p0[index] + l);
   }
+
+  inline       T           getMinX()      const { return getMin(0);                 }
+  inline       T           getMaxX()      const { return getMax(0);                 }
+  inline       T           getMinY()      const { return getMin(1);                 }
+  inline       T           getMaxY()      const { return getMax(1);                 }
 
   PointType getAllMin() const {
     PointType p;

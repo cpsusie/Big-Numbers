@@ -26,8 +26,6 @@ public:
   {
   }
 
-  inline const T                &getX()         const { return p0()[0];                                       }
-  inline const T                &getY()         const { return p0()[1];                                       }
   inline const T                &getZ()         const { return p0()[2];                                       }
   inline const T                &getWidth()     const { return size()[0];                                     }
   inline const T                &getDepth()     const { return size()[1];                                     }
@@ -48,15 +46,9 @@ public:
   inline       PointType         LTF()          const { return PointType(getLeft() , getFar() , getTop()   ); }
   inline       PointType         RTF()          const { return LBN() + size();                                }
 
-  inline       T                 getMinX()      const { return __super::getMin(0);                            }
-  inline       T                 getMaxX()      const { return __super::getMax(0);                            }
-  inline       T                 getMinY()      const { return __super::getMin(1);                            }
-  inline       T                 getMaxY()      const { return __super::getMax(1);                            }
   inline       T                 getMinZ()      const { return __super::getMin(2);                            }
   inline       T                 getMaxZ()      const { return __super::getMax(2);                            }
 
-  inline       NumberInterval<T> getXInterval() const { return getInterval(0);                                }
-  inline       NumberInterval<T> getYInterval() const { return getInterval(1);                                }
   inline       NumberInterval<T> getZInterval() const { return getInterval(2);                                }
 };
 

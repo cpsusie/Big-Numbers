@@ -49,8 +49,6 @@ public:
   }
 #endif // __ATLTYPES_H__
 
-  inline const T          &getX()         const { return p0()[0];                            }
-  inline const T          &getY()         const { return p0()[1];                            }
   inline const T          &getWidth()     const { return size()[0];                          }
   inline const T          &getHeight()    const { return size()[1];                          }
   inline const T          &getLeft()      const { return getX();                             }
@@ -62,14 +60,6 @@ public:
   inline       PointType   RB()           const { return PointType(getRight(), getBottom()); }
   inline       PointType   LT()           const { return PointType(getLeft() , getTop());    }
   inline       PointType   RT()           const { return p0() + size();                      }
-
-  inline       T           getMinX()      const { return __super::getMin(0);                 }
-  inline       T           getMaxX()      const { return __super::getMax(0);                 }
-  inline       T           getMinY()      const { return __super::getMin(1);                 }
-  inline       T           getMaxY()      const { return __super::getMax(1);                 }
-
-  inline NumberInterval<T> getXInterval() const { return getInterval(0);                     }
-  inline NumberInterval<T> getYInterval() const { return getInterval(1);                     }
 
   // Returns a Rectangle2DTemplate with non-negative width and non-positive height
   inline static Rectangle2DTemplate makeBottomUpRectangle(const Rectangle2DTemplate &rect) {
