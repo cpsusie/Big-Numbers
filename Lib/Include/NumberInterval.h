@@ -45,18 +45,27 @@ public:
     return m_from > m_to ? m_from : m_to;
   }
 
+  NumberInterval &clear() {
+    return setFrom(0).setTo(0);
+  }
+
+  // Return true if getMin() <= x <= getMax(), else return false
   template<typename S> bool contains(const S &x) const {
     return (getMin() <= (T)x) && ((T)x <= getMax());
   }
 
+  // Return true if makePositive(this).contains(makePositive(i))
   template<typename S> bool contains(const NumberInterval<S> &i) const {
     return (getMin() <= (T)(i.getMin())) && ((T)(i.getMax()) <= getMax());
   }
 
+  // Return true if makePositive(this) overlaps makePositive(i)
   template<typename S> bool overlap(const NumberInterval<S> &i) const {
     return (getMin() <= (T)(i.getMax())) && (getMax() >= (T)(i.getMin()));
   }
 
+  // Return NumberInterval(max(getMin(), i.getMin()), min(getMax(), i.getMax())) if this.overlap(i)
+  // else return Interval(0,0)
   NumberInterval<T> interSection(const NumberInterval<T> &i) const {
     if(!overlap(i)) {
       return NumberInterval<T>(T(0), T(0));
@@ -79,15 +88,20 @@ public:
     return *this;
   }
 
-  T getLength() const {
+  inline bool isNegativeLength() const {
+    return m_to < m_from;
+  }
+  inline T getLength() const {
     return m_to - m_from;
   }
 
-  NumberInterval<T> &makePositive() {
-    if(m_from > m_to) {
-      std::swap(m_from, m_to);
-    }
+  inline NumberInterval<T> &invert() {
+    std::swap(m_from, m_to);
     return *this;
+  }
+
+  inline NumberInterval<T> &makePositive() {
+    return isNegativeLength() ? invert() : *this;
   }
 
   bool operator==(const NumberInterval<T> &rhs) const {

@@ -4,25 +4,25 @@
 #include "CubeTemplate.h"
 #include "Point3D.h"
 
-template<typename T> class Cube3DTemplate : public CubeTemplate<T,3> {
+template<typename T> class Cube3DTemplate : public CubeTemplate<T, 3> {
 public:
   inline Cube3DTemplate() {
   }
 
   template<typename X, typename Y, typename Z, typename W, typename D, typename H> Cube3DTemplate(const X &x, const Y &y, const Z &z, const W &w, const D &d, const H &h)
-    : CubeTemplate<T,2>(Point3DTemplate<T>(x,y,z), Size3DTemplate<T>(w,d,h))
+    : CubeTemplate<T, 3>(Point3DTemplate<T>(x,y,z), Size3DTemplate<T>(w,d,h))
   {
   }
-  template<typename S> Cube3DTemplate(const CubeTemplate<S,3> &src)
+  template<typename S> Cube3DTemplate(const CubeTemplate<S, 3> &src)
     : CubeTemplate<T, 3>(src)
   {
   }
-  template<typename T1, typename T2> Cube3DTemplate(const PointTemplate<T1,3> &lbn, const PointTemplate<T2,3> &rtf)
-    : CubeTemplate<T,3>(lbn, rtf-lbn)
+  template<typename T1, typename T2> Cube3DTemplate(const PointTemplate<T1, 3> &lbn, const PointTemplate<T2, 3> &rtf)
+    : CubeTemplate<T, 3>(lbn, rtf-lbn)
   {
   }
-  template<typename P, typename S> Cube3DTemplate(const PointTemplate<P,3> &p0, const SizeTemplate<S,3> &size)
-    : CubeTemplate<T,3>(p0, size)
+  template<typename P, typename S> Cube3DTemplate(const PointTemplate<P, 3> &p0, const SizeTemplate<S, 3> &size)
+    : CubeTemplate<T, 3>(p0, size)
   {
   }
 
