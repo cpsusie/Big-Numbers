@@ -1,7 +1,9 @@
 #pragma once
 
 #include <BasicIncludes.h>
+#include "MathLib.h"
 #include "FixedSizeVector.h"
+
 
 template<typename T, UINT dimension> class SizeTemplate : public FixedSizeVectorTemplate<T, dimension> {
 public:
@@ -131,28 +133,16 @@ template<typename PointType> void getMinMaxPoints(PointType &minP, PointType &ma
   }
 }
 
-template<typename PointType, UINT dimension> class PointRefArrayTemplate : public CompactArray<PointType*> {
+template<typename PointType, UINT dimension> class PointRefArrayTemplate : public ValueRefArrayTemplate<PointType> {
 public:
   inline PointRefArrayTemplate() {
   }
-  inline PointRefArrayTemplate(size_t capacity) : CompactArray<PointType*>(capacity) {
+  inline PointRefArrayTemplate(size_t capacity) : ValueRefArrayTemplate(capacity) {
   }
   inline PointRefArrayTemplate(CompactArray<PointType> &src)
-    : CompactArray<PointType*>(src.size())
+    : ValueRefArrayTemplate(src.size())
   {
     addAll(src);
-  }
-  bool addAll(CompactArray<PointType> &a) {
-    if(a.isEmpty()) {
-      return false;
-    }
-    for(PointType *p = a.begin(), *endp = a.end(); p < endp;) {
-      add(p++);
-    }
-    return true;
-  }
-  inline bool addAll(PointRefArrayTemplate &a) {
-    return __super::addAll(a);
   }
 
   template<typename S> PointRefArrayTemplate &operator+=(const FixedSizeVectorTemplate<S,dimension> &v) {
@@ -161,5 +151,4 @@ public:
     }
     return *this;
   }
-
 };

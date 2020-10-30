@@ -3,8 +3,7 @@
 #include "Point2DToPoint2DFunctions.h"
 
 // ----------------------- MoveTransformation -----------------------
-MoveTransformation::MoveTransformation(const Point2D &dp) {
-  m_dp = dp;
+MoveTransformation::MoveTransformation(const Point2D &dp) : m_dp(dp) {
 }
 
 Point2D MoveTransformation::operator()(const Point2D &p) {
@@ -80,25 +79,27 @@ Point2D SkewTransformation::operator()(const Point2D &p) {
 
 
 // ----------------------- RotateTransformation -----------------------
-RotateTransformation::RotateTransformation(const Point2D &center, double theta) {
-  m_center = center;
-  m_theta  = theta;
+RotateTransformation::RotateTransformation(const Point2D &center, double theta)
+: m_center(center)
+, m_theta( theta )
+{
 }
 
 Point2D RotateTransformation::operator()(const Point2D &p) {
-  return rotate(Point2D(p - m_center),m_theta) + m_center;
+  return rotate(p - m_center,m_theta) + m_center;
 }
 
 // ----------------------- MirrorTransformation -----------------------
-MirrorTransformation::MirrorTransformation(const Point2D &p1, const Point2D &p2) {
-  m_p1 = p1;
-  m_p2 = p2;
+MirrorTransformation::MirrorTransformation(const Point2D &p1, const Point2D &p2)
+: m_p1(p1)
+, m_p2(p2)
+, m_u(unitVector(p2 - p1))
+{
 }
 
 Point2D MirrorTransformation::operator()(const Point2D &p) {
-  const Point2D u      = unitVector(m_p2 - m_p1);
   const Point2D v      = p - m_p1;
-  const Point2D prj    = (u * v) * u;
+  const Point2D prj    = (m_u * v) * m_u;
   const Point2D normal = v - prj;
   return m_p1 + (prj - normal);
 }

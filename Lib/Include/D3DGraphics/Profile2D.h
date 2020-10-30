@@ -222,11 +222,11 @@ public:
   ProfilePolygon2D &getLastPolygon() {
     return m_polygonArray.last();
   }
-  bool                   isEmpty() const;
-  Rectangle2D            getBoundingBox() const;
-  Point2DArray           getAllPoints() const;
+  bool                   isEmpty()          const;
+  Rectangle2D            getBoundingBox()   const;
+  Point2DArray           getAllPoints()     const;
   Point2DRefArray        getAllPointsRef();
-  Point2DArray           getCurvePoints() const;
+  Point2DArray           getCurvePoints()   const;
 
   bool canConnect(const Point2D *p1, const Point2D *p2) const;
   void connect(   const Point2D *p1, const Point2D *p2);

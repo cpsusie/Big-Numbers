@@ -17,6 +17,9 @@ public:
   inline const PointArrayTemplate<PointType,2> &getAllPoints() const {
     return m_points;
   }
+  inline PointArrayTemplate<PointType,2> &getAllPoints() {
+    return m_points;
+  }
   template<typename T> void move(const FixedSizeVectorTemplate<T, 2> &v) {
     for(size_t i = 0; i < m_points.size(); i++) {
       m_points[i] += v;

@@ -108,10 +108,10 @@ static void applyToEllipsePart(const CPoint &start, const CPoint &end, const CPo
 void applyToEllipse(const CRect &rect, PointOperator &op) {
   const CRect r = makePositiveRect(rect);
   const CPoint center = r.CenterPoint();
-  applyToEllipsePart(CPoint(center.x,r.top   ),CPoint(r.right,center.y ),center, op);
-  applyToEllipsePart(CPoint(r.right,center.y ),CPoint(center.x,r.bottom),center, op);
-  applyToEllipsePart(CPoint(center.x,r.bottom),CPoint(r.left,center.y  ),center, op);
-  applyToEllipsePart(CPoint(r.left,center.y  ),CPoint(center.x,r.top   ),center, op);
+  applyToEllipsePart(CPoint(center.x, r.top    ), CPoint(r.right , center.y ), center, op);
+  applyToEllipsePart(CPoint(r.right , center.y ), CPoint(center.x, r.bottom ), center, op);
+  applyToEllipsePart(CPoint(center.x, r.bottom ), CPoint(r.left  , center.y ), center, op);
+  applyToEllipsePart(CPoint(r.left  , center.y ), CPoint(center.x, r.top    ), center, op);
 }
 
 void applyToBezier(const Point2D &start, const Point2D &cp1, const Point2D &cp2, const Point2D &end, CurveOperator &op, bool applyStart) {
@@ -129,7 +129,7 @@ void applyToBezier(const Point2D &start, const Point2D &cp1, const Point2D &cp2,
   }
 }
 
-void CurveOperator ::apply(const Point2D &p) {
+void CurveOperator::apply(const Point2D &p) {
   if(m_firstTime) {
     m_currentPoint = p;
     m_firstTime = false;
@@ -137,4 +137,25 @@ void CurveOperator ::apply(const Point2D &p) {
     line(m_currentPoint,p);
     m_currentPoint = p;
   }
+}
+
+Point2D applyToPrimCSpline(const Point2D &start, const Point2DArray &a, CurveOperator &op) {
+  Point2D pp = start;
+  for(const Point2D *p = a.begin(), *endp = a.end(); p < endp;) {
+    const Point2D &cp1 = *(p++);
+    const Point2D &cp2 = *(p++);
+    const Point2D &end = *(p++);
+    applyToBezier(pp, cp1, cp2, end, op, false);
+    pp = end;
+  }
+  return pp;
+}
+
+Point2D applyToPrimLine(const Point2DArray &a, CurveOperator &op) {
+  Point2D pp;
+  for(auto p : a) {
+    op.apply(p);
+    pp = p;
+  }
+  return pp;
 }

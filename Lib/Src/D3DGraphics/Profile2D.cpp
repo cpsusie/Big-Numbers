@@ -13,7 +13,7 @@ class FlatVertexGenerator : public CurveOperator {
 private:
   VertexCurve2D m_result;
 public:
-  void line(const Point2D &from, const Point2D &to);
+  void line(const Point2D &from, const Point2D &to) override;
   const VertexCurve2D &getResult() const {
     return m_result;
   }
@@ -183,7 +183,7 @@ Point2DArray Profile2D::getAllPoints() const {
 
 Point2DRefArray Profile2D::getAllPointsRef() {
   Point2DRefArray result;
-  for(Iterator<ProfilePolygon2D> it = m_polygonArray.getIterator(); it.hasNext();) {
+  for(auto it = m_polygonArray.getIterator(); it.hasNext();) {
     result.addAll(it.next().getAllPointsRef());
   }
   return result;
@@ -191,15 +191,15 @@ Point2DRefArray Profile2D::getAllPointsRef() {
 
 Point2DArray Profile2D::getCurvePoints() const {
   Point2DArray result;
-  for(ConstIterator<ProfilePolygon2D> it = m_polygonArray.getIterator(); it.hasNext();) {
+  for(auto it = m_polygonArray.getIterator(); it.hasNext();) {
     result.addAll(it.next().getCurvePoints());
   }
   return result;
 }
 
 bool Profile2D::isEmpty() const {
-  for(size_t i = 0; i < m_polygonArray.size(); i++) {
-    if(!m_polygonArray[i].isEmpty()) {
+  for(auto it = m_polygonArray.getIterator(); it.hasNext();) {
+    if(!it.next().isEmpty()) {
       return false;
     }
   }
@@ -222,10 +222,9 @@ void Profile2D::addLine(const Point2D &p1, const Point2D &p2) {
 }
 
 void Profile2D::addLineStrip(const Point2D *points, int n) {
-  const Point2D *last = points++;
-  while(--n) {
+  const Point2D *endp = points + n;
+  for(const Point2D *last = points++; points < endp; last = points++) {
     addLine(*last, *points);
-    last = points++;
   }
 }
 
@@ -293,29 +292,17 @@ void ProfilePolygon2D::apply(CurveOperator &op) const {
   Point2D pp = m_start;
   op.beginCurve();
   op.apply(pp);
-  for(size_t i = 0; i < m_curveArray.size(); i++) {
-    const ProfileCurve2D &curve = m_curveArray[i];
+  for(auto it = m_curveArray.getIterator(); it.hasNext();) {
+    const ProfileCurve2D &curve  = it.next();
     switch(curve.m_type) {
     case TT_PRIM_LINE   :
-      { for(size_t j = 0; j < curve.m_points.size(); j++) {
-          const Point2D &np = curve.m_points[j];
-          op.apply(np);
-          pp = np;
-        }
-      }
+      pp = applyToPrimLine(curve.m_points, op);
       break;
     case TT_PRIM_QSPLINE:
-      { String str = curve.toString();
-        int f = 1;
-      }
+      throwException(__TFUNCTION__, _T("TT_PRIM_QSPLINE not supported"));
       break;
     case TT_PRIM_CSPLINE:
-      { for(size_t j = 0; j < curve.m_points.size(); j+=3) {
-          const Point2D &end = curve.m_points[j+2];
-          applyToBezier(pp,curve.m_points[j],curve.m_points[j+1],end, op,false);
-          pp = end;
-        }
-      }
+      pp = applyToPrimCSpline(pp, curve.m_points, op);
       break;
     }
   }
@@ -326,8 +313,8 @@ void ProfilePolygon2D::apply(CurveOperator &op) const {
 }
 
 void Profile2D::apply(CurveOperator &op) const {
-  for(size_t i = 0; i < m_polygonArray.size(); i++) {
-    m_polygonArray[i].apply(op);
+  for(auto it = m_polygonArray.getIterator(); it.hasNext();) {
+    it.next().apply(op);
   }
 }
 

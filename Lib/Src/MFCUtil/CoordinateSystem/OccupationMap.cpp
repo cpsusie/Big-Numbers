@@ -38,7 +38,7 @@ private:
 public:
   SetOccupied(OccupationMap *grid) : m_grid(*grid) {
   }
-  void apply(const CPoint &p);
+  void apply(const CPoint &p) override;
 };
 
 void SetOccupied::apply(const CPoint &p) {

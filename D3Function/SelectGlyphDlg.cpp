@@ -45,8 +45,8 @@ private:
   CPen    m_pen;
   Point2D m_pos;
 public:
-  void line(const Point2D &from, const Point2D &to);
   GlyphPainter(CDC &dc, const Point2D &pos);
+  void line(const Point2D &from, const Point2D &to) override;
 };
 
 GlyphPainter::GlyphPainter(CDC &dc, const Point2D &pos) : m_dc(dc) {

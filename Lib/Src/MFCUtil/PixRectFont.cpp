@@ -157,32 +157,20 @@ void PixRect::text(const CPoint &p, const String &text, const PixRectFont &font,
 }
 
 void applyToGlyphPolygon(const GlyphPolygon &polygon, CurveOperator &op) {
-  const Point2D *pp = &polygon.getStart();
+  Point2D pp = polygon.getStart();
   op.beginCurve();
-  op.apply(*pp);
+  op.apply(pp);
   for(auto it = polygon.getCurveArray().getIterator(); it.hasNext();) {
     const PolygonCurve2D &curve = it.next();
     switch(curve.getType()) {
     case TT_PRIM_LINE   :
-      { for(const Point2D np : curve.getAllPoints()) {
-          op.apply(np);
-          pp = &np;
-        }
-      }
+      pp = applyToPrimLine(curve.getAllPoints(), op);
       break;
     case TT_PRIM_QSPLINE:
-      { String str = curve.toString();
-        int f = 1;
-      }
+      throwException(__TFUNCTION__, _T("TT_PRIM_QSPLINE not supported"));
       break;
     case TT_PRIM_CSPLINE:
-      { const Point2DArray &pa = curve.getAllPoints();
-        for(size_t j = 0; j < pa.size(); j+=3) {
-          const Point2D &end = pa[j+2];
-          applyToBezier(*pp,pa[j],pa[j+1],end, op,false);
-          pp = &end;
-        }
-      }
+      pp = applyToPrimCSpline(pp, curve.getAllPoints(), op);
       break;
     }
   }
@@ -191,8 +179,7 @@ void applyToGlyphPolygon(const GlyphPolygon &polygon, CurveOperator &op) {
 }
 
 void applyToGlyph(const GlyphCurveData &glyphCurve, CurveOperator &op) {
-  const Array<GlyphPolygon> &pa = glyphCurve.getPolygonArray();
-  for(auto it = pa.getIterator(); it.hasNext();) {
+  for(auto it = glyphCurve.getPolygonArray().getIterator(); it.hasNext();) {
     applyToGlyphPolygon(it.next(), op);
   }
 }

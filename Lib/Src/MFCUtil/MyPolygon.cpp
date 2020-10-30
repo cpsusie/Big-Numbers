@@ -8,7 +8,7 @@ private:
 public:
   PointArray m_pointsOutside;
   PolygonFiller(PixRect *pixRect, MyPolygon &polygon);
-  void apply(const CPoint &p);
+  void apply(const CPoint &p) override;
   void restoreBlackOutSideRegion();
 };
 
@@ -161,7 +161,7 @@ class PolygonEdgeOperator : public PointOperator {
   const CPoint  &m_endPoint;
 public:
   PolygonEdgeOperator(PointOperator &op, const CPoint &endPoint);
-  void apply(const CPoint &p);
+  void apply(const CPoint &p) override;
 };
 
 PolygonEdgeOperator::PolygonEdgeOperator(PointOperator &op, const CPoint &endPoint) : m_op(op), m_endPoint(endPoint) {

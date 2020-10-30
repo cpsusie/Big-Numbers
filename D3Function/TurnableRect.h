@@ -58,6 +58,7 @@ private:
   inline Point2D getU2()            const {
     return getTopLeft()     - getBottomLeft();
   }
+  Point2DRefArray getAllMarkPoints();
 public:
   TurnableRect();
   TurnableRect(const Rectangle2D &r);

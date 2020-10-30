@@ -217,14 +217,13 @@ template<typename T> bool isParallel(const Line2DTemplate<T> &line1, const Line2
   return det(line1.m_p2 - line1.m_p1, line2.m_p2 - line2.m_p1) == 0;
 }
 
-class Point2DOperator {
-public:
-  virtual void apply(const Point2D &p) = 0;
-};
+typedef ValueOperatorTemplate<     Point2D         > Point2DOperator;
 
-typedef FunctionTemplate<Real   , Point2D> FunctionR1R2;
-typedef FunctionTemplate<Point2D, Real   > FunctionR2R1;
-typedef FunctionTemplate<Point2D, Point2D> FunctionR2R2;
+typedef FunctionTemplate<Real        , Point2D     > FunctionR1R2;
+typedef FunctionTemplate<Point2D     , Real        > FunctionR2R1;
 
+typedef FunctionTemplate<FloatPoint2D, FloatPoint2D> FloatFunctionR2R2;
+typedef FunctionTemplate<Point2D     , Point2D     > FunctionR2R2;
+typedef FunctionTemplate<RealPoint2D , RealPoint2D > RealFunctionR2R2;
 
 RealPoint2D findExtremum(Function &f, const RealInterval &interval, bool maximum);

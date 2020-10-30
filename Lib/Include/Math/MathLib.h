@@ -41,6 +41,49 @@ public:
   }
 };
 
+template<typename ValueType> class ValueOperatorTemplate {
+public:
+  virtual void apply(const ValueType &x) = 0;
+};
+
+template<typename ValueType> class ValueRefArrayTemplate : public CompactArray<ValueType*> {
+public:
+  inline ValueRefArrayTemplate() {
+  }
+  inline ValueRefArrayTemplate(size_t capacity) : CompactArray<ValueType*>(capacity) {
+  }
+  inline ValueRefArrayTemplate(CompactArray<ValueType> &src)
+    : CompactArray<VauleType*>(src.size())
+  {
+    addAll(src);
+  }
+  bool addAll(CompactArray<ValueType> &a) {
+    if(a.isEmpty()) {
+      return false;
+    }
+    for(ValueType *p = a.begin(), *endp = a.end(); p < endp;) {
+      add(p++);
+    }
+    return true;
+  }
+  bool addAll(const ValueRefArrayTemplate &a) {
+    return __super::addAll(a);
+  }
+
+  // set x = f(x) for all x in the array
+  ValueRefArrayTemplate &apply(FunctionTemplate<ValueType, ValueType> &f) {
+    for(ValueType **x = begin(), **endp = end(); x < endp; x++) {
+      **x = f(**x);
+    }
+    return *this;
+  }
+  void apply(ValueOperatorTemplate<ValueType> &op) const {
+    for(const ValueType **x = begin(), **endp = end(); x < endp;) {
+      op.apply(**(x++));
+    }
+  }
+};
+
 typedef FunctionTemplate<Real,Real> FunctionR1R1;
 
 typedef FunctionR1R1 Function;

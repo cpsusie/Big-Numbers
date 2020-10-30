@@ -91,6 +91,12 @@ Point2D TurnableRect::getRotateDir() const {
   return getU1();
 }
 
+Point2DRefArray TurnableRect::getAllMarkPoints() {
+  Point2DRefArray result(*this);
+  result.add(&m_rotationCenter);
+  return result;
+}
+
 // ----------------------------------- PointTransformations ----------------------------------
 
 FunctionR2R2 *TurnableRect::getMoveTransformation(const Point2D &dp) const {
@@ -124,14 +130,9 @@ FunctionR2R2 *TurnableRect::getMirrorTransformation(bool horizontal) const {
 
 void TurnableRect::applyFunction(FunctionR2R2 *fp, Point2DRefArray &pointArray) {
   try {
-    FunctionR2R2 &f = *fp;
-    for(Point2D *p = begin(), *endp = end(); p < endp; p++) {
-      *p = f(*p);
-    }
-    m_rotationCenter = f(m_rotationCenter);
-    for(Point2D **p = pointArray.begin(), **endp = pointArray.end(); p < endp; p++) {
-      **p = f(**p);
-    }
+    Point2DRefArray pa = getAllMarkPoints();
+    pa.addAll(pointArray);
+    pa.apply(*fp);
     delete fp;
   } catch(...) {
     delete fp;

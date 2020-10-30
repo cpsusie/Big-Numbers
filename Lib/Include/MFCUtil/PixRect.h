@@ -67,10 +67,10 @@ public:
     m_pixels        = (DWORD*)m_lockedRect.pBits;
     m_pixelsPerLine = m_lockedRect.Pitch / sizeof(m_pixels[0]);
   }
-  void     setPixel(UINT x, UINT y, D3DCOLOR color);
-  D3DCOLOR getPixel(UINT x, UINT y) const;
+  void     setPixel(UINT x, UINT y, D3DCOLOR color)       override;
+  D3DCOLOR getPixel(UINT x, UINT y)                 const override;
   // if r == nullptr, entire surface will be filled
-  void fillRect(D3DCOLOR color, const CRect *r);
+  void fillRect(D3DCOLOR color, const CRect *r)           override;
 };
 
 class PixRectOperator : public PointOperator {
@@ -94,10 +94,12 @@ protected:
   PixelAccessor *m_resultPixelAccessor;
   void releasePixelAccessor();
 public:
-  PixRectFilter() { init(); }
+  PixRectFilter() {
+    init();
+  }
   // if(pr == nullptr && m_result!=m_pixrect) => releasePixelAcc(); rop(m_pixRect,m_result); delete m_result;
   // After that call __super::setPixRect(pr); m_result = m_pixRect, m_resultPA = m_pa;
-  void setPixRect(PixRect *pr);
+  void setPixRect(PixRect *pr) override;
   // returns default CRect(0, 0, m_pixRrect->getWidth(), m_pixRect->getHeight())
   virtual CRect getRect() const;
 };
@@ -108,7 +110,7 @@ private:
 public:
   SetColor(D3DCOLOR color, PixRect *pr = nullptr) : m_color(color), PixRectOperator(pr) {
   }
-  void apply(const CPoint &p);
+  void apply(const CPoint &p) override;
 };
 
 class SetAlpha : public PixRectOperator {
@@ -117,14 +119,14 @@ private:
 public:
   SetAlpha(BYTE alpha, PixRect *pr = nullptr) : m_alphaMask(D3DCOLOR_ARGB(alpha,0,0,0)), PixRectOperator(pr) {
   }
-  void apply(const CPoint &p);
+  void apply(const CPoint &p) override;
 };
 
 class InvertColor : public PixRectOperator {
 public:
   InvertColor(PixRect *pr = nullptr) : PixRectOperator(pr) {
   }
-  void apply(const CPoint &p);
+  void apply(const CPoint &p) override;
 };
 
 class SubstituteColor : public PixRectOperator {
@@ -133,12 +135,12 @@ private:
 public:
   SubstituteColor(D3DCOLOR from, D3DCOLOR to, PixRect *pr = nullptr) : m_from(from), m_to(to), PixRectOperator(pr) {
   }
-  void apply(const CPoint &p);
+  void apply(const CPoint &p) override;
 };
 
 class GrayScaleFilter : public PixRectFilter {
 public:
-  void apply(const CPoint &p);
+  void apply(const CPoint &p) override;
 };
 
 class SobelFilter : public PixRectFilter {
@@ -146,9 +148,9 @@ protected:
   int Gx[3][3], Gy[3][3];
 public:
   SobelFilter();
-  void setPixRect(PixRect *src);
-  CRect getRect() const;
-  void apply(const CPoint &p);
+  void  setPixRect(PixRect *src)       override;
+  CRect getRect()                const override;
+  void  apply(const CPoint &p)         override;
 };
 
 class LaplaceFilter : public PixRectFilter {
@@ -156,9 +158,9 @@ private:
   int MASK[5][5];
 public:
   LaplaceFilter();
-  void setPixRect(PixRect *src);
-  CRect getRect() const;
-  void apply(const CPoint &p);
+  void  setPixRect(PixRect *src)       override;
+  CRect getRect()                const override;
+  void  apply(const CPoint &p)         override;
 };
 
 class GaussFilter : public PixRectFilter {
@@ -166,23 +168,23 @@ private:
   int MASK[5][5];
 public:
   GaussFilter();
-  void setPixRect(PixRect *src);
-  CRect getRect() const;
-  void apply(const CPoint &p);
+  void  setPixRect(PixRect *src)       override;
+  CRect getRect()                const override;
+  void  apply(const CPoint &p)         override;
 };
 
 class EdgeDirectionFilter : public SobelFilter {
 public:
-  void setPixRect(PixRect *src);
-  CRect getRect() const;
-  void apply(const CPoint &p);
+  void  setPixRect(PixRect *src)       override;
+  CRect getRect()                const override;
+  void  apply(const CPoint &p)         override;
 };
 
 class CannyEdgeFilter : public PixRectFilter {
 public:
-  void setPixRect(PixRect *src);
-  CRect getRect() const;
-  void apply(const CPoint &p);
+  void  setPixRect(PixRect *src)       override;
+  CRect getRect()                const override;
+  void  apply(const CPoint &p)         override;
 };
 
 class PixRectTextMaker : public TextOperator {
@@ -192,9 +194,9 @@ private:
   bool     m_invert;
   Point2D  m_textPos, m_glyphPos;
 public:
-  void line(const Point2D &from, const Point2D &to);
-  void beginGlyph(const Point2D &offset);
   PixRectTextMaker(PixRect *pixRect, const Point2D &textPos, D3DCOLOR color, bool invert);
+  void beginGlyph(               const Point2D &offset) override;
+  void line(const Point2D &from, const Point2D &to    ) override;
 };
 
 class ScaleParameters {
@@ -212,7 +214,7 @@ public:
   void  move(const CPoint &dp);
   CRect getBoundsRect() const;
   int   contains(const CPoint &p) const; // 1=inside, -1=outside, 0=edge
-  void  applyToEdge(PointOperator &f, bool closingEdge = true) const;
+  void  applyToEdge(PointOperator &op, bool closingEdge = true) const;
   bool  add(const CPoint &p);
 };
 
@@ -484,7 +486,13 @@ public:
   inline const Point2D &getStart() const {
     return m_start;
   }
+  inline Point2D &getStart() {
+    return m_start;
+  }
   inline const Array<PolygonCurve2D> &getCurveArray() const {
+    return m_polygonCurveArray;
+  }
+  inline Array<PolygonCurve2D> &getCurveArray() {
     return m_polygonCurveArray;
   }
 };
@@ -551,6 +559,6 @@ public:
   }
 };
 
-void applyToGlyphPolygon(const GlyphPolygon   &glyphPolygon, CurveOperator &op);
-void applyToGlyph(       const GlyphCurveData &glyphCurve  , CurveOperator &op);
-void applyToText(        const String         &text        , const PixRectFont &font, TextOperator &op);
+void applyToGlyphPolygon(const GlyphPolygon   &glyphPolygon                         , CurveOperator &op);
+void applyToGlyph(       const GlyphCurveData &glyphCurve                           , CurveOperator &op);
+void applyToText(        const String         &text        , const PixRectFont &font, TextOperator  &op);
