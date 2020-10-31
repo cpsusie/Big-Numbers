@@ -1,18 +1,6 @@
 #pragma once
 
-#include <Scanner.h>
-
-class SourceText {
-public:
-  SourcePositionWithName m_pos;
-  String                 m_sourceText;
-  // -1 indicates that text is empty
-  SourceText() : m_pos(EMPTYSTRING, -1, 0) {
-  }
-  bool isDefined() const {
-    return m_pos.getLineNumber() != -1;
-  }
-};
+#include "SourceText.h"
 
 class StringCollector : public String {
 private:

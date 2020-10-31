@@ -1,6 +1,5 @@
 #include "stdafx.h"
-#include <limits>
-#include "GrammarCode.h"
+#include "GrammarTables.h"
 
 GrammarTables::GrammarTables(const Grammar &grammar, const String &tablesClassName, const String &parserClassName)
 : m_compressibleStateSet(grammar.getStateCount())
@@ -168,33 +167,4 @@ void GrammarTables::print(MarginFile &output, Language language, bool useTableCo
     printJava(output, useTableCompression);
     break;
   }
-}
-
-ByteCount GrammarTables::printByteArray(MarginFile &output, const String &name, const ByteArray &ba, UINT bytesPerLine, const StringArray *linePrefix) const {
-  const UINT nBytes        = (UINT)ba.size();
-  const bool hasLinePrefix = (linePrefix != nullptr);
-  output.setLeftMargin(0);
-  output.printf(_T("static const BYTE %s[%u] = {"), name.cstr(), nBytes);
-  TCHAR *delim = _T(" ");
-  output.setLeftMargin(2);
-  if((nBytes > bytesPerLine) || !hasLinePrefix) {
-    output.printf(_T("\n"));
-  }
-  bool printLinePrefix = hasLinePrefix;
-  size_t lineCount = 0;
-  for(UINT i = 0; i < nBytes; i++, delim = _T(",")) {
-    if(printLinePrefix && (lineCount < linePrefix->size())) {
-      output.printf(_T("/* %s */ "), (*linePrefix)[lineCount++].cstr());
-      printLinePrefix = false;
-    }
-    output.printf(_T("%s0x%02x"),delim, ba[i]);
-    if(((i % bytesPerLine) == (bytesPerLine-1)) && (i < (nBytes-1))) {
-      output.printf(_T("\n"));
-      printLinePrefix = hasLinePrefix;
-    }
-  }
-  output.setLeftMargin(0);
-  const ByteCount byteCount = ByteCount::wordAlignedSize(nBytes*sizeof(unsigned char));
-  output.printf(_T("\n}; // Size of table:%s.\n"), byteCount.toString().cstr());
-  return byteCount;
 }

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "GrammarCode.h"
+#include "GrammarTables.h"
 
 static void printUncompressedActionArrayJava(MarginFile &output, const TCHAR *tableType, const int index, const ActionArray &actions) {
   const int actionCount = (int)actions.size();

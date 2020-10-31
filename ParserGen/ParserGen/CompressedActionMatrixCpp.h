@@ -1,9 +1,7 @@
 #pragma once
 
-#include <MyString.h>
-#include <BitSet.h>
-#include <Array.h>
-#include "Grammar.h"
+#include <TreeMap.h>
+#include "GrammarTables.h"
 
 namespace ActionMatrix {
 

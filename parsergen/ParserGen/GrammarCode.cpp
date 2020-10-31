@@ -24,20 +24,6 @@ GrammarCoder::GrammarCoder(const String &templateName
 {
 }
 
-UINT getTypeSize(IntegerType type) {
-  switch(type) {
-  case TYPE_CHAR  :
-  case TYPE_UCHAR : return sizeof(char );
-  case TYPE_SHORT :
-  case TYPE_USHORT: return sizeof(short);
-  case TYPE_INT   :
-  case TYPE_UINT  : return sizeof(int  );
-  }
-  throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), type);
-  return 0;
-}
-
-
 ByteArray bitSetToByteArray(const BitSet &set) {
   const size_t byteCount = (set.getCapacity() - 1) / 8 + 1;
   ByteArray    result(byteCount);
@@ -48,29 +34,6 @@ ByteArray bitSetToByteArray(const BitSet &set) {
     b[v >> 3] |= (1 << (v & 7));
   }
   return result;
-}
-
-IntegerType findUintType(UINT maxValue) { // static
-  if(maxValue <= UCHAR_MAX) {
-    return TYPE_UCHAR;
-  } else if(maxValue <= USHRT_MAX) {
-    return TYPE_USHORT;
-  } else {
-    return TYPE_UINT;
-  }
-}
-
-const TCHAR *getTypeName(IntegerType type) { // static
-  switch(type) {
-  case TYPE_CHAR  : return _T("char"          );
-  case TYPE_UCHAR : return _T("unsigned char" );
-  case TYPE_SHORT : return _T("short"         );
-  case TYPE_USHORT: return _T("unsigned short");
-  case TYPE_INT   : return _T("int"           );
-  case TYPE_UINT  : return _T("unsigned int"  );
-  }
-  throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), type);
-  return EMPTYSTRING;
 }
 
 void newLine(MarginFile &output, String &comment, int minColumn) { // static
@@ -89,145 +52,6 @@ void newLine(MarginFile &output, String &comment, int minColumn) { // static
 }
 
 GrammarCoder::~GrammarCoder() {
-}
-
-class ActionsWriter : public KeywordHandler {
-private:
-  GrammarCoder &m_coder;
-public:
-  ActionsWriter(GrammarCoder &coder) : m_coder(coder) {}
-  void handleKeyword(TemplateWriter &writer, String &line) const override;
-};
-
-void ActionsWriter::handleKeyword(TemplateWriter &writer, String &line) const {
-  const CodeFlags flags    = m_coder.getFlags();
-  if(!flags.m_generateActions) {
-    return;
-  }
-
-  const Grammar &grammar         = m_coder.getGrammar();
-  const int      productionCount = grammar.getProductionCount();
-  int            actionCount     = 0;
-
-  for(int p = 0; p < productionCount; p++) { // first count the number of real actions
-    if(grammar.getProduction(p).m_actionBody.isDefined()) {
-      actionCount++;
-    }
-  }
-
-  if(actionCount == 0) {
-    return; // dont generate any switch
-  }
-
-  String text;
-  for(int p = 0; p < productionCount; p++) {
-    const Production &prod = grammar.getProduction(p);
-    if(!prod.m_actionBody.isDefined()) {
-      continue;
-    }
-    writer.printf(_T("case %d: /* %s */\n"), p, grammar.getProductionString(p).cstr());
-    writer.incrLeftMargin(2);
-    writer.writeSourceText(prod.m_actionBody);
-    if(flags.m_generateBreaks) {
-      writer.printf(_T("break;\n"));
-    }
-    writer.decrLeftMargin(2);
-  }
-}
-
-class TablesWriter : public KeywordHandler {
-private:
-  GrammarCoder &m_coder;
-public:
-  TablesWriter(GrammarCoder &coder) : m_coder(coder) {};
-  void handleKeyword(TemplateWriter &writer, String &line) const override;
-};
-
-void TablesWriter::handleKeyword(TemplateWriter &writer, String &line) const {
-  GrammarTables tables(m_coder.getGrammar(), m_coder.getTablesClassName(), m_coder.getParserClassName());
-  String tmpFileName = TemplateWriter::createTempFileName(_T("txt"));
-  MarginFile f(tmpFileName);
-  tables.print(f, m_coder.getGrammar().getLanguage(), m_coder.getFlags().m_useTableCompression);
-  f.close();
-  const String text = readTextFile(tmpFileName);
-  writer.printf(_T("%s"),text.cstr());
-  unlink(tmpFileName);
-  m_coder.setByteCount(tables.getTotalSizeInBytes());
-}
-
-class SymbolsWriter : public KeywordHandler {
-private:
-  GrammarCoder &m_coder;
-  bool m_terminals;
-  void writeCppSymbols(TemplateWriter &writer) const;
-  void writeJavaSymbols(TemplateWriter &writer) const;
-public:
-  SymbolsWriter(GrammarCoder &coder, bool terminals) : m_coder(coder) { m_terminals = terminals; }
-  void handleKeyword(TemplateWriter &writer, String &line) const override;
-};
-
-void SymbolsWriter::handleKeyword(TemplateWriter &writer, String &line) const {
-  const Grammar &grammar = m_coder.getGrammar();
-  switch(grammar.getLanguage()) {
-  case CPP : writeCppSymbols(writer);
-             break;
-  case JAVA: writeJavaSymbols(writer);
-             break;
-  }
-}
-
-void SymbolsWriter::writeCppSymbols(TemplateWriter &writer) const {
-  const Grammar &grammar       = m_coder.getGrammar();
-  const int      maxNameLength = grammar.getMaxSymbolNameLength();
-  String text;
-  if(m_terminals) {
-    char delimiter = ' ';
-    for(int s = 0; s < grammar.getTerminalCount(); s++, delimiter=',') {
-      text += format(_T("%c%-*s = %3d\n"), delimiter, maxNameLength, grammar.getSymbol(s).m_name.cstr(), s);
-    }
-  } else {
-    if(m_coder.getFlags().m_generateNonTerminals) {
-      char delimiter = ' ';
-      for(int s = grammar.getTerminalCount(); s < grammar.getSymbolCount(); s++, delimiter=',') {
-        text += format(_T("%c%-*s = %3d\n"), delimiter, maxNameLength, grammar.getSymbol(s).m_name.cstr(), s);
-      }
-    }
-  }
-  writer.printf(_T("%s"),text.cstr());
-}
-
-void SymbolsWriter::writeJavaSymbols(TemplateWriter &writer) const {
-  const Grammar &grammar       = m_coder.getGrammar();
-  int            maxNameLength = grammar.getMaxSymbolNameLength();
-  String         text;
-  if(m_terminals) {
-    for(int s = 0; s < grammar.getTerminalCount(); s++) {
-      text += format(_T("public static final int %-*s = %3d;\n"), maxNameLength, grammar.getSymbol(s).m_name.cstr(), s);
-    }
-  } else {
-    if(m_coder.getFlags().m_generateNonTerminals) {
-      for(int s = grammar.getTerminalCount(); s < grammar.getSymbolCount(); s++) {
-        text += format(_T("public static final int %-*s = %3d;\n"), maxNameLength, grammar.getSymbol(s).m_name.cstr(), s);
-      }
-    }
-  }
-  writer.printf(_T("%s"), text.cstr());
-}
-
-class DocFileWriter : public KeywordHandler {
-private:
-  GrammarCoder &m_coder;
-public:
-  DocFileWriter(GrammarCoder &coder) : m_coder(coder) {}
-  void handleKeyword(TemplateWriter &writer, String &line) const override;
-};
-
-void DocFileWriter::handleKeyword(TemplateWriter &writer, String &line) const {
-  m_coder.generateDocFile();
-}
-
-void GrammarCoder::generateDocFile() {
-  generateDocFile(MarginFile(m_docFileName));
 }
 
 void GrammarCoder::generateDocFile(MarginFile &output) {

@@ -3,7 +3,7 @@
 #include <HashMap.h>
 #include <MarginFile.h>
 #include <LRParser.h>
-#include "StringCollector.h"
+#include "SourceText.h"
 
 typedef enum {
   CPP

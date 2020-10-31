@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <Math.h>
 #include <FileNameSplitter.h>
 #include "GrammarScanner.h"
 

@@ -131,4 +131,3 @@ public:
   SourceTextWriter(const SourceText &sourceText);
   void handleKeyword(TemplateWriter &writer, String &line) const override;
 };
-

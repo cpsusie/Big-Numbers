@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\KeyWordHandles">
+      <UniqueIdentifier>{6993516d-2c03-4b5a-9e11-a9cb1198826a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -46,6 +49,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CompressedActionMatrixCpp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GrammarTables.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ByteCount.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceText.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -91,6 +103,21 @@
     </ClCompile>
     <ClCompile Include="CompressedActionMatrixCpp.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ByteCount.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ActionsWriter.cpp">
+      <Filter>Source Files\KeyWordHandles</Filter>
+    </ClCompile>
+    <ClCompile Include="DocFileWriter.cpp">
+      <Filter>Source Files\KeyWordHandles</Filter>
+    </ClCompile>
+    <ClCompile Include="SymbolsWriter.cpp">
+      <Filter>Source Files\KeyWordHandles</Filter>
+    </ClCompile>
+    <ClCompile Include="TablesWriter.cpp">
+      <Filter>Source Files\KeyWordHandles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

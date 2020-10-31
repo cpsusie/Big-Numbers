@@ -228,12 +228,15 @@
     </Xdcmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ByteCount.h" />
     <ClInclude Include="CompressedActionMatrixCpp.h" />
     <ClInclude Include="Grammar.h" />
     <ClInclude Include="GrammarCode.h" />
     <ClInclude Include="GrammarParser.h" />
     <ClInclude Include="GrammarScanner.h" />
+    <ClInclude Include="GrammarTables.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="SourceText.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StringCollector.h" />
     <ClInclude Include="targetver.h" />
@@ -241,7 +244,10 @@
     <ClInclude Include="Wizard.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ActionsWriter.cpp" />
+    <ClCompile Include="ByteCount.cpp" />
     <ClCompile Include="CompressedActionMatrixCpp.cpp" />
+    <ClCompile Include="DocFileWriter.cpp" />
     <ClCompile Include="Grammar.cpp" />
     <ClCompile Include="GrammarCode.cpp" />
     <ClCompile Include="GrammarParser.cpp" />
@@ -258,6 +264,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="StringCollector.cpp" />
+    <ClCompile Include="SymbolsWriter.cpp" />
+    <ClCompile Include="TablesWriter.cpp" />
     <ClCompile Include="TemplateWriter.cpp" />
     <ClCompile Include="Wizard.cpp" />
   </ItemGroup>
