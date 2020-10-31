@@ -24,6 +24,70 @@ GrammarCoder::GrammarCoder(const String &templateName
 {
 }
 
+UINT getTypeSize(IntegerType type) {
+  switch(type) {
+  case TYPE_CHAR  :
+  case TYPE_UCHAR : return sizeof(char );
+  case TYPE_SHORT :
+  case TYPE_USHORT: return sizeof(short);
+  case TYPE_INT   :
+  case TYPE_UINT  : return sizeof(int  );
+  }
+  throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), type);
+  return 0;
+}
+
+
+ByteArray bitSetToByteArray(const BitSet &set) {
+  const size_t byteCount = (set.getCapacity() - 1) / 8 + 1;
+  ByteArray    result(byteCount);
+  result.addZeroes(byteCount);
+  BYTE *b = (BYTE*)result.getData();
+  for(ConstIterator<size_t> it = set.getIterator(); it.hasNext();) {
+    const UINT v = (UINT)it.next();
+    b[v >> 3] |= (1 << (v & 7));
+  }
+  return result;
+}
+
+IntegerType findUintType(UINT maxValue) { // static
+  if(maxValue <= UCHAR_MAX) {
+    return TYPE_UCHAR;
+  } else if(maxValue <= USHRT_MAX) {
+    return TYPE_USHORT;
+  } else {
+    return TYPE_UINT;
+  }
+}
+
+const TCHAR *getTypeName(IntegerType type) { // static
+  switch(type) {
+  case TYPE_CHAR  : return _T("char"          );
+  case TYPE_UCHAR : return _T("unsigned char" );
+  case TYPE_SHORT : return _T("short"         );
+  case TYPE_USHORT: return _T("unsigned short");
+  case TYPE_INT   : return _T("int"           );
+  case TYPE_UINT  : return _T("unsigned int"  );
+  }
+  throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), type);
+  return EMPTYSTRING;
+}
+
+void newLine(MarginFile &output, String &comment, int minColumn) { // static
+  if(comment.length() > 0) {
+    if(minColumn > 0) {
+      const int fillerSize = minColumn - output.getCurrentLineLength();
+      if(fillerSize > 0) {
+        output.printf(_T("%*s"), fillerSize, EMPTYSTRING);
+      }
+    }
+    output.printf(_T(" /* %s */\n"), comment.cstr());
+    comment = EMPTYSTRING;
+  } else {
+    output.printf(_T("\n"));
+  }
+}
+
 GrammarCoder::~GrammarCoder() {
 }
 

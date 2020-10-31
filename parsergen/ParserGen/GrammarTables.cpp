@@ -8,7 +8,7 @@ GrammarTables::GrammarTables(const Grammar &grammar, const String &tablesClassNa
 , m_parserClassName(parserClassName)
 {
   m_terminalCount   = grammar.getTerminalCount();
-  m_countTableBytes.reset();
+  m_countTableBytes.clear();
 
   for(int p = 0; p < grammar.getProductionCount(); p++) {
     const Production &prod = grammar.getProduction(p);
@@ -24,7 +24,6 @@ GrammarTables::GrammarTables(const Grammar &grammar, const String &tablesClassNa
   for(int s = 0; s < grammar.getSymbolCount(); s++) {
     const GrammarSymbol &symbol = grammar.getSymbol(s);
     m_symbolName.add(symbol.m_name);
-//    m_symboltypes.add(symbol.m_type);
   }
 
   for(size_t i = 0; i < grammar.m_result.size(); i++) {
@@ -85,64 +84,6 @@ SuccesorArray GrammarTables::getSuccessorArray(UINT state) const {
   return result;
 }
 
-IntegerType GrammarTables::findUintType(UINT maxValue) { // static
-  if(maxValue <= UCHAR_MAX) {
-    return TYPE_UCHAR;
-  } else if(maxValue <= USHRT_MAX) {
-    return TYPE_USHORT;
-  } else {
-    return TYPE_UINT;
-  }
-}
-
-IntegerType GrammarTables::findTableType(UINT maxValue) { // static
-  if(maxValue < UCHAR_MAX-1) {
-    return TYPE_UCHAR;
-  } else if(maxValue < USHRT_MAX-1) {
-    return TYPE_USHORT;
-  } else {
-    return TYPE_UINT;
-  }
-}
-
-const TCHAR *GrammarTables::getTypeName(IntegerType type) { // static
-  switch(type) {
-  case TYPE_CHAR  : return _T("char"          );
-  case TYPE_UCHAR : return _T("unsigned char" );
-  case TYPE_SHORT : return _T("short"         );
-  case TYPE_USHORT: return _T("unsigned short");
-  case TYPE_INT   : return _T("int"           );
-  case TYPE_UINT  : return _T("unsigned int"  );
-  }
-  throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), type);
-  return EMPTYSTRING;
-}
-
-UINT GrammarTables::getTypeSize(IntegerType type) { // static
-  switch(type) {
-  case TYPE_CHAR  :
-  case TYPE_UCHAR : return sizeof(char );
-  case TYPE_SHORT :
-  case TYPE_USHORT: return sizeof(short);
-  case TYPE_INT   :
-  case TYPE_UINT  : return sizeof(int  );
-  }
-  throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), type);
-  return 0;
-}
-
-ByteArray GrammarTables::bitSetToByteArray(const BitSet &set) { // static
-  const size_t byteCount = (set.getCapacity() - 1) / 8 + 1;
-  ByteArray    result(byteCount);
-  result.addZeroes(byteCount);
-  BYTE *b = (BYTE*)result.getData();
-  for(ConstIterator<size_t> it = set.getIterator(); it.hasNext();) {
-    const UINT v = (UINT)it.next();
-    b[v >> 3] |= (1 << (v & 7));
-  }
-  return result;
-}
-
 void GrammarTables::initCompressibleStateSet() {
   const UINT stateCount = getStateCount();
   for(UINT state = 0; state < stateCount; state++) {
@@ -174,14 +115,6 @@ bool GrammarTables::calcIsCompressibleState(UINT state) const {
       return true;
     }
   }
-}
-
-ByteCount GrammarTables::wordAlignedSize(const ByteCount &c, UINT n) { // static
-  return (n *c).getAlignedSize();
-}
-
-ByteCount GrammarTables::wordAlignedSize(UINT size) { // static
-  return wordAlignedSize(ByteCount(size,size),1);
 }
 
 ByteCount GrammarTables::getTotalSizeInBytes() const {
@@ -261,7 +194,7 @@ ByteCount GrammarTables::printByteArray(MarginFile &output, const String &name, 
     }
   }
   output.setLeftMargin(0);
-  const ByteCount byteCount = wordAlignedSize(nBytes*sizeof(unsigned char));
+  const ByteCount byteCount = ByteCount::wordAlignedSize(nBytes*sizeof(unsigned char));
   output.printf(_T("\n}; // Size of table:%s.\n"), byteCount.toString().cstr());
   return byteCount;
 }
