@@ -3,7 +3,7 @@
 #include "TemplateWriter.h"
 #include "ByteCount.h"
 
-class GrammarCoder {
+class GrammarCode {
 private:
   const String     m_templateName;
   const Grammar   &m_grammar;
@@ -18,13 +18,13 @@ private:
   const String     m_nameSpace;
   ByteCount        m_tablesByteCount;
 public:
-  GrammarCoder(const String &templateName
-             , Grammar      &grammar
-             , const String &outputDirImpl
-             , const String &outputDirHeaders
-             , const String &nameSpace
-             , CodeFlags     flags);
-  ~GrammarCoder();
+  GrammarCode(const String &templateName
+             ,Grammar      &grammar
+             ,const String &outputDirImpl
+             ,const String &outputDirHeaders
+             ,const String &nameSpace
+             ,CodeFlags     flags);
+  ~GrammarCode();
   void generateParser();
   void generateDocFile();
   void generateDocFile(MarginFile &output);
@@ -67,35 +67,35 @@ void         newLine(MarginFile &output, String &comment = String(_T("")), int m
 
 class ActionsWriter : public KeywordHandler {
 private:
-  GrammarCoder &m_coder;
+  GrammarCode &m_coder;
 public:
-  ActionsWriter(GrammarCoder &coder) : m_coder(coder) {}
+  ActionsWriter(GrammarCode &coder) : m_coder(coder) {}
   void handleKeyword(TemplateWriter &writer, String &line) const override;
 };
 
 class TablesWriter : public KeywordHandler {
 private:
-  GrammarCoder &m_coder;
+  GrammarCode &m_coder;
 public:
-  TablesWriter(GrammarCoder &coder) : m_coder(coder) {};
+  TablesWriter(GrammarCode &coder) : m_coder(coder) {};
   void handleKeyword(TemplateWriter &writer, String &line) const override;
 };
 
 class SymbolsWriter : public KeywordHandler {
 private:
-  GrammarCoder &m_coder;
+  GrammarCode &m_coder;
   bool m_terminals;
   void writeCppSymbols( TemplateWriter &writer) const;
   void writeJavaSymbols(TemplateWriter &writer) const;
 public:
-  SymbolsWriter(GrammarCoder &coder, bool terminals) : m_coder(coder) { m_terminals = terminals; }
+  SymbolsWriter(GrammarCode &coder, bool terminals) : m_coder(coder) { m_terminals = terminals; }
   void handleKeyword(TemplateWriter &writer, String &line) const override;
 };
 
 class DocFileWriter : public KeywordHandler {
 private:
-  GrammarCoder &m_coder;
+  GrammarCode &m_coder;
 public:
-  DocFileWriter(GrammarCoder &coder) : m_coder(coder) {}
+  DocFileWriter(GrammarCode &coder) : m_coder(coder) {}
   void handleKeyword(TemplateWriter &writer, String &line) const override;
 };

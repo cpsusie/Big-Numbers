@@ -209,12 +209,12 @@ int _tmain(int argc, TCHAR **argv) {
         grammar.generateStates();
   //      checkhas2reduce(g);
 
-        GrammarCoder code(templateName
-                         ,grammar
-                         ,implOutputDir
-                         ,headerOutputDir
-                         ,nameSpace
-                         ,flags);
+        GrammarCode code(templateName
+                        ,grammar
+                        ,implOutputDir
+                        ,headerOutputDir
+                        ,nameSpace
+                        ,flags);
 
         if(first1File.length() != 0) {
           FILE *f = MKFOPEN(first1File, _T("w"));

@@ -4,12 +4,12 @@
 
 const ByteCount ByteCount::s_pointerSize(4,8); // sizeof(void*) in x86 and x64
 
-GrammarCoder::GrammarCoder(const String &templateName
-                          ,Grammar      &grammar
-                          ,const String &implOutputDir
-                          ,const String &headerOutputDir
-                          ,const String &nameSpace
-                          ,CodeFlags     flags)
+GrammarCode::GrammarCode(const String &templateName
+                        ,Grammar      &grammar
+                        ,const String &implOutputDir
+                        ,const String &headerOutputDir
+                        ,const String &nameSpace
+                        ,CodeFlags     flags)
 : m_grammar(        grammar                                                     )
 , m_templateName(   templateName                                                )
 , m_implOutputDir(  implOutputDir                                               )
@@ -51,10 +51,14 @@ void newLine(MarginFile &output, String &comment, int minColumn) { // static
   }
 }
 
-GrammarCoder::~GrammarCoder() {
+GrammarCode::~GrammarCode() {
 }
 
-void GrammarCoder::generateDocFile(MarginFile &output) {
+void GrammarCode::generateDocFile() {
+  generateDocFile(MarginFile(m_docFileName));
+}
+
+void GrammarCode::generateDocFile(MarginFile &output) {
   int dumpformat = DUMP_DOCFORMAT;
   if(getFlags().m_generateLookahead) {
     dumpformat |= DUMP_LOOKAHEAD;
@@ -80,8 +84,7 @@ void GrammarCoder::generateDocFile(MarginFile &output) {
   }
 }
 
-void GrammarCoder::generateParser() {
-
+void GrammarCode::generateParser() {
   SourceTextWriter     headerWriter(     m_grammar.getHeader()    );
   SourceTextWriter     driverHeadWriter( m_grammar.getDriverHead());
   SourceTextWriter     driverTailWriter( m_grammar.getDriverTail());
@@ -121,4 +124,3 @@ void GrammarCoder::generateParser() {
 
   writer.generateOutput();
 }
-
