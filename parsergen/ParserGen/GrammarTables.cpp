@@ -43,8 +43,8 @@ UINT GrammarTables::getMaxInputCount() const {
   return m;
 }
 
-BitSet GrammarTables::getLookaheadSet(UINT state) const {
-  BitSet             result(m_terminalCount);
+SymbolSet GrammarTables::getLookaheadSet(UINT state) const {
+  SymbolSet          result(m_terminalCount);
   const ActionArray &actions     = m_stateActions[state];
   const size_t       actionCount = actions.size();
   for(size_t a = 0; a < actionCount; a++) {
@@ -145,10 +145,6 @@ void GrammarTables::getLegalInputs(UINT state, UINT *symbols) const {
   for(size_t i = 0; i < list.size(); i++) {
     symbols[i] = list[i].m_token;
   }
-}
-
-UINT GrammarTables::getTableByteCount(Platform platform) const {
-  return m_countTableBytes.getByteCount(platform);
 }
 
 void GrammarTables::getRightSide(UINT prod, UINT *dst) const {

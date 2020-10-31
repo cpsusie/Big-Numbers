@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "ByteCount.h"
 
+const ByteCount ByteCount::s_pointerSize(4,8); // sizeof(void*) in x86 and x64
+
 IntegerType findUintType(UINT maxValue) { // static
   if(maxValue <= UCHAR_MAX) {
     return TYPE_UCHAR;

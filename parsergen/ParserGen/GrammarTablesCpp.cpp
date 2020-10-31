@@ -220,114 +220,6 @@ ByteCount GrammarTables::printCompressedActionMatrixCpp(MarginFile &output) cons
   return ActionMatrix::CompressedActionMatrix(*this).print(output);
 }
 
-class ArrayIndex {
-public:
-  const UINT m_arrayIndex; // offset into array
-  int        m_count;      // counter
-  ArrayIndex(UINT arrayIndex) : m_arrayIndex(arrayIndex), m_count(-1) {
-  }
-};
-
-static int arrayIndexCmp(const ArrayIndex &i1, const ArrayIndex &i2) {
-  return (int)i1.m_arrayIndex - (int)i2.m_arrayIndex;
-}
-
-class IndexMapValue : public ArrayIndex {
-public:
-  BitSet m_stateSet;
-  IndexMapValue(size_t stateCount, UINT state0, UINT arrayIndex) : ArrayIndex(arrayIndex), m_stateSet(stateCount) {
-    addState(state0);
-  }
-  void addState(UINT state) {
-    m_stateSet.add(state);
-  }
-  String getComment() const;
-};
-
-String IndexMapValue::getComment() const {
-  const size_t n = m_stateSet.size();
-  return format(_T("Used by state%c %s"), (n == 1) ? ' ': 's', m_stateSet.toString().cstr());
-}
-
-template<typename Key> class IndexArrayEntry : public IndexMapValue {
-public:
-  Key m_key;
-  IndexArrayEntry(const Entry<Key, IndexMapValue> &e) : IndexMapValue(e.getValue()), m_key(e.getKey()) {
-  }
-};
-
-template<typename Key> class IndexComparator : public Comparator<IndexArrayEntry<Key> > {
-public:
-  int compare(const IndexArrayEntry<Key> &kv1, const IndexArrayEntry<Key> &kv2) override {
-    return arrayIndexCmp(kv1, kv2);
-  }
-  AbstractComparator *clone() const override {
-    return new IndexComparator<Key>;
-  }
-};
-
-template<typename Key> class IndexArray : public Array<IndexArrayEntry<Key> > {
-public:
-  explicit IndexArray(size_t capacity) : Array<IndexArrayEntry<Key> >(capacity) {
-  }
-  void sortByIndex() {
-    sort(IndexComparator<Key>());
-  }
-  UINT getElementCount(bool addArraySize) const {
-    UINT elemCount = 0;
-    for(ConstIterator<IndexArrayEntry<Key> > it = getIterator(); it.hasNext();) {
-      const IndexArrayEntry<Key> &e = it.next();
-      elemCount += (UINT)e.m_key.size();
-    }
-    return elemCount + (addArraySize ? (UINT)size() : 0);
-  }
-};
-
-template<typename Key> class IndexMap : public TreeMap<Key, IndexMapValue> {
-public:
-  IndexMap(int (*cmp)(const Key &, const Key &)) : TreeMap<Key, IndexMapValue>(cmp) {
-  }
-  IndexArray<Key> getEntryArray() const {
-    IndexArray<Key> a(size());
-    for(ConstIterator<Entry<Key, IndexMapValue> > it = getIterator(); it.hasNext();) {
-      a.add(it.next());
-    }
-    a.sortByIndex();
-    const size_t n = size();
-    for(UINT c = 0; c < n; c++) {
-      a[c].m_count = c;
-    }
-    return a;
-  }
-};
-
-typedef BitSet SymbolSet;
-
-static int symbolSetCmp( const SymbolSet &k1, const SymbolSet &k2) {
-  return bitSetCmp(k1, k2);
-}
-
-class SymbolSetIndexMap : public IndexMap<SymbolSet> {
-public:
-  SymbolSetIndexMap() : IndexMap<SymbolSet>(symbolSetCmp) {
-  }
-};
-
-typedef IndexArray<SymbolSet> SymbolSetIndexArray;
-
-static constexpr UINT compressedBit      = 0x00010000;
-static constexpr UINT multiItemIndicator = 0x00008000;
-static constexpr UINT codeMask           = compressedBit | multiItemIndicator;
-static constexpr UINT dataMask           = ~codeMask;
-
-static void checkMax15Bits(const TCHAR *method, int line, int v, const TCHAR *varName) {
-  if((v & 0xffff8000) != 0) {
-    throwException(_T("%s:(%d):value %s=(%08x) cannot be contained in 15 bits"), method, line, varName, v);
-  }
-}
-
-#define CHECKMAX15BITS(v) checkMax15Bits(__TFUNCTION__,__LINE__,v,_T(#v))
-
 // ---------------------------------------- Successor Matrix ---------------------------------------------
 
 static int succesorArrayCmp(const SuccesorArray &a1, const SuccesorArray &a2) {
@@ -372,15 +264,14 @@ ByteCount GrammarTables::printSuccessorMatrixCpp(MarginFile &output) const {
     }
     definedStateSet.add(state);
     if(succCount == 1) {
-      const ParserAction &pa = succList[0];
+      const ParserAction &pa           = succList[0];
       const UINT          NT           = pa.m_token;
       const UINT          newState     = pa.m_action;
       const String        comment      = format(_T("Goto %u on %s"), newState, getSymbolName(NT));
       const UINT          NTIndex      = NT - m_terminalCount;
       CHECKMAX15BITS(newState);
       const UINT          encodedValue = ((newState << 17) | NTIndex);
-      assert((compressedBit & encodedValue) == 0);
-      const String        macroValue   = format(_T("0x%08x"), compressedBit | encodedValue);
+      const String        macroValue   = format(_T("0x%08x"), encodeValue(encodedValue, ONEITEMCOMPRESSION));
       defines.add(format(_T("_su%04u %-10s /* %-40s*/"), state, macroValue.cstr(), comment.cstr()));
     } else {
       const SymbolSet   ntSet  = getNTOffsetSet(state);
@@ -389,13 +280,12 @@ ByteCount GrammarTables::printSuccessorMatrixCpp(MarginFile &output) const {
 
       if(imvp != nullptr) {
         ntIndex = imvp->m_arrayIndex;
-        ntCount = imvp->m_count;
+        ntCount = imvp->m_commentIndex;
         imvp->addState(state);
       } else {
         ntIndex = currentNTListSize;
-        ntCount = (UINT)ntSetMap.size();
+        ntCount = ntSetMap.getCount();
         IndexMapValue nv(stateCount, state, ntIndex);
-        nv.m_count = ntCount;
         ntSetMap.put(ntSet, nv);
         currentNTListSize += (UINT)ntSet.size() + 1;
       }
@@ -405,21 +295,20 @@ ByteCount GrammarTables::printSuccessorMatrixCpp(MarginFile &output) const {
       UINT                 saIndex, saCount;
       if(imvp != nullptr) {
         saIndex = imvp->m_arrayIndex;
-        saCount = imvp->m_count;
+        saCount = imvp->m_commentIndex;
         imvp->addState(state);
       } else {
         saIndex = currentSAListSize;
-        saCount = (UINT)saMap.size();
+        saCount = saMap.getCount();
         IndexMapValue nv(stateCount, state, saIndex);
-        nv.m_count = saCount;
         saMap.put(sa, nv);
         currentSAListSize += (UINT)sa.size();
       }
       CHECKMAX15BITS(saIndex);
+      CHECKMAX15BITS(ntIndex);
       const UINT   encodedValue = ((UINT)saIndex << 17) | ntIndex;
-      assert((encodedValue & compressedBit) == 0);
-      const String macroValue = format(_T("0x%08x"), encodedValue);
-      const String comment    = format(_T("NTindexList %3u, stateList %3u"), ntCount, saCount);
+      const String macroValue   = format(_T("0x%08x"), encodeValue(encodedValue, UNCOMPRESSED));
+      const String comment      = format(_T("NTindexList %3u, stateList %3u"), ntCount, saCount);
       defines.add(format(_T("_su%04u %-10s /* %-40s*/"), state, macroValue.cstr(), comment.cstr()));
     }
   }
@@ -436,7 +325,7 @@ ByteCount GrammarTables::printSuccessorMatrixCpp(MarginFile &output) const {
       output1.printf(_T("static const %s NTindexListTable[%u] = {\n"), getTypeName(m_NTIndexType), ntSetArray.getElementCount(true));
       for(ConstIterator<IndexArrayEntry<SymbolSet> > it = ntSetArray.getIterator(); it.hasNext();) {
         const IndexArrayEntry<SymbolSet> &e       = it.next();
-        String                            comment = format(_T(" %3u %s"), e.m_count, e.getComment().cstr());
+        String                            comment = format(_T(" %3u %s"), e.m_commentIndex, e.getComment().cstr());
         const UINT                        n       = (UINT)e.m_key.size();
         UINT                              counter = 0;
         output1.setLeftMargin(2);
@@ -466,7 +355,7 @@ ByteCount GrammarTables::printSuccessorMatrixCpp(MarginFile &output) const {
       output1.setLeftMargin(2);
       for(ConstIterator<IndexArrayEntry<SuccesorArray> > it = saArray.getIterator(); it.hasNext();) {
         const IndexArrayEntry<SuccesorArray> &e       = it.next();
-        String                                comment = format(_T("%3u %s"), e.m_count, e.getComment().cstr());
+        String                                comment = format(_T("%3u %s"), e.m_commentIndex, e.getComment().cstr());
         const UINT                            n       = (UINT)e.m_key.size();
         UINT                                  counter = 0;
         for(ConstIterator<unsigned short> it1 = e.m_key.getIterator(); it1.hasNext(); counter++, delim=',') {

@@ -2,8 +2,6 @@
 #include <FileNameSplitter.h>
 #include "GrammarCode.h"
 
-const ByteCount ByteCount::s_pointerSize(4,8); // sizeof(void*) in x86 and x64
-
 GrammarCode::GrammarCode(const String &templateName
                         ,Grammar      &grammar
                         ,const String &implOutputDir
@@ -51,14 +49,11 @@ void newLine(MarginFile &output, String &comment, int minColumn) { // static
   }
 }
 
-GrammarCode::~GrammarCode() {
-}
-
-void GrammarCode::generateDocFile() {
+void GrammarCode::generateDocFile() const {
   generateDocFile(MarginFile(m_docFileName));
 }
 
-void GrammarCode::generateDocFile(MarginFile &output) {
+void GrammarCode::generateDocFile(MarginFile &output) const {
   int dumpformat = DUMP_DOCFORMAT;
   if(getFlags().m_generateLookahead) {
     dumpformat |= DUMP_LOOKAHEAD;

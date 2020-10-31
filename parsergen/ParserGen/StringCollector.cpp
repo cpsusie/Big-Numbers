@@ -10,10 +10,6 @@ void StringCollector::begin(TCHAR *str, int length, const SourcePositionWithName
   m_startPos        = startPos;
 }
 
-void StringCollector::addChar(TCHAR ch) {
-  ((String&)*this) += ch;
-}
-
 SourceText StringCollector::getSourceText(int lastSymbolLength) {
   SourceText result;
   result.m_sourceText = substr(*this, 0, length()-lastSymbolLength);

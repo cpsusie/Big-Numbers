@@ -29,19 +29,14 @@ public:
 
 class KeywordTrigger {
 private:
-  String              m_verboseString;
-  KeywordHandler     &m_handler;
+  String          m_verboseString;
+  KeywordHandler &m_handler;
 
 public:
   KeywordTrigger(KeywordHandler &handler, const String &verboseString);
 
-  inline const KeywordHandler &getHandler() const {
-    return m_handler;
-  }
-
-  inline const String &getVerboseString() const {
-    return m_verboseString;
-  }
+  inline const KeywordHandler &getHandler()       const { return m_handler;       }
+  inline const String         &getVerboseString() const { return m_verboseString; }
 };
 
 typedef enum {
@@ -65,7 +60,7 @@ private:
   void           checkChar(     const TCHAR *&s, char expected) const;
   String         parseMacro(    const TCHAR *&s    ) const; // assume *s = '$'
   String         expandMacroes( const String &line ) const;
-  void closeOutput();
+  void           closeOutput();
   inline MarginFile &getOutput() {
     return *m_output;
   }
@@ -93,35 +88,18 @@ public:
     const int old = getOutput().getLeftMargin();
     getOutput().setLeftMargin(old-decr);
   }
-  void printf(const TCHAR *format,...);
-  void writeSourceText(const SourceText &sourceText);
-  void writeLineDirective(const String &sourceName, int lineNumber);
-  inline const SourcePositionWithName &getCurrentSourcePos() const {
-    return m_currentPos;
-  }
+  static       String                  createTempFileName(const String &ext);
+  void                                 openOutput(const String &fileName);
+  void                                 printf(            const TCHAR *format,...);
+  void                                 writeSourceText(   const SourceText &sourceText);
+  void                                 writeLineDirective(const String &sourceName, int lineNumber);
 
-  const CodeFlags &getFlags() const {
-    return m_flags;
-  }
-  static String createTempFileName(const String &ext);
-
-  inline const String &getImplOutputDir() const {
-    return m_implOutputDir;
-  }
-
-  inline const String &getHeaderOutputDir() const {
-    return m_headerOutputDir;
-  }
-
-  inline const SourcePositionWithName &getPos() const {
-    return m_currentPos;
-  }
-
-  inline int getLineNumber() const {
-    return getPos().getLineNumber();
-  }
-
-  void openOutput(const String &fileName);
+  inline const SourcePositionWithName &getCurrentSourcePos() const { return m_currentPos;             }
+  inline const CodeFlags              &getFlags()            const { return m_flags;                  }
+  inline const String                 &getImplOutputDir()    const { return m_implOutputDir;          }
+  inline const String                 &getHeaderOutputDir()  const { return m_headerOutputDir;        }
+  inline const SourcePositionWithName &getPos()              const { return m_currentPos;             }
+  inline       int                     getLineNumber()       const { return getPos().getLineNumber(); }
 };
 
 class SourceTextWriter : public KeywordHandler {

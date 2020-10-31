@@ -3,6 +3,25 @@
 #include "GrammarCode.h"
 #include "CompressedActionMatrixCpp.h"
 
+void checkMax15Bits(const TCHAR *method, int line, int v, const TCHAR *varName) {
+  if((v & 0xffff8000) != 0) {
+    throwException(_T("%s:(%d):value %s=(%08x) cannot be contained in 15 bits"), method, line, varName, v);
+  }
+}
+
+#if defined(_DEBUG)
+void checkCodeBits(const TCHAR *method, UINT v, const TCHAR *varName) {
+  if((v & encodeCompressMethod(MAXCOMPRESSIONVALUE)) != 0) {
+    MessageBox(NULL, format(_T("%s:Encoded variable %s has value %08x, with non-zero value in encoding bits")
+              ,method, varName, v).cstr()
+              ,_T("Error")
+              ,MB_ICONSTOP
+              );
+    exit(-1);
+  }
+}
+#endif // _DEBUG
+
 namespace ActionMatrix {
 
 int rawActionArrayCmp(const RawActionArray &a1, const RawActionArray &a2) {
@@ -15,19 +34,6 @@ int rawActionArrayCmp(const RawActionArray &a1, const RawActionArray &a2) {
   }
   return 0;
 }
-
-static constexpr UINT compressedBit      = 0x00010000;
-static constexpr UINT multiItemIndicator = 0x00008000;
-static constexpr UINT codeMask           = compressedBit | multiItemIndicator;
-static constexpr UINT dataMask           = ~codeMask;
-
-static void checkMax15Bits(const TCHAR *method, int line, int v, const TCHAR *varName) {
-  if((v & 0xffff8000) != 0) {
-    throwException(_T("%s:(%d):value %s=(%08x) cannot be contained in 15 bits"), method, line, varName, v);
-  }
-}
-
-#define CHECKMAX15BITS(v) checkMax15Bits(__TFUNCTION__,__LINE__,v,_T(#v))
 
 StateActionInfo::StateActionInfo(UINT terminalCount, UINT state, const ActionArray &actionArray)
 : m_actionArray(actionArray)
@@ -64,7 +70,7 @@ CompressionMethod StateActionInfo::getCompressionMethod() const {
            ? ONEITEMCOMPRESSION
            : REDUCEBYSAMEPRODCOMPRESSION;
     }
-  case 2 :
+//  case 2 :
 //    return SPLITCOMPRESSION;
   default:
     return UNCOMPRESSED;
@@ -96,57 +102,6 @@ ByteCount CompressedActionMatrix::print(MarginFile &output) const {
 
 void CompressedActionMatrix::addACdefine(UINT state, const String &value, const String &comment) {
   m_defines.add(format(_T("_ac%04u %-10s /* %-40s*/"), state, value.cstr(), comment.cstr()));
-}
-
-void CompressedActionMatrix::doOneItemState(const StateActionInfo &stateInfo) {
-  const UINT         state = stateInfo.getState();
-  const ActionArray &paa   = stateInfo.getActions();
-
-  assert(paa.size() == 1);
-
-  const ParserAction &pa = paa[0];
-  const int           action  = pa.m_action;                    // positive or negative
-  const UINT          token   = pa.m_token;
-  const String        comment = (action <= 0)
-                              ? format(_T("Reduce by %u on %s"), -action, m_tables.getSymbolName(pa.m_token))
-                              : format(_T("Shift  to %u on %s"),  action, m_tables.getSymbolName(pa.m_token));
-  CHECKMAX15BITS(token);
-  CHECKMAX15BITS(abs(action));
-  const UINT          encodedValue = ((action << 17) | token);
-  assert((encodedValue & codeMask) == 0);
-  const String        macroValue   = format(_T("0x%08x"), compressedBit | encodedValue);
-  addACdefine(state, macroValue, comment);
-}
-
-void CompressedActionMatrix::doReduceBySameProdState(const StateActionInfo &stateInfo) {
-  const UINT                         state = stateInfo.getState();
-  const Array<SameReduceActionInfo> &raa   = stateInfo.getReduceActionArray();
-
-  assert((raa.size() == 1) && stateInfo.getShiftActionArray().isEmpty());
-
-  const BitSet  &laSet = raa[0].getTerminalSet();
-  IndexMapValue *vp    = m_laSetMap.get(laSet);
-  UINT           byteIndex, termSetCount;
-  if(vp != nullptr) {
-    byteIndex    = vp->m_arrayIndex;
-    termSetCount = vp->m_commentIndex;
-    vp->addState(state);
-  } else {
-    byteIndex    = m_currentLASetArraySize;
-    termSetCount = m_laSetMap.getCount();
-    IndexMapValue nv(m_stateCount, state, byteIndex);
-    m_laSetMap.put(laSet, nv);
-    m_currentLASetArraySize += m_laSetSizeInBytes;
-  }
-  const int           prod         = raa[0].getProduction();
-  const int           action       = -prod;
-  const String        comment      = format(_T("Reduce by %u on tokens in termSet[%u]"), prod, termSetCount);
-  CHECKMAX15BITS(byteIndex);
-  CHECKMAX15BITS(abs(action));
-  const UINT          encodedValue = ((action << 17) | byteIndex);
-  assert((encodedValue & codeMask) == 0);
-  const String        macroValue   = format(_T("0x%08x"), compressedBit | multiItemIndicator | encodedValue);
-  addACdefine(state, macroValue, comment);
 }
 
 void CompressedActionMatrix::doUncompressedState(const StateActionInfo &stateInfo) {
@@ -181,10 +136,63 @@ void CompressedActionMatrix::doUncompressedState(const StateActionInfo &stateInf
     m_raaMap.put(raa, nv);
     m_currentActionListSize += (UINT)raa.size();
   }
-  const UINT encodedValue = ((UINT)actionListIndex << 17) | (UINT)termListIndex;
-  assert((encodedValue & compressedBit) == 0);
-  const String macroValue = format(_T("0x%08x"), encodedValue);
-  const String comment    = format(_T("termList %3u, actionList %3u"), laCount, raCount);
+  const UINT   encodedValue = ((UINT)actionListIndex << 17) | (UINT)termListIndex;
+  const String macroValue   = format(_T("0x%08x"), encodeValue(encodedValue,UNCOMPRESSED));
+  const String comment      = format(_T("termList %3u, actionList %3u"), laCount, raCount);
+  addACdefine(state, macroValue, comment);
+}
+
+void CompressedActionMatrix::doSplitCompression(const StateActionInfo &stateInfo) {
+  const ActionArray &sa = stateInfo.getShiftActionArray();
+//  const stateInfo.getReduceActionArray()
+}
+
+void CompressedActionMatrix::doOneItemState(const StateActionInfo &stateInfo) {
+  const UINT         state = stateInfo.getState();
+  const ActionArray &paa   = stateInfo.getActions();
+
+  assert(paa.size() == 1);
+
+  const ParserAction &pa = paa[0];
+  const int           action  = pa.m_action;                    // positive or negative
+  const UINT          token   = pa.m_token;
+  const String        comment = (action <= 0)
+                              ? format(_T("Reduce by %u on %s"), -action, m_tables.getSymbolName(pa.m_token))
+                              : format(_T("Shift  to %u on %s"),  action, m_tables.getSymbolName(pa.m_token));
+  CHECKMAX15BITS(token);
+  CHECKMAX15BITS(abs(action));
+  const UINT          encodedValue = ((action << 17) | token);
+  const String        macroValue   = format(_T("0x%08x"), encodeValue(encodedValue,ONEITEMCOMPRESSION));
+  addACdefine(state, macroValue, comment);
+}
+
+void CompressedActionMatrix::doReduceBySameProdState(const StateActionInfo &stateInfo) {
+  const UINT                         state = stateInfo.getState();
+  const Array<SameReduceActionInfo> &raa   = stateInfo.getReduceActionArray();
+
+  assert((raa.size() == 1) && stateInfo.getShiftActionArray().isEmpty());
+
+  const SymbolSet &laSet = raa[0].getTerminalSet();
+  IndexMapValue   *vp    = m_laSetMap.get(laSet);
+  UINT             byteIndex, termSetCount;
+  if(vp != nullptr) {
+    byteIndex    = vp->m_arrayIndex;
+    termSetCount = vp->m_commentIndex;
+    vp->addState(state);
+  } else {
+    byteIndex    = m_currentLASetArraySize;
+    termSetCount = m_laSetMap.getCount();
+    IndexMapValue nv(m_stateCount, state, byteIndex);
+    m_laSetMap.put(laSet, nv);
+    m_currentLASetArraySize += m_laSetSizeInBytes;
+  }
+  const int           prod         = raa[0].getProduction();
+  const int           action       = -prod;
+  const String        comment      = format(_T("Reduce by %u on tokens in termSet[%u]"), prod, termSetCount);
+  CHECKMAX15BITS(byteIndex);
+  CHECKMAX15BITS(abs(action));
+  const UINT          encodedValue = ((action << 17) | byteIndex);
+  const String        macroValue   = format(_T("0x%08x"), encodeValue(encodedValue,REDUCEBYSAMEPRODCOMPRESSION));
   addACdefine(state, macroValue, comment);
 }
 
@@ -197,14 +205,20 @@ void CompressedActionMatrix::generateCompressedForm() {
   for(UINT state = 0; state < m_stateCount; state++) {
     const StateActionInfo &stateInfo = m_stateInfoArray[state];
     switch(stateInfo.getCompressionMethod()) {
+    case UNCOMPRESSED               :
+      doUncompressedState(stateInfo);
+      break;
+    case SPLITCOMPRESSION           :
+      doSplitCompression(stateInfo);
+      break;
     case ONEITEMCOMPRESSION:
       doOneItemState(stateInfo);
       break;
     case REDUCEBYSAMEPRODCOMPRESSION:
       doReduceBySameProdState(stateInfo);
       break;
-    case UNCOMPRESSED:
-      doUncompressedState(stateInfo);
+    default                         :
+      throwException(_T("%s:unknown compressionMethod for state %u"), __TFUNCTION__, state);
       break;
     }
   }
