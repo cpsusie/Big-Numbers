@@ -2,12 +2,12 @@
 #include <FileNameSplitter.h>
 #include "GrammarCode.h"
 
-GrammarCode::GrammarCode(const String &templateName
-                        ,Grammar      &grammar
-                        ,const String &implOutputDir
-                        ,const String &headerOutputDir
-                        ,const String &nameSpace
-                        ,CodeFlags     flags)
+GrammarCode::GrammarCode(const String  &templateName
+                        ,const Grammar &grammar
+                        ,const String  &implOutputDir
+                        ,const String  &headerOutputDir
+                        ,const String  &nameSpace
+                        ,CodeFlags      flags)
 : m_grammar(        grammar                                                     )
 , m_templateName(   templateName                                                )
 , m_implOutputDir(  implOutputDir                                               )
@@ -22,7 +22,7 @@ GrammarCode::GrammarCode(const String &templateName
 {
 }
 
-ByteArray bitSetToByteArray(const BitSet &set) {
+ByteArray symbolSetToByteArray(const BitSet &set) {
   const size_t byteCount = (set.getCapacity() - 1) / 8 + 1;
   ByteArray    result(byteCount);
   result.addZeroes(byteCount);

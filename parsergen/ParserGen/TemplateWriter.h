@@ -39,11 +39,6 @@ public:
   inline const String         &getVerboseString() const { return m_verboseString; }
 };
 
-typedef enum {
-  STR_EQ    // '=='
- ,STR_NE    // '!="
-} StringRelation;
-
 class TemplateWriter {
 private:
   String                         m_templateName;

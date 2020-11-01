@@ -2,25 +2,19 @@
 
 #include "ByteCount.h"
 
-typedef CompactShortArray  RawActionArray;
-typedef CompactUshortArray SuccesorArray;
-
-typedef BitSet SymbolSet;
-
-inline int symbolSetCmp( const SymbolSet &s1, const SymbolSet &s2) {
-  return bitSetCmp(s1, s2);
-}
-
 class GrammarTables : public ParserTables {
 private:
-  UINT                    m_terminalCount;
+  const UINT              m_terminalCount;
+  const UINT              m_symbolCount;
+  const UINT              m_productionCount;
+  const UINT              m_stateCount;
+  const String            m_parserClassName;
+  const String            m_tablesClassName;
   CompactUshortArray      m_productionLength, m_left;
   StringArray             m_symbolName;
   Array<CompactIntArray>  m_rightSide;
   Array<ActionArray>      m_stateActions;
   Array<ActionArray>      m_stateSucc;
-  const String            m_parserClassName;
-  const String            m_tablesClassName;
   mutable BitSet          m_compressibleStateSet;
   mutable ByteCount       m_countTableBytes;
   mutable IntegerType     m_terminalType, m_NTIndexType, m_symbolType, m_actionType, m_stateType;
@@ -53,20 +47,21 @@ public:
   const TCHAR *getSymbolName(UINT symbol                ) const override { return m_symbolName[symbol].cstr();        }
   void getRightSide(         UINT prod, UINT *dst       ) const override;
   UINT getTerminalCount()                                 const override { return m_terminalCount;                    }
-  UINT getSymbolCount()                                   const override { return (UINT)m_symbolName.size();          }
-  UINT getProductionCount()                               const override { return (UINT)m_productionLength.size();    }
-  UINT getStateCount()                                    const override { return (UINT)m_stateActions.size();        }
+  UINT getSymbolCount()                                   const override { return m_symbolCount;                      }
+  UINT getProductionCount()                               const override { return m_productionCount;                  }
+  UINT getStateCount()                                    const override { return m_stateCount;                       }
   UINT getLegalInputCount(   UINT state                 ) const override { return (UINT)m_stateActions[state].size(); }
   void getLegalInputs(       UINT state, UINT *symbols  ) const override;
   UINT getTableByteCount(    Platform platform          ) const override { return m_countTableBytes.getByteCount(platform); }
 
-  inline IntegerType        getTerminalType()             const          { return m_terminalType;                     }
-  inline IntegerType        getActionType()               const          { return m_actionType;                       }
-  SymbolSet                 getLookaheadSet(  UINT state) const;
-  RawActionArray            getRawActionArray(UINT state) const;
+  inline IntegerType        getTerminalType()             const          { return m_terminalType;                                         }
+  inline IntegerType        getActionType()               const          { return m_actionType;                                           }
+  inline SymbolSet          getLookaheadSet(  UINT state) const          { return m_stateActions[state].getLookaheadSet(m_terminalCount); }
+  inline RawActionArray     getRawActionArray(UINT state) const          { return m_stateActions[state].getRawActionArray();              }
+
   BitSet                    getNTOffsetSet(   UINT state) const;
   SuccesorArray             getSuccessorArray(UINT state) const;
-  const Array<ActionArray> &getStateActions()             const          { return m_stateActions;                     }
+  const Array<ActionArray> &getStateActions()             const          { return m_stateActions;                                         }
   ByteCount                 getTotalSizeInBytes()         const;
   void print(MarginFile &output, Language language, bool useTableCompression) const;
 };

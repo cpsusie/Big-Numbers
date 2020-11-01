@@ -18,12 +18,12 @@ private:
   const String     m_nameSpace;
   ByteCount        m_tablesByteCount;
 public:
-  GrammarCode(const String &templateName
-             ,Grammar      &grammar
-             ,const String &outputDirImpl
-             ,const String &outputDirHeaders
-             ,const String &nameSpace
-             ,CodeFlags     flags);
+  GrammarCode(const String  &templateName
+             ,const Grammar &grammar
+             ,const String  &outputDirImpl
+             ,const String  &outputDirHeaders
+             ,const String  &nameSpace
+             ,CodeFlags      flags);
   ~GrammarCode() {
   }
   void generateParser();
@@ -46,7 +46,7 @@ inline int stringCmp(const String &s1, const String &s2) {
   return _tcscmp(s1.cstr(), s2.cstr());
 }
 
-ByteArray    bitSetToByteArray(const BitSet &set);
+ByteArray    symbolSetToByteArray(const SymbolSet &set);
 void         newLine(MarginFile &output, String &comment = String(_T("")), int minColumn=0);
 
 class ActionsWriter : public KeywordHandler {

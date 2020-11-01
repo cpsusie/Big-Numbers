@@ -91,45 +91,52 @@ private:
     return -1;
   }
 
-  static inline bool isCompressedCode(UINT code) {
+// ----------------------------- successor functions ---------------------------------------
+  static inline bool isCompressedSuccCode(UINT code) {
     return (code & 0x00010000) != 0;
   }
-  static inline bool isSingleItemCode(UINT code) {
-    return isCompressedCode(code) && ((code & 0x8000) == 0);
-  }
-  static inline bool isMultiItemCode(UINT code) {
-    return isCompressedCode(code) && ((code & 0x8000) != 0);
-  }
 
-  // Compressed states
-  static inline int getCompressedAction(signed int code) { // must be signed int
-    assert(isCompressedCode(code));
+  inline UINT getCompressedSuccessor(UINT code, UINT nt) const {
+    assert((nt - terminalCount) == (code & 0xffff));
     return code >> 17;
   }
-  static inline UINT getCompressedSuccessor(UINT code) { // must be unsigned int
-    assert(isCompressedCode(code));
-    return code >> 17;
+  inline const NTIndexType *getNTindexList(UINT code) const {
+    assert(!isCompressedSuccCode(code));
+    return m_NTindexListTable + (code & 0xffff);
+  }
+  inline UINT getUncompressedSuccessor(UINT code, UINT nt) const {
+    const int index = findElement(getNTindexList(code), nt - terminalCount);
+    assert(index >= 0);
+    return m_stateListTable[(code >> 17) + index];
   }
 
-  // SingleItem functions
-  static inline int getSingleItemAction(UINT code, UINT term) {
-    assert(isSingleItemCode(code));
-    return ((code & 0x7fff) == term) ? getCompressedAction(code) : _ParserError;
-  }
-  static inline UINT getSingleItemLegalInputCount(UINT code) {
-    assert(isSingleItemCode(code));
-    return 1;
-  }
-  static inline void getSingleItemLegalInputs(UINT code, UINT *symbols) {
-    assert(isSingleItemCode(code));
-    *symbols = (code&0x7fff);
-  }
+// ----------------------------------- action functions ---------------------------------
+  static constexpr unsigned char CodeTermList  = 0;
+  static constexpr unsigned char CodeSplitNode = 1;
+  static constexpr unsigned char CodeOneItem   = 2;
+  static constexpr unsigned char CodeTermSet   = 3;
 
-  // termSet functions
-  static inline int getTermSetAction(const BYTE *termSet, UINT code, UINT term) {
-    return contains(termSet, term) ? getCompressedAction(code) : _ParserError;
+  static inline BYTE getActMethodCode(UINT code) {
+    return (code >> 15) & 3;
   }
-  static UINT getTermSetLegalInputCount(const BYTE *termSet) {
+  inline const TerminalType *getTermList(UINT code) const {
+    return m_termListTable + (code & 0x7fff);
+  }
+  inline const BYTE         *getTermSet(UINT code) const {
+    return m_termSetTable  + (code & 0x7fff);
+  }
+  inline UINT left( UINT code) const { return m_actionCode[code & 0x7fff]; }
+  inline UINT right(UINT code) const { return m_actionCode[code >> 17   ]; }
+
+// --------------------------- getLegalInputCount -------------------------------------
+
+  static inline UINT getLegalInputCountTermList(const TerminalType *termList) {
+    return termList[0];
+  }
+  inline UINT getLegalInputCountSplitNode(UINT code) const {
+    return getLegalInputCountFromCode(left(code)) + getLegalInputCountFromCode(right(code));
+  }
+  static UINT getLegalInputCountTermSet(const BYTE *termSet) {
     UINT sum = 0;
     constexpr UINT termSetByteCount = (terminalCount - 1) / 8 + 1;
     for(const BYTE *endp = termSet + termSetByteCount; termSet < endp;) {
@@ -139,76 +146,69 @@ private:
     }
     return sum;
   }
-  static void getTermSetLegalInputs(const BYTE *termSet, UINT *symbols) {
-    for(UINT term = 0; term < terminalCount; term++) {
-      if(contains(termSet, term)) {
-        *(symbols++) = term;
-      }
+  inline UINT getLegalInputCountFromCode(UINT code) const {
+    switch(getActMethodCode(code)) {
+    case CodeTermList : return getLegalInputCountTermList(getTermList(code));
+    case CodeSplitNode: return getLegalInputCountSplitNode(           code );
+    case CodeOneItem  : return 1;
+    case CodeTermSet  : return getLegalInputCountTermSet( getTermSet( code));
     }
+    return 0;
   }
 
-  inline const BYTE *getTermSet(UINT code) const {
-    assert(isMultiItemCode(code));
-    return m_termSetTable + (code & 0x7fff);
-  }
-  inline int getCompressedAction(UINT code, UINT term) const {
-    return isSingleItemCode(code)
-         ? getSingleItemAction(code, term)
-         : getTermSetAction(getTermSet(code), code, term);
-  }
-  inline UINT getCompressedSuccessor(UINT code, UINT nt) const {
-    assert((nt - terminalCount) == (code & 0xffff));
-    return getCompressedSuccessor(code);
-  }
-  UINT getCompressedLegalInputCount(UINT code) const {
-    return isSingleItemCode(code)
-         ? getSingleItemLegalInputCount(code)
-         : getTermSetLegalInputCount(getTermSet(code));
-  }
-  void getCompressedLegalInputs(UINT code, UINT *symbols) const {
-    if(isSingleItemCode(code)) {
-      getSingleItemLegalInputs(code, symbols);
-    } else {
-      getTermSetLegalInputs(getTermSet(code), symbols);
-    }
-  }
+// --------------------------- getLegalInputs -------------------------------------
 
-  // termList functions
-  static inline UINT getTermListLegalInputCount(const TerminalType *termList) {
-    return termList[0];
-  }
-  static inline void getTermListLegalInputs(const TerminalType *termList, UINT *symbols) {
+  static inline UINT getLegalInputsTermList(const TerminalType *termList, UINT *symbols) {
     const UINT n = *(termList++);
     for(const TerminalType *endp = termList+n; termList < endp;) {
       *(symbols++) = *(termList++);
     }
+    return n;
+  }
+  inline UINT getLegalInputsSplitNode(UINT code, UINT *symbols) const {
+    const UINT n = getLegalInputsFromCode(left(code), symbols);
+    return n + getLegalInputsFromCode(right(code), symbols + n);
+  }
+  static UINT getLegalInputsTermSet(const BYTE *termSet, UINT *symbols) {
+    UINT count = 0;
+    for(UINT term = 0; term < terminalCount; term++) {
+      if(contains(termSet, term)) {
+        *(symbols++) = term;
+        count++;
+      }
+    }
+    return count;
+  }
+  inline UINT getLegalInputsFromCode(UINT code, UINT *symbols) const {
+    switch(getActMethodCode(code)) {
+    case CodeTermList : return getLegalInputsTermList(getTermList(code), symbols);
+    case CodeSplitNode: return getLegalInputsSplitNode(           code , symbols);
+    case CodeOneItem  : *symbols = (code & 0x7fff); return 1;
+    case CodeTermSet  : return getLegalInputsTermSet( getTermSet( code), symbols);
+    }
+    return 0;
   }
 
-  // Uncompressed functions
-  inline const TerminalType *getTermList(UINT code) const {
-    assert(!isCompressedCode(code));
-    return m_termListTable + (code & 0xffff);
-  }
-  inline const NTIndexType *getNTindexList(UINT code) const {
-    assert(!isCompressedCode(code));
-    return m_NTindexListTable + (code & 0xffff);
-  }
-
-  inline int getUncompressedAction(UINT code, UINT term) const {
+// --------------------------- getAction -------------------------------------
+  inline int getActionTermList(UINT code, UINT term) const {
     const int index = findElement(getTermList(code), term);
     return (index < 0) ? _ParserError : m_actionListTable[(code >> 17) + index];
   }
-  inline UINT getUncompressedSuccessor(UINT code, UINT nt) const {
-    const int index = findElement(getNTindexList(code), nt - terminalCount);
-    assert(index >= 0);
-    return m_stateListTable[(code >> 17) + index];
+  inline int getActionSplitNode(UINT code, UINT term) const {
+    const int a = getActionFromCode(left(code), term);
+    return (a != _ParserError) ? a : getActionFromCode(right(code), term);
   }
-  inline UINT getUncompressedLegalInputCount(UINT code) const {
-    return getTermListLegalInputCount(getTermList(code));
+  inline int getActionFromCode(UINT code, UINT term) const {
+    switch(getActMethodCode(code)) {
+    case CodeTermList : return getActionTermList(                 code, term);
+    case CodeSplitNode: return getActionSplitNode(                code, term);
+    case CodeOneItem  : return ((code & 0x7fff) == term)        ? ((signed int)code >> 17) : _ParserError;
+    case CodeTermSet  : return contains(getTermSet(code), term) ? ((signed int)code >> 17) : _ParserError;
+    }
+    return 0;
   }
-  inline void getUncompressedLegalInputs(UINT code, UINT *symbols) const {
-    getTermListLegalInputs(getTermList(code), symbols);
-  }
+
+// ------------------------------------ misc---------------------------------
 
   void buildSymbolNameTable() const {
     String tmp = m_nameString;
@@ -239,30 +239,23 @@ public:
   //   _ParserError: Unexpected term
   int getAction(UINT state, UINT term)           const override {
     assert(state < stateCount);
-    const UINT code = m_actionCode[state];
-    return isCompressedCode(code) ? getCompressedAction(code, term) : getUncompressedAction(code, term);
+    return getActionFromCode(m_actionCode[state], term);
   }
 
   // nt is nonterminal
   UINT getSuccessor(UINT state, UINT nt)         const override {
     assert(state < stateCount);
     const UINT code = m_successorCode[state];
-    return isCompressedCode(code) ? getCompressedSuccessor(code, nt) : getUncompressedSuccessor(code, nt);
+    return isCompressedSuccCode(code) ? getCompressedSuccessor(code, nt) : getUncompressedSuccessor(code, nt);
   }
 
   UINT getLegalInputCount(UINT state)            const override {
     assert(state < stateCount);
-    const UINT code = m_actionCode[state];
-    return isCompressedCode(code) ? getCompressedLegalInputCount(code) : getUncompressedLegalInputCount(code);
+    return getLegalInputCountFromCode(m_actionCode[state]);
   }
   void getLegalInputs(UINT state, UINT *symbols) const override {
     assert(state < stateCount);
-    const UINT code = m_actionCode[state];
-    if(isCompressedCode(code)) {
-      getCompressedLegalInputs(  code, symbols);
-    } else {
-      getUncompressedLegalInputs(code, symbols);
-    }
+    getLegalInputsFromCode(m_actionCode[state], symbols);
   }
 
   UINT getProductionLength(  UINT prod  )        const override {
@@ -292,18 +285,10 @@ public:
     }
   }
 
-  UINT getTerminalCount()                        const override {
-    return terminalCount;
-  }
-  UINT getSymbolCount()                          const override {
-    return symbolCount;
-  }
-  UINT getProductionCount()                      const override {
-    return productionCount;
-  }
-  UINT getStateCount()                           const override {
-    return stateCount;
-  }
+  UINT getTerminalCount()                        const override { return terminalCount;   }
+  UINT getSymbolCount()                          const override { return symbolCount;     }
+  UINT getProductionCount()                      const override { return productionCount; }
+  UINT getStateCount()                           const override { return stateCount;      }
   UINT getTableByteCount(Platform platform)      const override {
     return (platform==PLATFORM_X86) ? m_tableByteCountx86 : m_tableByteCountx64;
   }

@@ -264,14 +264,12 @@ ByteCount GrammarTables::printSuccessorMatrixCpp(MarginFile &output) const {
     }
     definedStateSet.add(state);
     if(succCount == 1) {
-      const ParserAction &pa           = succList[0];
-      const UINT          NT           = pa.m_token;
-      const UINT          newState     = pa.m_action;
-      const String        comment      = format(_T("Goto %u on %s"), newState, getSymbolName(NT));
-      const UINT          NTIndex      = NT - m_terminalCount;
-      CHECKMAX15BITS(newState);
-      const UINT          encodedValue = ((newState << 17) | NTIndex);
-      const String        macroValue   = format(_T("0x%08x"), encodeValue(encodedValue, ONEITEMCOMPRESSION));
+      const ParserAction &pa         = succList[0];
+      const UINT          NT         = pa.m_token;
+      const UINT          newState   = pa.m_action;
+      const String        comment    = format(_T("Goto %u on %s"), newState, getSymbolName(NT));
+      const UINT          NTIndex    = NT - m_terminalCount;
+      const String        macroValue = encodeMacroValue(ONEITEMCOMPRESSION, newState, NTIndex);
       defines.add(format(_T("_su%04u %-10s /* %-40s*/"), state, macroValue.cstr(), comment.cstr()));
     } else {
       const SymbolSet   ntSet  = getNTOffsetSet(state);
@@ -304,11 +302,8 @@ ByteCount GrammarTables::printSuccessorMatrixCpp(MarginFile &output) const {
         saMap.put(sa, nv);
         currentSAListSize += (UINT)sa.size();
       }
-      CHECKMAX15BITS(saIndex);
-      CHECKMAX15BITS(ntIndex);
-      const UINT   encodedValue = ((UINT)saIndex << 17) | ntIndex;
-      const String macroValue   = format(_T("0x%08x"), encodeValue(encodedValue, UNCOMPRESSED));
-      const String comment      = format(_T("NTindexList %3u, stateList %3u"), ntCount, saCount);
+      const String comment    = format(_T("NTindexList %3u, stateList %3u"), ntCount, saCount);
+      const String macroValue = encodeMacroValue(UNCOMPRESSED, saIndex, ntIndex);
       defines.add(format(_T("_su%04u %-10s /* %-40s*/"), state, macroValue.cstr(), comment.cstr()));
     }
   }

@@ -7121,7 +7121,7 @@ State 158:
   94	productions
  159	LALR(1) states
 3106	items
-4.156(x86)/4.240(x64) bytes	 required for parsertables
+4.040(x86)/4.128(x64) bytes	 required for parsertables
 
    0	shift/reduce  conflicts
    0	reduce/reduce conflicts

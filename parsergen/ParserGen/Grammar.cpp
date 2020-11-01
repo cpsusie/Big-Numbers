@@ -11,92 +11,82 @@ static String getModifierString(SymbolModifier modifier) {
   }
 }
 
-GrammarSymbol::GrammarSymbol(int index, const String &name, SymbolType type, int precedence, const SourcePosition &pos, long terminalCount) : m_first1(terminalCount) {
-  if(type == NONTERMINAL && terminalCount == 0) {
+GrammarSymbol::GrammarSymbol(UINT index, const String &name, SymbolType type, int precedence, const SourcePosition &pos, UINT terminalCount)
+: m_index( index        )
+, m_name(  name         )
+, m_type(  type         )
+, m_first1(terminalCount)
+, m_pos(   pos          )
+{
+  if((type == NONTERMINAL) && (terminalCount == 0)) {
     throwException(_T("Cannot add nonterminal <%s> when terminalCount == 0"), name.cstr());
   }
 
-  m_index         = index;
-  m_name          = name;
-  m_type          = type;
   m_precedence    = precedence;
   m_reachable     = false;
   m_terminate     = false;
   m_deriveEpsilon = false;
-  m_pos           = pos;
-
 }
 
 const TCHAR *GrammarSymbol::getTypeString() const {
   switch(m_type) {
-  case LEFTASSOC_TERMINAL  : return _T("left assoc");
+  case LEFTASSOC_TERMINAL  : return _T("left assoc" );
   case RIGHTASSOC_TERMINAL : return _T("right assoc");
-  case NONASSOC_TERMINAL   : return _T("non assoc");
+  case NONASSOC_TERMINAL   : return _T("non assoc"  );
   case NONTERMINAL         : return _T("nonterminal");
-  case TERMINAL            : return _T("terminal");
+  case TERMINAL            : return _T("terminal"   );
   }
   return _T("?");
 }
 
-LR1Item::LR1Item(bool kernelItem, short prod, short dot, const BitSet &la) : m_la(la) {
-  m_kernelItem = kernelItem;
-  m_prod       = prod;
-  m_dot        = dot;
-  m_succ       = -1;
+static inline bool equalCore(const LR1Item &i1, const LR1Item &i2) {
+  return (i1.m_prod == i2.m_prod) && (i1.m_dot == i2.m_dot);
 }
 
-unsigned long LR1Item::coreHashCode() const {
-  return ((unsigned long)m_prod << 16) ^ m_dot;
-//    m_la.hashval(); DONT USE THIS HERE !!!!
-}
-
-static bool equalCore(const LR1Item &i1, const LR1Item &i2) {
-  return i1.m_prod == i2.m_prod && i1.m_dot == i2.m_dot;
-}
-
-static bool equalCore(const LR1State &e1, const LR1State &e2) { // compare CORE(e1) with CORE(e2)
-  const int n = e1.m_noOfKernelItems;
-  if(n != e2.m_noOfKernelItems) {
+static int coreCmp(const LR1State &s1, const LR1State &s2) { // compare CORE(s1) with CORE(s2)
+  const BYTE n = s1.m_kernelItemCount;
+  if(n != s2.m_kernelItemCount) {
     return false;
   }
-  for(int i = 0; i < n; i++) {
-    if(!equalCore(e1.m_items[i], e2.m_items[i])) {
+  for(BYTE i = 0; i < n; i++) {
+    if(!equalCore(s1.m_items[i], s2.m_items[i])) {
       return false;
     }
   }
   return true;
 }
 
-static int stateCoreCompareFunction(const LR1State * const &key, const LR1State * const &elem) { // used by hashmap
-  return equalCore(*key, *elem) ? 0 : 1;
-}
+// used by hashmap
+class StateCoreComparator : public Comparator<const LR1State *> {
+public:
+  int compare(const LR1State * const &s1, const LR1State * const &s2) override {
+    return coreCmp(*s1, *s2) ? 0 : 1;
+  }
+  AbstractComparator *clone() const override {
+    return new StateCoreComparator();
+  }
+};
 
-static unsigned long stateCoreHashFunction(const LR1State * const &s) { // used by hashmap
+
+static ULONG stateCoreHashFunction(const LR1State * const &s) { // used by hashmap
   const LR1State &state = *s;
-  const int n = state.m_noOfKernelItems;
-  unsigned long v = n;
-  for(int i = 0; i < n; i++) {
+  const BYTE      n     = state.m_kernelItemCount;
+  ULONG           v     = n;
+  for(BYTE i = 0; i < n; i++) {
     v ^= state.m_items[i].coreHashCode();
     v *= 13;
   }
   return v;
 }
 
-LR1State::LR1State(int index) {
-  m_index           = index;
-  m_noOfKernelItems = 0;
+StateHashMap::StateHashMap(size_t capacity)
+  : HashMap(stateCoreHashFunction, StateCoreComparator(), capacity)
+{
 }
 
-void LR1State::addItem(const LR1Item &item) {
-  m_items.add(item);
-  if(item.m_kernelItem) {
-    m_noOfKernelItems++;
-  }
-}
-
-LR1Item *LR1State::findItem(const LR1Item &item) {
-  const int n = (int)m_items.size();
-  for(int i = 0; i < n; i++) {
+LR1Item *LR1State::findItemWithSameCore(const LR1Item &item) {
+  const UINT n = (UINT)m_items.size();
+  for(UINT i = 0; i < n; i++) {
     if(equalCore(m_items[i], item)) {
       return &m_items[i];
     }
@@ -109,7 +99,7 @@ static int itemCmp(const LR1Item &e1, const LR1Item &e2) {
   if(c) {
     return c;
   }
-  c = e1.m_prod - e2.m_prod;                 // then sort by production
+  c = (int)e1.m_prod - (int)e2.m_prod;       // then sort by production
   return c ? c : (e1.m_dot - e2.m_dot);      // and by dot
 }
 
@@ -118,7 +108,7 @@ void LR1State::sortItems() {
 }
 
 Grammar::Grammar(Language language, int verboseLevel)
-: m_stateMap(stateCoreHashFunction, stateCoreCompareFunction, 4001)
+: m_stateMap(4001)
 , m_unfinishedSet(1001) {
 
   m_language      = language;
@@ -127,7 +117,7 @@ Grammar::Grammar(Language language, int verboseLevel)
 }
 
 Grammar::Grammar(Language language, const ParserTables &src)
-: m_stateMap(stateCoreHashFunction, stateCoreCompareFunction, 4001)
+: m_stateMap(4001)
 , m_unfinishedSet(1001) {
 
   m_language      = language;
@@ -152,27 +142,24 @@ Grammar::Grammar(Language language, const ParserTables &src)
   }
 }
 
-Grammar::~Grammar() {
-}
-
 int Grammar::findSymbol(const String &name) const {
-  const int *id = m_symbolMap.get(name);
+  const UINT *id = m_symbolMap.get(name);
   return id != nullptr ? *id : -1;
 }
 
-int Grammar::addSymbol(const GrammarSymbol &symbol) {
-  const int index = getSymbolCount();
+UINT Grammar::addSymbol(const GrammarSymbol &symbol) {
+  const UINT index = getSymbolCount();
   m_symbolMap.put(symbol.m_name, index);
   m_symbols.add(symbol);
   return index;
 }
 
-int Grammar::addTerminal(const String &name, SymbolType type, int precedence, const SourcePosition &pos) {
+UINT Grammar::addTerminal(const String &name, SymbolType type, int precedence, const SourcePosition &pos) {
   m_terminalCount++;
   return addSymbol(GrammarSymbol(getSymbolCount(), name, type, precedence, pos, 1));
 }
 
-int Grammar::addNonTerminal(const String &name, const SourcePosition &pos) {
+UINT Grammar::addNonTerminal(const String &name, const SourcePosition &pos) {
   return addSymbol(GrammarSymbol(getSymbolCount(), name, NONTERMINAL, 0, pos, getTerminalCount()));
 }
 
@@ -181,7 +168,7 @@ void Grammar::addProduction(const Production &production) {
     m_startSymbol = production.m_leftSide;
   }
 
-  const int prodIndex = getProductionCount();
+  const UINT prodIndex = getProductionCount();
   m_productions.add(production);
   getSymbol(production.m_leftSide).m_leftSideOf.add(prodIndex);
 }
@@ -190,10 +177,10 @@ void Grammar::addClosureProductions() {
   bool stable;
   do {
     stable = true;
-    for(int p = 0; p < getProductionCount(); p++) {
+    for(UINT p = 0; p < getProductionCount(); p++) {
       Production &prod = m_productions[p];
-      const int length = prod.getLength();
-      for(int s = 0; s < length; s++) {
+      const UINT length = prod.getLength();
+      for(UINT s = 0; s < length; s++) {
         RightSideSymbol &symbol = prod.m_rightSide[s];
         switch(symbol.m_modifier) {
         case NO_MODIFIER:
@@ -201,7 +188,7 @@ void Grammar::addClosureProductions() {
         case ZEROORONE  : // ?
           { Production copy(prod);
             symbol.m_modifier = NO_MODIFIER;
-            copy.m_rightSide.removeIndex(s);
+            copy.m_rightSide.remove(s);
             addProduction(copy);
             stable = false;
           }
@@ -236,8 +223,8 @@ void Grammar::addClosureProductions() {
 }
 
 bool Grammar::canTerminate(const Production &prod) const {
-  const int length = prod.getLength();
-  for(int s = 0; s < length; s++) {
+  const UINT length = prod.getLength();
+  for(UINT s = 0; s < length; s++) {
     if(!getSymbol(prod.m_rightSide[s]).m_terminate) {
       return false;
     }
@@ -246,8 +233,8 @@ bool Grammar::canTerminate(const Production &prod) const {
 }
 
 bool Grammar::deriveEpsilon(const Production &prod) const {
-  const int length = prod.getLength();
-  for(int s = 0; s < length; s++) {
+  const UINT length = prod.getLength();
+  for(UINT s = 0; s < length; s++) {
     if(!getSymbol(prod.m_rightSide[s]).m_deriveEpsilon) {
       return false;
     }
@@ -257,16 +244,16 @@ bool Grammar::deriveEpsilon(const Production &prod) const {
 
 void Grammar::findReachable() {
   getSymbol(getStartSymbol()).m_reachable = true;
-  const int n = getProductionCount();
+  const UINT n = getProductionCount();
   bool stable;
   do {
 //    gotoxy(0, 0); dump(); pause();
     stable = true;
-    for(int p = 0; p < n; p++) {
-      const Production &prod = m_productions[p];
+    for(UINT p = 0; p < n; p++) {
+      const Production &prod = getProduction(p);
       if(getSymbol(prod.m_leftSide).m_reachable) {
-        const int length = prod.getLength();
-        for(int s = 0; s < length; s++) {
+        const UINT length = prod.getLength();
+        for(UINT s = 0; s < length; s++) {
           GrammarSymbol &rightSymbol = getSymbol(prod.m_rightSide[s]);
           if(!rightSymbol.m_reachable) {
 //            printf(_T(")%s is reachable\n", rightSymbol.m_name.cstr());
@@ -280,16 +267,16 @@ void Grammar::findReachable() {
 }
 
 void Grammar::findTerminate() {
-  for(int s = 0; s < getTerminalCount(); s++) { // all terminals terminate
+  for(UINT s = 0; s < getTerminalCount(); s++) { // all terminals terminate
     getSymbol(s).m_terminate = true;
   }
-  const int n = getProductionCount();
+  const UINT n = getProductionCount();
   bool stable;
   do {
 //    gotoxy(0, 0); dump(); pause();
     stable = true;
-    for(int p = 0; p < n; p++) {
-      const Production &prod = m_productions[p];
+    for(UINT p = 0; p < n; p++) {
+      const Production &prod = getProduction(p);
       if(!getSymbol(prod.m_leftSide).m_terminate && canTerminate(prod)) {
 //          _tprintf(_T("%s can terminate\n"), getSymbol(prod.m_leftSide).m_name.cstr());
         getSymbol(prod.m_leftSide).m_terminate = true;
@@ -300,13 +287,13 @@ void Grammar::findTerminate() {
 }
 
 void Grammar::findEpsilonSymbols() {
-  const int n = getProductionCount();
+  const UINT n = getProductionCount();
   bool stable;
   do {
 //    gotoxy(0, 0); dump(); pause();
     stable = true;
-    for(int p = 0; p < n; p++) {
-      const Production &prod = m_productions[p];
+    for(UINT p = 0; p < n; p++) {
+      const Production &prod = getProduction(p);
       if(!getSymbol(prod.m_leftSide).m_deriveEpsilon && deriveEpsilon(prod)) {
         getSymbol(prod.m_leftSide).m_deriveEpsilon = true;
 //          _tprintf(_T("%s derive eps\n"), getSymbol(prod.m_leftSide).m_name.cstr());
@@ -323,16 +310,16 @@ void Grammar::findEpsilonSymbols() {
 
 void Grammar::findFirst1Sets() {
   findEpsilonSymbols();
-  const int n = getProductionCount();
+  const UINT n = getProductionCount();
   bool stable;
   do {
     stable = true;
-    for(int p = 0; p < n; p++) {
-      const Production &prod = m_productions[p];
-      const int length = prod.getLength();
+    for(UINT p = 0; p < n; p++) {
+      const Production &prod = getProduction(p);
+      const UINT length = prod.getLength();
       GrammarSymbol &ls = getSymbol(prod.m_leftSide);
-      for(int k = 0; k < length; k++) {
-        const int sk = prod.m_rightSide[k];
+      for(UINT k = 0; k < length; k++) {
+        const UINT sk = prod.m_rightSide[k];
         if(isTerminal(sk)) {
           if(!ls.m_first1.contains(sk)) {
             ls.m_first1.add(sk);
@@ -343,7 +330,7 @@ void Grammar::findFirst1Sets() {
         }
         else { // nonterminal
           const GrammarSymbol &nt = getSymbol(sk);
-          const BitSet diff(nt.m_first1 - ls.m_first1);
+          const SymbolSet diff(nt.m_first1 - ls.m_first1);
           if(!diff.isEmpty()) {
             ls.m_first1 += nt.m_first1;
 //            printf(_T(")first1(%s) : ", ls.m_name.cstr()); dump(ls.m_first1); printf(_T(")\n");
@@ -369,23 +356,23 @@ void Grammar::findFirst1Sets() {
   } while(!stable);
 }
 
-int Grammar::getItemCount() const {
-  const int n = getStateCount();
-  int count = 0;
-  for(int i = 0; i < n; i++) {
-    count += (int)m_states[i].m_items.size();
+UINT Grammar::getItemCount() const {
+  const UINT n = getStateCount();
+  UINT count = 0;
+  for(UINT i = 0; i < n; i++) {
+    count += (UINT)m_states[i].m_items.size();
   }
   return count;
 }
 
 // assume item = A -> alfa . B beta [la]
 // computes first1(beta la)
-BitSet Grammar::first1(const LR1Item &item) const {
-  const Production &prod = getProduction(item);
-  const int length = prod.getLength();
-  BitSet result(getTerminalCount());
-  for(int k = item.m_dot+1; k < length; k++) {
-    const int symbol = prod.m_rightSide[k];
+SymbolSet Grammar::first1(const LR1Item &item) const {
+  const Production &prod   = getProduction(item.m_prod);
+  const UINT        length = prod.getLength();
+  SymbolSet         result(getTerminalCount());
+  for(UINT k = item.m_dot+1; k < length; k++) {
+    const UINT symbol = prod.m_rightSide[k];
     if(isTerminal(symbol)) {
       result += symbol;
       return result;
@@ -400,32 +387,20 @@ BitSet Grammar::first1(const LR1Item &item) const {
   return result += item.m_la;
 }
 
-int Grammar::findState(const LR1State &state) const {
-  const int *i = m_stateMap.get(&state);
+int Grammar::findStateWithSameCore(const LR1State &state) const {
+  const UINT *i = m_stateMap.get(&state);
   return i ? *i : -1;
 }
 
 bool Grammar::isShiftItem(const LR1Item &item) const { // is item = "A -> alfa . a beta [la]"
-  const Production &prod = getProduction(item);
-  return item.m_dot < prod.getLength() && isTerminal(prod.m_rightSide[item.m_dot]);
+  const Production &prod = getProduction(item.m_prod);
+  return (item.m_dot < prod.getLength()) && isTerminal(prod.m_rightSide[item.m_dot]);
 }
 
-bool Grammar::isReduceItem(const LR1Item &item) const { // is item = "A -> alfa . [la]"
-  return item.m_dot == getProduction(item).getLength();
-}
-
-bool Grammar::isAcceptItem(const LR1Item &item) const {
-  return (item.m_prod == 0) && isReduceItem(item);
-}
-
-int Grammar::getShiftSymbol(const LR1Item &item) const { // Assume item = "A -> alfa . x beta [la]". Return x
-  return getProduction(item).m_rightSide[item.m_dot];
-}
-
-int Grammar::addState(const LR1State &state) { // return index of state
-  const int stateIndex = getStateCount();
+UINT Grammar::addState(const LR1State &state) {
+  const UINT stateIndex = getStateCount();
   m_states.add(state);
-  m_stateMap.put(&m_states[stateIndex], stateIndex);
+  m_stateMap.put(&m_states.last(), stateIndex);
   return stateIndex;
 }
 
@@ -434,14 +409,14 @@ void Grammar::computeClosure(LR1State &state, bool allowNewItems) {
   do {
     changed = false;
     for(size_t i = 0; i < state.m_items.size(); i++) {
-      const LR1Item &item = state.m_items[i];
-      const Production &prod = getProduction(item);
+      const LR1Item    &item = state.m_items[i];
+      const Production &prod = getProduction(item.m_prod);
       if(item.m_dot < prod.getLength() && isNonTerminal(prod.m_rightSide[item.m_dot])) { // item is A -> alfa . B beta [la]
         const GrammarSymbol &B = getSymbol(prod.m_rightSide[item.m_dot]);
-        const BitSet la(first1(item));
+        const SymbolSet la(first1(item));
         for(size_t p = 0; p < B.m_leftSideOf.size(); p++) {
           const LR1Item newItem(false, B.m_leftSideOf[p], 0, la); // newItem is B -> . gamma [first1(beta la)] (nonkernelitem)
-          LR1Item *oldItem = state.findItem(newItem);
+          LR1Item *oldItem = state.findItemWithSameCore(newItem);
           if(oldItem == nullptr) {
             if(!allowNewItems) {
               throwException(_T("Grammar::computeClosure:No new items allowed"));
@@ -463,7 +438,7 @@ void Grammar::computeClosure(LR1State &state, bool allowNewItems) {
 
 bool Grammar::mergeLookahead(LR1State &dst, const LR1State &src) {
   bool changed = false;
-  for(int i = 0; i < src.m_noOfKernelItems; i++) {
+  for(BYTE i = 0; i < src.m_kernelItemCount; i++) {
     LR1Item &dstItem = dst.m_items[i];
     const LR1Item &srcItem = src.m_items[i];
 
@@ -479,8 +454,9 @@ bool Grammar::mergeLookahead(LR1State &dst, const LR1State &src) {
 
 void Grammar::computeSuccessors(LR1State &state) {
 //dump(state); pause();
-  BitSet itemsDone(state.m_items.size()); // this is correct!
-  for(UINT i = 0; i < state.m_items.size(); i++) {
+  const UINT itemCount = (UINT)state.m_items.size();
+  BitSet itemsDone(itemCount); // this is correct!
+  for(UINT i = 0; i < itemCount; i++) {
     if(itemsDone.contains(i)) {
       continue;
     }
@@ -488,31 +464,32 @@ void Grammar::computeSuccessors(LR1State &state) {
     if(isAcceptItem(origItem)) {
       continue; // No successor, but accept
     }
-    const Production &origProduction = getProduction(origItem);
+    const Production &origProduction = getProduction(origItem.m_prod);
     if(origItem.m_dot < origProduction.getLength()) { // origItem is A -> alfa . X beta [la]
-      CompactIntArray successorItems;
-      successorItems.add(i);
-      int symbolNr = origProduction.m_rightSide[origItem.m_dot];
+      BitSet successorItems(itemCount);
+      successorItems += i;
+      UINT symbolNr = origProduction.m_rightSide[origItem.m_dot];
       LR1State newState(getStateCount());
-      const LR1Item newItem(true, origItem.m_prod, origItem.m_dot+1, origItem.m_la); // newItem is A -> alfa X . beta [la] (kernelItem)
-      newState.addItem(newItem);
+      
+      // newItem is A -> alfa X . beta [la] (kernelItem)
+      newState.addItem(LR1Item(true, origItem.m_prod, origItem.m_dot+1, origItem.m_la));
       itemsDone += i;
-      for(UINT k = i+1; k < state.m_items.size(); k++) {
+      for(UINT k = i+1; k < itemCount; k++) {
         if(itemsDone.contains(k)) {
           continue;
         }
         const LR1Item    &sameSymbolItem = state.m_items[k];
-        const Production &sameSymbolProd = getProduction(sameSymbolItem);
+        const Production &sameSymbolProd = getProduction(sameSymbolItem.m_prod);
         if(sameSymbolItem.m_dot < sameSymbolProd.getLength()
           && sameSymbolProd.m_rightSide[sameSymbolItem.m_dot] == symbolNr) { // sameSymbolItem is C -> gamma . X zeta [la1]
-          const LR1Item newItem1(true, sameSymbolItem.m_prod, sameSymbolItem.m_dot+1, sameSymbolItem.m_la); // newItem1 is C -> gamma X . zeta [la1] (kernelItem)
-          newState.addItem(newItem1);
-          itemsDone += k;
-          successorItems.add(k);
+          // newItem1 is C -> gamma X . zeta [la1] (kernelItem)
+          newState.addItem(LR1Item(true, sameSymbolItem.m_prod, sameSymbolItem.m_dot+1, sameSymbolItem.m_la));
+          itemsDone      += k;
+          successorItems += k;
         }
       }
       newState.sortItems();
-      int succStateIndex = findState(newState);
+      int succStateIndex = findStateWithSameCore(newState);
       if(succStateIndex < 0) {
         computeClosure(newState, true);
         succStateIndex = addState(newState);
@@ -525,8 +502,8 @@ void Grammar::computeSuccessors(LR1State &state) {
 
       assert(succStateIndex >= 0);
 
-      for(size_t j = 0; j < successorItems.size(); j++) {
-        state.m_items[successorItems[j]].m_succ = succStateIndex;
+      for(auto it = successorItems.getIterator(); it.hasNext();) {
+        state.m_items[it.next()].m_succ = succStateIndex;
       }
     }
   }
@@ -538,7 +515,7 @@ void Grammar::generateStates() {
   m_stateMap.clear();
   m_unfinishedSet.clear();
 
-  BitSet eoiset(getTerminalCount());
+  SymbolSet eoiset(getTerminalCount());
   eoiset.add(0); // EOI
   LR1Item initialItem(true, 0, 0, eoiset);
   LR1State initialState(0);
@@ -549,8 +526,8 @@ void Grammar::generateStates() {
 //  dump(initialState);
   verbose(2, _T("Computing LALR(1) states\n"));
 
-  for(int i = 0; i < getStateCount(); i++) {
-    verbose(2, _T("state %d\r"), i);
+  for(UINT i = 0; i < getStateCount(); i++) {
+    verbose(2, _T("state %u\r"), i);
     computeSuccessors(m_states[i]);
   }
 
@@ -573,7 +550,7 @@ void Grammar::generateStates() {
   verbose(2, _T("Checking consistensy\n"));
 
   m_warningCount = m_SRconflicts = m_RRconflicts = 0;
-  for(int i = 0; i < getStateCount(); i++) {
+  for(UINT i = 0; i < getStateCount(); i++) {
     LR1State &state = m_states[i];
     m_result.add(StateResult());
     checkStateIsConsistent(state, m_result.last());
@@ -581,7 +558,7 @@ void Grammar::generateStates() {
 }
 
 ConflictSolution Grammar::resolveShiftReduceConflict(const GrammarSymbol &terminal, const LR1Item &item) const {
-  short productionPrecedence = getProduction(item).m_precedence;
+  short productionPrecedence = getProduction(item.m_prod).m_precedence;
   short terminalPrecedence   = terminal.m_precedence;
 
   if((productionPrecedence == 0) || (terminalPrecedence == 0)) {
@@ -596,22 +573,18 @@ ConflictSolution Grammar::resolveShiftReduceConflict(const GrammarSymbol &termin
   }
 }
 
-static int parserActionCompareToken(const ParserAction &p1, const ParserAction &p2) {
-  return p1.m_token - p2.m_token;
-}
-
 void Grammar::checkStateIsConsistent(const LR1State &state, StateResult &result) {
-  BitSet symbolsDone(getSymbolCount());
-  const int itemCount = (int)state.m_items.size();
+  SymbolSet  symbolsDone(getSymbolCount());
+  const UINT itemCount = (UINT)state.m_items.size();
 
-  for(int i = 0; i < itemCount; i++) {
+  for(UINT i = 0; i < itemCount; i++) {
     const LR1Item &item = state.m_items[i];
     if(isShiftItem(item)) {
-      const int t = getShiftSymbol(item);
+      const UINT t = getShiftSymbol(item);
       if(symbolsDone.contains(t)) {
         continue;
       }
-      for(int j = 0; j < itemCount; j++) {
+      for(UINT j = 0; j < itemCount; j++) {
         if(j == i) {
           continue;
         }
@@ -621,9 +594,9 @@ void Grammar::checkStateIsConsistent(const LR1State &state, StateResult &result)
           switch(resolveShiftReduceConflict(terminal, item1)) {
           case CONFLICT_NOT_RESOLVED:
             m_SRconflicts++;
-            result.m_errors.add(format(_T("Shift/reduce conflict. Shift or reduce by prod %-3d (prec=%d) on '%s' (prec=%d, %s).")
+            result.m_errors.add(format(_T("Shift/reduce conflict. Shift or reduce by prod %-3u (prec=%d) on '%s' (prec=%d, %s).")
                                       ,item1.m_prod
-                                      ,getProduction(item1).m_precedence
+                                      ,getProduction(item1.m_prod).m_precedence
                                       ,terminal.m_name.cstr()
                                       ,terminal.m_precedence
                                       ,terminal.getTypeString()));
@@ -631,23 +604,23 @@ void Grammar::checkStateIsConsistent(const LR1State &state, StateResult &result)
           case CHOOSE_SHIFT:
             result.m_actions.add(ParserAction(t, item.getSuccessor()));
             symbolsDone += t;
-            result.m_warnings.add(format(_T("Shift/reduce conflict on %s (prec=%d, %s). Choose shift instead of reduce by prod %d (prec=%d).")
+            result.m_warnings.add(format(_T("Shift/reduce conflict on %s (prec=%d, %s). Choose shift instead of reduce by prod %u (prec=%d).")
                                         ,terminal.m_name.cstr()
                                         ,terminal.m_precedence
                                         ,terminal.getTypeString()
                                         ,item1.m_prod
-                                        ,getProduction(item1).m_precedence));
+                                        ,getProduction(item1.m_prod).m_precedence));
             m_warningCount++;
             break;
           case CHOOSE_REDUCE:
-            result.m_actions.add(ParserAction(t, -item1.m_prod));
+            result.m_actions.add(ParserAction(t, -((int)(item1.m_prod))));
             symbolsDone += t;
-            result.m_warnings.add(format(_T("Shift/reduce conflict on %s (prec=%d, %s). Choose reduce by prod %d (prec=%d).")
+            result.m_warnings.add(format(_T("Shift/reduce conflict on %s (prec=%d, %s). Choose reduce by prod %u (prec=%d).")
                                         ,terminal.m_name.cstr()
                                         ,terminal.m_precedence
                                         ,terminal.getTypeString()
                                         ,item1.m_prod
-                                        ,getProduction(item1).m_precedence));
+                                        ,getProduction(item1.m_prod).m_precedence));
             m_warningCount++;
             break;
           }
@@ -663,10 +636,10 @@ void Grammar::checkStateIsConsistent(const LR1State &state, StateResult &result)
     }
   }
 
-  for(int i = 0; i < itemCount; i++) {
+  for(UINT i = 0; i < itemCount; i++) {
     const LR1Item &itemi = state.m_items[i];
     if(isReduceItem(itemi)) {
-      BitSet tokensReducedByOtherItems(getTerminalCount());
+      SymbolSet tokensReducedByOtherItems(getTerminalCount());
       if(isAcceptItem(itemi)) {  // check if this is start -> S . [EOI]
         result.m_actions.add(ParserAction(0, 0));
         if(symbolsDone.contains(0)) {
@@ -675,17 +648,17 @@ void Grammar::checkStateIsConsistent(const LR1State &state, StateResult &result)
         symbolsDone += 0;
         continue;
       }
-      for(int j = 0; j < itemCount; j++) {
+      for(UINT j = 0; j < itemCount; j++) {
         if(j == i) {
           continue;
         }
         const LR1Item &itemj = state.m_items[j];
         if(isReduceItem(itemj)) {
-          const BitSet intersection(itemi.m_la & itemj.m_la);
+          const SymbolSet intersection(itemi.m_la & itemj.m_la);
           if(!intersection.isEmpty()) {
             if(itemj.m_prod < itemi.m_prod) {
               tokensReducedByOtherItems += intersection;
-              result.m_warnings.add(format(_T("Reduce/reduce conflict on %s between prod %d and prod %d. Choose prod %d.")
+              result.m_warnings.add(format(_T("Reduce/reduce conflict on %s between prod %u and prod %u. Choose prod %u.")
                                           ,symbolSetToString(intersection).cstr()
                                           ,itemj.m_prod
                                           ,itemi.m_prod
@@ -695,18 +668,18 @@ void Grammar::checkStateIsConsistent(const LR1State &state, StateResult &result)
           }
         }
       }
-      BitSet itemTokens(itemi.m_la - tokensReducedByOtherItems);
+      SymbolSet itemTokens(itemi.m_la - tokensReducedByOtherItems);
       for(Iterator<size_t> it = itemTokens.getIterator(); it.hasNext(); ) {
-        const unsigned short t = (unsigned short)it.next();
+        const UINT t = (UINT)it.next();
         if(!symbolsDone.contains(t)) {
-          result.m_actions.add(ParserAction(t, -itemi.m_prod));
+          result.m_actions.add(ParserAction(t, -(int)(itemi.m_prod)));
           symbolsDone += t;
         }
       }
     }
   }
 
-  for(int i = 0; i < itemCount; i++) {
+  for(UINT i = 0; i < itemCount; i++) {
     const LR1Item &itemi = state.m_items[i];
     if(!isShiftItem(itemi) && !isReduceItem(itemi)) {
       const int nt = getShiftSymbol(itemi);
@@ -719,29 +692,29 @@ void Grammar::checkStateIsConsistent(const LR1State &state, StateResult &result)
     }
   } // for
 
-  result.m_actions.sort(parserActionCompareToken); // sort actions by symbolnumber (lookahead symbol)
-  result.m_succs.sort(  parserActionCompareToken); // sort result by symbolnumber  (nonTerminal)
+  result.m_actions.sortByToken(); // sort actions by symbolnumber (lookahead symbol)
+  result.m_succs.sortByToken();   // sort result by symbolnumber  (nonTerminal)
 }
 
 void Grammar::dump(const Production &prod, MarginFile *f) const {
   fprintf(f, _T("%s -> "), getSymbol(prod.m_leftSide).m_name.cstr());
-  for(int i = 0; i < prod.getLength(); i++) {
+  for(UINT i = 0; i < prod.getLength(); i++) {
     fprintf(f, _T("%s "), getSymbol(prod.m_rightSide[i]).m_name.cstr());
   }
   fprintf(f, _T("prec %d"), prod.m_precedence);
 }
 
-String Grammar::getRightSide(int p) const {
-  const Production &prod = m_productions[p];
-  const int n = prod.getLength();
+String Grammar::getRightSide(UINT p) const {
+  const Production &prod = getProduction(p);
+  const UINT        n    = prod.getLength();
 
   if(n == 0) {
     return _T("epsilon");
   }
 
   String result;
-  for(int i = 0; i < n; i++) {
-    const int s = prod.m_rightSide[i];
+  for(UINT i = 0; i < n; i++) {
+    const UINT s = prod.m_rightSide[i];
     if(i > 0) {
       result += _T(" ");
     }
@@ -750,17 +723,17 @@ String Grammar::getRightSide(int p) const {
   return result;
 }
 
-String Grammar::getProductionString(int prod) const {
-  return getSymbol(m_productions[prod].m_leftSide).m_name
+String Grammar::getProductionString(UINT prod) const {
+  return getSymbol(getProduction(prod).m_leftSide).m_name
        + _T(" -> ")
        + getRightSide(prod);
 }
 
-int Grammar::getMaxSymbolNameLength() const {
-  const int n = getSymbolCount();
-  int m = 0;
-  for(int i = 0; i < n; i++) {
-    const int l = (int)getSymbol(i).m_name.length();
+UINT Grammar::getMaxSymbolNameLength() const {
+  const UINT n = getSymbolCount();
+  UINT       m = 0;
+  for(UINT i = 0; i < n; i++) {
+    const UINT l = (UINT)getSymbol(i).m_name.length();
     if(l > m) {
       m = l;
     }
@@ -768,11 +741,11 @@ int Grammar::getMaxSymbolNameLength() const {
   return m;
 }
 
-int Grammar::getMaxNonTerminalNameLength() const {
-  const int n = getSymbolCount();
-  int m = 0;
-  for(int i = getTerminalCount(); i < n; i++) {
-    const int l = (int)getSymbol(i).m_name.length();
+UINT Grammar::getMaxNonTerminalNameLength() const {
+  const UINT n = getSymbolCount();
+  UINT       m = 0;
+  for(UINT i = getTerminalCount(); i < n; i++) {
+    const UINT l = (UINT)getSymbol(i).m_name.length();
     if(l > m) {
       m = l;
     }
@@ -780,33 +753,33 @@ int Grammar::getMaxNonTerminalNameLength() const {
   return m;
 }
 
-String Grammar::symbolSetToString(const BitSet &set) const {
-  String result;
-  ConstIterator<size_t> it = set.getIterator();
-  int i = 0;
-  while(it.hasNext()) {
-    const int s = (int)it.next();
+String Grammar::symbolSetToString(const SymbolSet &set) const {
+  String result = _T("[");
+  UINT i = 0;
+  for(auto it = set.getIterator(); it.hasNext();) {
+    const UINT s = (UINT)it.next();
     if(i++ != 0) {
-      result += _T(" ");
+      result += ' ';
     }
     result += getSymbol(s).m_name;
   }
-  return String(_T("[")) + result + _T("]");
+  result += ']';
+  return result;
 }
 
 String Grammar::itemToString(const LR1Item &item, int flags) const {
   String result;
-  const Production &prod = getProduction(item);
+  const Production &prod = getProduction(item.m_prod);
   result = format(_T(" (%3d)%c %-15s -> "), item.m_prod, item.m_kernelItem?'K':' ', getSymbol(prod.m_leftSide).m_name.cstr());
-  for(int i = 0; i < item.m_dot; i++) {
+  for(UINT i = 0; i < item.m_dot; i++) {
     result += getSymbol(prod.m_rightSide[i]).m_name;
-    result += _T(" ");
+    result += ' ';
   }
-  result += _T(".");
-  const int n = prod.getLength();
-  const TCHAR *delimiter = EMPTYSTRING;
-  for(int i = item.m_dot; i < n; i++, delimiter = _T(" ")) {
-    result += delimiter;
+  result += '.';
+  const UINT n         = prod.getLength();
+  TCHAR      delim = 0;
+  for(UINT i = item.m_dot; i < n; i++, delim = ' ') {
+    if(delim) result += delim;
     result += getSymbol(prod.m_rightSide[i]).m_name;
   }
   if(flags & DUMP_LOOKAHEAD) {
@@ -822,8 +795,8 @@ String Grammar::itemToString(const LR1Item &item, int flags) const {
 String Grammar::stateToString(const LR1State &state, int flags) const {
   String result;
   result = format(_T("State %d:\n"), state.m_index);
-  const int itemstodump = (flags & DUMP_KERNELONLY) ? state.m_noOfKernelItems : (int)state.m_items.size();
-  for(int i = 0; i < itemstodump; i++) {
+  const UINT itemstodump = (flags & DUMP_KERNELONLY) ? state.m_kernelItemCount : (UINT)state.m_items.size();
+  for(UINT i = 0; i < itemstodump; i++) {
     const LR1Item &item = state.m_items[i];
     if(isShiftItem(item) && !(flags & DUMP_SHIFTITEMS)) {
       continue;
@@ -852,7 +825,7 @@ String Grammar::stateToString(const LR1State &state, int flags) const {
   return result;
 }
 
-void Grammar::dump(const BitSet &set, MarginFile *f) const {
+void Grammar::dump(const SymbolSet &set, MarginFile *f) const {
   f->printf(_T("%s"), symbolSetToString(set).cstr());
 }
 
@@ -879,34 +852,34 @@ void Grammar::dump(const LR1State &state, int flags, MarginFile *f) const {
 }
 
 void Grammar::dumpStates(int flags, MarginFile *f) const {
-  for(int i = 0; i < getStateCount(); i++) {
+  for(UINT i = 0; i < getStateCount(); i++) {
     dump(m_states[i], flags, f);
   }
 }
 
 void Grammar::dump(MarginFile *f) const {
-  for(int i = 0; i < getSymbolCount(); i++) {
-    const GrammarSymbol &sym = getSymbol(i);
+  for(UINT s = 0; s < getSymbolCount(); s++) {
+    const GrammarSymbol &sym = getSymbol(s);
     f->printf(_T("Symbol:%-20s, %4d %-11s "), sym.m_name.cstr(), sym.m_precedence, sym.getTypeString());
     if(sym.m_reachable    ) f->printf(_T("reachable "));
     if(sym.m_terminate    ) f->printf(_T("terminate "));
     if(sym.m_deriveEpsilon) f->printf(_T("derive e "));
-    if(isNonTerminal(i)) {
+    if(isNonTerminal(s)) {
       dump(sym.m_first1);
     }
     f->printf(_T("\n"));
   }
 
-  for(int i = 0; i < getProductionCount(); i++) {
-    dump(m_productions[i], f);
+  for(UINT p = 0; p < getProductionCount(); p++) {
+    dump(getProduction(p), f);
     f->printf(_T("\n"));
   }
 }
 
 void Grammar::dumpFirst1Sets(FILE *f) const {
-  const int maxLength = getMaxNonTerminalNameLength() + 1;
-  for(int i = getTerminalCount(); i < getSymbolCount(); i++) {
-    const GrammarSymbol &nt = getSymbol(i);
+  const UINT maxLength = getMaxNonTerminalNameLength() + 1;
+  for(UINT s = getTerminalCount(); s < getSymbolCount(); s++) {
+    const GrammarSymbol &nt = getSymbol(s);
     _ftprintf(f, _T("%-*.*s:%s\n"), maxLength, maxLength, nt.m_name.cstr(), symbolSetToString(nt.m_first1).cstr());
   }
 }

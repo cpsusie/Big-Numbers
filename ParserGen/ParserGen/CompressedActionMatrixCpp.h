@@ -2,6 +2,7 @@
 
 #include <TreeMap.h>
 #include "GrammarTables.h"
+#include "StateActionInfo.h"
 
 class ArrayIndex {
 public:
@@ -10,10 +11,6 @@ public:
   ArrayIndex(UINT arrayIndex) : m_arrayIndex(arrayIndex), m_commentIndex(-1) {
   }
 };
-
-inline int arrayIndexCmp(const ArrayIndex &i1, const ArrayIndex &i2) {
-  return (int)i1.m_arrayIndex - (int)i2.m_arrayIndex;
-}
 
 class IndexMapValue : public ArrayIndex {
 private:
@@ -37,6 +34,10 @@ public:
   IndexArrayEntry(const Entry<Key, IndexMapValue> &e) : IndexMapValue(e.getValue()), m_key(e.getKey()) {
   }
 };
+
+inline int arrayIndexCmp(const ArrayIndex &i1, const ArrayIndex &i2) {
+  return (int)i1.m_arrayIndex - (int)i2.m_arrayIndex;
+}
 
 template<typename Key> class IndexComparator : public Comparator<IndexArrayEntry<Key> > {
 public:
@@ -96,97 +97,9 @@ typedef IndexArray<SymbolSet> SymbolSetIndexArray;
 
 // --------------------------------------------------------------------------------------------
 
-typedef enum {
-  UNCOMPRESSED
- ,SPLITCOMPRESSION
- ,ONEITEMCOMPRESSION
- ,REDUCEBYSAMEPRODCOMPRESSION
- ,MAXCOMPRESSIONVALUE = SPLITCOMPRESSION
-} CompressionMethod;
-
-inline UINT encodeCompressMethod(CompressionMethod method) {
-  return (((UINT)method) << 15);
-}
-
-void checkMax15Bits(const TCHAR *method, int line, int v, const TCHAR *varName);
-
-#define CHECKMAX15BITS(v) checkMax15Bits(__TFUNCTION__,__LINE__,v,_T(#v))
-
-#if defined(_DEBUG)
-
-// check that bits, used for encoding the compression method are all zero, give error-message and exit(-1) if this is not the case
-void checkCodeBits( const TCHAR *method, UINT v, const TCHAR *varName);
-
-#define CHECKCODEBITS(v) checkCodeBits(__TFUNCTION__,v,_T(#v))
-
-#else
-
-#define CHECKCODEBITS(v)
-
-#endif // _DEBUG
-
-inline UINT encodeValue(UINT v, CompressionMethod method) {
-  CHECKCODEBITS(v);
-  return (v | encodeCompressMethod(method));
-}
-
 // ------------------------------------------------------------------------------------
 
 namespace ActionMatrix {
-
-class SameReduceActionInfo {
-private:
-  const UINT m_prod;
-  SymbolSet  m_termSet;
-public:
-  SameReduceActionInfo(UINT terminalCount, UINT prod, UINT token)
-    : m_prod(prod)
-    , m_termSet(terminalCount)
-  {
-    m_termSet.add(token);
-  }
-  inline UINT getProduction() const {
-    return m_prod;
-  }
-  inline const SymbolSet &getTerminalSet() const {
-    return m_termSet;
-  }
-  inline void addTerminal(UINT token) {
-    m_termSet.add(token);
-  }
-};
-
-class StateActionInfo {
-private:
-  const UINT                  m_state;
-  const ActionArray          &m_actionArray;
-  // List of different reduceActions;
-  Array<SameReduceActionInfo> m_sameReductionArray;
-  ActionArray                 m_shiftActionArray;
-public:
-  StateActionInfo(UINT terminalCount, UINT state, const ActionArray &actionArray);
-
-  inline UINT getDifferentActionCount() const {
-    return (UINT)(m_sameReductionArray.size() + m_shiftActionArray.size());
-  }
-  inline UINT getState() const {
-    return m_state;
-  }
-  inline const ActionArray &getActions() const {
-    return m_actionArray;
-  }
-  inline const Array<SameReduceActionInfo> &getReduceActionArray() const {
-    return m_sameReductionArray;
-  }
-  inline const ActionArray &getShiftActionArray() const {
-    return m_shiftActionArray;
-  }
-  CompressionMethod getCompressionMethod() const;
-
-  String toString() const {
-    return format(_T("%2u sa, %2u ra"), (UINT)m_shiftActionArray.size(), (UINT)m_sameReductionArray.size());
-  }
-};
 
 extern int rawActionArrayCmp(const RawActionArray &a1, const RawActionArray &a2);
 
@@ -198,6 +111,61 @@ public:
 
 typedef IndexArray<RawActionArray> RawActionArrayIndexArray;
 
+class Macro {
+private:
+  mutable BitSet m_stateSet;
+  int            m_index;     // index in array m_actionCode
+  String         m_name;
+  const String   m_value, m_comment;
+public:
+  Macro(UINT stateCount, UINT state0, const String &value, const String &comment)
+    : m_stateSet(stateCount)
+    , m_index(  -1         )
+    , m_value(  value      )
+    , m_comment(comment    )
+  {
+    m_stateSet.add(state0);
+  }
+  inline int getIndex() const {
+    return m_index;
+  }
+  Macro &setIndex(UINT index) {
+    m_index = index;
+    return *this;
+  }
+  Macro &setName(const String &name) {
+    m_name = name;
+    return *this;
+  }
+  inline const String &getName() const {
+    return m_name;
+  }
+  inline const String &getValue() const {
+    return m_value;
+  }
+  inline const String &getComment() const {
+    return m_comment;
+  }
+  inline const BitSet &getStateSet() const {
+    return m_stateSet;
+  }
+  inline void addState(UINT state) const {
+    m_stateSet.add(state);
+  }
+};
+
+inline bool operator==(const Macro &m1, const Macro &m2) {
+  return (m1.getName() == m2.getName()) && (m1.getValue() == m2.getValue());
+}
+
+inline int macroCmpByName(const Macro &m1, const Macro &m2) {
+  return stringCmp(m1.getName(), m2.getName());
+}
+
+inline int macroCmpByIndex(const Macro &m1, const Macro &m2) {
+  return m1.getIndex() - m2.getIndex();
+}
+
 class CompressedActionMatrix {
 private :
   const GrammarTables          &m_tables;
@@ -207,24 +175,39 @@ private :
   UINT                          m_currentTermListSize;
   UINT                          m_currentActionListSize;
   UINT                          m_currentLASetArraySize;
-
+  UINT                          m_currentSplitNodeCount;
+  const IntegerType             m_terminalType, m_actionType;
   Array<StateActionInfo>        m_stateInfoArray;
   SymbolSetIndexMap             m_laSetMap;
   SymbolSetIndexMap             m_termListMap;
   RawActionArrayIndexMap        m_raaMap;
-  mutable StringArray           m_defines;
-  void addACdefine(UINT state, const String &value, const String &comment);
-  void doUncompressedState(    const StateActionInfo &stateInfo);
-  void doSplitCompression(     const StateActionInfo &stateInfo);
-  void doOneItemState(         const StateActionInfo &stateInfo);
-  void doReduceBySameProdState(const StateActionInfo &stateInfo);
+  Array<Macro>                  m_macroArray;
+  StringHashMap<UINT>           m_macroMap; // map macro-value -> index into macroArray
+  inline const TCHAR *getSymbolName(UINT terminal) const {
+    return m_tables.getSymbolName(terminal);
+  }
+  inline UINT getTerminalCount() const {
+    return m_terminalCount;
+  }
+  inline UINT getStateCount() const {
+    return m_stateCount;
+  }
+  // Return point to macro with same value if it exist, or nullptr if not
+  const Macro *findMacroByValue( const String &macroValue) const;
+  void   addMacro(               const Macro &m);
+  Macro  doStateActionInfo(      const StateActionInfo &stateInfo);
+  Macro  doUncompressedState(    const StateActionInfo &stateInfo);
+  Macro  doSplitCompression(     const StateActionInfo &stateInfo);
+  Macro  doOneItemState(         const StateActionInfo &stateInfo);
+  Macro  doReduceBySameProdState(const StateActionInfo &stateInfo);
+  void   generateCompressedForm();
 
+  ByteCount printMacroesAndActionCode(MarginFile &output) const;
   ByteCount printTermAndActionList(   MarginFile &output) const;
   ByteCount printTermSetTable(        MarginFile &output) const;
-  ByteCount printDefinesAndActionCode(MarginFile &output) const;
+
 public:
   CompressedActionMatrix(const GrammarTables &tables);
-  void generateCompressedForm();
   ByteCount print(MarginFile &output) const;
 };
 

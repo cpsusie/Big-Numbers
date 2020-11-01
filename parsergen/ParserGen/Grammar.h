@@ -24,76 +24,107 @@ typedef enum {
  ,CONFLICT_NOT_RESOLVED
 } ConflictSolution;
 
+typedef BitSet SymbolSet;
+
+inline int symbolSetCmp(const SymbolSet &s1, const SymbolSet &s2) {
+  return bitSetCmp(s1, s2);
+}
+
 class GrammarSymbol {
 public:
-  short          m_index;
-  String         m_name;
-  SymbolType     m_type;
-  bool           m_reachable     : 1; // True if symbol is reachable from startsymbol
-  bool           m_terminate     : 1; // True if symbol can terminate
-  bool           m_deriveEpsilon : 1; // True if symbol ->* epsilon
-  BitSet         m_first1;            // Only for nonterminals;
-  short          m_precedence;        // Only for terminals.
-  SourcePosition m_pos;               // Specified at this position in the inputfile
-  ShortArray     m_leftSideOf;        // Only for nonterminals. List of productions, where this symbol is leftside
+  const UINT       m_index;
+  const String     m_name;
+  const SymbolType m_type;
+  bool             m_reachable     : 1; // True if symbol is reachable from startsymbol
+  bool             m_terminate     : 1; // True if symbol can terminate
+  bool             m_deriveEpsilon : 1; // True if symbol ->* epsilon
+  SymbolSet        m_first1;            // Only for nonterminals;
+  int              m_precedence;        // Only for terminals.
+  SourcePosition   m_pos;               // Specified at this position in the inputfile
+  CompactUintArray m_leftSideOf;        // Only for nonterminals. List of productions, where this symbol is leftside
 
-  GrammarSymbol(int index, const String &name, SymbolType type, int precedence, const SourcePosition &pos, long terminalCount);
+  GrammarSymbol(UINT index, const String &name, SymbolType type, int precedence, const SourcePosition &pos, UINT terminalCount);
   const TCHAR *getTypeString() const;
 };
 
 class RightSideSymbol {
 public:
-  short          m_index;    // Symbol index
+  UINT           m_index;    // Symbol index
   SymbolModifier m_modifier; // ?, *, +
-  RightSideSymbol(int index, SymbolModifier modifier) {
-    m_index = index; m_modifier = modifier;
+  inline RightSideSymbol() {
   }
-  operator int() const {
+  inline RightSideSymbol(UINT index, SymbolModifier modifier)
+    : m_index(   index   )
+    , m_modifier(modifier)
+  {
+  }
+  inline operator UINT() const {
     return m_index;
   }
 };
 
 class Production {
 public:
-  short                   m_leftSide;
-  Array<RightSideSymbol>  m_rightSide;
-  SourceText              m_actionBody;
-  short                   m_precedence; // %prec
-  SourcePosition          m_pos;        // Position in the inputfile
+  const UINT                    m_leftSide;
+  CompactArray<RightSideSymbol> m_rightSide;
+  SourceText                    m_actionBody;
+  short                         m_precedence; // %prec
+  const SourcePosition          m_pos;        // Position in the inputfile
 
-  Production(int leftSide, const SourcePosition &pos) {
-    m_leftSide   = leftSide;
+  Production(UINT leftSide, const SourcePosition &pos)
+    : m_leftSide(leftSide) 
+    , m_pos(     pos     )
+  {
     m_precedence = 0;
-    m_pos        = pos;
   }
 
-  int getLength() const {
-    return (int)m_rightSide.size();
+  inline UINT getLength() const {
+    return (UINT)m_rightSide.size();
   }
 };
 
 class LR1Item {  // item = A -> alfa . beta {m_la}, then production[m_prod] = A -> alfa beta, and m_dot = length(alfa)
 public:
-  short  m_prod;
-  short  m_dot;
-  BitSet m_la;
-  int    m_succ; // Must be signed, initialized to -1. if >= 0, then index of successor-state
-  bool   m_kernelItem;
-  LR1Item(bool kernelItem, short prod, short dot, const BitSet &la);
-  int getSuccessor() const {
+  // core(item) is defined as [m_prod, m_dot], ignoring m_la
+  const bool m_kernelItem;
+  const UINT m_prod;
+  const UINT m_dot;
+  SymbolSet  m_la;
+  int        m_succ; // Must be signed, initialized to -1. if >= 0, then index of successor-state
+  inline LR1Item(bool kernelItem, UINT prod, UINT dot, const SymbolSet &la) 
+    : m_kernelItem(kernelItem)
+    , m_prod(      prod      )
+    , m_dot(       dot       )
+    , m_la(        la        ) 
+    , m_succ(      -1        )
+  {
+  }
+  inline int getSuccessor() const {
     return m_succ;
   }
-  unsigned long coreHashCode() const;
+  inline ULONG coreHashCode() const {
+    return (m_prod << 16) ^ m_dot; //    m_la.hashval(); DONT USE THIS HERE !!!!
+  }
 };
 
 class LR1State {
 public:
-  int            m_index;
+  const UINT     m_index;
+  BYTE           m_kernelItemCount;
   Array<LR1Item> m_items;
-  short          m_noOfKernelItems;
-  LR1State(int index);
-  LR1Item *findItem(const LR1Item &item);
-  void addItem(const LR1Item &item);
+  inline LR1State(UINT index)
+    : m_index(          index)
+    , m_kernelItemCount(0    )
+   {
+   }
+
+  LR1Item *findItemWithSameCore(const LR1Item &item);
+  inline void addItem(const LR1Item &item) {
+    m_items.add(item);
+    if(item.m_kernelItem) {
+      m_kernelItemCount++;
+    }
+  }
   void sortItems();
 };
 
@@ -108,8 +139,8 @@ public:
   }
   inline ParserAction(unsigned short token, short action) : m_token(token), m_action(action) {
   }
-  inline unsigned long hashCode() const {
-    return *(unsigned long*)(&m_token);
+  inline ULONG hashCode() const {
+    return *(ULONG*)(&m_token);
   }
   inline bool operator==(const ParserAction &a) const {
     return hashCode() == a.hashCode();
@@ -119,7 +150,26 @@ public:
   }
 };
 
-typedef CompactArray<ParserAction> ActionArray;
+typedef CompactShortArray  RawActionArray;
+typedef CompactUshortArray SuccesorArray;
+
+inline int parserActionCompareToken(const ParserAction &p1, const ParserAction &p2) {
+  return p1.m_token - p2.m_token;
+}
+
+class ActionArray : public CompactArray<ParserAction> {
+public:
+  ActionArray() {
+  }
+  ActionArray(size_t capacity) : CompactArray(capacity) {
+  }
+  inline ActionArray &sortByToken() {
+    sort(parserActionCompareToken);
+    return *this;
+  }
+  SymbolSet      getLookaheadSet(UINT terminalCount) const;
+  RawActionArray getRawActionArray()                 const;
+};
 
 class StateResult {
 public:
@@ -129,7 +179,10 @@ public:
   ActionArray m_succs;
 };
 
-typedef HashMap<const LR1State*, int> StateHashMap;
+class StateHashMap : public HashMap<const LR1State *, UINT> {
+public:
+  StateHashMap(size_t capacity);
+};
 
 #define DUMP_LOOKAHEAD  0x01
 #define DUMP_SUCC       0x02
@@ -144,76 +197,80 @@ typedef HashMap<const LR1State*, int> StateHashMap;
 
 class Grammar {
 private:
-  int    addSymbol(const GrammarSymbol &symbol);
-  bool   canTerminate( const Production &prod) const;
-  bool   deriveEpsilon(const Production &prod) const;
-  void   findEpsilonSymbols();        // Find all nonterminals that derive epsilon
-  void   findFirst1Sets();            // Find FIRST1(A) for all nonterminals A
-  void   computeSuccessors(   LR1State &state);
-  void   computeClosure(      LR1State &state, bool allowNewItems);
-  int    findState(     const LR1State &state) const;
-  int    addState(      const LR1State &state);
-  bool   mergeLookahead(      LR1State &dst, const LR1State &src);
-  BitSet first1(        const LR1Item &item) const;
-  bool   isShiftItem(   const LR1Item &item) const; // Is item = "A -> alfa . a beta [la]"
-  bool   isReduceItem(  const LR1Item &item) const; // Is item = "A -> alfa . [la]"
-  bool   isAcceptItem(  const LR1Item &item) const; // Is this item start -> alfa . EOI
-  int    getShiftSymbol(const LR1Item &item) const; // Assume item = "A -> alfa . x beta [la]". Return x (terminal or nonterminal)
-  const Production &getProduction(const LR1Item &item) const {
-    return m_productions[item.m_prod];
-  }
-  void   checkStateIsConsistent(const LR1State &state, StateResult &result);
-  ConflictSolution resolveShiftReduceConflict(const GrammarSymbol &terminal, const LR1Item &item) const;
-  void   verbose(int level, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) const;
-
   Language               m_language;
   String                 m_name;
   Array<GrammarSymbol>   m_symbols;
-  StringHashMap<int>     m_symbolMap;
+  StringHashMap<UINT>    m_symbolMap;
   Array<Production>      m_productions;
   Array<LR1State>        m_states;
-  StateHashMap           m_stateMap;
+  StateHashMap           m_stateMap; // map core(state) -> index (UINT) into m_states
   IntHashSet             m_unfinishedSet;
   int                    m_verboseLevel;
-  int                    m_terminalCount, m_startSymbol;
+  UINT                   m_terminalCount, m_startSymbol;
+
+
+  UINT   addSymbol(            const GrammarSymbol &symbol);
+  bool   canTerminate(         const Production    &prod  ) const;
+  bool   deriveEpsilon(        const Production    &prod  ) const;
+  // Find all nonterminals that derive epsilon
+  void   findEpsilonSymbols();
+  // Find FIRST1(A) for all nonterminals A
+  void   findFirst1Sets();
+  void   computeSuccessors(          LR1State      &state );
+  void   computeClosure(             LR1State      &state, bool allowNewItems);
+  int    findStateWithSameCore(const LR1State      &state ) const;
+  // Return index of state
+  UINT   addState(             const LR1State      &state );
+  bool   mergeLookahead(             LR1State      &dst, const LR1State &src);
+  SymbolSet   first1(          const LR1Item       &item  ) const;
+
+  // Is item = "A -> alfa . a beta [la]"
+  bool        isShiftItem(     const LR1Item       &item) const;
+
+  // Is item = "A -> alfa . [la]"
+  inline bool isReduceItem(    const LR1Item       &item) const {
+    return item.m_dot == m_productions[item.m_prod].getLength();
+  }
+
+  // Is item start -> alfa . EOI
+  inline bool isAcceptItem(    const LR1Item       &item) const {
+    return (item.m_prod == 0) && isReduceItem(item);
+  }
+
+  // Assume item = "A -> alfa . x beta [la]". Return x (terminal or nonterminal)
+  inline UINT getShiftSymbol(  const LR1Item       &item) const {
+    return m_productions[item.m_prod].m_rightSide[item.m_dot].m_index;
+  }
+  void             checkStateIsConsistent(const LR1State &state, StateResult &result);
+  ConflictSolution resolveShiftReduceConflict(const GrammarSymbol &terminal, const LR1Item &item) const;
+  void             verbose(int level, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) const;
 
 public:
-  int                    m_warningCount;
+  UINT                   m_warningCount;
   Array<StateResult>     m_result;
-  int                    m_SRconflicts, m_RRconflicts; // only for doc-file
+  UINT                   m_SRconflicts, m_RRconflicts;         // only for doc-file
   SourceText             m_header, m_driverHead, m_driverTail; // programtext between %{ and %}
 
   Grammar(Language language, int verboselevel = 1);
   Grammar(Language language, const ParserTables &src);
-  ~Grammar();
-
-  bool isTerminal(int symbolIndex) const {
-    return symbolIndex < m_terminalCount;
+  ~Grammar() {
   }
 
-  bool isNonTerminal(int symbolIndex) const {
-    return symbolIndex >= m_terminalCount;
-  }
-
-  GrammarSymbol &getSymbol(int symbolIndex) {
-    return m_symbols[symbolIndex];
-  }
-
-  const GrammarSymbol &getSymbol(int symbolIndex) const {
-    return m_symbols[symbolIndex];
-  }
-
-  const Production &getProduction(int index) const {
-    return m_productions[index];
-  }
-
-  const LR1State &getState(int index) const {
-    return m_states[index];
-  }
+  inline UINT                 getSymbolCount()                const { return (UINT)m_symbols.size();                }
+  inline UINT                 getProductionCount()            const { return (UINT)m_productions.size();            }
+  inline UINT                 getStateCount()                 const { return (UINT)m_states.size();                 }
+  inline UINT                 getTerminalCount()              const { return m_terminalCount;                       }
+  inline UINT                 getNonTerminalCount()           const { return getSymbolCount() - getTerminalCount(); }
+  inline bool                 isTerminal(   UINT symbolIndex) const { return symbolIndex < m_terminalCount;         }
+  inline bool                 isNonTerminal(UINT symbolIndex) const { return symbolIndex >= m_terminalCount;        }
+  inline       GrammarSymbol &getSymbol(    UINT symbolIndex)       { return m_symbols[symbolIndex];                }
+  inline const GrammarSymbol &getSymbol(    UINT symbolIndex) const { return m_symbols[symbolIndex];                }
+  inline const Production    &getProduction(UINT index      ) const { return m_productions[index];                  }
+  inline const LR1State      &getState(     UINT index      ) const { return m_states[index];                       }
 
   int  findSymbol(    const String &name) const;
-  int  addTerminal(   const String &name, SymbolType type, int precedence, const SourcePosition &pos);
-  int  addNonTerminal(const String &name, const SourcePosition &pos);
+  UINT addTerminal(   const String &name, SymbolType type, int precedence, const SourcePosition &pos);
+  UINT addNonTerminal(const String &name, const SourcePosition &pos);
   void addProduction( const Production &production);
   void addClosureProductions();
 
@@ -221,79 +278,38 @@ public:
   void findTerminate();  // find all symbols that can terminate
   void generateStates();
 
-  const String &getName() const {
-    return m_name;
+  const String &getName() const             { return m_name; }
+  inline void   setName(const String &name) { m_name = name; }
+
+  inline bool allStatesConsistent() const {
+    return (m_SRconflicts == 0) && (m_RRconflicts == 0);
   }
 
-  void setName(const String &name) {
-    m_name = name;
-  }
+  inline UINT        getStartSymbol()  const { return m_startSymbol;  }
+  inline Language    getLanguage()     const { return m_language;     }
+  const  SourceText &getHeader()       const { return m_header;       }
+  const SourceText  &getDriverHead()   const { return m_driverHead;   }
+  const SourceText  &getDriverTail()   const { return m_driverTail;   }
+  int                getVerboseLevel() const { return m_verboseLevel; }
 
-  bool allStatesConsistent() const {
-    return m_SRconflicts == 0 && m_RRconflicts == 0;
-  }
+  UINT getItemCount() const;
 
-  int getSymbolCount() const {
-    return (int)m_symbols.size();
-  }
-
-  int getProductionCount() const {
-    return (int)m_productions.size();
-  }
-
-  int getStateCount() const {
-    return (int)m_states.size();
-  }
-
-  int getTerminalCount() const {
-    return m_terminalCount;
-  }
-
-  int getNonTerminalCount() const {
-    return getSymbolCount() - getTerminalCount();
-  }
-
-  int getStartSymbol() const {
-    return m_startSymbol;
-  }
-
-  Language getLanguage() const {
-    return m_language;
-  }
-
-  const SourceText &getHeader() const {
-    return m_header;
-  }
-
-  const SourceText &getDriverHead() const {
-    return m_driverHead;
-  }
-
-  const SourceText &getDriverTail() const {
-    return m_driverTail;
-  }
-
-  int getVerboseLevel() const {
-    return m_verboseLevel;
-  }
-
-  int getItemCount() const;
-
-  String symbolSetToString(const BitSet &set) const; // convert symbolset to String
+  // convert symbolset to String
+  String symbolSetToString(const SymbolSet &set) const;
 
   String itemToString(const LR1Item &item, int flags = DUMP_LOOKAHEAD) const;
 
   String stateToString(const LR1State &state, int flags = DUMP_ALL) const;
 
-  String getRightSide(int prod)        const;
-  String getProductionString(int prod) const;
-  int    getMaxSymbolNameLength()      const;
-  int    getMaxNonTerminalNameLength() const;
+  String getRightSide(       UINT prod) const;
+  String getProductionString(UINT prod) const;
+  UINT   getMaxSymbolNameLength()       const;
+  UINT   getMaxNonTerminalNameLength()  const;
 
   void dump(                                                     MarginFile *f = tostdout) const;
   void dump(const Production &prod ,                             MarginFile *f = tostdout) const;
   void dump(const LR1Item    &item , int flags = DUMP_LOOKAHEAD, MarginFile *f = tostdout) const;
-  void dump(const BitSet     &set  ,                             MarginFile *f = tostdout) const;
+  void dump(const SymbolSet  &set  ,                             MarginFile *f = tostdout) const;
   void dump(const LR1State   &state, int flags = DUMP_ALL,       MarginFile *f = tostdout) const;
   void dumpStates(                   int flags = DUMP_DOCFORMAT, MarginFile *f = tostdout) const;
   void dumpFirst1Sets(FILE *f) const;

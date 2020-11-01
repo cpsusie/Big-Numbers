@@ -272,8 +272,8 @@ void GrammarParser::parseActionBody(const SourcePosition &sourcePos, CompactShor
           m_lex.error(_T("Expected number."));
           m_actionBody += _T("$ ");
         } else {
-          const int prodLength = prod.getLength();
-          const int symbolIndex  = (int)m_lex.getNumber();
+          const int prodLength  = prod.getLength();
+          const int symbolIndex = (int)m_lex.getNumber();
           const int fromTop = prodLength - symbolIndex;
           if(symbolIndex < 1 || symbolIndex > prodLength) {
             m_lex.warning(m_lex.getSourcePos(), _T("$%d is not in range [1..%d]."), symbolIndex, prodLength);
@@ -301,7 +301,7 @@ void GrammarParser::parseActionBody(const SourcePosition &sourcePos, CompactShor
 }
 
 void GrammarParser::checkGrammar() {
-  for(int i = 1; i < m_grammar.getSymbolCount(); i++) { // dont check EOI
+  for(UINT i = 1; i < m_grammar.getSymbolCount(); i++) { // dont check EOI
     const GrammarSymbol &sym = m_grammar.getSymbol(i);
     if(sym.m_type == NONTERMINAL) {
       checkNonTerminal(i);
@@ -318,20 +318,20 @@ void GrammarParser::checkGrammar() {
   }
 }
 
-void GrammarParser::checkNonTerminal(int nt) { // check, that nonterminal occurs on both a left- and a rightside
+void GrammarParser::checkNonTerminal(UINT nt) { // check, that nonterminal occurs on both a left- and a rightside
   if(nt == m_grammar.getStartSymbol()) {
     checkStartSymbol();
   } else {
     bool leftsideFound  = false;
     bool rightsideFound = false;
 
-    for(int i = 0; i < m_grammar.getProductionCount(); i++) {
+    for(UINT i = 0; i < m_grammar.getProductionCount(); i++) {
       const Production &prod = m_grammar.getProduction(i);
       if(prod.m_leftSide == nt) {
         leftsideFound = true;
       }
       if(!rightsideFound) {
-        for(int j = 0; j < prod.getLength(); j++) {
+        for(UINT j = 0; j < prod.getLength(); j++) {
           if(prod.m_rightSide[j] == nt) {
             rightsideFound = true;
             break;
@@ -353,8 +353,8 @@ void GrammarParser::checkNonTerminal(int nt) { // check, that nonterminal occurs
 }
 
 void GrammarParser::checkStartSymbol() { // check, that startsymbol exists on only one leftside, and no rightsides
-  int countStartProd = 0;
-  for(int i = 0; i < m_grammar.getProductionCount(); i++) {
+  UINT countStartProd = 0;
+  for(UINT i = 0; i < m_grammar.getProductionCount(); i++) {
     const Production &prod = m_grammar.getProduction(i);
     if(prod.m_leftSide == m_grammar.getStartSymbol()) {
       countStartProd++;
@@ -362,7 +362,7 @@ void GrammarParser::checkStartSymbol() { // check, that startsymbol exists on on
         m_lex.error(prod.m_pos, _T("Only 1 startproduction allowed."));
       }
     }
-    for(int j = 0; j < prod.getLength(); j++) {
+    for(UINT j = 0; j < prod.getLength(); j++) {
       if(prod.m_rightSide[j] == m_grammar.getStartSymbol()) {
         m_lex.error(prod.m_pos, _T("Startsymbol not allowed on rightside of production."));
       }
@@ -373,10 +373,10 @@ void GrammarParser::checkStartSymbol() { // check, that startsymbol exists on on
   }
 }
 
-void GrammarParser::checkTerminal(int t) { // check, that terminal-symbol is used in at least one rightside
-  for(int i = 0; i < m_grammar.getProductionCount(); i++) {
+void GrammarParser::checkTerminal(UINT t) { // check, that terminal-symbol is used in at least one rightside
+  for(UINT i = 0; i < m_grammar.getProductionCount(); i++) {
     const Production &prod = m_grammar.getProduction(i);
-    for(int j = 0; j < prod.getLength(); j++) {
+    for(UINT j = 0; j < prod.getLength(); j++) {
       if(prod.m_rightSide[j] == t) {
         return; // found
       }
@@ -387,15 +387,15 @@ void GrammarParser::checkTerminal(int t) { // check, that terminal-symbol is use
     m_lex.warning(terminal.m_pos, _T("Terminal %s is not used."), terminal.m_name.cstr());
   }
   m_grammar.m_warningCount++;
-
 }
 
 void GrammarParser::checkDuplicateProd() {
-  for(int nt = m_grammar.getTerminalCount(); nt < m_grammar.getSymbolCount(); nt++) { // for all nonterminals
-    const ShortArray &prodlist = m_grammar.getSymbol(nt).m_leftSideOf;
-    for(size_t i = 0; i < prodlist.size(); i++) {
+  for(UINT nt = m_grammar.getTerminalCount(); nt < m_grammar.getSymbolCount(); nt++) { // for all nonterminals
+    const CompactUintArray &prodlist  = m_grammar.getSymbol(nt).m_leftSideOf;
+    const UINT              prodCount = (UINT)prodlist.size();
+    for(UINT i = 0; i < prodCount; i++) {
       const Production &prodi = m_grammar.getProduction(prodlist[i]);
-      for(size_t j = 0; j < i; j++) {
+      for(UINT j = 0; j < i; j++) {
         const Production &prodj = m_grammar.getProduction(prodlist[j]);
         if(prodi.m_rightSide == prodj.m_rightSide) {
           m_lex.error(prodi.m_pos, _T("This production equals another."));
@@ -407,7 +407,7 @@ void GrammarParser::checkDuplicateProd() {
 
 void GrammarParser::checkReachability() {
   m_grammar.findReachable();
-  for(int i = m_grammar.getTerminalCount(); i < m_grammar.getSymbolCount(); i++) {
+  for(UINT i = m_grammar.getTerminalCount(); i < m_grammar.getSymbolCount(); i++) {
     const GrammarSymbol &sym = m_grammar.getSymbol(i);
     if(!sym.m_reachable) {
       m_lex.error(sym.m_pos, _T("%s is not reachable from startsymbol."), sym.m_name.cstr());
@@ -417,7 +417,7 @@ void GrammarParser::checkReachability() {
 
 void GrammarParser::checkTermination() {
   m_grammar.findTerminate();
-  for(int i = 0; i < m_grammar.getSymbolCount(); i++) {
+  for(UINT i = 0; i < m_grammar.getSymbolCount(); i++) {
     const GrammarSymbol &sym = m_grammar.getSymbol(i);
     if(!sym.m_terminate) {
       m_lex.error(sym.m_pos, _T("Nonterminal %s does not terminate."), sym.m_name.cstr());

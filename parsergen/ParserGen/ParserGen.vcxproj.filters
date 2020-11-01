@@ -60,6 +60,12 @@
     <ClInclude Include="SourceText.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="StateActionInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CompressEncoding.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -118,6 +124,15 @@
     </ClCompile>
     <ClCompile Include="TablesWriter.cpp">
       <Filter>Source Files\KeyWordHandles</Filter>
+    </ClCompile>
+    <ClCompile Include="StateActionInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CompressEncoding.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ActionArray.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

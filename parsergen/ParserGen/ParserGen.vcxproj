@@ -230,6 +230,7 @@
   <ItemGroup>
     <ClInclude Include="ByteCount.h" />
     <ClInclude Include="CompressedActionMatrixCpp.h" />
+    <ClInclude Include="CompressEncoding.h" />
     <ClInclude Include="Grammar.h" />
     <ClInclude Include="GrammarCode.h" />
     <ClInclude Include="GrammarParser.h" />
@@ -237,6 +238,7 @@
     <ClInclude Include="GrammarTables.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SourceText.h" />
+    <ClInclude Include="StateActionInfo.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StringCollector.h" />
     <ClInclude Include="targetver.h" />
@@ -244,9 +246,11 @@
     <ClInclude Include="Wizard.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ActionArray.cpp" />
     <ClCompile Include="ActionsWriter.cpp" />
     <ClCompile Include="ByteCount.cpp" />
     <ClCompile Include="CompressedActionMatrixCpp.cpp" />
+    <ClCompile Include="CompressEncoding.cpp" />
     <ClCompile Include="DocFileWriter.cpp" />
     <ClCompile Include="Grammar.cpp" />
     <ClCompile Include="GrammarCode.cpp" />
@@ -257,6 +261,7 @@
     <ClCompile Include="GrammarTablesJava.cpp" />
     <ClCompile Include="KeyWords.CPP" />
     <ClCompile Include="ParserGen.cpp" />
+    <ClCompile Include="StateActionInfo.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

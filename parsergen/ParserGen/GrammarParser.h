@@ -23,8 +23,8 @@ private:
 
   void checkGrammar();
   void checkStartSymbol();
-  void checkNonTerminal(int nonterminal);
-  void checkTerminal(int terminal);
+  void checkNonTerminal(UINT nonterminal);
+  void checkTerminal(   UINT terminal);
   void checkReachability();
   void checkTermination();
   void checkDuplicateProd();

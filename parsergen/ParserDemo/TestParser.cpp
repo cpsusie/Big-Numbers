@@ -126,7 +126,7 @@ void TestParser::buildReduceActionArray() {
 void TestParser::buildStateArray() {
   m_grammar.generateStates();
   Grammar &g = getGrammar();
-  for(int i = 0; i < g.getStateCount(); i++) {
+  for(UINT i = 0; i < g.getStateCount(); i++) {
     m_stateStr.add(g.stateToString(g.getState(i)).replace('\n', _T("\r\n")));
   }
 }
