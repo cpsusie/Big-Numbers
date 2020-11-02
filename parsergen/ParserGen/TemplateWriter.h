@@ -1,42 +1,25 @@
 #pragma once
 
 #include <HashMap.h>
-
-class TemplateWriter;
-
-class CodeFlags {
-public:
-  bool m_lineDirectives       : 1;
-  bool m_generateBreaks       : 1;
-  bool m_generateActions      : 1;
-  bool m_generateLookahead    : 1;
-  bool m_generateNonTerminals : 1;
-  bool m_useTableCompression  : 1;
-  bool m_dumpStates           : 1;
-  bool m_DFAVerbose           : 1;
-  bool m_skipIfEqual          : 1;
-  bool m_callWizard           : 1;
-  bool m_verbose              : 1;
-  CodeFlags();
-};
-
-class KeywordHandler {
-public:
-  virtual void handleKeyword(TemplateWriter &writer, String &line) const = 0;
-  virtual ~KeywordHandler() {
-  }
-};
+#include "CodeFlags.h"
+#include "KeywordHandler.h"
 
 class KeywordTrigger {
 private:
-  String          m_verboseString;
+  const String    m_verboseString;
   KeywordHandler &m_handler;
-
+  inline const String &getVerboseString() const {
+    return m_verboseString;
+  }
+  inline bool hasVerboseString() const {
+    return m_verboseString.length() > 0;
+  }
 public:
   KeywordTrigger(KeywordHandler &handler, const String &verboseString);
-
-  inline const KeywordHandler &getHandler()       const { return m_handler;       }
-  inline const String         &getVerboseString() const { return m_verboseString; }
+  inline const KeywordHandler &getHandler() const {
+    return m_handler;
+  }
+  void verbose() const;
 };
 
 class TemplateWriter {
@@ -72,7 +55,7 @@ private:
 public:
   TemplateWriter(const String &templateName, const String &implOutputDir, const String &headerOutputDir, const CodeFlags &flags);
   virtual ~TemplateWriter();
-  void addKeywordHandler(const String &keyword, KeywordHandler &handler, const String &verboseString="");
+  void addKeywordHandler(const String &keyword, KeywordHandler &handler, const String &verboseString=EMPTYSTRING);
   void addMacro(const String &macro, const String &value);
   void generateOutput();
   void incrLeftMargin(int incr) {
@@ -85,7 +68,7 @@ public:
   }
   static       String                  createTempFileName(const String &ext);
   void                                 openOutput(const String &fileName);
-  void                                 printf(            const TCHAR *format,...);
+  void                                 printf(_In_z_ _Printf_format_string_  TCHAR const * const format,...);
   void                                 writeSourceText(   const SourceText &sourceText);
   void                                 writeLineDirective(const String &sourceName, int lineNumber);
 

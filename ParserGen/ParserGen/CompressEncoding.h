@@ -5,7 +5,7 @@ typedef enum {
  ,SPLITCOMPRESSION
  ,ONEITEMCOMPRESSION
  ,REDUCEBYSAMEPRODCOMPRESSION
- ,MAXCOMPRESSIONVALUE = SPLITCOMPRESSION
+ ,MAXCOMPRESSIONVALUE = REDUCEBYSAMEPRODCOMPRESSION // we have only 2 bits to encode compressionmethod in parsertables. So keep maxvalue < 4 !!
 } CompressionMethod;
 
 inline UINT encodeCompressMethod(CompressionMethod method) {

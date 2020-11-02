@@ -232,9 +232,7 @@ ByteCount CompressedActionMatrix::printMacroesAndActionCode(MarginFile &output) 
     output.printf(_T("\n"));
   }
 
-  output.setLeftMargin(0);
-  output.printf(_T("static const unsigned int actionCode[%u] = {\n"), macroCount);
-  output.setLeftMargin(2);
+  outputBeginArrayDefinition(output, _T("actionCode"), TYPE_UINT, macroCount);
   macroes.sort(macroCmpByIndex);
   TCHAR delim = ' ';
   UINT  count = 0;
@@ -244,10 +242,7 @@ ByteCount CompressedActionMatrix::printMacroesAndActionCode(MarginFile &output) 
       output.printf(_T("\n"));
     }
   }
-  output.setLeftMargin(0);
-  const ByteCount byteCount = ByteCount::wordAlignedSize(macroCount * sizeof(UINT));
-  output.printf(_T("\n}; // Size of table:%s.\n\n"), byteCount.toString().cstr());
-  return byteCount;
+  return outputEndArrayDefinition(output, TYPE_UINT, macroCount, true);
 }
 
 ByteCount CompressedActionMatrix::printTermAndActionList(MarginFile &output) const {
@@ -262,7 +257,7 @@ ByteCount CompressedActionMatrix::printTermAndActionList(MarginFile &output) con
     UINT                      tableSize     = 0;
     TCHAR                     delim         = ' ';
 
-    output.printf(_T("static const %s termListTable[%u] = {\n"), getTypeName(m_terminalType), termListArray.getElementCount(true));
+    outputBeginArrayDefinition(output, _T("termListTable"), m_terminalType, termListArray.getElementCount(true));
     for(ConstIterator<IndexArrayEntry<SymbolSet>> it = termListArray.getIterator(); it.hasNext();) {
       const IndexArrayEntry<SymbolSet> &e       = it.next();
       String                            comment = format(_T(" %3u %s"), e.m_commentIndex, e.getComment().cstr());
@@ -280,18 +275,14 @@ ByteCount CompressedActionMatrix::printTermAndActionList(MarginFile &output) con
       newLine(output, comment, 108);
       tableSize += n + 1;
     }
-    const ByteCount tableByteCount = ByteCount::wordAlignedSize(tableSize * getTypeSize(m_terminalType));
-    output.setLeftMargin(0);
-    output.printf(_T("}; // Size of table:%s.\n\n"), tableByteCount.toString().cstr());
-    byteCount += tableByteCount;
+    byteCount += outputEndArrayDefinition(output, m_terminalType, tableSize);
   }
 
   { const RawActionArrayIndexArray raaArray   = m_raaMap.getEntryArray();
     UINT                           tableSize  = 0;
     TCHAR                          delim      = ' ';
 
-    output.printf(_T("static const %s actionListTable[%u] = {\n"), getTypeName(m_actionType), raaArray.getElementCount(false));
-    output.setLeftMargin(2);
+    outputBeginArrayDefinition(output, _T("actionListTable"), m_actionType, raaArray.getElementCount(false));
     for(ConstIterator<IndexArrayEntry<RawActionArray>> it = raaArray.getIterator(); it.hasNext();) {
       const IndexArrayEntry<RawActionArray> &e       = it.next();
       String                                 comment = format(_T("%3u %s"), e.m_commentIndex, e.getComment().cstr());
@@ -306,12 +297,8 @@ ByteCount CompressedActionMatrix::printTermAndActionList(MarginFile &output) con
       newLine(output, comment, 108);
       tableSize += n;
     }
-    const ByteCount tableByteCount = ByteCount::wordAlignedSize(tableSize * getTypeSize(m_actionType));
-    output.setLeftMargin(0);
-    output.printf(_T("}; // Size of table:%s.\n\n"), tableByteCount.toString().cstr());
-    byteCount += tableByteCount;
+    byteCount += outputEndArrayDefinition(output, m_actionType, tableSize);
   }
-
   return byteCount;
 }
 
@@ -321,8 +308,7 @@ ByteCount CompressedActionMatrix::printTermSetTable(MarginFile &output) const {
     output.printf(_T("#define termSetTable nullptr\n\n"));
   } else {
     const SymbolSetIndexArray laSetArray = m_laSetMap.getEntryArray();
-    output.printf(_T("static const unsigned char termSetTable[%u] = {\n"), m_currentLASetArraySize);
-    output.setLeftMargin(2);
+    outputBeginArrayDefinition(output, _T("termSetTable"), TYPE_UCHAR, m_currentLASetArraySize);
     TCHAR delim = ' ';
     for(ConstIterator<IndexArrayEntry<SymbolSet> > it = laSetArray.getIterator(); it.hasNext();) {
       const IndexArrayEntry<SymbolSet> &e = it.next();
@@ -334,9 +320,7 @@ ByteCount CompressedActionMatrix::printTermSetTable(MarginFile &output) const {
       }
       newLine(output, comment);
     }
-    output.setLeftMargin(0);
-    byteCount = ByteCount::wordAlignedSize(m_currentLASetArraySize * sizeof(char));
-    output.printf(_T("}; // Size of table:%s.\n\n"), byteCount.toString().cstr());
+    byteCount = outputEndArrayDefinition(output, TYPE_UCHAR, m_currentLASetArraySize);
   }
   return byteCount;
 }

@@ -229,6 +229,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ByteCount.h" />
+    <ClInclude Include="CodeFlags.h" />
     <ClInclude Include="CompressedActionMatrixCpp.h" />
     <ClInclude Include="CompressEncoding.h" />
     <ClInclude Include="Grammar.h" />
@@ -236,6 +237,7 @@
     <ClInclude Include="GrammarParser.h" />
     <ClInclude Include="GrammarScanner.h" />
     <ClInclude Include="GrammarTables.h" />
+    <ClInclude Include="KeywordHandler.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SourceText.h" />
     <ClInclude Include="StateActionInfo.h" />
@@ -249,11 +251,13 @@
     <ClCompile Include="ActionArray.cpp" />
     <ClCompile Include="ActionsWriter.cpp" />
     <ClCompile Include="ByteCount.cpp" />
+    <ClCompile Include="CodeFlags.cpp" />
     <ClCompile Include="CompressedActionMatrixCpp.cpp" />
     <ClCompile Include="CompressEncoding.cpp" />
     <ClCompile Include="DocFileWriter.cpp" />
     <ClCompile Include="Grammar.cpp" />
     <ClCompile Include="GrammarCode.cpp" />
+    <ClCompile Include="GrammarDump.cpp" />
     <ClCompile Include="GrammarParser.cpp" />
     <ClCompile Include="GrammarScanner.cpp" />
     <ClCompile Include="GrammarTables.cpp" />

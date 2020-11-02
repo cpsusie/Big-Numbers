@@ -288,29 +288,27 @@ public:
   inline UINT        getStartSymbol()  const { return m_startSymbol;  }
   inline Language    getLanguage()     const { return m_language;     }
   const  SourceText &getHeader()       const { return m_header;       }
-  const SourceText  &getDriverHead()   const { return m_driverHead;   }
-  const SourceText  &getDriverTail()   const { return m_driverTail;   }
+  const  SourceText &getDriverHead()   const { return m_driverHead;   }
+  const  SourceText &getDriverTail()   const { return m_driverTail;   }
   int                getVerboseLevel() const { return m_verboseLevel; }
 
-  UINT getItemCount() const;
 
   // convert symbolset to String
   String symbolSetToString(const SymbolSet &set) const;
-
-  String itemToString(const LR1Item &item, int flags = DUMP_LOOKAHEAD) const;
-
-  String stateToString(const LR1State &state, int flags = DUMP_ALL) const;
+  String itemToString(     const LR1Item   &item , int flags = DUMP_LOOKAHEAD) const; // flags any combination of {DUMP_LOOKAHEAD,DUMP_SUCC}
+  String stateToString(    const LR1State  &state, int flags = DUMP_ALL      ) const; // flags any combination of {DUMP_KERNELONLY,DUMP_SHIFTITEMS,DUMP_ACTIONS} + {flags for itemToString}
 
   String getRightSide(       UINT prod) const;
   String getProductionString(UINT prod) const;
   UINT   getMaxSymbolNameLength()       const;
   UINT   getMaxNonTerminalNameLength()  const;
+  UINT   getItemCount()                 const; // return total number of generated LALR(1) items
 
-  void dump(                                                     MarginFile *f = tostdout) const;
-  void dump(const Production &prod ,                             MarginFile *f = tostdout) const;
-  void dump(const LR1Item    &item , int flags = DUMP_LOOKAHEAD, MarginFile *f = tostdout) const;
-  void dump(const SymbolSet  &set  ,                             MarginFile *f = tostdout) const;
-  void dump(const LR1State   &state, int flags = DUMP_ALL,       MarginFile *f = tostdout) const;
-  void dumpStates(                   int flags = DUMP_DOCFORMAT, MarginFile *f = tostdout) const;
-  void dumpFirst1Sets(FILE *f) const;
+  void   dump(             const SymbolSet  &set  ,                             MarginFile *f = tostdout) const;
+  void   dump(             const Production &prod ,                             MarginFile *f = tostdout) const;
+  void   dump(             const LR1Item    &item , int flags = DUMP_LOOKAHEAD, MarginFile *f = tostdout) const; // flags as for itemToString
+  void   dump(             const LR1State   &state, int flags = DUMP_ALL,       MarginFile *f = tostdout) const; // flags any combination of {DUMP_ERRORS,DUMP_WARNINGS} + {flags for stateToString}
+  void   dumpStates(                                int flags = DUMP_DOCFORMAT, MarginFile *f = tostdout) const; // flags as for dump(const LR1State &state...)
+  void   dump(                                                                  MarginFile *f = tostdout) const;
+  void   dumpFirst1Sets(FILE *f) const;
 };

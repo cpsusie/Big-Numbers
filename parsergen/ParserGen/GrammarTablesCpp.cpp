@@ -254,7 +254,7 @@ ByteCount GrammarTables::printSuccessorMatrixCpp(MarginFile &output) const {
   SuccessorArrayIndexMap saMap;
   UINT                   currentNTListSize = 0;
   UINT                   currentSAListSize = 0;
-  ByteCount              totalByteCount;
+  ByteCount              byteCount;
 
   for(UINT state = 0; state < stateCount; state++) {
     const ActionArray &succList = m_stateSucc[state];
@@ -315,9 +315,9 @@ ByteCount GrammarTables::printSuccessorMatrixCpp(MarginFile &output) const {
     { const SymbolSetIndexArray ntSetArray = ntSetMap.getEntryArray();
       ntSetMap.clear();
       
+      outputBeginArrayDefinition(output1, _T("NTindexListTable"), m_NTIndexType, ntSetArray.getElementCount(true));
       UINT       tableSize = 0;
       TCHAR      delim     = ' ';
-      output1.printf(_T("static const %s NTindexListTable[%u] = {\n"), getTypeName(m_NTIndexType), ntSetArray.getElementCount(true));
       for(ConstIterator<IndexArrayEntry<SymbolSet> > it = ntSetArray.getIterator(); it.hasNext();) {
         const IndexArrayEntry<SymbolSet> &e       = it.next();
         String                            comment = format(_T(" %3u %s"), e.m_commentIndex, e.getComment().cstr());
@@ -335,19 +335,15 @@ ByteCount GrammarTables::printSuccessorMatrixCpp(MarginFile &output) const {
         newLine(output1, comment, 108);
         tableSize += n + 1;
       }
-      const ByteCount byteCount = ByteCount::wordAlignedSize(tableSize * getTypeSize(m_NTIndexType));
-      output1.setLeftMargin(0);
-      output1.printf(_T("}; // Size of table:%s.\n\n"), byteCount.toString().cstr());
-      totalByteCount += byteCount;
+      byteCount += outputEndArrayDefinition(output1, m_NTIndexType, tableSize);
     }
 
     { const SuccesorArrayIndexArray saArray  = saMap.getEntryArray();
       saMap.clear();
 
+      outputBeginArrayDefinition(output1, _T("stateListTable"), m_stateType, saArray.getElementCount(false));
       UINT       tableSize = 0;
       TCHAR      delim     = ' ';
-      output1.printf(_T("static const %s stateListTable[%u] = {\n"), getTypeName(m_stateType), saArray.getElementCount(false));
-      output1.setLeftMargin(2);
       for(ConstIterator<IndexArrayEntry<SuccesorArray> > it = saArray.getIterator(); it.hasNext();) {
         const IndexArrayEntry<SuccesorArray> &e       = it.next();
         String                                comment = format(_T("%3u %s"), e.m_commentIndex, e.getComment().cstr());
@@ -362,10 +358,7 @@ ByteCount GrammarTables::printSuccessorMatrixCpp(MarginFile &output) const {
         newLine(output1, comment, 108);
         tableSize += n;
       }
-      const ByteCount byteCount = ByteCount::wordAlignedSize(tableSize * getTypeSize(m_stateType));
-      output1.setLeftMargin(0);
-      output1.printf(_T("}; // Size of table:%s.\n\n"), byteCount.toString().cstr());
-      totalByteCount += byteCount;
+      byteCount += outputEndArrayDefinition(output1, m_stateType, tableSize);
     }
   }
 
@@ -377,9 +370,7 @@ ByteCount GrammarTables::printSuccessorMatrixCpp(MarginFile &output) const {
     output.printf(_T("\n"));
   }
   output.printf(_T("#define nil (unsigned int)-1\n"));
-  output.setLeftMargin(0);
-  output.printf(_T("static const unsigned int successorCode[%u] = {\n"), stateCount);
-  output.setLeftMargin(2);
+  outputBeginArrayDefinition(output, _T("successorCode"), TYPE_UINT, stateCount);
 
   TCHAR delim     = ' ';
   for(UINT state = 0; state < stateCount; state++, delim=',') {
@@ -392,14 +383,11 @@ ByteCount GrammarTables::printSuccessorMatrixCpp(MarginFile &output) const {
       output.printf(_T("\n"));
     }
   }
-  output.setLeftMargin(0);
-  const ByteCount byteCount = ByteCount::wordAlignedSize(stateCount*sizeof(UINT));
-  output.printf(_T("\n}; // Size of table:%s.\n\n"), byteCount.toString().cstr());
-  totalByteCount += byteCount;
+  byteCount += outputEndArrayDefinition(output, TYPE_UINT, stateCount, true);
   output1.close();
   output.puts(tmpOutput.str().c_str());
 
-  return totalByteCount;
+  return byteCount;
 }
 
 ByteCount GrammarTables::printProductionLengthTableCpp(MarginFile &output) const {
@@ -407,8 +395,7 @@ ByteCount GrammarTables::printProductionLengthTableCpp(MarginFile &output) const
 
   const UINT productionCount = getProductionCount();
 
-  output.printf(_T("static const unsigned char productionLength[%u] = {\n"), productionCount);
-  output.setLeftMargin(2);
+  outputBeginArrayDefinition(output, _T("productionLength"), TYPE_UCHAR, productionCount);
   TCHAR delim = ' ';
   for(UINT p = 0; p < productionCount; p++, delim = ',') {
     const UINT l = m_productionLength[p];
@@ -420,19 +407,14 @@ ByteCount GrammarTables::printProductionLengthTableCpp(MarginFile &output) const
       output.printf(_T("\n"));
     }
   }
-  output.setLeftMargin(0);
-
-  const ByteCount byteCount = ByteCount::wordAlignedSize(productionCount*sizeof(char));
-  output.printf(_T("\n}; // Size of table:%s.\n\n"), byteCount.toString().cstr());
-  return byteCount;
+  return outputEndArrayDefinition(output, TYPE_UCHAR, productionCount, true);
 }
 
 ByteCount GrammarTables::printLeftSideTableCpp(MarginFile &output) const {
   output.printf(_T("%s"), comment4);
 
   const UINT productionCount = getProductionCount();
-  output.printf(_T("static const %s leftSideTable[%u] = {\n"), getTypeName(m_NTIndexType), productionCount);
-  output.setLeftMargin(2);
+  outputBeginArrayDefinition(output, _T("leftSideTable"), m_NTIndexType, productionCount);
 
   TCHAR delim = ' ';
   for(UINT p = 0; p < productionCount; p++, delim = ',') {
@@ -445,23 +427,18 @@ ByteCount GrammarTables::printLeftSideTableCpp(MarginFile &output) const {
       output.printf(_T("\n"));
     }
   }
-  output.setLeftMargin(0);
-
-  const ByteCount byteCount = ByteCount::wordAlignedSize(productionCount * getTypeSize(m_NTIndexType));
-  output.printf(_T("\n}; // Size of table:%s.\n\n"), byteCount.toString().cstr());
-  return byteCount;
+  return outputEndArrayDefinition(output, m_NTIndexType, productionCount, true);
 }
 
 ByteCount GrammarTables::printRightSideTableCpp(MarginFile &output) const {
   output.printf(_T("%s"), comment5);
   const UINT productionCount = getProductionCount();
-  UINT       totalItemCount  = 0;
+  UINT       itemCount  = 0;
 
   for(UINT p = 0; p < productionCount; p++) {
-    totalItemCount += (UINT)m_rightSide[p].size();
+    itemCount += (UINT)m_rightSide[p].size();
   }
-  output.printf(_T("static const %s rightSideTable[%u] = {\n"), getTypeName(m_symbolType), totalItemCount);
-  output.setLeftMargin(2);
+  outputBeginArrayDefinition(output, _T("rightSideTable"), m_symbolType, itemCount);
   TCHAR delim = ' ';
   for(UINT p = 0; p < productionCount; p++) {
     const CompactIntArray &r = m_rightSide[p];
@@ -474,11 +451,7 @@ ByteCount GrammarTables::printRightSideTableCpp(MarginFile &output) const {
     }
     output.printf(_T("\n"));
   }
-  output.setLeftMargin(0);
-
-  const ByteCount byteCount = ByteCount::wordAlignedSize(totalItemCount * getTypeSize(m_symbolType));
-  output.printf(_T("}; // Size of table:%s.\n\n"), byteCount.toString().cstr());
-  return byteCount;
+  return outputEndArrayDefinition(output, m_symbolType, itemCount);
 }
 
 ByteCount GrammarTables::printSymbolNameTableCpp(MarginFile &output) const {
@@ -501,9 +474,7 @@ ByteCount GrammarTables::printSymbolNameTableCpp(MarginFile &output) const {
   }
   output.setLeftMargin(0);
 
-  const ByteCount stringByteCount = ByteCount::wordAlignedSize(sizeof(char)*((UINT)charCount+1));
-  output.printf(_T("}; // Total size of string:%s\n\n")
-               ,stringByteCount.toString().cstr());
-
-  return stringByteCount;
+  const ByteCount byteCount = ByteCount::wordAlignedSize(sizeof(char)*(UINT)(charCount+1));
+  output.printf(_T("}; // Size of string:%s\n\n"), byteCount.toString().cstr());
+  return byteCount;
 }

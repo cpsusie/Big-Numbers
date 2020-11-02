@@ -51,6 +51,9 @@
     <ClCompile Include="..\parsergen\Wizard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\ParserGen\CodeFlags.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LexGen.rc">

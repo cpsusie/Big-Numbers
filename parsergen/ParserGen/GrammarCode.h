@@ -1,7 +1,10 @@
 #pragma once
 
-#include "TemplateWriter.h"
 #include "ByteCount.h"
+#include "CodeFlags.h"
+#include "KeywordHandler.h"
+
+class TemlateWriter;
 
 class GrammarCode {
 private:
@@ -47,6 +50,8 @@ inline int stringCmp(const String &s1, const String &s2) {
 }
 
 ByteArray    symbolSetToByteArray(const SymbolSet &set);
+void         outputBeginArrayDefinition(MarginFile &output, const TCHAR *tableName, IntegerType elementType, UINT size); // size = #elements in array
+ByteCount    outputEndArrayDefinition(  MarginFile &output,                         IntegerType elementType, UINT size, bool addNewLine=false);
 void         newLine(MarginFile &output, String &comment = String(_T("")), int minColumn=0);
 
 class ActionsWriter : public KeywordHandler {

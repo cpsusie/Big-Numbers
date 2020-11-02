@@ -130,14 +130,19 @@ private:
 
 // --------------------------- getLegalInputCount -------------------------------------
 
-  static inline UINT getLegalInputCountTermList(const TerminalType *termList) {
+  inline        UINT getLegalInputCountTermList( UINT code) const {
+    const TerminalType *termList = getTermList(code);
     return termList[0];
   }
-  inline UINT getLegalInputCountSplitNode(UINT code) const {
+  inline        UINT getLegalInputCountSplitNode(UINT code) const {
     return getLegalInputCountFromCode(left(code)) + getLegalInputCountFromCode(right(code));
   }
-  static UINT getLegalInputCountTermSet(const BYTE *termSet) {
-    UINT sum = 0;
+  static inline UINT getLegalInputCountOneItem(  UINT code)       {
+    return 1;
+  }
+  UINT               getLegalInputCountTermSet(  UINT code) const {
+    const BYTE *termSet = getTermSet(code);
+    UINT        sum     = 0;
     constexpr UINT termSetByteCount = (terminalCount - 1) / 8 + 1;
     for(const BYTE *endp = termSet + termSetByteCount; termSet < endp;) {
       for(BYTE b = *(termSet++); b; b &= (b-1)) {
@@ -146,31 +151,37 @@ private:
     }
     return sum;
   }
-  inline UINT getLegalInputCountFromCode(UINT code) const {
+  inline UINT getLegalInputCountFromCode(        UINT code) const {
     switch(getActMethodCode(code)) {
-    case CodeTermList : return getLegalInputCountTermList(getTermList(code));
-    case CodeSplitNode: return getLegalInputCountSplitNode(           code );
-    case CodeOneItem  : return 1;
-    case CodeTermSet  : return getLegalInputCountTermSet( getTermSet( code));
+    case CodeTermList : return getLegalInputCountTermList( code);
+    case CodeSplitNode: return getLegalInputCountSplitNode(code);
+    case CodeOneItem  : return getLegalInputCountOneItem(  code);
+    case CodeTermSet  : return getLegalInputCountTermSet(  code);
+    default           : __assume(0);
     }
-    return 0;
   }
 
 // --------------------------- getLegalInputs -------------------------------------
 
-  static inline UINT getLegalInputsTermList(const TerminalType *termList, UINT *symbols) {
-    const UINT n = *(termList++);
+  inline        UINT getLegalInputsTermList( UINT code, UINT *symbols) const {
+    const TerminalType *termList = getTermList(code);
+    const UINT          n        = *(termList++);
     for(const TerminalType *endp = termList+n; termList < endp;) {
       *(symbols++) = *(termList++);
     }
     return n;
   }
-  inline UINT getLegalInputsSplitNode(UINT code, UINT *symbols) const {
+  inline        UINT getLegalInputsSplitNode(UINT code, UINT *symbols) const {
     const UINT n = getLegalInputsFromCode(left(code), symbols);
     return n + getLegalInputsFromCode(right(code), symbols + n);
   }
-  static UINT getLegalInputsTermSet(const BYTE *termSet, UINT *symbols) {
-    UINT count = 0;
+  static inline UINT getLegalInputsOneItem(  UINT code, UINT *symbols)       {
+    *symbols = (code & 0x7fff);
+    return 1;
+  }
+  UINT               getLegalInputsTermSet(  UINT code, UINT *symbols) const {
+    const BYTE *termSet = getTermSet(code);
+    UINT        count   = 0;
     for(UINT term = 0; term < terminalCount; term++) {
       if(contains(termSet, term)) {
         *(symbols++) = term;
@@ -179,33 +190,39 @@ private:
     }
     return count;
   }
-  inline UINT getLegalInputsFromCode(UINT code, UINT *symbols) const {
+  inline        UINT getLegalInputsFromCode(        UINT code, UINT *symbols) const {
     switch(getActMethodCode(code)) {
-    case CodeTermList : return getLegalInputsTermList(getTermList(code), symbols);
-    case CodeSplitNode: return getLegalInputsSplitNode(           code , symbols);
-    case CodeOneItem  : *symbols = (code & 0x7fff); return 1;
-    case CodeTermSet  : return getLegalInputsTermSet( getTermSet( code), symbols);
+    case CodeTermList : return getLegalInputsTermList( code, symbols);
+    case CodeSplitNode: return getLegalInputsSplitNode(code, symbols);
+    case CodeOneItem  : return getLegalInputsOneItem(  code, symbols);
+    case CodeTermSet  : return getLegalInputsTermSet(  code, symbols);
+    default           : __assume(0);
     }
-    return 0;
   }
 
 // --------------------------- getAction -------------------------------------
-  inline int getActionTermList(UINT code, UINT term) const {
+  inline        int getActionTermList( UINT code, UINT term) const {
     const int index = findElement(getTermList(code), term);
     return (index < 0) ? _ParserError : m_actionListTable[(code >> 17) + index];
   }
-  inline int getActionSplitNode(UINT code, UINT term) const {
+  inline        int getActionSplitNode(UINT code, UINT term) const {
     const int a = getActionFromCode(left(code), term);
     return (a != _ParserError) ? a : getActionFromCode(right(code), term);
   }
-  inline int getActionFromCode(UINT code, UINT term) const {
+  static inline int getActionOneItem(  UINT code, UINT term)       {
+    return ((code & 0x7fff) == term)        ? ((signed int)code >> 17) : _ParserError;
+  }
+  inline        int getActionTermSet(  UINT code, UINT term) const {
+    return contains(getTermSet(code), term) ? ((signed int)code >> 17) : _ParserError;
+  }
+  inline        int getActionFromCode( UINT code, UINT term) const {
     switch(getActMethodCode(code)) {
-    case CodeTermList : return getActionTermList(                 code, term);
-    case CodeSplitNode: return getActionSplitNode(                code, term);
-    case CodeOneItem  : return ((code & 0x7fff) == term)        ? ((signed int)code >> 17) : _ParserError;
-    case CodeTermSet  : return contains(getTermSet(code), term) ? ((signed int)code >> 17) : _ParserError;
+    case CodeTermList : return getActionTermList( code, term);
+    case CodeSplitNode: return getActionSplitNode(code, term);
+    case CodeOneItem  : return getActionOneItem(  code, term);
+    case CodeTermSet  : return getActionTermSet(  code, term);
+    default           : __assume(0);
     }
-    return 0;
   }
 
 // ------------------------------------ misc---------------------------------

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <FileNameSplitter.h>
+#include "TemplateWriter.h"
 #include "GrammarCode.h"
 
 GrammarCode::GrammarCode(const String  &templateName
@@ -22,7 +23,7 @@ GrammarCode::GrammarCode(const String  &templateName
 {
 }
 
-ByteArray symbolSetToByteArray(const BitSet &set) {
+ByteArray symbolSetToByteArray(const SymbolSet &set) {
   const size_t byteCount = (set.getCapacity() - 1) / 8 + 1;
   ByteArray    result(byteCount);
   result.addZeroes(byteCount);
@@ -32,6 +33,20 @@ ByteArray symbolSetToByteArray(const BitSet &set) {
     b[v >> 3] |= (1 << (v & 7));
   }
   return result;
+}
+
+
+void      outputBeginArrayDefinition(MarginFile &output, const TCHAR *tableName, IntegerType elementType, UINT size) {
+  output.setLeftMargin(0);
+  output.printf(_T("static const %s %s[%u] = {\n"), getTypeName(elementType), tableName, size);
+  output.setLeftMargin(2);
+}
+
+ByteCount outputEndArrayDefinition(  MarginFile &output,                         IntegerType elementType, UINT size, bool addNewLine) {
+  const ByteCount byteCount = ByteCount::wordAlignedSize(size * getTypeSize(elementType));
+  output.setLeftMargin(0);
+  output.printf(_T("%s}; // Size of table:%s.\n\n"), addNewLine?_T("\n"):_T(""), byteCount.toString().cstr());
+  return byteCount;
 }
 
 void newLine(MarginFile &output, String &comment, int minColumn) { // static
@@ -60,19 +75,19 @@ void GrammarCode::generateDocFile(MarginFile &output) const {
   }
   m_grammar.dumpStates(dumpformat, &output);
   output.printf(_T("\n"));
-  output.printf(_T("%4d\tterminals\n")     , m_grammar.getTerminalCount()   );
-  output.printf(_T("%4d\tnonterminals\n")  , m_grammar.getNonTerminalCount());
-  output.printf(_T("%4d\tproductions\n")   , m_grammar.getProductionCount() );
-  output.printf(_T("%4d\tLALR(1) states\n"), m_grammar.getStateCount()      );
-  output.printf(_T("%4d\titems\n")         , m_grammar.getItemCount()       );
+  output.printf(_T("%4d\tterminals\n"              ), m_grammar.getTerminalCount()   );
+  output.printf(_T("%4d\tnonterminals\n"           ), m_grammar.getNonTerminalCount());
+  output.printf(_T("%4d\tproductions\n"            ), m_grammar.getProductionCount() );
+  output.printf(_T("%4d\tLALR(1) states\n"         ), m_grammar.getStateCount()      );
+  output.printf(_T("%4d\titems\n"                  ), m_grammar.getItemCount()       );
   const ByteCount &byteCount = getByteCount();
   if(!byteCount.isEmpty()) {
     output.printf(_T("%s\t required for parsertables\n"), byteCount.toString().cstr());
   }
   output.printf(_T("\n"));
-  output.printf(_T("%4d\tshift/reduce  conflicts\n"), m_grammar.m_SRconflicts);
-  output.printf(_T("%4d\treduce/reduce conflicts\n"), m_grammar.m_RRconflicts);
-  output.printf(_T("%4d\twarnings\n"), m_grammar.m_warningCount);
+  output.printf(_T("%4d\tshift/reduce  conflicts\n"), m_grammar.m_SRconflicts        );
+  output.printf(_T("%4d\treduce/reduce conflicts\n"), m_grammar.m_RRconflicts        );
+  output.printf(_T("%4d\twarnings\n"               ), m_grammar.m_warningCount       );
 
   if(!m_grammar.allStatesConsistent()) {
     _tprintf(_T("See %s for details\n"), output.getName().cstr());

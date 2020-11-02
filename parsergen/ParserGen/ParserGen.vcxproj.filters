@@ -66,6 +66,12 @@
     <ClInclude Include="CompressEncoding.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CodeFlags.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KeywordHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -132,6 +138,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ActionArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CodeFlags.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GrammarDump.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

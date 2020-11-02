@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "TemplateWriter.h"
 #include "GrammarCode.h"
 
 void SymbolsWriter::handleKeyword(TemplateWriter &writer, String &line) const {

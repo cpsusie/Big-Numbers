@@ -14,9 +14,10 @@ SameReduceActionInfo::operator ActionArray() const {
 StateActionInfo::StateActionInfo(UINT terminalCount, UINT state, const ActionArray &actionArray)
 : m_state(state)
 , m_terminalCount(terminalCount)
+, m_legalTokenCount((UINT)actionArray.size())
 {
   const size_t count = actionArray.size();
-  CompactUIntHashMap<UINT, 1999>  sameReductionMap; // map from reduce-production -> index into m_shiftActionArray
+  CompactUIntHashMap<UINT, 1999>  sameReductionMap; // map from reduce-production -> index into m_sameReductionArray
   for(auto it = actionArray.getIterator(); it.hasNext();) {
     const ParserAction &pa = it.next();
     if(pa.m_action > 0) {
@@ -33,12 +34,13 @@ StateActionInfo::StateActionInfo(UINT terminalCount, UINT state, const ActionArr
       }
     }
   }
-
+//  m_sameReductionArray.sortBySetSize();
+  m_compressMethod = findCompressionMethod();
 #if defined(_DEDUG)
   if(getActionArray() != actionArray) {
     throwException(_T("%s:getActionArray failed for state :%u"), __TFUNCTION__, state);
   }
-#endif
+#endif // _DEBUG
 }
 
 ActionArray StateActionInfo::getActionArray() const {
@@ -55,14 +57,14 @@ ActionArray StateActionInfo::getActionArray() const {
   return result;
 }
 
-CompressionMethod StateActionInfo::getCompressionMethod() const {
+CompressionMethod StateActionInfo::findCompressionMethod() {
   const UINT ac = getDifferentActionCount();
   switch(ac) {
   case 1 :
     if(m_shiftActionArray.size() == 1) {
       return ONEITEMCOMPRESSION;
     } else {
-      return (m_sameReductionArray[0].getTerminalSet().size() == 1)
+      return (m_sameReductionArray[0].getSetSize() == 1)
            ? ONEITEMCOMPRESSION
            : REDUCEBYSAMEPRODCOMPRESSION;
     }
@@ -72,3 +74,22 @@ CompressionMethod StateActionInfo::getCompressionMethod() const {
     return UNCOMPRESSED;
   }
 }
+
+/*
+CompressionMethod StateActionInfo::findCompressionMethod() {
+  const UINT ac = getDifferentActionCount();
+  if(ac == 1) {
+    if(m_shiftActionArray.size() == 1) {
+      return ONEITEMCOMPRESSION;
+    } else {
+      return (m_sameReductionArray[0].getSetSize() == 1)
+           ? ONEITEMCOMPRESSION
+           : REDUCEBYSAMEPRODCOMPRESSION;
+    }
+  }
+
+  if(m_sameReductionArray.isEmpty()) {
+    return UNCOMPRESSED;
+  }
+}
+*/

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "GrammarTables.h"
+#include "TemplateWriter.h"
 #include "GrammarCode.h"
 
 void TablesWriter::handleKeyword(TemplateWriter &writer, String &line) const {

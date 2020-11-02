@@ -4475,7 +4475,7 @@ static const char *symbolNames = {
   " SwitchLabel_plus"                                 /* NT  303 NTindex=198   */
   " CatchClause_plus"                                 /* NT  304 NTindex=199   */
   " DimExpression_plus"                               /* NT  305 NTindex=200   */
-}; // Total size of string:4.456(x86)/4.456(x64) bytes
+}; // Size of string:4.456(x86)/4.456(x64) bytes
 
 static const ParserTablesTemplate<105,306,635,1191
                                  ,unsigned char

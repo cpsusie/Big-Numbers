@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "GrammarCode.h"
+#include "TemplateWriter.h"
 
 void ActionsWriter::handleKeyword(TemplateWriter &writer, String &line) const {
-  const CodeFlags flags    = m_coder.getFlags();
+  const CodeFlags flags = m_coder.getFlags();
   if(!flags.m_generateActions) {
     return;
   }
