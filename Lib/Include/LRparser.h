@@ -71,6 +71,7 @@ private:
   static inline bool contains(const BYTE *bitset, UINT v) {
     return (bitset[v>>3]&(1<<(v&7))) != 0;
   }
+  static constexpr UINT termSetByteCount = (terminalCount - 1) / 8 + 1;
 
   // Binary search.
   // Assume a[0] contains the number of elements, n, in the array, followed by n distinct elements, in increasing order
@@ -143,7 +144,6 @@ private:
   UINT               getLegalInputCountTermSet(  UINT code) const {
     const BYTE *termSet = getTermSet(code);
     UINT        sum     = 0;
-    constexpr UINT termSetByteCount = (terminalCount - 1) / 8 + 1;
     for(const BYTE *endp = termSet + termSetByteCount; termSet < endp;) {
       for(BYTE b = *(termSet++); b; b &= (b-1)) {
         sum++;
@@ -180,15 +180,17 @@ private:
     return 1;
   }
   UINT               getLegalInputsTermSet(  UINT code, UINT *symbols) const {
-    const BYTE *termSet = getTermSet(code);
-    UINT        count   = 0;
-    for(UINT term = 0; term < terminalCount; term++) {
-      if(contains(termSet, term)) {
-        *(symbols++) = term;
-        count++;
+    UINT           *symp             = symbols;
+    const     BYTE *termSet          = getTermSet(code);
+    for(const BYTE *bp = termSet, *endp = bp + termSetByteCount; bp < endp; bp++) {
+      if(*bp) {
+        UINT bitIndex = ((UINT)(bp - termSet)) << 3;
+        for(BYTE b = *bp; b; bitIndex++, b >>= 1) {
+          if(b & 1) *(symp++) = bitIndex;
+        }
       }
     }
-    return count;
+    return (UINT)(symp - symbols);
   }
   inline        UINT getLegalInputsFromCode(        UINT code, UINT *symbols) const {
     switch(getActMethodCode(code)) {
