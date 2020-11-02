@@ -41,23 +41,24 @@ public:
 };
 
 static String getLegalInput(const ParserTables &tables, UINT state) {
+  UINT      *symbols = NULL;
   const UINT n       = tables.getLegalInputCount(state);
-  UINT      *symbols = new UINT[n]; TRACE_NEW(symbols);
-  tables.getLegalInputs(state, symbols);
-  StringArray symstr;
-  for(UINT i = 0; i < n; i++) {
-    symstr.add(tables.getSymbolName(symbols[i]));
-  }
-  SAFEDELETEARRAY(symbols);
-
-  String result;
-  for(size_t i = 0; i < symstr.size(); i++) {
-    if(i > 0) {
-      result += _T(" ");
+  try {
+    symbols = new UINT[n]; TRACE_NEW(symbols);
+    tables.getLegalInputs(state, symbols);
+    String result;
+    for(UINT i = 0; i < n; i++) {
+      if(i > 0) {
+        result += _T(" ");
+      }
+      result += tables.getSymbolName(symbols[i]);
     }
-    result += symstr[i];
+    SAFEDELETEARRAY(symbols);
+    return result;
+  } catch(...) {
+    SAFEDELETEARRAY(symbols);
+    throw;
   }
-  return result;
 }
 
 class YaccJob : public SafeRunnable {
@@ -106,14 +107,17 @@ void TestParser::deleteNodeList() {
 void TestParser::buildLegalInputArray() {
   const ParserTables &tables     = getParserTables();
   const UINT          stateCount = tables.getStateCount();
+  m_legalLookahead.setCapacity(stateCount);
   for(UINT i = 0; i < stateCount; i++) {
     m_legalLookahead.add(::getLegalInput(tables, i));
   }
 }
 
 void TestParser::buildReduceActionArray() {
-  const ParserTables &tables = getParserTables();
-  for(UINT prod = 0; prod < tables.getProductionCount(); prod++) {
+  const ParserTables &tables    = getParserTables();
+  const UINT          prodCount = tables.getProductionCount();
+  m_reduceActionStr.setCapacity(prodCount);
+  for(UINT prod = 0; prod < prodCount; prod++) {
     m_reduceActionStr.add(format(_T("Reduce by (%d) %s -> %s")
                                 ,prod
                                 ,getSymbolName(tables.getLeftSymbol(prod))
@@ -125,8 +129,10 @@ void TestParser::buildReduceActionArray() {
 
 void TestParser::buildStateArray() {
   m_grammar.generateStates();
-  Grammar &g = getGrammar();
-  for(UINT i = 0; i < g.getStateCount(); i++) {
+  Grammar   &g          = getGrammar();
+  const UINT stateCount = g.getStateCount();
+  m_stateStr.setCapacity(stateCount);
+  for(UINT i = 0; i < stateCount; i++) {
     m_stateStr.add(g.stateToString(g.getState(i)).replace('\n', _T("\r\n")));
   }
 }
@@ -148,7 +154,7 @@ void TestParser::userStackInit() {
 }
 
 void TestParser::setStackSize(UINT newSize) {
-  LRparser::setStackSize(newSize);
+  __super::setStackSize(newSize);
   SAFEDELETEARRAY(m_userStack);
   m_userStack = new SyntaxNodep[getStackSize()]; TRACE_NEW(m_userStack);
 }

@@ -739,7 +739,7 @@ static const char *symbolNames = {
   " productExpr"                                      /* NT   99 NTindex=15    */
   " polyExpr"                                         /* NT  100 NTindex=16    */
   " exprList"                                         /* NT  101 NTindex=17    */
-}; // Total size of string:620(x86)/624(x64) bytes
+}; // Size of string:620(x86)/624(x64) bytes
 
 static const ParserTablesTemplate<84,102,94,159
                                  ,unsigned char
