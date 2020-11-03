@@ -25,7 +25,7 @@ GrammarTables::GrammarTables(const Grammar &grammar, const String &tablesClassNa
   }
   for(UINT s = 0; s < m_symbolCount; s++) {
     const GrammarSymbol &symbol = grammar.getSymbol(s);
-    m_symbolName.add(symbol.m_name);
+    m_symbolNameArray.add(symbol.m_name);
   }
 
   const UINT stateCount = getStateCount();
@@ -55,7 +55,7 @@ BitSet GrammarTables::getNTOffsetSet(UINT state) const {
   const ActionArray &successors     = m_stateSucc[state];
   const UINT         successorCount = (UINT)successors.size();
   for(UINT s = 0; s < successorCount; s++) {
-    result.add((UINT)successors[s].m_token - terminalCount);
+    result.add(((UINT)successors[s].m_token) - terminalCount);
   }
   return result;
 }

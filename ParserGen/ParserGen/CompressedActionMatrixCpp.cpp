@@ -12,20 +12,26 @@ int rawActionArrayCmp(const RawActionArray &a1, const RawActionArray &a2) {
   return n ? memcmp(a1.begin(), a2.begin(), n * sizeof(short)) : 0;
 }
 
-CompressedActionMatrix::CompressedActionMatrix(const GrammarTables &tables)
-  : m_tables(           tables                   )
-  , m_stateCount(       tables.getStateCount()   )
-  , m_terminalCount(    tables.getTerminalCount())
-  , m_laSetSizeInBytes((tables.getTerminalCount() - 1) / 8 + 1)
-  , m_terminalType(     tables.getTerminalType() )
-  , m_actionType(       tables.getActionType()   )
-{
-  m_stateInfoArray.setCapacity(getStateCount());
-
-  const Array<ActionArray> &stateActions = m_tables.getStateActions();
-  for(UINT state = 0; state < getStateCount(); state++) {
-    m_stateInfoArray.add(StateActionInfo(getTerminalCount(), state, stateActions[state]));
+String Macro::getComment() const {
+  if((getStateSetSize() == 1) && m_stateSet.contains(m_index)) {
+    return m_comment;
   }
+  return format(_T("%s Used by %s %s ")
+               ,m_comment.cstr()
+               ,(getStateSetSize() > 1)?_T("states"):_T("state")
+               ,getStateSet().toString().cstr()
+               );
+}
+
+CompressedActionMatrix::CompressedActionMatrix(const GrammarTables &tables)
+  : m_tables(           tables                                )
+  , m_stateCount(       tables.getStateCount()                )
+  , m_terminalCount(    tables.getTerminalCount()             )
+  , m_laSetSizeInBytes((tables.getTerminalCount() - 1) / 8 + 1)
+  , m_terminalType(     tables.getTerminalType()              )
+  , m_actionType(       tables.getActionType()                )
+  , m_stateInfoArray(   tables                                )
+{
   generateCompressedForm();
 }
 
@@ -37,8 +43,8 @@ void CompressedActionMatrix::generateCompressedForm() {
   ByteCount totalByteCount;
 
   for(UINT state = 0; state < getStateCount(); state++) {
-    const StateActionInfo &stateInfo = m_stateInfoArray[state];
-    Macro                  macro     = doStateActionInfo(stateInfo);
+    const StateActionInfo *stateInfo = m_stateInfoArray[state];
+    Macro                  macro     = doStateActionInfo(*stateInfo);
     addMacro(macro.setIndex(state).setName(format(_T("_ac%04u"), state)));
   }
 }
@@ -46,7 +52,7 @@ void CompressedActionMatrix::generateCompressedForm() {
 Macro CompressedActionMatrix::doStateActionInfo(const StateActionInfo &stateInfo) {
   switch(stateInfo.getCompressionMethod()) {
   case UNCOMPRESSED                : return doUncompressedState(    stateInfo);
-  case SPLITCOMPRESSION            : return doSplitCompression(     stateInfo);
+  case SPLITNODECOMPRESSION        : return doSplitCompression(     stateInfo);
   case ONEITEMCOMPRESSION          : return doOneItemState(         stateInfo);
   case REDUCEBYSAMEPRODCOMPRESSION : return doReduceBySameProdState(stateInfo);
   default                         :
@@ -107,63 +113,37 @@ Macro CompressedActionMatrix::doUncompressedState(const StateActionInfo &stateIn
 }
 
 Macro CompressedActionMatrix::doSplitCompression(const StateActionInfo &stateInfo) {
-  const UINT                   state         = stateInfo.getState();
-  const ActionArray           &shiftActions  = stateInfo.getShiftActionArray();
-  const SameReduceActionArray &reduceActions = stateInfo.getReduceActionArray();
-  const BYTE                   code          = ((BYTE)reduceActions.size() * 3) + (BYTE)shiftActions.size();
-  ActionArray a1(1), a2(1);
-  switch(code) {
-  case 2 : // 2 shift actions
-    a1.add(shiftActions[0]);
-    a2.add(shiftActions[1]);
-    break;
-  case 4 : // 1 shift action, 1 reduce action
-    a1.add(shiftActions[0]);
-    a2.addAll((ActionArray)reduceActions[0]);
-    break;
-  case 6 : // 0 shift actions, 2 reduce actions
-    a1.addAll((ActionArray)reduceActions[0]);
-    a2.addAll((ActionArray)reduceActions[1]);
-    break;
+  const UINT             state  = stateInfo.getState();
+  const StateActionInfo &left   = stateInfo.getChild(0);
+  const StateActionInfo &right  = stateInfo.getChild(1);
 
-  case 0 : // 0 actions                        -> error
-  case 1 : // 1 shift action                   -> error
-  case 3 : // 1 reduce action                  -> error
-  case 5 : // 2 shift actions, 1 reduce action -> error
-  default:
-    throwInvalidArgumentException(__TFUNCTION__,_T("stateInfo(shifts:%u, reductions:%u")
-                                               ,(UINT)shiftActions.size()
-                                               ,(UINT)reduceActions.size()
-                                 );
-  }
-
-  int arrayIndex1, arrayIndex2;
-  Macro        macro1 = doStateActionInfo(StateActionInfo(getTerminalCount(), state, a1));
-  const Macro *mp1    = findMacroByValue(macro1.getValue());
-  if(mp1 != nullptr) {
-    mp1->addState(state);
-    arrayIndex1 = mp1->getIndex();
+  UINT         indexL, indexR;
+  Macro        macroL = doStateActionInfo(left);
+  const Macro *mpL    = findMacroByValue(macroL.getValue());
+  if(mpL != nullptr) {
+    mpL->addState(state);
+    indexL = mpL->getIndex();
   } else {
     const String name = format(_T("_sn%04u"), m_currentSplitNodeCount);
-    arrayIndex1 = getStateCount() + m_currentSplitNodeCount++;
-    addMacro(macro1.setIndex(arrayIndex1).setName(name));
-    mp1 = &macro1;
+    indexL = getStateCount() + m_currentSplitNodeCount++;
+    addMacro(macroL.setIndex(indexL).setName(name));
+    mpL = &macroL;
   }
 
-  Macro        macro2 = doStateActionInfo(StateActionInfo(getTerminalCount(), state, a2));
-  const Macro *mp2    = findMacroByValue(macro2.getValue());
-  if(mp2 != nullptr) {
-    mp2->addState(state);
-    arrayIndex2 = mp2->getIndex();
+  Macro        macroR = doStateActionInfo(right);
+  const Macro *mpR    = findMacroByValue(macroR.getValue());
+  if(mpR != nullptr) {
+    mpR->addState(state);
+    indexR = mpR->getIndex();
   } else {
     const String  name = format(_T("_sn%04u"), m_currentSplitNodeCount);
-    arrayIndex2 = getStateCount() + m_currentSplitNodeCount++;
-    addMacro(macro2.setIndex(arrayIndex2).setName(name));
-    mp2 = &macro2;
+    indexR = getStateCount() + m_currentSplitNodeCount++;
+    addMacro(macroR.setIndex(indexR).setName(name));
+    mpR = &macroR;
   }
 
-  const String comment    = format(_T("Split(%s,%s)"), mp1->getName().cstr(), mp2->getName().cstr());
-  const String macroValue = encodeMacroValue(SPLITCOMPRESSION, arrayIndex1, arrayIndex2);
+  const String comment    = format(_T("Split(%s,%s)"), mpL->getName().cstr(), mpR->getName().cstr());
+  const String macroValue = encodeMacroValue(SPLITNODECOMPRESSION, indexL, indexR);
   return Macro(getStateCount(), state, macroValue, comment);
 }
 
@@ -221,13 +201,16 @@ ByteCount CompressedActionMatrix::print(MarginFile &output) const {
 }
 
 ByteCount CompressedActionMatrix::printMacroesAndActionCode(MarginFile &output) const {
-  const UINT macroCount = (UINT)m_macroArray.size();
+  const UINT   macroCount = (UINT)m_macroArray.size();
   Array<Macro> macroes(m_macroArray);
   if(macroCount > 0) {
     macroes.sort(macroCmpByName);
     for(auto it = macroes.getIterator(); it.hasNext();) {
       const Macro &m = it.next();
-      output.printf(_T("#define %s %-10s /* %-40s*/\n"), m.getName().cstr(), m.getValue().cstr(), m.getComment().cstr());
+      output.printf(_T("#define %s %-10s /* %-40s*/\n")
+                   ,m.getName().cstr(), m.getValue().cstr()
+                   ,m.getComment().cstr()
+                   );
     }
     output.printf(_T("\n"));
   }
@@ -258,7 +241,7 @@ ByteCount CompressedActionMatrix::printTermAndActionList(MarginFile &output) con
     TCHAR                     delim         = ' ';
 
     outputBeginArrayDefinition(output, _T("termListTable"), m_terminalType, termListArray.getElementCount(true));
-    for(ConstIterator<IndexArrayEntry<SymbolSet>> it = termListArray.getIterator(); it.hasNext();) {
+    for(auto it = termListArray.getIterator(); it.hasNext();) {
       const IndexArrayEntry<SymbolSet> &e       = it.next();
       String                            comment = format(_T(" %3u %s"), e.m_commentIndex, e.getComment().cstr());
       const UINT                        n       = (UINT)e.m_key.size();
@@ -283,7 +266,7 @@ ByteCount CompressedActionMatrix::printTermAndActionList(MarginFile &output) con
     TCHAR                          delim      = ' ';
 
     outputBeginArrayDefinition(output, _T("actionListTable"), m_actionType, raaArray.getElementCount(false));
-    for(ConstIterator<IndexArrayEntry<RawActionArray>> it = raaArray.getIterator(); it.hasNext();) {
+    for(auto it = raaArray.getIterator(); it.hasNext();) {
       const IndexArrayEntry<RawActionArray> &e       = it.next();
       String                                 comment = format(_T("%3u %s"), e.m_commentIndex, e.getComment().cstr());
       const UINT                             n       = (UINT)e.m_key.size();
@@ -310,10 +293,10 @@ ByteCount CompressedActionMatrix::printTermSetTable(MarginFile &output) const {
     const SymbolSetIndexArray laSetArray = m_laSetMap.getEntryArray();
     outputBeginArrayDefinition(output, _T("termSetTable"), TYPE_UCHAR, m_currentLASetArraySize);
     TCHAR delim = ' ';
-    for(ConstIterator<IndexArrayEntry<SymbolSet> > it = laSetArray.getIterator(); it.hasNext();) {
-      const IndexArrayEntry<SymbolSet> &e = it.next();
+    for(auto it = laSetArray.getIterator(); it.hasNext();) {
+      const IndexArrayEntry<SymbolSet> &e  = it.next();
       const ByteArray                   ba = symbolSetToByteArray(e.m_key);
-      const UINT                        n = (UINT)ba.size();
+      const UINT                        n  = (UINT)ba.size();
       String                            comment = format(_T("%3u %3u tokens %s"), e.m_commentIndex, (UINT)e.m_key.size(), e.getComment().cstr());
       for(const BYTE *cp = ba.getData(), *last = cp + n; cp < last; delim = ',') {
         output.printf(_T("%c0x%02x"), delim, *(cp++));

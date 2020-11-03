@@ -241,6 +241,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="SourceText.h" />
     <ClInclude Include="StateActionInfo.h" />
+    <ClInclude Include="StateActionInfoArray.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StringCollector.h" />
     <ClInclude Include="targetver.h" />
@@ -266,6 +267,7 @@
     <ClCompile Include="KeyWords.CPP" />
     <ClCompile Include="ParserGen.cpp" />
     <ClCompile Include="StateActionInfo.cpp" />
+    <ClCompile Include="StateActionInfoArray.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

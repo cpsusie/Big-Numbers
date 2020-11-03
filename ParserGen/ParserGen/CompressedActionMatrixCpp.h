@@ -2,7 +2,7 @@
 
 #include <TreeMap.h>
 #include "GrammarTables.h"
-#include "StateActionInfo.h"
+#include "StateActionInfoArray.h"
 
 class ArrayIndex {
 public:
@@ -114,17 +114,19 @@ typedef IndexArray<RawActionArray> RawActionArrayIndexArray;
 class Macro {
 private:
   mutable BitSet m_stateSet;
+  mutable UINT   m_stateSetSize;
   int            m_index;     // index in array m_actionCode
   String         m_name;
   const String   m_value, m_comment;
 public:
   Macro(UINT stateCount, UINT state0, const String &value, const String &comment)
     : m_stateSet(stateCount)
+    , m_stateSetSize(0)
     , m_index(  -1         )
     , m_value(  value      )
     , m_comment(comment    )
   {
-    m_stateSet.add(state0);
+    addState(state0);
   }
   inline int getIndex() const {
     return m_index;
@@ -143,14 +145,16 @@ public:
   inline const String &getValue() const {
     return m_value;
   }
-  inline const String &getComment() const {
-    return m_comment;
-  }
+  String getComment() const;
   inline const BitSet &getStateSet() const {
     return m_stateSet;
   }
+  inline UINT getStateSetSize() const {
+    return m_stateSetSize;
+  }
   inline void addState(UINT state) const {
     m_stateSet.add(state);
+    m_stateSetSize++;
   }
 };
 
@@ -167,7 +171,7 @@ inline int macroCmpByIndex(const Macro &m1, const Macro &m2) {
 }
 
 class CompressedActionMatrix {
-private :
+private:
   const GrammarTables          &m_tables;
   const UINT                    m_stateCount;
   const UINT                    m_terminalCount;
@@ -177,20 +181,20 @@ private :
   UINT                          m_currentLASetArraySize;
   UINT                          m_currentSplitNodeCount;
   const IntegerType             m_terminalType, m_actionType;
-  Array<StateActionInfo>        m_stateInfoArray;
+  StateActionInfoArray          m_stateInfoArray;
   SymbolSetIndexMap             m_laSetMap;
   SymbolSetIndexMap             m_termListMap;
   RawActionArrayIndexMap        m_raaMap;
   Array<Macro>                  m_macroArray;
   StringHashMap<UINT>           m_macroMap; // map macro-value -> index into macroArray
-  inline const TCHAR *getSymbolName(UINT terminal) const {
-    return m_tables.getSymbolName(terminal);
-  }
   inline UINT getTerminalCount() const {
     return m_terminalCount;
   }
   inline UINT getStateCount() const {
     return m_stateCount;
+  }
+  inline const TCHAR *getSymbolName(UINT symbolIndex) const {
+    return m_tables.getSymbolName(symbolIndex);
   }
   // Return point to macro with same value if it exist, or nullptr if not
   const Macro *findMacroByValue( const String &macroValue) const;

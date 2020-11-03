@@ -5,12 +5,14 @@
 
 class SameReduceActionInfo {
 private:
-  const UINT m_prod;
-  UINT       m_termSetSize; // == m_termSet.size()
-  SymbolSet  m_termSet;     // set of terminals which should give reduce by procuction m_prod
+  const UINT                 m_prod;
+  UINT                       m_termSetSize; // == m_termSet.size()
+  SymbolSet                  m_termSet;     // set of terminals which should give reduce by procuction m_prod
+  const SymbolNameContainer &m_symbolNames;
 public:
-  SameReduceActionInfo(UINT terminalCount, UINT prod, UINT term0)
+  SameReduceActionInfo(UINT terminalCount, UINT prod, UINT term0, const SymbolNameContainer &symbolNames)
     : m_prod(       prod         )
+    , m_symbolNames(symbolNames  )
     , m_termSetSize(0            )
     , m_termSet(    terminalCount)
   {
@@ -30,34 +32,52 @@ public:
     return m_termSetSize;
   }
   operator ActionArray() const;
+  String toString() const {
+    return format(_T("Reduce by %u on %s (%u terminals)"), m_prod, m_symbolNames.symbolSetToString(m_termSet).cstr(), m_termSetSize);
+  }
 };
 
-inline int setSizeCmp(const SameReduceActionInfo &i1, const SameReduceActionInfo &i2) {
-  return (int)i1.getSetSize() - (int)i2.getSetSize();
+inline int setSizeReverseCmp(const SameReduceActionInfo &i1, const SameReduceActionInfo &i2) {
+  return (int)i2.getSetSize() - (int)i1.getSetSize();
 }
 
 class SameReduceActionArray : public Array<SameReduceActionInfo> {
 public:
-  void sortBySetSize() {
+  // sort by setSize, decreasing, ie. largest set first
+  inline void sortBySetSize() {
     if(size() > 1) {
-      sort(setSizeCmp);
+      sort(setSizeReverseCmp);
     }
+  }
+  String toString() const {
+    String result;
+    for(auto it = getIterator(); it.hasNext();) {
+      result += format(_T("   %s\n"), it.next().toString().cstr());
+    }
+    return result;
   }
 };
 
 class StateActionInfo {
 private:
-  const UINT             m_state, m_terminalCount, m_legalTokenCount;
-
+  const UINT                 m_state, m_terminalCount, m_legalTokenCount;
+  const SymbolNameContainer &m_symbolNames;
   // List of different reduceActions;
-  SameReduceActionArray  m_sameReductionArray;
-  ActionArray            m_shiftActionArray;
-  CompressionMethod      m_compressMethod;
+  SameReduceActionArray      m_sameReductionArray;
+  ActionArray                m_shiftActionArray;
+  CompressionMethod          m_compressMethod;
+  const StateActionInfo     *m_child[2]; // only used for m_compressMethod = SPLITNODECOMPRESSION
+  StateActionInfo(           const StateActionInfo &src); // not implemented
   StateActionInfo &operator=(const StateActionInfo &src); // not implemented
   CompressionMethod findCompressionMethod();
+  inline void initChildren() {
+    m_child[0] = m_child[1] = nullptr;
+  }
+  StateActionInfo(const StateActionInfo &parent, const SameReduceActionInfo &sameReduceAction);
+  StateActionInfo(const StateActionInfo &parent, const ActionArray          &shiftActionArray);
 public:
-  StateActionInfo(UINT terminalCount, UINT state, const ActionArray &actionArray);
-
+  StateActionInfo(UINT terminalCount, UINT state, const ActionArray &actionArray, const SymbolNameContainer &symbolNames);
+  ~StateActionInfo();
   // Return m_sameReductionArray.size() + m_shiftActionArray.size()
   inline UINT getDifferentActionCount() const {
     return (UINT)(m_sameReductionArray.size() + m_shiftActionArray.size());
@@ -75,8 +95,11 @@ public:
   inline CompressionMethod getCompressionMethod() const {
     return m_compressMethod;
   }
-
-  String toString() const {
-    return format(_T("%2u sa, %2u ra"), (UINT)m_shiftActionArray.size(), (UINT)m_sameReductionArray.size());
+  const StateActionInfo &getChild(BYTE index) const {
+    assert(getCompressionMethod() == SPLITNODECOMPRESSION);
+    assert(index < 2);
+    return *m_child[index];
   }
+
+  String toString() const;
 };

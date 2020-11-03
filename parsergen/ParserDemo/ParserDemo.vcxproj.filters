@@ -13,6 +13,9 @@
       <UniqueIdentifier>{f9df542f-88ef-4c63-b92d-c2ae09d158d1}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
+    <Filter Include="Source Files\ParserGen Files">
+      <UniqueIdentifier>{d516530a-2f0e-4119-b813-f0eb8a73726a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ErrorsDlg.cpp">
@@ -22,9 +25,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GotoDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\parsergen\Grammar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ParserDemo.cpp">
@@ -69,6 +69,12 @@
     <ClCompile Include="TreeDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\ParserGen\ActionArray.cpp">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\parsergen\Grammar.cpp">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ParserDemo.rc">
@@ -83,9 +89,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GotoDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\parsergen\Grammar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GRAMMARS.h">
@@ -135,6 +138,9 @@
     </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\parsergen\Grammar.h">
+      <Filter>Source Files\ParserGen Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

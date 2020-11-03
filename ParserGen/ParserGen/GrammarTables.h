@@ -11,7 +11,7 @@ private:
   const String            m_parserClassName;
   const String            m_tablesClassName;
   CompactUshortArray      m_productionLength, m_left;
-  StringArray             m_symbolName;
+  StringArray             m_symbolNameArray;
   Array<CompactIntArray>  m_rightSide;
   Array<ActionArray>      m_stateActions;
   Array<ActionArray>      m_stateSucc;
@@ -44,7 +44,7 @@ public:
   UINT getSuccessor(         UINT state, UINT nt        ) const override;
   UINT getProductionLength(  UINT prod                  ) const override { return m_productionLength[prod];           }
   UINT getLeftSymbol(        UINT prod                  ) const override { return m_left[prod];                       }
-  const TCHAR *getSymbolName(UINT symbol                ) const override { return m_symbolName[symbol].cstr();        }
+  const TCHAR *getSymbolName(UINT symbol                ) const override { return m_symbolNameArray[symbol].cstr();   }
   void getRightSide(         UINT prod, UINT *dst       ) const override;
   UINT getTerminalCount()                                 const override { return m_terminalCount;                    }
   UINT getSymbolCount()                                   const override { return m_symbolCount;                      }
@@ -54,14 +54,14 @@ public:
   void getLegalInputs(       UINT state, UINT *symbols  ) const override;
   UINT getTableByteCount(    Platform platform          ) const override { return m_countTableBytes.getByteCount(platform); }
 
-  inline IntegerType        getTerminalType()             const          { return m_terminalType;                                         }
-  inline IntegerType        getActionType()               const          { return m_actionType;                                           }
-  inline SymbolSet          getLookaheadSet(  UINT state) const          { return m_stateActions[state].getLookaheadSet(m_terminalCount); }
-  inline RawActionArray     getRawActionArray(UINT state) const          { return m_stateActions[state].getRawActionArray();              }
-
-  BitSet                    getNTOffsetSet(   UINT state) const;
-  SuccesorArray             getSuccessorArray(UINT state) const;
-  const Array<ActionArray> &getStateActions()             const          { return m_stateActions;                                         }
-  ByteCount                 getTotalSizeInBytes()         const;
+  inline IntegerType            getTerminalType()             const          { return m_terminalType;                                         }
+  inline IntegerType            getActionType()               const          { return m_actionType;                                           }
+  inline SymbolSet              getLookaheadSet(  UINT state) const          { return m_stateActions[state].getLookaheadSet(m_terminalCount); }
+  inline RawActionArray         getRawActionArray(UINT state) const          { return m_stateActions[state].getRawActionArray();              }
+  inline const StringArray     &getSymbolNameArray()          const          { return m_symbolNameArray;                                      }
+  BitSet                        getNTOffsetSet(   UINT state) const;
+  SuccesorArray                 getSuccessorArray(UINT state) const;
+  const Array<ActionArray>     &getStateActions()             const          { return m_stateActions;                                         }
+  ByteCount                     getTotalSizeInBytes()         const;
   void print(MarginFile &output, Language language, bool useTableCompression) const;
 };

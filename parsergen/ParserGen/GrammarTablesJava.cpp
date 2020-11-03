@@ -227,7 +227,7 @@ void GrammarTables::printJava(MarginFile &output, bool useTableCompression) cons
   output.printf(_T("private static final String symbolName[] = {\n"));
   output.setLeftMargin(8);
   for(int s = 0; s < symbolCount; s++) {
-    output.printf(_T("/* %3d */ \"%s\""), s, m_symbolName[s].cstr());
+    output.printf(_T("/* %3d */ \"%s\""), s, m_symbolNameArray[s].cstr());
     if(s < symbolCount-1) {
       output.printf(_T(","));
     }

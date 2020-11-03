@@ -72,7 +72,6 @@ int _tmain(int argc, TCHAR **argv) {
   int       tabSize         = 4;
   String    first1File;
 
-//  redirectDebugLog();
   try {
     for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
       for(cp++; *cp; cp++) {

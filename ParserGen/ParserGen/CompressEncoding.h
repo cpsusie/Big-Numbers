@@ -2,11 +2,13 @@
 
 typedef enum {
   UNCOMPRESSED
- ,SPLITCOMPRESSION
+ ,SPLITNODECOMPRESSION
  ,ONEITEMCOMPRESSION
  ,REDUCEBYSAMEPRODCOMPRESSION
  ,MAXCOMPRESSIONVALUE = REDUCEBYSAMEPRODCOMPRESSION // we have only 2 bits to encode compressionmethod in parsertables. So keep maxvalue < 4 !!
 } CompressionMethod;
+
+const TCHAR *compressMethodToString(CompressionMethod method);
 
 inline UINT encodeCompressMethod(CompressionMethod method) {
   return (((UINT)method) << 15);

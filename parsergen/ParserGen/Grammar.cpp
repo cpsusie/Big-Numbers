@@ -687,7 +687,7 @@ void Grammar::checkStateIsConsistent(const LR1State &state, StateResult &result)
   result.m_succs.sortByToken();   // sort result by symbolnumber  (nonTerminal)
 }
 
-String Grammar::symbolSetToString(const SymbolSet &set) const {
+String SymbolNameContainer::symbolSetToString(const SymbolSet &set) const {
   String result = _T("[");
   UINT i = 0;
   for(auto it = set.getIterator(); it.hasNext();) {
@@ -695,7 +695,7 @@ String Grammar::symbolSetToString(const SymbolSet &set) const {
     if(i++ != 0) {
       result += ' ';
     }
-    result += getSymbol(s).m_name;
+    result += getSymbolName(s);
   }
   result += ']';
   return result;
@@ -741,20 +741,8 @@ String Grammar::stateToString(const LR1State &state, int flags) const {
     result += _T("\n");
     const ActionArray &actions    = m_result[state.m_index].m_actions;
     const ActionArray &successors = m_result[state.m_index].m_succs;
-    for(size_t i = 0; i < actions.size(); i++) {
-      const ParserAction &act = actions[i];
-      if(act.m_action > 0) { // shiftItem
-        result += format(_T("   shift to %d on %s\n"), act.m_action, getSymbol(act.m_token).m_name.cstr());
-      } else if(act.m_action < 0) { // reduceItem
-        result += format(_T("   reduce by %d on %s\n"), -act.m_action, getSymbol(act.m_token).m_name.cstr());
-      } else { // accept
-        result += format(_T("   accept on %s\n"), getSymbol(act.m_token).m_name.cstr());
-      }
-    }
-    for(size_t i = 0; i < successors.size(); i++) {
-      const ParserAction &act = successors[i];
-      result += format(_T("   goto %d on %s\n"), act.m_action, getSymbol(act.m_token).m_name.cstr());
-    }
+    result += actions.toString(   *this, true );
+    result += successors.toString(*this, false);
   }
   return result;
 }

@@ -288,6 +288,7 @@
     </Xdcmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\ParserGen\ActionArray.cpp" />
     <ClCompile Include="..\parsergen\Grammar.cpp" />
     <ClCompile Include="ErrorsDlg.cpp" />
     <ClCompile Include="FindDlg.cpp" />

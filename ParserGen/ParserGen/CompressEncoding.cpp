@@ -31,3 +31,15 @@ UINT encodeValue(CompressionMethod method, int highEnd, int lowEnd) {
 String encodeMacroValue(CompressionMethod method, int highEnd, int lowEnd) {
   return format(_T("0x%08x"), encodeValue(method, highEnd, lowEnd));
 }
+
+static const TCHAR *methodNames[] = {
+  _T("UNCOMPRESSED"    )
+ ,_T("SPLITNODE"       )
+ ,_T("ONEITEM"         )
+ ,_T("REDUCEBYSAMEPROD")
+};
+
+const TCHAR *compressMethodToString(CompressionMethod method) {
+  assert(method < ARRAYSIZE(methodNames));
+  return methodNames[method];
+}

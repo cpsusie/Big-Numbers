@@ -66,3 +66,4 @@ void Grammar::dumpFirst1Sets(FILE *f) const {
     _ftprintf(f, _T("%-*.*s:%s\n"), maxLength, maxLength, nt.m_name.cstr(), symbolSetToString(nt.m_first1).cstr());
   }
 }
+

@@ -30,6 +30,12 @@ inline int symbolSetCmp(const SymbolSet &s1, const SymbolSet &s2) {
   return bitSetCmp(s1, s2);
 }
 
+class SymbolNameContainer {
+public:
+  virtual const TCHAR *getSymbolName(UINT symbolIndex) const = 0;
+  String symbolSetToString(const SymbolSet &set      ) const;
+};
+
 class GrammarSymbol {
 public:
   const UINT       m_index;
@@ -148,6 +154,7 @@ public:
   inline bool operator!=(const ParserAction &a) const {
     return !(*this == a);
   }
+  String toString(const SymbolNameContainer &symbolNames, bool action) const;
 };
 
 typedef CompactShortArray  RawActionArray;
@@ -167,8 +174,9 @@ public:
     sort(parserActionCompareToken);
     return *this;
   }
-  SymbolSet      getLookaheadSet(UINT terminalCount) const;
-  RawActionArray getRawActionArray()                 const;
+  SymbolSet      getLookaheadSet(UINT                terminalCount) const;
+  RawActionArray getRawActionArray()                                const;
+  String         toString(const SymbolNameContainer &symbolNames, bool actions) const; // actions=true, this is an actionArray, false => successorArray
 };
 
 class StateResult {
@@ -195,7 +203,7 @@ public:
 #define DUMP_ALL        DUMP_SHIFTITEMS | DUMP_LOOKAHEAD  | DUMP_SUCC
 #define DUMP_DOCFORMAT  DUMP_SHIFTITEMS | DUMP_ACTIONS    | DUMP_ERRORS | DUMP_WARNINGS
 
-class Grammar {
+class Grammar : public SymbolNameContainer {
 private:
   Language               m_language;
   String                 m_name;
@@ -265,6 +273,9 @@ public:
   inline bool                 isNonTerminal(UINT symbolIndex) const { return symbolIndex >= m_terminalCount;        }
   inline       GrammarSymbol &getSymbol(    UINT symbolIndex)       { return m_symbols[symbolIndex];                }
   inline const GrammarSymbol &getSymbol(    UINT symbolIndex) const { return m_symbols[symbolIndex];                }
+  const  TCHAR               *getSymbolName(UINT symbolIndex) const override {
+    return getSymbol(symbolIndex).m_name.cstr();
+  }
   inline const Production    &getProduction(UINT index      ) const { return m_productions[index];                  }
   inline const LR1State      &getState(     UINT index      ) const { return m_states[index];                       }
 
@@ -294,7 +305,6 @@ public:
 
 
   // convert symbolset to String
-  String symbolSetToString(const SymbolSet &set) const;
   String itemToString(     const LR1Item   &item , int flags = DUMP_LOOKAHEAD) const; // flags any combination of {DUMP_LOOKAHEAD,DUMP_SUCC}
   String stateToString(    const LR1State  &state, int flags = DUMP_ALL      ) const; // flags any combination of {DUMP_KERNELONLY,DUMP_SHIFTITEMS,DUMP_ACTIONS} + {flags for itemToString}
 
