@@ -17,6 +17,6 @@ protected:
   virtual BOOL OnInitDialog();
   virtual BOOL PreTranslateMessage(MSG *pMsg);
   virtual void DoDataExchange(CDataExchange *pDX);
-  afx_msg LRESULT OnShowStateUpdate(WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgShowStateUpdate(WPARAM wp, LPARAM lp);
   DECLARE_MESSAGE_MAP()
 };

@@ -23,16 +23,16 @@ void FindDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(FindDlg, CDialog)
   ON_BN_CLICKED(IDC_FINDNEXT                  , OnFindnext                     )
   ON_BN_CLICKED(IDC_BUTTONREGSYMBOLSMENU      , OnButtonregsymbolsmenu         )
-  ON_COMMAND(ID_REGSYMBOLS_ANYCHARACTER       , OnRegsymbolsAnycharacter       )
-  ON_COMMAND(ID_REGSYMBOLS_CHARACTERINRANGE   , OnRegsymbolsCharacterinrange   )
-  ON_COMMAND(ID_REGSYMBOLS_CHARACTERNOTINRANGE, OnRegsymbolsCharacternotinrange)
-  ON_COMMAND(ID_REGSYMBOLS_BEGINNINGOFLINE    , OnRegsymbolsBeginningofline    )
-  ON_COMMAND(ID_REGSYMBOLS_ENDOFLINE          , OnRegsymbolsEndofline          )
-  ON_COMMAND(ID_REGSYMBOLS_0ORMOREOCCURRENCES , OnRegsymbols0ormoreoccurrences )
-  ON_COMMAND(ID_REGSYMBOLS_1ORMOREOCCURRENCES , OnRegsymbols1ormoreoccurrences )
-  ON_COMMAND(ID_REGSYMBOLS_0OR1OCCURENCE      , OnRegsymbols0or1occurence      )
-  ON_COMMAND(ID_REGSYMBOLS_OR                 , OnRegsymbolsOr                 )
-  ON_COMMAND(ID_REGSYMBOLS_GROUP              , OnRegsymbolsGroup              )
+  ON_COMMAND(ID_REGSYMBOLS_ANYCHAR            , OnRegSymbolsAnyChar            )
+  ON_COMMAND(ID_REGSYMBOLS_CHARINRANGE        , OnRegSymbolsCharInRange        )
+  ON_COMMAND(ID_REGSYMBOLS_CHARNOTINRANGE     , OnRegSymbolsCharNotInRange     )
+  ON_COMMAND(ID_REGSYMBOLS_BEGINOFLINE        , OnRegSymbolsBeginOfLine        )
+  ON_COMMAND(ID_REGSYMBOLS_ENDOFLINE          , OnRegSymbolsEndOfLine          )
+  ON_COMMAND(ID_REGSYMBOLS_0ORMORE            , OnRegSymbols0orMore            )
+  ON_COMMAND(ID_REGSYMBOLS_1ORMORE            , OnRegSymbols1orMore            )
+  ON_COMMAND(ID_REGSYMBOLS_0OR1               , OnRegSymbols0or1               )
+  ON_COMMAND(ID_REGSYMBOLS_OR                 , OnRegSymbolsOr                 )
+  ON_COMMAND(ID_REGSYMBOLS_GROUP              , OnRegSymbolsGroup              )
   ON_CBN_SETFOCUS(IDC_COMBOFINDWHAT           , OnSetfocusCombofindwhat        )
   ON_CBN_SELENDOK(IDC_COMBOFINDWHAT           , OnSelendokCombofindwhat        )
   ON_CBN_SELCHANGE(IDC_COMBOFINDWHAT          , OnSelchangeCombofindwhat       )
@@ -111,16 +111,16 @@ void FindDlg::addRegSymbol(const TCHAR *s, int cursorpos) {
   b->SetFocus();
 }
 
-void FindDlg::OnRegsymbolsAnycharacter()        { addRegSymbol(_T("."), 1);      }
-void FindDlg::OnRegsymbolsCharacterinrange()    { addRegSymbol(_T("[]"), 1);     }
-void FindDlg::OnRegsymbolsCharacternotinrange() { addRegSymbol(_T("[^]"), 2);    }
-void FindDlg::OnRegsymbolsBeginningofline()     { addRegSymbol(_T("^"), 1);      }
-void FindDlg::OnRegsymbolsEndofline()           { addRegSymbol(_T("$"), 1);      }
-void FindDlg::OnRegsymbols0ormoreoccurrences()  { addRegSymbol(_T("*"), 1);      }
-void FindDlg::OnRegsymbols1ormoreoccurrences()  { addRegSymbol(_T("+"), 1);      }
-void FindDlg::OnRegsymbols0or1occurence()       { addRegSymbol(_T("?"), 1);      }
-void FindDlg::OnRegsymbolsOr()                  { addRegSymbol(_T("\\|"), 2);    }
-void FindDlg::OnRegsymbolsGroup()               { addRegSymbol(_T("\\(\\)"), 2); }
+void FindDlg::OnRegSymbolsAnyChar()         { addRegSymbol(_T(".")     , 1); }
+void FindDlg::OnRegSymbolsCharInRange()     { addRegSymbol(_T("[]")    , 1); }
+void FindDlg::OnRegSymbolsCharNotInRange()  { addRegSymbol(_T("[^]")   , 2); }
+void FindDlg::OnRegSymbolsBeginOfLine()     { addRegSymbol(_T("^")     , 1); }
+void FindDlg::OnRegSymbolsEndOfLine()       { addRegSymbol(_T("$")     , 1); }
+void FindDlg::OnRegSymbols0orMore()         { addRegSymbol(_T("*")     , 1); }
+void FindDlg::OnRegSymbols1orMore()         { addRegSymbol(_T("+")     , 1); }
+void FindDlg::OnRegSymbols0or1()            { addRegSymbol(_T("?")     , 1); }
+void FindDlg::OnRegSymbolsOr()              { addRegSymbol(_T("\\|")   , 2); }
+void FindDlg::OnRegSymbolsGroup()           { addRegSymbol(_T("\\(\\)"), 2); }
 
 void FindDlg::OnSetfocusCombofindwhat() {
   CComboBox *b = (CComboBox*)GetDlgItem(IDC_COMBOFINDWHAT);

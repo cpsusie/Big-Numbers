@@ -17,7 +17,7 @@ void ShowStateDlg::DoDataExchange(CDataExchange *pDX) {
 }
 
 BEGIN_MESSAGE_MAP(ShowStateDlg, CDialog)
-  ON_MESSAGE(      ID_SHOWSTATE_UPDATE, OnShowStateUpdate)
+  ON_MESSAGE(      ID_MSG_SHOWSTATE_UPDATE, OnMsgShowStateUpdate)
 END_MESSAGE_MAP()
 
 void ShowStateDlg::ajourState() {
@@ -26,7 +26,7 @@ void ShowStateDlg::ajourState() {
   UpdateData(false);
 }
 
-LRESULT ShowStateDlg::OnShowStateUpdate(WPARAM wp, LPARAM lp) {
+LRESULT ShowStateDlg::OnMsgShowStateUpdate(WPARAM wp, LPARAM lp) {
   ajourState();
   return 0;
 }

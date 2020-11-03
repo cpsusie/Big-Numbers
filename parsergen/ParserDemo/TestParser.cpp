@@ -209,3 +209,34 @@ String TestParser::getActionString() const {
     return m_reduceActionStr[-action];
   }
 }
+
+String TestParser::getActionMatrixDump() const {
+  const ParserTables &tables     = getParserTables();
+  const UINT          stateCount = tables.getStateCount();
+  const UINT          termCount  = tables.getTerminalCount();
+  String              result;
+  result = _T("     | ");
+  for(UINT t = 0; t < termCount; t++) {
+    result += format(_T("%4u "), t);
+  }
+
+  result += '\n';
+  result += spaceString(result.length(), _T('_'));
+  result += '\n';
+
+  for(UINT s = 0; s < stateCount; s++) {
+    String line;
+    line = format(_T("%4u | "), s);
+    for(UINT t = 0; t < termCount; t++) {
+      int a = tables.getAction(s, t);
+      if(a == _ParserError) {
+        line += _T("   E ");
+      } else {
+        line += format(_T("%4d "), a);
+      }
+    }
+    result += line;
+    result += '\n';
+  }
+  return result;
+}

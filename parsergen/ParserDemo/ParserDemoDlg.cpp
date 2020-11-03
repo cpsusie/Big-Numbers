@@ -66,8 +66,9 @@ BEGIN_MESSAGE_MAP(CParserDemoDlg, CDialog)
   ON_WM_CLOSE()
   ON_COMMAND(      IDOK                              , OnOk                            )
   ON_COMMAND(      ID_FILE_OPEN                      , OnFileOpen                      )
+  ON_COMMAND(      ID_FILE_DUMPACTIONMATRIX          , OnFileDumpActionMatrix          )
   ON_COMMAND(      ID_FILE_EXIT                      , OnFileExit                      )
-  ON_COMMAND(      ID_EDIT_SELECTPRODUCTIONSTOBREAKON, OnEditSelectProductionsToBreakOn)
+  ON_COMMAND(      ID_EDIT_SELECTPRODTOBREAKON, OnEditSelectProductionsToBreakOn)
   ON_COMMAND(      ID_EDIT_SELECTSTATESTOBREAKON     , OnEditSelectStatesToBreakOn     )
   ON_COMMAND(      ID_EDIT_FIND                      , OnEditFind                      )
   ON_COMMAND(      ID_EDIT_FINDNEXT                  , OnEditFindNext                  )
@@ -94,9 +95,6 @@ BEGIN_MESSAGE_MAP(CParserDemoDlg, CDialog)
   ON_COMMAND(      ID_HELP_ABOUTPARSERDEMO           , OnHelpAboutParserDemo           )
   ON_COMMAND(      ID_CHECKBREAKONPRODUCTION         , OnCheckBreakOnProduction        )
   ON_COMMAND(      ID_CHECKBREAKONERROR              , OnCheckBreakOnError             )
-  ON_COMMAND(      ID_GOTOINPUTCONTROL               , OnGotoInputControl              )
-  ON_COMMAND(      ID_GOTODEBUGCONTROL               , OnGotoDebugControl              )
-  ON_COMMAND(      ID_GOTOERRORSCONTROL              , OnGotoErrorsControl             )
   ON_EN_CHANGE(    IDC_EDITINPUTSTRING               , OnChangeEditInputString         )
   ON_EN_SETFOCUS(  IDC_EDITINPUTSTRING               , OnSetFocusEditInputString       )
   ON_EN_KILLFOCUS( IDC_EDITINPUTSTRING               , OnKillFocusEditInputString      )
@@ -273,7 +271,7 @@ BOOL CParserDemoDlg::OnInitDialog() {
 
   m_showStateThread  = nullptr;
 
-  m_accelTable       = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORMAIN));
+  m_accelTable       = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_MAINFRAME));
   m_animateOn        = isMenuItemChecked(this, ID_OPTIONS_ANIMATE);
   GetDlgItem(IDC_EDITINPUTSTRING)->SetFont(&m_printFont);
   GetDlgItem(IDC_EDITINPUTSTRING)->SetFocus();
@@ -402,7 +400,7 @@ void CParserDemoDlg::showStatus(bool gotoLastDebug) {
     setWindowText(this,IDC_ACTION, m_parser.getActionString());
   }
   if(m_showStateThread != nullptr) {
-    m_showStateThread->m_pMainWnd->PostMessage(ID_SHOWSTATE_UPDATE, 0, 0);
+    m_showStateThread->m_pMainWnd->PostMessage(ID_MSG_SHOWSTATE_UPDATE, 0, 0);
   }
 
   if(gotoLastDebug) {
@@ -432,6 +430,27 @@ void CParserDemoDlg::OnFileOpen() {
     OnMaxTextEditInputString();
     resetListBoxes();
     m_textBox.markPos(nullptr);
+  } catch(Exception e) {
+    showException(e);
+  }
+}
+
+void CParserDemoDlg::OnFileDumpActionMatrix() {
+  String dump             = m_parser.getActionMatrixDump();
+  String objname          = _T("ActionTestResult");
+  String filter           = format(_T("txt-files (*.txt)%c*.*%cAll files (*.*)%c*.*%c%c"),0,0,0,0,0);
+  String defaultExtension = _T("*.txt");
+  CFileDialog dlg(FALSE, defaultExtension.cstr(), objname.cstr());
+  dlg.m_ofn.lpstrTitle  = _T("Dump Action Matrix Test result");
+  dlg.m_ofn.lpstrFilter = filter.cstr();
+
+  if((dlg.DoModal() != IDOK) || (_tcslen(dlg.m_ofn.lpstrFile) == 0)) {
+    return;
+  }
+  try {
+    FILE *f = MKFOPEN(dlg.m_ofn.lpstrFile, _T("w"));
+    fputws(dump.cstr(), f);
+    fclose(f);
   } catch(Exception e) {
     showException(e);
   }
@@ -669,18 +688,6 @@ void CParserDemoDlg::OnSetFocusListDebug()        {
 void CParserDemoDlg::OnKillFocusListDebug()       {
   GetDlgItem(IDC_LISTDEBUG)->ModifyStyle(GOTFOCUSBORDER, 0);
   Invalidate(false);
-}
-
-void CParserDemoDlg::OnGotoInputControl() {
-  GetDlgItem(IDC_EDITINPUTSTRING)->SetFocus();
-}
-
-void CParserDemoDlg::OnGotoErrorsControl() {
-  GetDlgItem(IDC_LISTERRORS)->SetFocus();
-}
-
-void CParserDemoDlg::OnGotoDebugControl() {
-  GetDlgItem(IDC_LISTDEBUG)->SetFocus();
 }
 
 void CParserDemoDlg::OnEditNextError() {

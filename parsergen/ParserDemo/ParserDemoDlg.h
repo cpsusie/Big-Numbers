@@ -61,7 +61,7 @@ public:
   void             handleError(const SourcePosition &pos, const TCHAR *form, va_list argptr);   // do
   void             handleDebug(const SourcePosition &pos, const TCHAR *form, va_list argptr);   // do
 
-  enum { IDD = IDD_DIALOGPARSERDEMO };
+  enum { IDD = IDR_MAINFRAME };
 
 protected:
   virtual BOOL PreTranslateMessage(MSG *pMsg);
@@ -71,6 +71,7 @@ protected:
   afx_msg void OnPaint();
   afx_msg HCURSOR OnQueryDragIcon();
   afx_msg void OnFileOpen();
+  afx_msg void OnFileDumpActionMatrix();
   afx_msg void OnFileExit();
   afx_msg void OnOk();
   afx_msg void OnSize(UINT nType, int cx, int cy);
@@ -103,9 +104,6 @@ protected:
   afx_msg void OnCheckBreakOnProduction();
   afx_msg void OnCheckBreakOnError();
   afx_msg void OnCheckBreakOnState();
-  afx_msg void OnGotoInputControl();
-  afx_msg void OnGotoErrorsControl();
-  afx_msg void OnGotoDebugControl();
   afx_msg void OnChangeEditInputString();
   afx_msg void OnSelChangeListErrors();
   afx_msg void OnSelChangeListDebug();
