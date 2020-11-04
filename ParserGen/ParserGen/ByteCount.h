@@ -2,16 +2,26 @@
 
 #include <LRparser.h>
 
+typedef enum {
+  TYPE_CHAR
+ ,TYPE_UCHAR
+ ,TYPE_SHORT
+ ,TYPE_USHORT
+ ,TYPE_INT
+ ,TYPE_UINT
+} IntegerType;
+
+typedef enum {
+  CPP
+ ,JAVA
+} Language;
+
 class ByteCount {
 private:
   UINT m_countx86;
   UINT m_countx64;
 
-  ByteCount getAlignedSize() const {
-    const int restx86 = m_countx86%4, restx64 = m_countx64%8;
-    return ByteCount(restx86 ? (m_countx86 + (4-restx86)) : m_countx86
-                    ,restx64 ? (m_countx64 + (8-restx64)) : m_countx64);
-  }
+  ByteCount getAlignedSize() const;
 public:
   inline ByteCount() : m_countx86(0), m_countx64(0) {
   }
@@ -49,24 +59,17 @@ public:
   static inline ByteCount wordAlignedSize(UINT size) {
     return wordAlignedSize(ByteCount(size,size),1);
   }
+  // sizeof(void*) in x86 and x64
   static const ByteCount s_pointerSize;
 
-  inline String toString() const {
-    return format(_T("%s(x86)/%s(x64) bytes")
-                 ,format1000(m_countx86).cstr()
-                 ,format1000(m_countx64).cstr());
-  }
+  String toString() const;
 };
 
-typedef enum {
-  TYPE_CHAR
- ,TYPE_UCHAR
- ,TYPE_SHORT
- ,TYPE_USHORT
- ,TYPE_INT
- ,TYPE_UINT
-} IntegerType;
-
+// Used only for language CPP, as unsigned types does not exist int Java
 IntegerType  findUintType(     UINT        maxValue);
-const TCHAR *getTypeName(      IntegerType type    );
+// Used for language CPP/JAVA
+IntegerType  findIntType(int minValue, int maxValue, Language = CPP);
+const TCHAR *getTypeName(      IntegerType type    , Language = CPP);
+// Return type of TntegerType, 1,2,4 for char, short, int (signed/unsigned)
+// typesize is independent of language
 UINT         getTypeSize(      IntegerType type    );

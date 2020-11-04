@@ -9,7 +9,7 @@ void checkMax15Bits(const TCHAR *method, int line, int v, const TCHAR *varName) 
 
 #if defined(_DEBUG)
 void checkCodeBits(const TCHAR *method, UINT v, const TCHAR *varName) {
-  if((v & encodeCompressMethod(MAXCOMPRESSIONVALUE)) != 0) {
+  if((v >> 15) & 3) != 0) { // Same code as ParserTables::getActMethodCode
     MessageBox(NULL, format(_T("%s:Encoded variable %s has value %08x, with non-zero value in encoding bits")
               ,method, varName, v).cstr()
               ,_T("Error")
@@ -33,10 +33,10 @@ String encodeMacroValue(CompressionMethod method, int highEnd, int lowEnd) {
 }
 
 static const TCHAR *methodNames[] = {
-  _T("UNCOMPRESSED"    )
- ,_T("SPLITNODE"       )
- ,_T("ONEITEM"         )
- ,_T("REDUCEBYSAMEPROD")
+  _T("TermList"    )
+ ,_T("SplitNode"   )
+ ,_T("OneItem"     )
+ ,_T("TermSet"     )
 };
 
 const TCHAR *compressMethodToString(CompressionMethod method) {

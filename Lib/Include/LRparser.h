@@ -38,6 +38,15 @@ public:
 
   virtual ~ParserTables() {
   }
+
+  typedef BYTE CompressionMethod;
+
+  // 4 different compression-codes. Saved in bit 15-16 in m_actionCode[i] and m_successorCode[i]
+  // See generated parsertables for more info of encoding
+  static constexpr CompressionMethod CompCodeTermList  = 0;
+  static constexpr CompressionMethod CompCodeSplitNode = 1;
+  static constexpr CompressionMethod CompCodeOneItem   = 2;
+  static constexpr CompressionMethod CompCodeTermSet   = 3;
 };
 
 #define _ParserError 0xffff
@@ -68,6 +77,9 @@ private:
   mutable const SymbolType **m_rightSides;
   mutable StringArray        m_symbolNameTable;
 
+
+private:
+
   static inline bool contains(const BYTE *bitset, UINT v) {
     return (bitset[v>>3]&(1<<(v&7))) != 0;
   }
@@ -92,34 +104,25 @@ private:
     return -1;
   }
 
-// ----------------------------- successor functions ---------------------------------------
-  static inline bool isCompressedSuccCode(UINT code) {
-    return (code & 0x00010000) != 0;
+  static inline CompressionMethod getCompressionCode(UINT code) {
+    return (code >> 15) & 3;
   }
 
-  inline UINT getCompressedSuccessor(UINT code, UINT nt) const {
+// ----------------------------- successor functions ---------------------------------------
+  static inline UINT getSuccessorOneItem(UINT code, UINT nt) {
     assert((nt - terminalCount) == (code & 0xffff));
     return code >> 17;
   }
   inline const NTIndexType *getNTindexList(UINT code) const {
-    assert(!isCompressedSuccCode(code));
     return m_NTindexListTable + (code & 0xffff);
   }
-  inline UINT getUncompressedSuccessor(UINT code, UINT nt) const {
+  inline UINT geSuccessorNtIndexList(UINT code, UINT nt) const {
     const int index = findElement(getNTindexList(code), nt - terminalCount);
     assert(index >= 0);
     return m_stateListTable[(code >> 17) + index];
   }
 
 // ----------------------------------- action functions ---------------------------------
-  static constexpr unsigned char CodeTermList  = 0;
-  static constexpr unsigned char CodeSplitNode = 1;
-  static constexpr unsigned char CodeOneItem   = 2;
-  static constexpr unsigned char CodeTermSet   = 3;
-
-  static inline BYTE getActMethodCode(UINT code) {
-    return (code >> 15) & 3;
-  }
   inline const TerminalType *getTermList(UINT code) const {
     return m_termListTable + (code & 0x7fff);
   }
@@ -152,12 +155,12 @@ private:
     return sum;
   }
   inline UINT getLegalInputCountFromCode(        UINT code) const {
-    switch(getActMethodCode(code)) {
-    case CodeTermList : return getLegalInputCountTermList( code);
-    case CodeSplitNode: return getLegalInputCountSplitNode(code);
-    case CodeOneItem  : return getLegalInputCountOneItem(  code);
-    case CodeTermSet  : return getLegalInputCountTermSet(  code);
-    default           : __assume(0);
+    switch(getCompressionCode(code)) {
+    case CompCodeTermList : return getLegalInputCountTermList( code);
+    case CompCodeSplitNode: return getLegalInputCountSplitNode(code);
+    case CompCodeOneItem  : return getLegalInputCountOneItem(  code);
+    case CompCodeTermSet  : return getLegalInputCountTermSet(  code);
+    default               : __assume(0);
     }
   }
 
@@ -193,12 +196,12 @@ private:
     return (UINT)(symp - symbols);
   }
   inline        UINT getLegalInputsFromCode(        UINT code, UINT *symbols) const {
-    switch(getActMethodCode(code)) {
-    case CodeTermList : return getLegalInputsTermList( code, symbols);
-    case CodeSplitNode: return getLegalInputsSplitNode(code, symbols);
-    case CodeOneItem  : return getLegalInputsOneItem(  code, symbols);
-    case CodeTermSet  : return getLegalInputsTermSet(  code, symbols);
-    default           : __assume(0);
+    switch(getCompressionCode(code)) {
+    case CompCodeTermList : return getLegalInputsTermList( code, symbols);
+    case CompCodeSplitNode: return getLegalInputsSplitNode(code, symbols);
+    case CompCodeOneItem  : return getLegalInputsOneItem(  code, symbols);
+    case CompCodeTermSet  : return getLegalInputsTermSet(  code, symbols);
+    default               : __assume(0);
     }
   }
 
@@ -218,12 +221,12 @@ private:
     return contains(getTermSet(code), term) ? ((signed int)code >> 17) : _ParserError;
   }
   inline        int getActionFromCode( UINT code, UINT term) const {
-    switch(getActMethodCode(code)) {
-    case CodeTermList : return getActionTermList( code, term);
-    case CodeSplitNode: return getActionSplitNode(code, term);
-    case CodeOneItem  : return getActionOneItem(  code, term);
-    case CodeTermSet  : return getActionTermSet(  code, term);
-    default           : __assume(0);
+    switch(getCompressionCode(code)) {
+    case CompCodeTermList : return getActionTermList( code, term);
+    case CompCodeSplitNode: return getActionSplitNode(code, term);
+    case CompCodeOneItem  : return getActionOneItem(  code, term);
+    case CompCodeTermSet  : return getActionTermSet(  code, term);
+    default               : __assume(0);
     }
   }
 
@@ -265,7 +268,12 @@ public:
   UINT getSuccessor(UINT state, UINT nt)         const override {
     assert(state < stateCount);
     const UINT code = m_successorCode[state];
-    return isCompressedSuccCode(code) ? getCompressedSuccessor(code, nt) : getUncompressedSuccessor(code, nt);
+    switch(getCompressionCode(code)) {
+    case CompCodeTermList : return geSuccessorNtIndexList(code, nt);
+    case CompCodeOneItem  : return getSuccessorOneItem(   code, nt);
+    default               : throwException(_T("%s:Invalid compressionCode for state %u"), __TFUNCTION__, state);
+    }
+    return 0;
   }
 
   UINT getLegalInputCount(UINT state)            const override {

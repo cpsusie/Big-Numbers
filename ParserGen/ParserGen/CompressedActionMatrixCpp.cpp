@@ -5,13 +5,6 @@
 
 namespace ActionMatrix {
 
-int rawActionArrayCmp(const RawActionArray &a1, const RawActionArray &a2) {
-  const size_t n = a1.size();
-  int          c = sizetHashCmp(n, a2.size());
-  if(c) return c;
-  return n ? memcmp(a1.begin(), a2.begin(), n * sizeof(short)) : 0;
-}
-
 String Macro::getComment() const {
   if((getStateSetSize() == 1) && m_stateSet.contains(m_index)) {
     return m_comment;
@@ -51,10 +44,10 @@ void CompressedActionMatrix::generateCompressedForm() {
 
 Macro CompressedActionMatrix::doStateActionInfo(const StateActionInfo &stateInfo) {
   switch(stateInfo.getCompressionMethod()) {
-  case UNCOMPRESSED                : return doUncompressedState(    stateInfo);
-  case SPLITNODECOMPRESSION        : return doSplitCompression(     stateInfo);
-  case ONEITEMCOMPRESSION          : return doOneItemState(         stateInfo);
-  case REDUCEBYSAMEPRODCOMPRESSION : return doReduceBySameProdState(stateInfo);
+  case ParserTables::CompCodeTermList : return doUncompressedState(stateInfo);
+  case ParserTables::CompCodeSplitNode: return doSplitNodeState(   stateInfo);
+  case ParserTables::CompCodeOneItem  : return doOneItemState(     stateInfo);
+  case ParserTables::CompCodeTermSet  : return doTermSetState(     stateInfo);
   default                         :
     throwException(_T("%s:Unknown compressionMethod for state %u"), __TFUNCTION__, stateInfo.getState());
     break;
@@ -108,11 +101,11 @@ Macro CompressedActionMatrix::doUncompressedState(const StateActionInfo &stateIn
     m_currentActionListSize += (UINT)raa.size();
   }
   const String comment      = format(_T("termList %3u, actionList %3u"), laCount, raCount);
-  const String macroValue   = encodeMacroValue(UNCOMPRESSED, actionListIndex, termListIndex);
+  const String macroValue   = encodeMacroValue(ParserTables::CompCodeTermList, actionListIndex, termListIndex);
   return Macro(getStateCount(), state, macroValue, comment);
 }
 
-Macro CompressedActionMatrix::doSplitCompression(const StateActionInfo &stateInfo) {
+Macro CompressedActionMatrix::doSplitNodeState(const StateActionInfo &stateInfo) {
   const UINT             state  = stateInfo.getState();
   const StateActionInfo &left   = stateInfo.getChild(0);
   const StateActionInfo &right  = stateInfo.getChild(1);
@@ -143,7 +136,7 @@ Macro CompressedActionMatrix::doSplitCompression(const StateActionInfo &stateInf
   }
 
   const String comment    = format(_T("Split(%s,%s)"), mpL->getName().cstr(), mpR->getName().cstr());
-  const String macroValue = encodeMacroValue(SPLITNODECOMPRESSION, indexL, indexR);
+  const String macroValue = encodeMacroValue(ParserTables::CompCodeSplitNode, indexL, indexR);
   return Macro(getStateCount(), state, macroValue, comment);
 }
 
@@ -159,11 +152,11 @@ Macro CompressedActionMatrix::doOneItemState(const StateActionInfo &stateInfo) {
   const String        comment = (action <= 0)
                               ? format(_T("Reduce by %u on %s"), -action, getSymbolName(pa.m_token))
                               : format(_T("Shift  to %u on %s"),  action, getSymbolName(pa.m_token));
-  const String        macroValue   = encodeMacroValue(ONEITEMCOMPRESSION, action, token);
+  const String        macroValue = encodeMacroValue(ParserTables::CompCodeOneItem, action, token);
   return Macro(getStateCount(), state, macroValue, comment);
 }
 
-Macro CompressedActionMatrix::doReduceBySameProdState(const StateActionInfo &stateInfo) {
+Macro CompressedActionMatrix::doTermSetState(const StateActionInfo &stateInfo) {
   const UINT                   state = stateInfo.getState();
   const SameReduceActionArray &raa   = stateInfo.getReduceActionArray();
 
@@ -186,7 +179,7 @@ Macro CompressedActionMatrix::doReduceBySameProdState(const StateActionInfo &sta
   const int           prod         = raa[0].getProduction();
   const int           action       = -prod;
   const String        comment      = format(_T("Reduce by %u on tokens in termSet[%u]"), prod, termSetCount);
-  const String        macroValue   = encodeMacroValue(REDUCEBYSAMEPRODCOMPRESSION, action, byteIndex);
+  const String        macroValue   = encodeMacroValue(ParserTables::CompCodeTermSet, action, byteIndex);
   return Macro(getStateCount(), state, macroValue, comment);
 }
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ByteCount.h"
 #include "CodeFlags.h"
 #include "KeywordHandler.h"
 
@@ -44,10 +43,6 @@ public:
     m_tablesByteCount = count;
   }
 };
-
-inline int stringCmp(const String &s1, const String &s2) {
-  return _tcscmp(s1.cstr(), s2.cstr());
-}
 
 ByteArray    symbolSetToByteArray(const SymbolSet &set);
 void         outputBeginArrayDefinition(MarginFile &output, const TCHAR *tableName, IntegerType elementType, UINT size); // size = #elements in array

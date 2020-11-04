@@ -1,14 +1,10 @@
 #pragma once
 
 #include <HashMap.h>
-#include <MarginFile.h>
 #include <LRParser.h>
+#include <MarginFile.h>
+#include "ByteCount.h"
 #include "SourceText.h"
-
-typedef enum {
-  CPP
- ,JAVA
-} Language;
 
 typedef enum {
   LEFTASSOC_TERMINAL  // %left
@@ -160,8 +156,27 @@ public:
 typedef CompactShortArray  RawActionArray;
 typedef CompactUshortArray SuccesorArray;
 
+inline int compactShortArrayCmp(const CompactShortArray &a1, const CompactShortArray &a2) {
+  const size_t n = a1.size();
+  int          c = sizetHashCmp(n, a2.size());
+  if(c) return c;
+  return n ? memcmp(a1.begin(), a2.begin(), n * sizeof(short)) : 0;
+}
+
+inline int rawActionArrayCmp(const RawActionArray &a1, const RawActionArray &a2) {
+  return compactShortArrayCmp((const CompactShortArray&)a1, (const CompactShortArray&)a2);
+}
+
+inline int successorArrayCmp(const SuccesorArray &a1, const SuccesorArray &a2) {
+  return compactShortArrayCmp((const CompactShortArray&)a1, (const CompactShortArray&)a2);
+}
+
 inline int parserActionCompareToken(const ParserAction &p1, const ParserAction &p2) {
-  return p1.m_token - p2.m_token;
+  return (int)p1.m_token - (int)p2.m_token;
+}
+
+inline int stringCmp(const String &s1, const String &s2) {
+  return _tcscmp(s1.cstr(), s2.cstr());
 }
 
 class ActionArray : public CompactArray<ParserAction> {

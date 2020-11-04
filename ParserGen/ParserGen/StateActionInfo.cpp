@@ -53,7 +53,7 @@ StateActionInfo::StateActionInfo(const StateActionInfo &parent, const SameReduce
 {
   initChildren();
   m_sameReductionArray.add(sameReduceAction         );
-  m_compressMethod     = (m_legalTokenCount == 1) ? ONEITEMCOMPRESSION : REDUCEBYSAMEPRODCOMPRESSION;
+  m_compressMethod     = (m_legalTokenCount == 1) ? ParserTables::CompCodeOneItem : ParserTables::CompCodeTermSet;
 }
 
 StateActionInfo::StateActionInfo(const StateActionInfo &parent, const ActionArray &actionArray)
@@ -64,7 +64,7 @@ StateActionInfo::StateActionInfo(const StateActionInfo &parent, const ActionArra
 , m_shiftActionArray(  actionArray                  )
 {
   initChildren();
-  m_compressMethod     = (m_legalTokenCount == 1) ? ONEITEMCOMPRESSION : UNCOMPRESSED;
+  m_compressMethod     = (m_legalTokenCount == 1) ? ParserTables::CompCodeOneItem : ParserTables::CompCodeTermList;
 }
 
 StateActionInfo::~StateActionInfo() {
@@ -91,16 +91,16 @@ CompressionMethod StateActionInfo::findCompressionMethod() {
   const UINT reduceActions = (UINT)m_sameReductionArray.size();
   if(shiftActions + reduceActions == 1) {
     if(reduceActions == 0) {
-      return ONEITEMCOMPRESSION;
+      return ParserTables::CompCodeOneItem;
     } else { // reduceActions == 1
       return (m_sameReductionArray[0].getSetSize() == 1)
-           ? ONEITEMCOMPRESSION
-           : REDUCEBYSAMEPRODCOMPRESSION;
+           ? ParserTables::CompCodeOneItem
+           : ParserTables::CompCodeTermSet;
     }
   }
 
   if((reduceActions == 0) || (m_sameReductionArray[0].getSetSize() < 5)) {
-    return UNCOMPRESSED;
+    return ParserTables::CompCodeTermList;
   }
 
   // (shiftActions + reduceActions >= 2) && (reduceActions >= 1) && (m_sameReductionArray[0].getSetSize() >= 5)
@@ -126,7 +126,7 @@ CompressionMethod StateActionInfo::findCompressionMethod() {
       m_child[1] = new StateActionInfo(*this, allTheRest.sortByToken());
     }
   }
-  return SPLITNODECOMPRESSION;
+  return ParserTables::CompCodeSplitNode;
 }
 
 String StateActionInfo::toString() const {
@@ -135,7 +135,7 @@ String StateActionInfo::toString() const {
   result += m_shiftActionArray.toString(m_symbolNames, true);
   result += m_sameReductionArray.toString();
   result += format(_T("   Compress method:%s\n"), compressMethodToString(getCompressionMethod()));
-  if(getCompressionMethod() == SPLITNODECOMPRESSION) {
+  if(getCompressionMethod() == ParserTables::CompCodeSplitNode) {
     const String cstr0 = getChild(0).toString();
     const String cstr1 = getChild(1).toString();
     result += indentString(format(_T("Child 0:\n%s\nChild 1:\n%s"), indentString(cstr0, 2).cstr(), indentString(cstr1, 2).cstr()), 3);

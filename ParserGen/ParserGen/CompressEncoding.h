@@ -1,12 +1,6 @@
 #pragma once
 
-typedef enum {
-  UNCOMPRESSED
- ,SPLITNODECOMPRESSION
- ,ONEITEMCOMPRESSION
- ,REDUCEBYSAMEPRODCOMPRESSION
- ,MAXCOMPRESSIONVALUE = REDUCEBYSAMEPRODCOMPRESSION // we have only 2 bits to encode compressionmethod in parsertables. So keep maxvalue < 4 !!
-} CompressionMethod;
+typedef BYTE CompressionMethod;
 
 const TCHAR *compressMethodToString(CompressionMethod method);
 

@@ -9,17 +9,8 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\KeyWordHandles">
-      <UniqueIdentifier>{6993516d-2c03-4b5a-9e11-a9cb1198826a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\ActionCompression">
-      <UniqueIdentifier>{bb2cdfb1-7a42-43ab-a103-98a77aef5d00}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\GrammarParsing">
       <UniqueIdentifier>{ffb3a640-a38a-4040-bb96-7120c6fc87ed}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\ActionCompression\Header Files">
-      <UniqueIdentifier>{6f46e068-0527-4acd-bf3f-cb4d0d65bf3d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\GrammarParsing\Header Files">
       <UniqueIdentifier>{153e85f5-c6f3-435e-98db-a5cecb5bb7c8}</UniqueIdentifier>
@@ -33,6 +24,15 @@
     <Filter Include="Source Files\Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Source Files\GrammarOutput\ActionCompression">
+      <UniqueIdentifier>{bb2cdfb1-7a42-43ab-a103-98a77aef5d00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GrammarOutput\ActionCompression\Header Files">
+      <UniqueIdentifier>{6f46e068-0527-4acd-bf3f-cb4d0d65bf3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\KeyWordHandlers">
+      <UniqueIdentifier>{6993516d-2c03-4b5a-9e11-a9cb1198826a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -55,13 +55,13 @@
       <Filter>Source Files\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StateActionInfo.h">
-      <Filter>Source Files\ActionCompression\Header Files</Filter>
+      <Filter>Source Files\GrammarOutput\ActionCompression\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CompressEncoding.h">
-      <Filter>Source Files\ActionCompression\Header Files</Filter>
+      <Filter>Source Files\GrammarOutput\ActionCompression\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CompressedActionMatrixCpp.h">
-      <Filter>Source Files\ActionCompression\Header Files</Filter>
+      <Filter>Source Files\GrammarOutput\ActionCompression\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GrammarParser.h">
       <Filter>Source Files\GrammarParsing\Header Files</Filter>
@@ -88,10 +88,13 @@
       <Filter>Source Files\GrammarOutput\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StateActionInfoArray.h">
-      <Filter>Source Files\ActionCompression\Header Files</Filter>
+      <Filter>Source Files\GrammarOutput\ActionCompression\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CodeFlags.h">
       <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Lib\Include\LRparser.h">
+      <Filter>Source Files\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -111,31 +114,31 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ActionsWriter.cpp">
-      <Filter>Source Files\KeyWordHandles</Filter>
+      <Filter>Source Files\KeyWordHandlers</Filter>
     </ClCompile>
     <ClCompile Include="DocFileWriter.cpp">
-      <Filter>Source Files\KeyWordHandles</Filter>
+      <Filter>Source Files\KeyWordHandlers</Filter>
     </ClCompile>
     <ClCompile Include="SymbolsWriter.cpp">
-      <Filter>Source Files\KeyWordHandles</Filter>
+      <Filter>Source Files\KeyWordHandlers</Filter>
     </ClCompile>
     <ClCompile Include="TablesWriter.cpp">
-      <Filter>Source Files\KeyWordHandles</Filter>
+      <Filter>Source Files\KeyWordHandlers</Filter>
     </ClCompile>
     <ClCompile Include="ActionArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CompressedActionMatrixCpp.cpp">
-      <Filter>Source Files\ActionCompression</Filter>
+      <Filter>Source Files\GrammarOutput\ActionCompression</Filter>
     </ClCompile>
     <ClCompile Include="CompressEncoding.cpp">
-      <Filter>Source Files\ActionCompression</Filter>
+      <Filter>Source Files\GrammarOutput\ActionCompression</Filter>
     </ClCompile>
     <ClCompile Include="StateActionInfo.cpp">
-      <Filter>Source Files\ActionCompression</Filter>
+      <Filter>Source Files\GrammarOutput\ActionCompression</Filter>
     </ClCompile>
     <ClCompile Include="StateActionInfoArray.cpp">
-      <Filter>Source Files\ActionCompression</Filter>
+      <Filter>Source Files\GrammarOutput\ActionCompression</Filter>
     </ClCompile>
     <ClCompile Include="GrammarParser.cpp">
       <Filter>Source Files\GrammarParsing</Filter>

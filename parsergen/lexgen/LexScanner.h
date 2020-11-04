@@ -1,7 +1,6 @@
 #pragma once
 
 #include <HashMap.h>
-#include <StringCollector.h>
 
 typedef enum {
   EOI                 //  end of input

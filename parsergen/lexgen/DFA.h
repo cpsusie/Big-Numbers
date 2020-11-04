@@ -1,12 +1,7 @@
 #pragma once
 
+#include <NumberInterval.h>
 #include "NFA.h"
-#include <MarginFile.h>
-
-typedef enum {
-	CPP
- ,JAVA
-} Language;
 
 // transitions for each DFAstate
 typedef int DFAtrans[MAX_CHARS];
@@ -58,27 +53,26 @@ private:
   void        makeTransitions();
   // Put states with equal AcceptAction into the same group.
   // Note that all non-accept-states go to the same group
-  void        makeInitialGroups();
+  void         makeInitialGroups();
   // Reduce the size of the m_states to the number of groups.
   // Consider the first element of each group (state) to be a
   // "representative" state. Insert this state to the new transition table,
   // modifying all the transitions, so that the successors
   // are the groups within which the old state is found.
-  void        fixupTransitions();
-  void        minimize();
-  void        reduce(int *rowMap, int *columnMap, BitSet &rowSave, BitSet &columnSave) const;
+  void         fixupTransitions();
+  void         minimize();
+  void         reduce(int *rowMap, int *columnMap, BitSet &rowSave, BitSet &columnSave) const;
   // Return true if two columns in transitionmatrix are equal, else return false
-  bool        columnsEqual(size_t col1, size_t col2) const;
+  bool         columnsEqual(size_t col1, size_t col2) const;
   // Return true if two rows in transitionmatrix are equal, else return false
-  bool        rowsEqual(size_t row1, size_t row2) const;
-  void        minmaxElement(BitSet &rowSave, BitSet &columnSave, int &minElement, int &maxElement) const;
-  const TCHAR *findTransisitionType(BitSet &rowSave, BitSet &columnSave) const;
-  void        printGroups(   MarginFile &f);
-  void        printCharMap(  MarginFile &f) const;
-  void        printCharMap(  MarginFile &f, const int *map) const;
-  void        printStateMap( MarginFile &f, const int *map) const;
-  void        printTransitionMatrix(MarginFile &f, BitSet &rowSave, BitSet &columnSave) const;
-  void        printAcceptTable(MarginFile &f) const;
+  bool         rowsEqual(size_t row1, size_t row2) const;
+  IntInterval  minmaxElement(        const BitSet &rowSave, const BitSet &columnSave) const;
+  void         printGroups(          MarginFile &f);
+  void         printCharMap(         MarginFile &f) const;
+  void         printCharMap(         MarginFile &f, const int *map) const;
+  void         printStateMap(        MarginFile &f, const int *map) const;
+  void         printTransitionMatrix(MarginFile &f, const BitSet &rowSave, const BitSet &columnSave) const;
+  void         printAcceptTable(     MarginFile &f) const;
 public:
   Array<DFAstate> m_states;
   DFA(const NFA &nfa, Language language, bool verbose = false);

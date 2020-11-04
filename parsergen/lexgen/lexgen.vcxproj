@@ -285,6 +285,7 @@
     </Xdcmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\ParserGen\ByteCount.cpp" />
     <ClCompile Include="..\ParserGen\CodeFlags.cpp" />
     <ClCompile Include="..\parsergen\StringCollector.cpp" />
     <ClCompile Include="..\parsergen\TemplateWriter.cpp" />
@@ -312,7 +313,9 @@
     <ResourceCompile Include="LexGen.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\ParserGen\ByteCount.h" />
     <ClInclude Include="..\parsergen\StringCollector.h" />
+    <ClInclude Include="..\ParserGen\targetver.h" />
     <ClInclude Include="..\parsergen\TemplateWriter.h" />
     <ClInclude Include="..\parsergen\Wizard.h" />
     <ClInclude Include="DFA.h" />

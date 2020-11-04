@@ -1,7 +1,5 @@
 #pragma once
 
-#include "ByteCount.h"
-
 class GrammarTables : public ParserTables {
 private:
   const UINT              m_terminalCount;

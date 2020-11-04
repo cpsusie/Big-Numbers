@@ -54,6 +54,9 @@
     <ClCompile Include="..\ParserGen\CodeFlags.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\ParserGen\ByteCount.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LexGen.rc">
@@ -80,6 +83,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\parsergen\Wizard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ParserGen\ByteCount.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ParserGen\targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

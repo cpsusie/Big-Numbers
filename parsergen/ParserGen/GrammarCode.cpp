@@ -9,16 +9,16 @@ GrammarCode::GrammarCode(const String  &templateName
                         ,const String  &headerOutputDir
                         ,const String  &nameSpace
                         ,CodeFlags      flags)
-: m_grammar(        grammar                                                     )
-, m_templateName(   templateName                                                )
-, m_implOutputDir(  implOutputDir                                               )
-, m_headerOutputDir(headerOutputDir                                             )
-, m_flags(          flags                                                       )
-, m_sourceName(     FileNameSplitter(grammar.getName()).getAbsolutePath()       )
-, m_grammarName(    FileNameSplitter(m_grammar.getName()).getFileName()         )
-, m_parserClassName(m_grammarName + _T("Parser")                                )
-, m_tablesClassName(m_grammarName + _T("Tables")                                )
-, m_nameSpace(      nameSpace                                                   )
+: m_grammar(        grammar                                               )
+, m_templateName(   templateName                                          )
+, m_implOutputDir(  implOutputDir                                         )
+, m_headerOutputDir(headerOutputDir                                       )
+, m_flags(          flags                                                 )
+, m_sourceName(     FileNameSplitter(grammar.getName()).getAbsolutePath() )
+, m_grammarName(    FileNameSplitter(m_grammar.getName()).getFileName()   )
+, m_parserClassName(m_grammarName + _T("Parser")                          )
+, m_tablesClassName(m_grammarName + _T("Tables")                          )
+, m_nameSpace(      nameSpace                                             )
 , m_docFileName(    FileNameSplitter(m_sourceName).setExtension(_T("txt")).getFullPath())
 {
 }

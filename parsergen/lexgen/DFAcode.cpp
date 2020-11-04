@@ -1,9 +1,10 @@
 #include "stdafx.h"
+#include <ByteCount.h>
 #include "DFA.h"
 
 void DFA::printTables(MarginFile &f) const {
-  int    *columnMap = new int[MAX_CHARS];
-  int    *rowMap    = new int[m_states.size()];
+  int    *columnMap = new int[MAX_CHARS];       TRACE_NEW(columnMap);
+  int    *rowMap    = new int[m_states.size()]; TRACE_NEW(rowMap   );
   BitSet  columnSave(MAX_CHARS);       // columns that will remain in table
   BitSet  rowSave(m_states.size());    // rows    that will remain in table
 
@@ -14,8 +15,8 @@ void DFA::printTables(MarginFile &f) const {
 
   printTransitionMatrix(f, rowSave, columnSave);
   printAcceptTable(f);
-  delete[] columnMap;
-  delete[] rowMap;
+  SAFEDELETEARRAY(columnMap);
+  SAFEDELETEARRAY(rowMap   );
 }
 
 bool DFA::columnsEqual(size_t col1, size_t col2) const {
@@ -77,11 +78,11 @@ void DFA::reduce(int *rowMap, int *columnMap, BitSet &rowSave, BitSet &columnSav
   }
 }
 
-static int maxElement(const int *map, int size) {
+static int maxElement(const int *map, size_t size) {
   int m = 0;
-  for(int i = 0; i < size; i++) {
-    if(map[i] > m) {
-      m = map[i];
+  for(const int *ep = map, *endp = ep + size; ep < endp; ep++) {
+    if(*ep > m) {
+      m = *ep;
     }
   }
   return m;
@@ -99,25 +100,25 @@ void DFA::printCharMap(MarginFile &f, const int *map) const {
 
   f.printf(_T("%s"), text);
   printCharMap(f);
-  TCHAR *tableType;
+  const IntegerType tableType = findUintType(maxElement(map, MAX_CHARS));
   switch(m_language) {
   case CPP :
-    tableType = (maxElement(map, MAX_CHARS) > 255) ? _T("unsigned short") : _T("unsigned char");
-    f.printf(_T("static %s lexCharMap[%d] = {\n"), tableType, MAX_CHARS);
+    f.printf(_T("static const %s lexCharMap[%u] = {\n"), getTypeName(tableType), MAX_CHARS);
     break;
   case JAVA:
-    tableType = (maxElement(map, MAX_CHARS) > 255) ? _T("short") : _T("byte");
-    f.printf(_T("private static final %s lexCharMap[] = {\n"), tableType);
+    { const TCHAR *tableName = (maxElement(map, MAX_CHARS) > 255) ? _T("short") : _T("byte");
+      f.printf(_T("private static final %s lexCharMap[] = {\n"), tableName);
+    }
     break;
   }
-  int oldMargin = f.getLeftMargin();
-  f.setLeftMargin(oldMargin+4);
-  for(int i = 0; i < MAX_CHARS; i++) {
-    f.printf(_T("%4d"), map[i]);
+  const int oldMargin = f.getLeftMargin();
+  f.setLeftMargin(oldMargin+2);
+  for(UINT i = 0; i < MAX_CHARS; i++) {
+    f.printf(_T("%4u"), map[i]);
     if(i < MAX_CHARS - 1) {
       f.printf(_T(","));
     }
-    if(i % 16 == 15 || i == MAX_CHARS - 1) {
+    if((i % 16 == 15) || (i == MAX_CHARS - 1)) {
       f.printf(_T("\n"));
     }
   }
@@ -126,40 +127,43 @@ void DFA::printCharMap(MarginFile &f, const int *map) const {
 }
 
 void DFA::printCharMap(MarginFile &f) const {
-  f.printf(_T("//  "));
+  f.printf(_T("//"));
   for(UINT i = 0; i < MAX_CHARS; i++) {
     f.printf(((i % 16 == 15) || (i == MAX_CHARS-1)) ? _T("%s") : _T("%-4s "), binToAscii(i).cstr());
     if((i % 16 == 15) && (i < MAX_CHARS-1)) {
-      f.printf(_T("\n//  "));
+      f.printf(_T("\n//"));
     }
   }
   f.printf(_T("\n\n"));
 }
 
 void DFA::printStateMap(MarginFile &f, const int *map) const {
-  TCHAR *tableType;
+  f.setLeftMargin(0);
+  const UINT stateCount = (UINT)m_states.size();
+  const int  maxValue   = maxElement(map, stateCount);
+  const IntegerType tableType = findUintType(maxValue);
+
   switch(m_language) {
   case CPP  :
-    tableType = (maxElement(map, (int)m_states.size()) > 255) ? _T("unsigned short") : _T("unsigned char");
-    f.printf(_T("static const %s lexStateMap[%d] = {\n"), tableType, m_states.size());
+    f.printf(_T("static const %s lexStateMap[%u] = {\n"), getTypeName(tableType), stateCount);
     break;
   case JAVA :
-    tableType = (maxElement(map, (int)m_states.size()) > 255) ? _T("short") : _T("byte");
-    f.printf(_T("private static final %s lexStateMap[] = {\n"), tableType);
+    { const TCHAR *tableName = (maxValue > 255) ? _T("short") : _T("byte");
+      f.printf(_T("private static final %s lexStateMap[] = {\n"), tableName);
+    }
     break;
   }
-
-  int oldMargin = f.getLeftMargin();
-  f.setLeftMargin(oldMargin+4);
-  for(size_t i = 0; i < m_states.size(); i++) {
-    if(i % 10 == 0) {
-      f.printf(_T("/* %3d */"), (int)i);
+  const UINT elementWidth = (UINT)format(_T("%d"), maxValue).length();
+  const int  oldMargin    = f.setLeftMargin(2);
+  for(UINT s = 0; s < stateCount; s++) {
+    if(s % 20 == 0) {
+      f.printf(_T("/* %3u */"), s);
     }
-    f.printf(_T("%4d"), map[i]);
-    if(i < m_states.size()-1) {
+    f.printf(_T("%*d"), elementWidth, map[s]);
+    if(s < stateCount-1) {
       f.printf(_T(","));
     }
-    if(i % 10 == 9 || i == m_states.size()-1) {
+    if(s % 20 == 19 || s == stateCount-1) {
       f.printf(_T("\n"));
     }
   }
@@ -167,58 +171,61 @@ void DFA::printStateMap(MarginFile &f, const int *map) const {
   f.printf(_T("};\n\n"));
 }
 
-void DFA::minmaxElement(BitSet &rowSave, BitSet &columnSave, int &minElement, int &maxElement) const {
-  minElement = maxElement = 0;
-  for(Iterator<size_t> rit = rowSave.getIterator(); rit.hasNext();) {
-    const int r = (int)rit.next();
-    for(Iterator<size_t> cit = columnSave.getIterator(); cit.hasNext();) {
-      const int c = (int)cit.next();
-      int e = m_states[r].m_transition[c];
-      if(e > maxElement) maxElement = e;
-      if(e < minElement) minElement = e;
+IntInterval DFA::minmaxElement(const BitSet &rowSave, const BitSet &columnSave) const {
+  int minValue, maxValue;
+  bool firstTime = true;
+  for(auto rit = rowSave.getIterator(); rit.hasNext();) {
+    const DFAtrans &transitions = m_states[(UINT)rit.next()].m_transition;
+    for(auto cit = columnSave.getIterator(); cit.hasNext();) {
+      const int e = transitions[(UINT)cit.next()];
+      if(firstTime) {
+        minValue  = maxValue = e;
+        firstTime = false;
+      } else if(e > maxValue) {
+        maxValue = e;
+      } else if(e < minValue) {
+        minValue = e;
+      }
     }
   }
+  return IntInterval(minValue, maxValue);
 }
 
-const TCHAR *DFA::findTransisitionType(BitSet &rowSave, BitSet &columnSave) const {
-  int minElement, maxElement;
-  minmaxElement(rowSave, columnSave, minElement, maxElement);
-  if(minElement < -128 || maxElement > 127) {
-    return _T("short");
-  } else {
-    return m_language == CPP ? _T("char") : _T("byte");
-  }
-}
+void DFA::printTransitionMatrix(MarginFile &f, const BitSet &rowSave, const BitSet &columnSave) const {
+  const IntInterval trInterval     = minmaxElement(rowSave, columnSave);
+  const IntegerType tableType      = findIntType(trInterval.getMin(), trInterval.getMax(), m_language);
+  const UINT        minStrLen      = (UINT)format(_T("%d"), trInterval.getMin()).length(), maxStrLen = (UINT)format(_T("%d"), trInterval.getMax()).length();
+  const UINT        elementWidth   = max(minStrLen, maxStrLen);
 
-void DFA::printTransitionMatrix(MarginFile &f, BitSet &rowSave, BitSet &columnSave) const {
-  int rowCount = (int)rowSave.size();
-  int colCount = (int)columnSave.size();
-
-  const TCHAR *tableType = findTransisitionType(rowSave, columnSave);
+  const UINT        rowCount       = (UINT)rowSave.size(), colCount = (UINT)columnSave.size();
+  const UINT        rowCountWidth  = (UINT)format(_T("%u"), rowCount - 1).length();
+  const UINT        lineHeaderSize = (UINT)format(_T("/* %*u */ {"), rowCountWidth, 1).length();
+  const UINT        lineLength     = colCount * (elementWidth + 1) + lineHeaderSize + 2; // line-header + leftMargin + 1 command-seprator for each element
 
   switch(m_language) {
   case CPP :
-    f.printf(_T("static const %s lexNext[%d][%d] = {\n"), tableType, rowCount, colCount);
+    f.printf(_T("static const %s lexNext[%u][%u] = {\n"), getTypeName(tableType, m_language), rowCount, colCount);
     break;
   case JAVA:
-    f.printf(_T("private static final %s lexNext[][] = {\n"), tableType);
+    f.printf(_T("private static final %s lexNext[][] = {\n"), getTypeName(tableType, m_language));
     break;
   }
-  int oldMargin = f.getLeftMargin();
-  f.setLeftMargin(oldMargin+4);
+  const int oldMargin = f.getLeftMargin();
+  f.setLeftMargin(oldMargin+2);
 
-  if(colCount < 40) {
-    int rCount = 0;
-    for(Iterator<size_t> rit = rowSave.getIterator(); rit.hasNext(); rCount++) {
-      int r = (int)rit.next();
-      f.printf(_T("/* %3d */ {"), rCount);
-      int cCount = 0;
-      for(Iterator<size_t> cit = columnSave.getIterator(); cit.hasNext(); cCount++) {
-        int c = (int)cit.next();
+  if(lineLength <= 156) {
+    UINT rCount = 0;
+    for(auto rit = rowSave.getIterator(); rit.hasNext(); rCount++) {
+      const UINT      r           = (UINT)rit.next();
+      const DFAtrans &transitions = m_states[r].m_transition;
+      f.printf(_T("/* %*u */ {"), rowCountWidth, rCount);
+      UINT cCount = 0;
+      for(auto cit = columnSave.getIterator(); cit.hasNext(); cCount++) {
+        const UINT c = (UINT)cit.next();
         if(cCount > 0) {
           f.printf(_T(","));
         }
-        f.printf(_T("%2d"), m_states[r].m_transition[c]);
+        f.printf(_T("%*d"), elementWidth, transitions[c]);
       }
       f.printf(_T("}"));
       if(rCount < rowCount-1) {
@@ -228,19 +235,21 @@ void DFA::printTransitionMatrix(MarginFile &f, BitSet &rowSave, BitSet &columnSa
       }
     }
   } else {
-    int rCount = 0;
-    for(Iterator<size_t> rit = rowSave.getIterator(); rit.hasNext(); rCount++) {
-      int r = (int)rit.next();
-      f.printf(_T("/* %3d */ {"), rCount);
-      int cCount = 0;
-      for(Iterator<size_t> cit = columnSave.getIterator(); cit.hasNext(); cCount++) {
-        int c = (int)cit.next();
-        f.printf(_T("%4d"), m_states[r].m_transition[c]);
+    UINT rCount = 0;
+    for(auto rit = rowSave.getIterator(); rit.hasNext(); rCount++) {
+      const UINT      r           = (UINT)rit.next();
+      const DFAtrans &transitions = m_states[r].m_transition;
+      f.printf(_T("/* %*u */ {"), rowCountWidth, rCount);
+      const UINT oldLeftMargin = f.setLeftMargin(f.getCurrentLineLength());
+      UINT cCount = 0;
+      for(auto cit = columnSave.getIterator(); cit.hasNext(); cCount++) {
+        UINT c = (UINT)cit.next();
+        f.printf(_T("%*d"), elementWidth, transitions[c]);
         if(cCount < colCount-1) {
           f.printf(_T(","));
         }
-        if(cCount % 16 == 15) {
-          f.printf(_T("\n           "));
+        if(cCount % 20 == 19) {
+          f.printf(_T("\n"));
         }
       }
       f.printf(_T("}"));
@@ -249,6 +258,7 @@ void DFA::printTransitionMatrix(MarginFile &f, BitSet &rowSave, BitSet &columnSa
       } else {
         f.printf(_T("\n"));
       }
+      f.setLeftMargin(oldLeftMargin);
     }
   }
   f.setLeftMargin(oldMargin);
@@ -256,6 +266,7 @@ void DFA::printTransitionMatrix(MarginFile &f, BitSet &rowSave, BitSet &columnSa
 }
 
 void DFA::printAcceptTable(MarginFile &f) const {
+  f.setLeftMargin(0);
   switch(m_language) {
   case CPP:
     f.printf(_T("static const char lexAccept[] = {\n"));
@@ -266,22 +277,22 @@ void DFA::printAcceptTable(MarginFile &f) const {
   }
 
   int oldMargin = f.getLeftMargin();
-  f.setLeftMargin(oldMargin+4);
-  const size_t stateCount = m_states.size();
-  for(size_t i = 0; i < stateCount; i++) {
+  f.setLeftMargin(oldMargin+2);
+  const UINT stateCount = (UINT)m_states.size();
+  for(UINT i = 0; i < stateCount; i++) {
     const DFAstate &state = m_states[i];
-    if(i % 10 == 0) {
-      f.printf(_T("/* %3d */"), i);
+    if(i % 20 == 0) {
+      f.printf(_T("/* %3u */"), i);
     }
     if(state.m_accept == nullptr) {
-      f.printf(_T("  0"));
+      f.printf(_T("0"));
     } else {
-      f.printf(_T("  %d"), state.m_accept->m_anchor ? state.m_accept->m_anchor : 4);
+      f.printf(_T("%d"), state.m_accept->m_anchor ? state.m_accept->m_anchor : 4);
     }
     if(i < stateCount-1) {
       f.printf(_T(","));
     }
-    if((i % 10 == 9) || (i == stateCount - 1)) {
+    if((i % 20 == 19) || (i == stateCount - 1)) {
       f.printf(_T("\n"));
     }
   }

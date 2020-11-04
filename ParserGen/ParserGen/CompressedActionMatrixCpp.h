@@ -101,8 +101,6 @@ typedef IndexArray<SymbolSet> SymbolSetIndexArray;
 
 namespace ActionMatrix {
 
-extern int rawActionArrayCmp(const RawActionArray &a1, const RawActionArray &a2);
-
 class RawActionArrayIndexMap : public IndexMap<RawActionArray> {
 public:
   RawActionArrayIndexMap() : IndexMap<RawActionArray>(rawActionArrayCmp) {
@@ -201,9 +199,9 @@ private:
   void   addMacro(               const Macro &m);
   Macro  doStateActionInfo(      const StateActionInfo &stateInfo);
   Macro  doUncompressedState(    const StateActionInfo &stateInfo);
-  Macro  doSplitCompression(     const StateActionInfo &stateInfo);
+  Macro  doSplitNodeState(       const StateActionInfo &stateInfo);
   Macro  doOneItemState(         const StateActionInfo &stateInfo);
-  Macro  doReduceBySameProdState(const StateActionInfo &stateInfo);
+  Macro  doTermSetState(         const StateActionInfo &stateInfo);
   void   generateCompressedForm();
 
   ByteCount printMacroesAndActionCode(MarginFile &output) const;

@@ -228,6 +228,7 @@
     </Xdcmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Lib\Include\LRparser.h" />
     <ClInclude Include="ByteCount.h" />
     <ClInclude Include="CodeFlags.h" />
     <ClInclude Include="CompressedActionMatrixCpp.h" />
