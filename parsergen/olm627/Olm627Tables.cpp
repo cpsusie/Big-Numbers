@@ -208,7 +208,7 @@ static const char *symbolNames = {
   " start"                                            /* NT    6 NTindex=0     */
   " S"                                                /* NT    7 NTindex=1     */
   " A"                                                /* NT    8 NTindex=2     */
-}; // Total size of string:24(x86)/24(x64) bytes
+}; // Size of string:24(x86)/24(x64) bytes
 
 static const ParserTablesTemplate<6,9,6,12
                                  ,unsigned char

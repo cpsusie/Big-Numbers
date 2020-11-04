@@ -244,7 +244,7 @@ static const char *symbolNames = {
   " E"                                                /* NT   10 NTindex=3     */
   " B"                                                /* NT   11 NTindex=4     */
   " D"                                                /* NT   12 NTindex=5     */
-}; // Total size of string:32(x86)/32(x64) bytes
+}; // Size of string:32(x86)/32(x64) bytes
 
 static const ParserTablesTemplate<7,13,13,21
                                  ,unsigned char

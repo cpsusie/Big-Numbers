@@ -198,7 +198,7 @@ static const char *symbolNames = {
   " b"                                                /* T     2               */
   " start"                                            /* NT    3 NTindex=0     */
   " S"                                                /* NT    4 NTindex=1     */
-}; // Total size of string:16(x86)/16(x64) bytes
+}; // Size of string:16(x86)/16(x64) bytes
 
 static const ParserTablesTemplate<3,5,5,6
                                  ,unsigned char
