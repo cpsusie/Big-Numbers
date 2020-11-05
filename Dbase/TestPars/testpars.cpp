@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <FileNameSplitter.h>
 
 static String getStmt() {
   String result = EMPTYSTRING;
@@ -78,7 +79,7 @@ static void testScanner(const String &stmt) {
     if(l < 0) {
       l = 0;
     }
-    _tprintf(_T("<%s>%*.*s\tsym:%s\n"),str,l,l,EMPTYSTRING,SqlTables->getSymbolName(s));
+    _tprintf(_T("<%s>%*.*s\tsym:%s\n"),str,l,l,EMPTYSTRING,SqlParser::getTables().getSymbolName(s));
   }
 //  parser.listErrors();
 }

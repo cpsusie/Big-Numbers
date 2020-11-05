@@ -73,17 +73,11 @@ private:
     const void *m_key;
     void       *m_value;
     friend class FileHashMapEntryIterator;
-
   public:
     const void *key()   const override {
       return m_key;
     }
-
-    void *value()             override {
-      return m_value;
-    }
-
-    const void *value() const override {
+    void *value()       const override {
       return m_value;
     }
   };

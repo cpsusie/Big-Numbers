@@ -388,8 +388,7 @@ int SelectStmt::expressionMaxJoinSequence(const SyntaxNode *expr) const {
 }
 
 void Predicate::dump(FILE *f) const {
-  _ftprintf(f,_T("Predicate:\"%s\" %s")
-             ,relopstring(m_relOpToken),m_colIndex.toStringBasicType().cstr());
+  _ftprintf(f,_T("Predicate:\"%s\" %s"), relopstring(m_relOpToken),m_colIndex.toString().cstr());
 #if defined(TRACECOMP)
   if(m_pred != nullptr) {
     dumpSyntaxTree(m_pred);

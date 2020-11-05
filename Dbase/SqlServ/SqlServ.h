@@ -4,7 +4,7 @@
 #include <Math.h>
 #include <BitSet.h>
 #include <Thread.h>
-#include <Semaphore.h>
+#include <FastSemaphore.h>
 #include <Stack.h>
 #include <SqlApi.h>
 #include <Btree.h>

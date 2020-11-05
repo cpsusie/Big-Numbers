@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <ctype.h>
 #include <time.h>
+#include <FileNameSplitter.h>
 
 class HostVarIndex {
 public:

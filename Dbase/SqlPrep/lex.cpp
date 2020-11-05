@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <HashMap.h>
+#include <FileNameSplitter.h>
 #include <Date.h>
 
 /* #define DEBUG_LEX */

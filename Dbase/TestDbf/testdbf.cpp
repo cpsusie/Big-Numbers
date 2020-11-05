@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <Console.h>
+#include <InputValue.h>
 
 class DBFILE : public DbFile {
 public:

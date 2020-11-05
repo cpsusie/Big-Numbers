@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <MyUtil.h>
 #include <Console.h>
 
 static String getStmt() {
@@ -45,7 +46,7 @@ static void scan(const String &stmt) {
     TCHAR *str = lex.getText();
     int l = 25 - (int)_tcslen(str);
     if(l < 0) l = 0;
-    _tprintf(_T("<%s>%*.*s\tsym:%s\n"),str,l,l,EMPTYSTRING,SqlTables->getSymbolName(s));
+    _tprintf(_T("<%s>%*.*s\tsym:%s\n"),str,l,l,EMPTYSTRING,SqlParser::getTables().getSymbolName(s));
   }
 }
 

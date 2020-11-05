@@ -2,9 +2,9 @@ static char sqlapi_program_id[240] = {
 115,  0,113,  0,108,  0, 98,  0,105,  0,110,  0,100,  0, 46,  0,115,  0,113,  0,
  99,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
- 83,  0, 97,  0,116,  0, 32,  0, 74,  0, 97,  0,110,  0, 32,  0, 50,  0, 48,  0,
- 32,  0, 49,  0, 53,  0, 58,  0, 51,  0, 48,  0, 58,  0, 52,  0, 57,  0, 32,  0,
- 50,  0, 48,  0, 49,  0, 56,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+ 84,  0,104,  0,117,  0, 32,  0, 78,  0,111,  0,118,  0, 32,  0, 32,  0, 53,  0,
+ 32,  0, 49,  0, 55,  0, 58,  0, 49,  0, 53,  0, 58,  0, 51,  0, 52,  0, 32,  0,
+ 50,  0, 48,  0, 50,  0, 48,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -13,8 +13,8 @@ static char sqlapi_program_id[240] = {
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
 
 };
-/* sqlbind.sqc Sat Jan 20 15:30:49 2018 */
-#line 1 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
+/* sqlbind.sqc Thu Nov  5 17:15:34 2020 */
+#line 1 "C:/Mytools2015/Dbase/SqlBind/sqlbind.sqc"
 #include "targetver.h"
 #include <sqlapi.h>
 #include <comdef.h>
@@ -24,17 +24,17 @@ static char sqlapi_program_id[240] = {
 #if defined(__NEVER__)
   EXEC SQL INCLUDE SQLCA;
 #endif
-#line 6 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 6 "C:/Mytools2015/Dbase/SqlBind/sqlbind.sqc"
 #include <sqlapi.h>
 sqlca sqlca;
-#line 6 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 6 "C:/Mytools2015/Dbase/SqlBind/sqlbind.sqc"
 
 
 
 #if defined(__NEVER__)
   EXEC SQL BEGIN DECLARE SECTION;
 #endif
-#line 8 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 8 "C:/Mytools2015/Dbase/SqlBind/sqlbind.sqc"
 
 
   static char dbname[20];
@@ -45,7 +45,7 @@ sqlca sqlca;
 #if defined(__NEVER__)
   EXEC SQL END DECLARE SECTION;
 #endif
-#line 14 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 14 "C:/Mytools2015/Dbase/SqlBind/sqlbind.sqc"
 
 
 static void dbConnect() {
@@ -54,30 +54,30 @@ static void dbConnect() {
 #if defined(__NEVER__)
   EXEC SQL CONNECT TO :dbname user :username using :password;
 #endif
-#line 18 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 18 "C:/Mytools2015/Dbase/SqlBind/sqlbind.sqc"
 {
   SqlApiVarList sqlapi_varl[3];
-#line 19 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 19 "C:/Mytools2015/Dbase/SqlBind/sqlbind.sqc"
   sqlapi_varl[0].sqltype = 29;
   sqlapi_varl[0].sqllen  = 20;
   sqlapi_varl[0].sqldata = (void*)dbname;
   sqlapi_varl[0].sqlind = 0L;
-#line 19 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 19 "C:/Mytools2015/Dbase/SqlBind/sqlbind.sqc"
   sqlapi_varl[1].sqltype = 29;
   sqlapi_varl[1].sqllen  = 30;
   sqlapi_varl[1].sqldata = (void*)username;
   sqlapi_varl[1].sqlind = 0L;
-#line 19 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 19 "C:/Mytools2015/Dbase/SqlBind/sqlbind.sqc"
   sqlapi_varl[2].sqltype = 29;
   sqlapi_varl[2].sqllen  = 30;
   sqlapi_varl[2].sqldata = (void*)password;
   sqlapi_varl[2].sqlind = 0L;
-#line 19 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 19 "C:/Mytools2015/Dbase/SqlBind/sqlbind.sqc"
   sqlapi_call(1,5,sqlapi_program_id,3,0,sqlapi_varl,sqlca);
-#line 19 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 19 "C:/Mytools2015/Dbase/SqlBind/sqlbind.sqc"
 }
-#line 18 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
-#line 17 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 18 "C:/Mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 17 "C:/Mytools2015/Dbase/SqlBind/sqlbind.sqc"
 
 
   if(sqlca.sqlcode != SQL_OK) {
@@ -92,13 +92,13 @@ static void dbDisconnect() {
 #if defined(__NEVER__)
   EXEC SQL CONNECT RESET END-EXEC
 #endif
-#line 28 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 28 "C:/Mytools2015/Dbase/SqlBind/sqlbind.sqc"
 {
   sqlapi_call(1,3,sqlapi_program_id,0,0,nullptr,sqlca);
-#line 28 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 28 "C:/Mytools2015/Dbase/SqlBind/sqlbind.sqc"
 }
-#line 27 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
-#line 27 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 27 "C:/Mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 27 "C:/Mytools2015/Dbase/SqlBind/sqlbind.sqc"
 
 }
 
@@ -262,7 +262,7 @@ typedef enum {
 
 int _tmain( int argc, TCHAR **argv ) {
   TCHAR *cp;
-  TCHAR *dbname = nullptr;
+  TCHAR *dbname = NULL;
   command cmd;
 
   argvExpand(argc, argv);
@@ -296,7 +296,7 @@ int _tmain( int argc, TCHAR **argv ) {
     }
   }
 
-  if(dbname == nullptr || _tcslen(dbname) == 0) usage();
+  if(dbname == NULL || _tcslen(dbname) == 0) usage();
   try {
     switch(cmd) {
     case BINDPROGRAM:

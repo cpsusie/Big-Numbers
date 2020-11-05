@@ -324,7 +324,7 @@ void FileSlotTable::dump() {
 
 static FileSlotTable slotTable;
 
-Semaphore DbFile::s_filesem;
+FastSemaphore DbFile::s_filesem;
 
 DbFile::DbFile(const String &fileName, DbFileMode mode, LogFile *lf) {
   init(fileName,mode,lf);

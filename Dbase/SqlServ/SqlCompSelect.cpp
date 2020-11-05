@@ -1686,7 +1686,7 @@ void SelectSetOperator::checkCompatibleSelectLists() {
   HostVarDescriptionList d2 = m_son2->getDescription();
   if(d1.size() != d2.size()) {
     m_compiler.syntaxError(m_node,SQL_INVALID_EXPRLIST,_T("Number of expressions in two select connected with %s differ"),
-      SqlTables->getSymbolName(m_node->token()));
+      SqlParser::getTables().getSymbolName(m_node->token()));
     return;
   }
   for(UINT i = 0; i < d1.size(); i++) {
@@ -1694,9 +1694,9 @@ void SelectSetOperator::checkCompatibleSelectLists() {
       SyntaxNode *e1 = findExpression(this,i,getMainType(d1[i].getType()));
       SyntaxNode *e2 = findExpression(this,i,getMainType(d2[i].getType()));
       m_compiler.syntaxError(e1,SQL_INVALID_EXPR_TYPE,_T("Type of expressions in 2 selects connected with %s is not compatible"),
-      SqlTables->getSymbolName(m_node->token()));
+      SqlParser::getTables().getSymbolName(m_node->token()));
       m_compiler.syntaxError(e2,SQL_INVALID_EXPR_TYPE,_T("Type of expressions in 2 selects connected with %s is not compatible"),
-      SqlTables->getSymbolName(m_node->token()));
+      SqlParser::getTables().getSymbolName(m_node->token()));
     }
   }
 }
@@ -1740,7 +1740,7 @@ DbMainType SelectSetOperator::getExpressionType(int i) {
 
 void SelectSetOperator::dump(FILE *f, int level) const {
   findent(f,level);
-  _ftprintf(f,_T("%s : purpose:%s\n"), SqlTables->getSymbolName(m_node->token()), purposeString(m_purpose));
+  _ftprintf(f,_T("%s : purpose:%s\n"), SqlParser::getTables().getSymbolName(m_node->token()), purposeString(m_purpose));
   getDescription().dump();
 }
 
