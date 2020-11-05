@@ -1,9 +1,11 @@
 #include "stdafx.h"
+#include <ThreadPool.h>
 #include "Whist3EPlayer.h"
 
-void startComputerPlayer(const String &name) {
+Whist3Player *startComputerPlayer(const String &name) {
   Whist3Player *player = new Whist3Player(name, new Whist3EPlayer(), _T("localhost"));
-  player->start();
+  ThreadPool::executeNoWait(*player);
+  return player;
 }
 
 void Whist3EPlayer::init(const Whist3Player &player) {

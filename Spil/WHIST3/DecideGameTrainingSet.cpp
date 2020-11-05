@@ -1,6 +1,9 @@
 #include "stdafx.h"
+#include <MyUtil.h>
 #include <Random.h>
 #include <Tokenizer.h>
+#include <FileNameSplitter.h>
+#include <MathUtil.h>
 #include "Whist3.h"
 #include "DecideGameTrainingDialog.h"
 #include "CardBitmap.h"
@@ -171,7 +174,7 @@ void DecideGameTrainingSet::validateSelection(GameType gameType, int pointsPerTr
   }
 }
 
-Array<double> &DecideGameTrainingSet::getBpnInput(Array<double> &input) const {
+CompactDoubleArray &DecideGameTrainingSet::getBpnInput(CompactDoubleArray &input) const {
   input.clear();
   input.add(m_gamesPlayed.isGameUsed(GAMETYPE_SOL)   ? 1 : 0);
   input.add(m_gamesPlayed.isGameUsed(GAMETYPE_SANS)  ? 1 : 0);
@@ -188,7 +191,7 @@ Array<double> &DecideGameTrainingSet::getBpnInput(Array<double> &input) const {
   return input;
 }
 
-Array<double> &DecideGameTrainingSet::getBpnOutput(Array<double> &output) const {
+CompactDoubleArray &DecideGameTrainingSet::getBpnOutput(CompactDoubleArray &output) const {
   output.clear();
   for(int i = 0; i < 8; i++) {
     output.add(0.1);
@@ -240,7 +243,7 @@ static int pointScoreCmp(const PointScore &s1, const PointScore &s2) {
   return sign(s2.m_score - s1.m_score);
 }
 
-void DecideGameTrainingSet::setSelectedGameAndPoint(const Array<double> &bpnOutput) {
+void DecideGameTrainingSet::setSelectedGameAndPoint(const CompactDoubleArray &bpnOutput) {
   m_bpnOutput = bpnOutput;
 
   Array<GameTypeScore> gameTypeScores;
@@ -311,8 +314,8 @@ Array<DecideGameTrainingSet> DecideGameTrainingSet::loadTrainingData() { // stat
 
 // --------------------------------------------------DecideGameBpn------------------------------------------
 
-Array<int> DecideGameBpn::getLayerCount() {
-  Array<int> units;
+CompactIntArray DecideGameBpn::getLayerCount() {
+  CompactIntArray units;
   units.add(60);
   units.add(20);
   units.add(8);
@@ -335,19 +338,17 @@ void DecideGameBpn::save() {
 }
 
 void DecideGameBpn::learn(const DecideGameTrainingSet &data) {
-  Array<double> input;
-  Array<double> output;
+  CompactDoubleArray input, output;
   Bpn::learn(data.getBpnInput(input),data.getBpnOutput(output));
 }
 
 void DecideGameBpn::recognize(DecideGameTrainingSet &data) {
-  Array<double> input;
-  Array<double> output;
+  CompactDoubleArray input, output;
   Bpn::recognize(data.getBpnInput(input),output);
   data.setSelectedGameAndPoint(output);
 }
 
 double DecideGameBpn::getPatternError(const DecideGameTrainingSet &data) const {
-  Array<double> output;
+  CompactDoubleArray output;
   return Bpn::getPatternError(data.getBpnOutput(output));
 }

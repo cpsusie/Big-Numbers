@@ -12,10 +12,13 @@ private:
   UINT            findCardToPlaySpar(   const Whist3Player &player) const;
   UINT            findCardToPlayFarve(  const Whist3Player &player) const;
 public:
-  void            init(                 const Whist3Player &player);
-  GameDescription getDecidedGame(       const Whist3Player &player);
-  CardIndexSet    getCardsToSubstitute( const Whist3Player &player);
-  UINT            getCardToPlay(        const Whist3Player &player);
+  void            init(                 const Whist3Player &player) override;
+  GameDescription getDecidedGame(       const Whist3Player &player) override;
+  CardIndexSet    getCardsToSubstitute( const Whist3Player &player) override;
+  UINT            getCardToPlay(        const Whist3Player &player) override;
+  bool            deleteOnEndOfUse()    const                       override {
+    return true;
+  }
 };
 
-void startComputerPlayer(const String &name);
+Whist3Player *startComputerPlayer(const String &name);

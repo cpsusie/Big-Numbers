@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.136
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{93EAC87D-57D7-402C-A44D-9AC47581ED2B}"
 EndProject
@@ -69,6 +69,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "30", "30\30.vcxproj", "{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3DGraphics", "..\Lib\Src\D3DGraphics\D3DGraphics.vcxproj", "{A90057E9-13D7-4E6F-8C02-0B355A71C134}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "whist3", "WHIST3\Whist3.vcxproj", "{746998D9-8E1A-4DF9-9442-4BA821BCB095}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -442,6 +444,34 @@ Global
 		{A90057E9-13D7-4E6F-8C02-0B355A71C134}.TablebaseBuilderRelease|x64.ActiveCfg = Release|x64
 		{A90057E9-13D7-4E6F-8C02-0B355A71C134}.TablebaseBuilderRelease|x86.ActiveCfg = Release|Win32
 		{A90057E9-13D7-4E6F-8C02-0B355A71C134}.TablebaseBuilderRelease|x86.Build.0 = Release|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Debug|x64.ActiveCfg = Debug|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Debug|x64.Build.0 = Debug|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Debug|x86.ActiveCfg = Debug|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Debug|x86.Build.0 = Debug|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.LDDebug|x64.ActiveCfg = Debug|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.LDDebug|x64.Build.0 = Debug|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.LDDebug|x86.ActiveCfg = Debug|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.LDDebug|x86.Build.0 = Debug|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.LDRelease|x64.ActiveCfg = Release|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.LDRelease|x64.Build.0 = Release|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.LDRelease|x86.ActiveCfg = Release|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.LDRelease|x86.Build.0 = Release|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Profilling|x64.ActiveCfg = Debug|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Profilling|x64.Build.0 = Debug|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Profilling|x86.ActiveCfg = Debug|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Profilling|x86.Build.0 = Debug|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Release|x64.ActiveCfg = Release|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Release|x64.Build.0 = Release|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Release|x86.ActiveCfg = Release|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Release|x86.Build.0 = Release|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.TablebaseBuilderDebug|x64.ActiveCfg = Debug|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.TablebaseBuilderDebug|x64.Build.0 = Debug|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.TablebaseBuilderDebug|x86.ActiveCfg = Debug|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.TablebaseBuilderDebug|x86.Build.0 = Debug|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.TablebaseBuilderRelease|x64.ActiveCfg = Release|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.TablebaseBuilderRelease|x64.Build.0 = Release|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.TablebaseBuilderRelease|x86.ActiveCfg = Release|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.TablebaseBuilderRelease|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

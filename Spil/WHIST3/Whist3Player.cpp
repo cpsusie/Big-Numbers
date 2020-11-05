@@ -6,10 +6,13 @@
 #include "Whist3EPlayer.h"
 
 Whist3Player::Whist3Player(const String &name, Whist3PlayerCallback *callback, const String &dealerName)
-: m_callback(*callback)
+: m_callback(callback)
 , m_isClient(dealerName.length() != 0)
 , m_myName(name)
+, m_listen(INVALID_SOCKET)
 {
+  m_socket[0] = m_socket[1] = INVALID_SOCKET;
+
   m_myId     = 0;
   addPropertyChangeListener(callback);
   if(isClient()) {
@@ -29,18 +32,40 @@ Whist3Player::Whist3Player(const String &name, Whist3PlayerCallback *callback, c
   }
 }
 
-UINT Whist3Player::run() {
+#define CLOSESOCKET(s)      \
+{ if(s != INVALID_SOCKET) { \
+    tcpClose(s);            \
+    s = INVALID_SOCKET;     \
+  }                         \
+}
+
+Whist3Player::~Whist3Player() {
+  closeAllSockets();
+  if(m_callback->deleteOnEndOfUse()) {
+    delete m_callback;
+  }
+}
+
+void Whist3Player::closeAllSockets() {
+  CLOSESOCKET(m_listen   );
+  CLOSESOCKET(m_socket[0]);
+  CLOSESOCKET(m_socket[1]);
+}
+
+void Whist3Player::shutDown() {
+  setInterrupted();
+  closeAllSockets();
+}
+
+UINT Whist3Player::safeRun() {
   try {
     play();
-  } catch(TcpException e) {
+  } catch(...) {
     if(isClient()) {
       setState(STATE_DEALER_DISCONNECTED);
     } else {
       setState(STATE_CLIENT_DISCONNECTED);
     }
-  } catch(Exception e) {
-    log(_T("Exception:%s"),e.what());
-    exit(-1);
   }
   return 0;
 }
@@ -106,13 +131,14 @@ void Whist3Player::play() {
     default:
       throwException(_T("Ukendt gamestate:%d"),m_gameState);
     }
+    handleInterruptOrSuspend();
   }
 }
 
 void Whist3Player::handleStateInit() {
   if(isClient()) {
     m_myId = Communication::readClientId(m_socket[0],m_myName);
-    m_callback.init(*this);
+    m_callback->init(*this);
     setState(STATE_CONNECTING);
   }
 }
@@ -163,7 +189,7 @@ void Whist3Player::handleStateDealing() {
 
 void Whist3Player::handleStateDecideGame() {
   if(isDealer()) {
-    m_gameDesc = m_callback.getDecidedGame(*this);
+    m_gameDesc = m_callback->getDecidedGame(*this);
     writeGameDescription(m_socket[0]);
     writeGameDescription(m_socket[1]);
     writePlayerInTurn(m_socket[0]);
@@ -171,7 +197,7 @@ void Whist3Player::handleStateDecideGame() {
     m_gameHistory.addPlayedGame(m_gameDesc);
     setState(STATE_SELECT_CARDS);
   } else {
-    m_gameDesc = m_callback.getDecidedGame(*this);
+    m_gameDesc = m_callback->getDecidedGame(*this);
     writeGameDescription(m_socket[0]);
     m_gameHistory.addPlayedGame(m_gameDesc);
     setState(STATE_WAITING_FOR_SELECT);
@@ -179,7 +205,7 @@ void Whist3Player::handleStateDecideGame() {
 }
 
 void Whist3Player::handleStateSelectCards() {
-  m_markedCards = m_callback.getCardsToSubstitute(*this);
+  m_markedCards = m_callback->getCardsToSubstitute(*this);
   substituteMarkedCards();
   setState(STATE_ACCEPT_CARDS);
 }
@@ -296,7 +322,7 @@ void Whist3Player::handleStateAcceptCards() {
 }
 
 void Whist3Player::handleStatePlayCard() {
-  const int index = m_callback.getCardToPlay(*this);
+  const int index = m_callback->getCardToPlay(*this);
 
   String tmp;
   if(!validatePlayedCard(index, tmp)) {
@@ -415,7 +441,7 @@ void Whist3Player::handleConnection() {
 }
 
 void Whist3Player::startGame() {
-  m_callback.startGame(*this);
+  m_callback->startGame(*this);
   m_gameHistory.clear();
   startRound();
 }
@@ -426,7 +452,7 @@ void Whist3Player::startRound() {
   m_cardStatistic.clear();
   initTableCards(0);
 
-  m_callback.startRound(*this);
+  m_callback->startRound(*this);
 }
 
 void Whist3Player::sortMyHand() {
@@ -622,6 +648,5 @@ void Whist3Player::setState(GameState newState) {
   }
 
   m_prevState = m_gameState;
-  m_gameState = newState;
-  notifyPropertyChanged(PLAYER_STATE, &m_prevState, &m_gameState);
+  setProperty(PLAYER_STATE, m_gameState, newState);
 }

@@ -366,9 +366,9 @@ public:
   DecideGameTrainingSet(const String &src);
   void generateRandomTestData();
   void setSelectedGameAndPoint(GameType type, int pointsPerTrick);
-  void setSelectedGameAndPoint(const Array<double> &bpnOutput);
-  Array<double> &getBpnInput( Array<double> &input ) const;
-  Array<double> &getBpnOutput(Array<double> &output) const;
+  void setSelectedGameAndPoint(const CompactDoubleArray &bpnOutput);
+  CompactDoubleArray &getBpnInput( CompactDoubleArray &input ) const;
+  CompactDoubleArray &getBpnOutput(CompactDoubleArray &output) const;
 
   const CardHand &getHand() const {
     return m_hand;
@@ -398,7 +398,7 @@ public:
 
 class DecideGameBpn : public Bpn {
 private:
-  static Array<int> getLayerCount();
+  static CompactIntArray getLayerCount();
   static String getFileName();
 public:
   DecideGameBpn();

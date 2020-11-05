@@ -1,7 +1,7 @@
 #pragma once
 
 #include <MyString.h>
-#include <Thread.h>
+#include <InterruptableRunnable.h>
 #include <PropertyContainer.h>
 #include <Tcp.h>
 #include "GameTypes.h"
@@ -24,11 +24,12 @@ public:
   virtual GameDescription getDecidedGame(       const Whist3Player &player) = 0;
   virtual CardIndexSet    getCardsToSubstitute( const Whist3Player &player) = 0;
   virtual UINT            getCardToPlay(        const Whist3Player &player) = 0;
-  void handlePropertyChanged(const class PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
+  virtual bool            deleteOnEndOfUse()    const                       = 0;
+  void handlePropertyChanged(const class PropertyContainer *source, int id, const void *oldValue, const void *newValue) override {
   }
 };
 
-class Whist3Player : public Thread, public PropertyContainer {
+class Whist3Player : public InterruptableRunnable, public PropertyContainer {
 private:
   const bool             m_isClient;
   const String           m_myName;
@@ -50,9 +51,10 @@ private:
   CardIndexSet           m_markedCards;
   CardCount              m_cardCount;
   CardStatistic          m_cardStatistic;
-  Whist3PlayerCallback  &m_callback;
+  Whist3PlayerCallback  *m_callback;
 
   void handleConnection();
+  void closeAllSockets();
   void sortMyHand();
   void unmarkAllCards();
   void markCard(  UINT index);
@@ -72,8 +74,6 @@ private:
 
   void initTableCards(int player0);
   void updateCardCount();
-  void updatePlayedGames();
-  void updateScoreList();
   void substituteMarkedCards();
   void playCard(UINT index);
 
@@ -96,78 +96,30 @@ private:
 
   void play();
 public:
-  Whist3Player(const String &name, Whist3PlayerCallback *callback, const String &dealerName = EMPTYSTRING); // if dealerName = "" I am the dealer
-  UINT run();
+  // if dealerName = "" I am the dealer
+  Whist3Player(const String &name, Whist3PlayerCallback *callback, const String &dealerName = EMPTYSTRING);
+  ~Whist3Player() override;
+  UINT safeRun()  override;
+  void shutDown();
 
   void markUnmarkCard(UINT index);
-
-  bool isCardMarked(  UINT index) {
-    return m_markedCards.contains(index);
-  }
-
-  bool isClient() const {
-    return m_isClient;
-  }
-
-  bool isDealer() const {
-    return !m_isClient;
-  }
-
-  int getPlayerId() const {
-    return m_myId;
-  }
-
+  bool isCardMarked(  UINT index)                 { return m_markedCards.contains(index);  }
+  bool isClient()                           const { return m_isClient;       }
+  bool isDealer()                           const { return !m_isClient;      }
+  int  getPlayerId()                        const { return m_myId;           }
   bool validatePlayedCard(UINT index, String &msg) const; // validering af renonce
 
-  const PlayerList &getPlayerList() const {
-    return m_players;
-  }
-
-  const GameDescription &getGameDesc() const {
-    return m_gameDesc;
-  }
-
-  UINT getPlayerInTurn() const {
-    return m_playerInTurn;
-  }
-
-  GameState getState() const {
-    return m_gameState;
-  }
-
-  const CardHand &getHand() const {
-    return m_myHand;
-  }
-
-  const CardHand &getKat() const {
-    return m_kat;
-  }
-
-  const CardIndexSet &getMarkedCards() const {
-    return m_markedCards;
-  }
-
-  const CardsOnTable &getPlayed() const {
-    return m_played;
-  }
-
-  const CardsOnTable &getLastTrick() const {
-    return m_lastTrick;
-  }
-
-  const GameHistory &getGameHistory() const {
-    return m_gameHistory;
-  }
-
-  const TrickCount &getTrickCount() const {
-    return m_trickCount;
-  }
-
-  const CardCount &getCardCount() const {
-    return m_cardCount;
-  }
-
-  const CardStatistic getCardStatistic() const {
-    return m_cardStatistic;
-  }
+  const PlayerList      &getPlayerList()    const { return m_players;        }
+  const GameDescription &getGameDesc()      const { return m_gameDesc;       }
+  UINT                   getPlayerInTurn()  const { return m_playerInTurn;   }
+  GameState              getState()         const { return m_gameState;      }
+  const CardHand        &getHand()          const { return m_myHand;         }
+  const CardHand        &getKat()           const { return m_kat;            }
+  const CardIndexSet    &getMarkedCards()   const { return m_markedCards;    }
+  const CardsOnTable    &getPlayed()        const { return m_played;         }
+  const CardsOnTable    &getLastTrick()     const { return m_lastTrick;      }
+  const GameHistory     &getGameHistory()   const { return m_gameHistory;    }
+  const TrickCount      &getTrickCount()    const { return m_trickCount;     }
+  const CardCount       &getCardCount()     const { return m_cardCount;      }
+  const CardStatistic    getCardStatistic() const { return m_cardStatistic;  }
 };

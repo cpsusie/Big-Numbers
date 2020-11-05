@@ -1,16 +1,13 @@
 #pragma once
 
-#include <Thread.h>
-#include <Semaphore.h>
+#include <InterruptableRunnable.h>
 #include "GameTypes.h"
 
 class DecideGameTrainingDialog;
 
-class TrainerThread : public Thread {
+class TrainerThread : public InterruptableRunnable {
 private:
   DecideGameTrainingDialog    &m_dlg;
-  Semaphore                    m_sync;
-  volatile bool                m_doStop;
   DecideGameBpn                m_bpn;
   Array<DecideGameTrainingSet> m_trainingData;
   double                       m_errorSum;
@@ -19,11 +16,9 @@ private:
   void learnTrainingSet(const DecideGameTrainingSet &data);
 public:
   TrainerThread(DecideGameTrainingDialog *dlg);
-  ~TrainerThread();
-  UINT run();
-
+  ~TrainerThread() override;
+  UINT safeRun() override;
   double getErrorSum() const;
-  void stopTraining();
 };
 
 class DecideGameTrainingDialog : public CDialog {

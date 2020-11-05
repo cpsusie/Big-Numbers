@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <Random.h>
 #include <Tokenizer.h>
+#include <ThreadPool.h>
 #include "Whist3.h"
 #include "DecideGameTrainingDialog.h"
 #include "CardBitmap.h"
@@ -157,7 +158,7 @@ void DecideGameTrainingDialog::OnButtontrain() {
   if(m_trainerThread == nullptr) {
     try {
       m_trainerThread = new TrainerThread(this); TRACE_NEW(m_trainerThread);
-      m_trainerThread->start();
+      ThreadPool::executeNoWait(*m_trainerThread);
       GetDlgItem(IDC_BUTTONTRAIN)->SetWindowText(_T("St&op training"));
       startTimer();
     } catch(Exception e) {
@@ -165,10 +166,8 @@ void DecideGameTrainingDialog::OnButtontrain() {
     }
   } else {
     stopTimer();
-    m_trainerThread->stopTraining();
-    while(m_trainerThread->stillActive());
+    m_trainerThread->setInterrupted();
     SAFEDELETE(m_trainerThread);
-    m_trainerThread = nullptr;
     m_bpn.load();
     GetDlgItem(IDC_BUTTONTRAIN)->SetWindowText(_T("S&tart training"));
   }
@@ -250,9 +249,8 @@ void DecideGameTrainingDialog::stopTimer() {
   }
 }
 
-TrainerThread::TrainerThread(DecideGameTrainingDialog *dlg) : m_dlg(*dlg), m_sync(0) {
+TrainerThread::TrainerThread(DecideGameTrainingDialog *dlg) : m_dlg(*dlg) {
   m_trainingData = DecideGameTrainingSet::loadTrainingData();
-  m_doStop = false;
 }
 
 TrainerThread::~TrainerThread() {
@@ -262,22 +260,22 @@ double TrainerThread::getErrorSum() const {
   return m_errorSum;
 }
 
-UINT TrainerThread::run() {
+UINT TrainerThread::safeRun() {
   m_errorSum = 0;
-  while(!m_doStop) {
-    double errorSum = 0;
-    for(size_t i = 0; i < m_trainingData.size(); i++) {
-      m_bpn.learn(m_trainingData[i]);
-      errorSum += m_bpn.getPatternError(m_trainingData[i]);
+  try {
+    for(;;) {
+      handleInterruptOrSuspend();
+      double errorSum = 0;
+      for(size_t i = 0; i < m_trainingData.size(); i++) {
+        m_bpn.learn(m_trainingData[i]);
+        errorSum += m_bpn.getPatternError(m_trainingData[i]);
+      }
+      m_errorSum = errorSum;
     }
-    m_errorSum = errorSum;
+    m_bpn.save();
+  } catch(...) {
+    m_bpn.save();
+    throw;
   }
-  m_bpn.save();
-  m_sync.notify();
   return 0;
-}
-
-void TrainerThread::stopTraining() {
-  m_doStop = true;
-  m_sync.wait();
 }

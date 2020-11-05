@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <Random.h>
 #include <Process.h>
+#include <ThreadPool.h>
 #include "Whist3.h"
 #include "CardBitmap.h"
 #include "Whist3Dialog.h"
@@ -12,30 +13,44 @@
 
 class CAboutDlg : public CDialog {
 public:
-  CAboutDlg();
   enum { IDD = IDD_ABOUTBOX };
-
+  CAboutDlg() : CDialog(IDD) {
+  }
 protected:
   DECLARE_MESSAGE_MAP()
 };
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CWhist3Dialog::CWhist3Dialog(CWnd *pParent) : CDialog(CWhist3Dialog::IDD, pParent), m_sync(0) {
-  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
+  m_hIcon  = theApp.LoadIcon(IDR_MAINFRAME);
+  m_player = nullptr;
 
   IdentifyDialog dlg;
   dlg.DoModal();
   try {
     const Options &options = getOptions();
-    m_player = new Whist3Player(options.m_myName, this, options.m_connected ? options.m_dealerName : EMPTYSTRING);
+    m_player = new Whist3Player(options.m_myName, this, options.m_connected ? options.m_dealerName : EMPTYSTRING); TRACE_NEW(m_player);
   } catch(Exception e) {
     fatalError(_T("%s"),e.what());
+    exit(-1);
   }
+}
+
+
+void CWhist3Dialog::OnDestroy() {
+  __super::OnDestroy();
+
+  if(m_player) {
+    m_player->setInterrupted();
+    SAFEDELETE(m_player);
+  }
+  for(auto it = m_computerPlayers.getIterator(); it.hasNext();) {
+    Whist3Player *computerPlayer = it.next();
+    SAFEDELETE(computerPlayer);
+  }
+  m_computerPlayers.clear();
 }
 
 void CWhist3Dialog::DoDataExchange(CDataExchange *pDX) {
@@ -62,6 +77,8 @@ BEGIN_MESSAGE_MAP(CWhist3Dialog, CDialog)
   ON_BN_CLICKED(IDC_SUBSTITUTE_OK , OnSubstituteOk    )
   ON_BN_CLICKED(IDC_START_BUTTON  , OnStartButton     )
   ON_MESSAGE(ID_MSG_STATECHANGE   , OnMsgStateChanged )
+  ON_WM_DESTROY()
+  ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 void CWhist3Dialog::OnSysCommand(UINT nID, LPARAM lParam) {
@@ -81,7 +98,6 @@ void CWhist3Dialog::fatalError(_In_z_ _Printf_format_string_ TCHAR const * const
   va_start(argptr, format);
   vshowMessageBox(MB_ICONERROR, format, argptr);
   va_end(argptr);
-  exit(-1);
 }
 
 BOOL CWhist3Dialog::OnInitDialog() {
@@ -108,7 +124,7 @@ BOOL CWhist3Dialog::OnInitDialog() {
   createWorkBitmap(rect.Size());
   m_backgroundBrush = CreateSolidBrush(RGB(0,128,0));
 
-  m_player->start();
+  ThreadPool::executeNoWait(*m_player);
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -116,16 +132,16 @@ BOOL CWhist3Dialog::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return TRUE;
   }
-
   return __super::PreTranslateMessage(pMsg);
 }
 
 void CWhist3Dialog::createWorkBitmap(const CSize &size) {
-  if(m_workDC.m_hDC != nullptr)
+  if(m_workDC.m_hDC != nullptr) {
     m_workDC.DeleteDC();
-  if(m_workBitmap.m_hObject != nullptr)
+  }
+  if(m_workBitmap.m_hObject != nullptr) {
     m_workBitmap.DeleteObject();
-
+  }
   CClientDC screen(this);
   m_workDC.CreateCompatibleDC(&screen);
   m_workSize = size;
@@ -278,8 +294,8 @@ String CWhist3Dialog::getPlayerInfo(int playerId) const {
 
 void CWhist3Dialog::handlePropertyChanged(const class PropertyContainer *source, int id, const void *oldValue, const void *newValue) { // Executed by player-thread. not WinThread.
   const Whist3Player &player   = *(const Whist3Player*)source;
-  const GameState     oldState = *(const GameState*)oldValue;
-  const GameState     newState = *(const GameState*)newValue;
+  const GameState     oldState = *(const GameState   *)oldValue;
+  const GameState     newState = *(const GameState   *)newValue;
   switch(newState) {
   case STATE_ACCEPT_CARDS:
     postStateChange(oldState, newState);
@@ -410,14 +426,17 @@ LRESULT CWhist3Dialog::OnMsgStateChanged(WPARAM wp, LPARAM lp) {
 
   case STATE_DEALER_DISCONNECTED:
     fatalError(_T("Kortgiveren har forladt spillet. Kan ikke fortsætte"));
+    endApp();
     break;
 
   case STATE_CLIENT_DISCONNECTED:
     fatalError(_T("En spiller har forladt spillet. Kan ikke fortsætte"));
+    endApp();
     break;
 
   default:
     fatalError(_T("Invalid gamestate:%d"), newState);
+    endApp();
     break;
   }
   return 0;
@@ -437,10 +456,11 @@ void CWhist3Dialog::setGameTypeMessage() {
 }
 
 void CWhist3Dialog::OnAskPlayAgain() {
-  if(MessageBox( _T("Vil du spille igen"),EMPTYSTRING, MB_YESNO + MB_ICONQUESTION) != IDYES) {
-    exit(0);
+  if(MessageBox( _T("Vil du spille igen"),EMPTYSTRING, MB_YESNO + MB_ICONQUESTION) == IDYES) {
+    m_sync.notify();
+  } else {
+    endApp();
   }
-  m_sync.notify();
 }
 
 void CWhist3Dialog::initTablePos(int myId) {
@@ -543,13 +563,21 @@ void CWhist3Dialog::OnGameSummary() {
 }
 
 void CWhist3Dialog::OnHelpAbout() {
-  CAboutDlg dlg;
-  dlg.DoModal();
+  CAboutDlg().DoModal();
+}
+
+void CWhist3Dialog::endApp() {
+  m_sync.notify();
+  if(m_player) {
+    m_player->shutDown();
+    m_player = nullptr;
+  }
+  EndDialog(IDOK);
 }
 
 void CWhist3Dialog::OnGameExit() {
   if(MessageBox( _T("Er du sikker på at du vil stoppe"),EMPTYSTRING, MB_YESNO + MB_ICONQUESTION) == IDYES) {
-    PostMessage(WM_QUIT);
+    endApp();
   }
 }
 
@@ -561,6 +589,11 @@ void CWhist3Dialog::OnOK() {
 void CWhist3Dialog::OnCancel() {
   OnGameExit();
 }
+
+void CWhist3Dialog::OnClose() {
+  OnGameExit();
+}
+
 
 static const TCHAR *someNames[] = {
   _T("Kaj")
@@ -598,15 +631,14 @@ static String selectRandomName(const String &name1, const String &name2) {
 
 void CWhist3Dialog::OnStartButton() {
   const PlayerList &playerList = m_player->getPlayerList();
-  const int count = playerList.getCount();
-  String myName = playerList.getName(0);
+  const int         count      = playerList.getCount();
+  const String      myName     = playerList.getName(0);
 
   if(count < 3) {   // start computer-spillere
     String name1 = selectRandomName(myName,playerList.getName(1));
-    startComputerPlayer(name1);
+    m_computerPlayers.add(startComputerPlayer(name1));
     if(count == 1) {
-      String name2 = selectRandomName(myName,name1);
-      startComputerPlayer(name2);
+      m_computerPlayers.add(startComputerPlayer(selectRandomName(myName, name1)));
     }
   }
 }
