@@ -33,7 +33,8 @@ protected:
   // If isInterrupted(), die() is called, or else thread continues execution
   // Only thread itself should call this function, may cause deadlocks if not use with care
   void suspend();
-  // Should only be called by this (operate on currentthread)
+  // Should only be called by this on regular basis, to check if job has been interrupted or suspended
+  // call die if isInterrupted(), or suspend if isSuspended(), or else do nothing
   virtual void handleInterruptOrSuspend();
   // if job has to be started again, use this to reset
   void clearAllFlags() {
