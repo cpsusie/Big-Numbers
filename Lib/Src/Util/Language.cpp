@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <MyUtil.h>
 #include <FileVersion.h>
-#include <Semaphore.h>
+#include <FastSemaphore.h>
 #include <Language.h>
 
 String Language::getLanguageName() const { // strip country-name enclosed by (..)
@@ -39,7 +39,7 @@ static BOOL CALLBACK enumLocalsCallback(LPTSTR localsString) {
 
 const Array<Language> &Language::getSystemLanguages() { // static
   static Array<Language> result;
-  static Semaphore gate;
+  static FastSemaphore gate;
 
   gate.wait();
   try {
@@ -59,7 +59,7 @@ const Array<Language> &Language::getSystemLanguages() { // static
 
 const Array<Language> &Language::getSupportedLanguages() { // static
   static Array<Language> result;
-  static Semaphore gate;
+  static FastSemaphore gate;
 
   gate.wait();
   try {
