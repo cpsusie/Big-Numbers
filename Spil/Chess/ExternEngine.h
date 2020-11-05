@@ -170,7 +170,7 @@ private:
   }
 public:
   ExternEngine(Player player, const String &path);
- ~ExternEngine();
+ ~ExternEngine() override;
   void start(AbstractMoveReceiver *mr = nullptr); // only when mr!=nullptr, the thread will be started
   void quit();
   inline bool isStarting() const {
@@ -195,7 +195,7 @@ public:
   void  findBestMove(const Game &game, const TimeLimit &timeLimit);
   void  stopSearch();
   void  moveNow();
-  UINT run();
+  UINT run() override;
   String flagsToString() const;
   String toString() const;
   const EngineOptionDescriptionArray &getOptionDescriptionArray() const {

@@ -77,7 +77,7 @@ protected:
 public:
   RedirectingInputThread(FILE *input) : InputThread(input) {
   }
-  String getLine(int timeoutInMilliseconds = INFINITE) {
+  String getLine(int timeoutInMilliseconds = INFINITE) override {
     return InputThread::getLine(timeoutInMilliseconds).trim();
   }
 };
