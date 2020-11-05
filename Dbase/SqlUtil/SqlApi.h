@@ -244,6 +244,8 @@ public:
   String toString() const;
 };
 
+std::wostream &operator<<(std::wostream &out, const HostVarDescription &hv);
+
 class SqlApiVarList : public HostVarDescription {
 public:
   void          *sqldata;

@@ -28,6 +28,11 @@ String HostVarDescription::toString() const {
   return format(_T("<Type:%s, len:%u>"), getTypeString((DbFieldType)sqltype));
 }
 
+std::wostream &operator<<(std::wostream &out, const HostVarDescription &hv) {
+  out << hv.toString();
+  return out;
+}
+
 // ----------------------------------------------------------------------------------
 
 HostVarList::HostVarList() {
