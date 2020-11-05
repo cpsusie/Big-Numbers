@@ -1301,7 +1301,6 @@
     <ClInclude Include="..\..\Include\Math\Cube3D.h" />
     <ClInclude Include="..\..\Include\Math\CubeTemplate.h" />
     <ClInclude Include="..\..\Include\Math\Cube3DTransformation.h" />
-    <ClInclude Include="..\..\Include\Math\FixedSizeVector.h" />
     <ClInclude Include="..\..\Include\Math\CubeTransformationTemplate.h" />
     <ClInclude Include="..\..\Include\Math\Double64.h" />
     <ClInclude Include="..\..\Include\Math\Double80.h" />
@@ -1347,6 +1346,7 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\fft.h" />
     <ClInclude Include="..\..\Include\Math\Fixed.h" />
+    <ClInclude Include="..\..\Include\Math\FixedDimensionVector.h" />
     <ClInclude Include="..\..\Include\Math\FPU.h" />
     <ClInclude Include="..\..\Include\Math\Int128.h" />
     <ClInclude Include="..\..\Include\Math\Int128Net.h" />

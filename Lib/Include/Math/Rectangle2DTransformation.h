@@ -30,27 +30,27 @@ public:
     setScaleType(0, xScale);
     setScaleType(1, yScale);
   }
-  template<typename CT, typename PT, typename ST, typename S> Rectangle2DTransformationTemplate(const CubeTransformationTemplate<CT,PT,ST,S,2> &src)
+  template<typename CT, typename PT, typename ST, typename S> Rectangle2DTransformationTemplate(const CubeTransformationTemplate<CT,PT,ST,S, 2> &src)
     : CubeTransformationTemplate(src)
   {
   }
 
   template<typename PT1, typename ST1, typename S1
           ,typename PT2, typename ST2, typename S2>
-     Rectangle2DTransformationTemplate(const CubeTemplate<PT1,ST1,S1,2> &from
-                                      ,const CubeTemplate<PT2,ST2,S2,2> &to
+     Rectangle2DTransformationTemplate(const CubeTemplate<PT1,ST1,S1, 2> &from
+                                      ,const CubeTemplate<PT2,ST2,S2, 2> &to
                                       ,IntervalScale xScale = LINEAR, IntervalScale yScale = LINEAR)
   {
     setFromCube(from).setToCube(to).setScaleType(0, xScale).setScaleType(1, yScale);
   }
 
   // Return *this
-  template<typename PT, typename ST, typename S> Rectangle2DTransformationTemplate &setFromRectangle(const CubeTemplate<PT,ST,S,2> &rect) {
+  template<typename PT, typename ST, typename S> Rectangle2DTransformationTemplate &setFromRectangle(const CubeTemplate<PT,ST,S, 2> &rect) {
     setFromCube(rect);
     return *this;
   }
   // Return *this
-  template<typename PT, typename ST, typename S> Rectangle2DTransformationTemplate &setToRectangle(const CubeTemplate<PT,ST,S,2> &rect) {
+  template<typename PT, typename ST, typename S> Rectangle2DTransformationTemplate &setToRectangle(const CubeTemplate<PT,ST,S, 2> &rect) {
     setToCube(rect);
     return *this;
   }
@@ -73,7 +73,7 @@ public:
   }
 
   // Returns *this
-  template<typename T1, typename T2> Rectangle2DTransformationTemplate &zoom(const FixedSizeVectorTemplate<T1, 2> &v, const T2 &factor, int flags = X_AXIS | Y_AXIS, bool pInToRectangle=true) {
+  template<typename T1, typename T2> Rectangle2DTransformationTemplate &zoom(const FixedDimensionVector<T1, 2> &v, const T2 &factor, int flags = X_AXIS | Y_AXIS, bool pInToRectangle=true) {
     if(flags & X_AXIS) {
       (*this)[0].zoom(v[0], factor, pInToRectangle);
     }

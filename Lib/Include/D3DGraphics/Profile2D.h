@@ -12,18 +12,18 @@ public:
   }
   template<typename V> Vertex2DTemplate(const Vertex2DTemplate<V> &v) : m_pos(v.pos), m_normal(v.normal) {
   }
-  template<typename P, typename N> Vertex2DTemplate(const FixedSizeVectorTemplate<P,2> &pos, const FixedSizeVectorTemplate<N,2> &normal)
+  template<typename P, typename N> Vertex2DTemplate(const FixedDimensionVector<P, 2> &pos, const FixedDimensionVector<N, 2> &normal)
     : m_pos(pos), m_normal(normal)
   {
   }
   template<typename V> Vertex2DTemplate<T> &operator=(const Vertex2DTemplate<V> &v) {
     return setPos(v.pos).setNormal(v.m_normal);
   }
-  template<typename P> Vertex2DTemplate<T> &setPos(const FixedSizeVectorTemplate<P,2> &pos) {
+  template<typename P> Vertex2DTemplate<T> &setPos(const FixedDimensionVector<P, 2> &pos) {
     m_pos = pos;
     return *this;
   }
-  template<typename N> Vertex2DTemplate<T> &setNormal(const FixedSizeVectorTemplate<N,2> &normal) {
+  template<typename N> Vertex2DTemplate<T> &setNormal(const FixedDimensionVector<N, 2> &normal) {
     m_normal = normal;
     return *this;
   }

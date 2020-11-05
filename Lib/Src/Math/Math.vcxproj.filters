@@ -514,10 +514,10 @@
     <ClInclude Include="..\..\Include\Math\Cube3DTransformation.h">
       <Filter>Source Files\Geometri\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\FixedSizeVector.h">
+    <ClInclude Include="..\..\Include\Math\Rectangle2DTransformation.h">
       <Filter>Source Files\Geometri\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Rectangle2DTransformation.h">
+    <ClInclude Include="..\..\Include\Math\FixedDimensionVector.h">
       <Filter>Source Files\Geometri\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

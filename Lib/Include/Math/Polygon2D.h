@@ -4,7 +4,7 @@
 
 class Polygon2D : public Point2DArray {
 public:
-  template<typename T> Polygon2D &move(const FixedSizeVectorTemplate<T, 2> &v) {
+  template<typename T> Polygon2D &move(const FixedDimensionVector<T, 2> &v) {
     (*this) += v;
     return *this;
   }

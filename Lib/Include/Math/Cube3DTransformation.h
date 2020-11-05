@@ -34,14 +34,14 @@ public:
     setScaleType(1, yScale);
     setScaleType(2, zScale);
   }
-  template<typename CT, typename PT, typename ST, typename S> Cube3DTransformationTemplate(const CubeTransformationTemplate<CT,PT,ST,S,3> &src)
+  template<typename CT, typename PT, typename ST, typename S> Cube3DTransformationTemplate(const CubeTransformationTemplate<CT,PT,ST,S, 3> &src)
     : CubeTransformationTemplate(src)
   {
   }
   template<typename PT1, typename ST1, typename S1
           ,typename PT2, typename ST2, typename S2>
-     Cube3DTransformationTemplate(const CubeTemplate<PT1,ST1,S1,3> &from
-                                 ,const CubeTemplate<PT2,ST2,S2,3> &to
+     Cube3DTransformationTemplate(const CubeTemplate<PT1,ST1,S1, 3> &from
+                                 ,const CubeTemplate<PT2,ST2,S2, 3> &to
                                  ,IntervalScale xScale = LINEAR, IntervalScale yScale = LINEAR, IntervalScale zScale = LINEAR)
   {
     setFromCube(from).setToCube(to).setScaleType(0, xScale).setScaleType(1, yScale).setScaleType(2, zScale);
@@ -61,7 +61,7 @@ public:
     return *this;
   }
   // Returns *this
-  template<typename T1, typename T2> Cube3DTransformationTemplate &zoom(const FixedSizeVectorTemplate<T1, 3> &v, const T2 &factor, int flags = X_AXIS | Y_AXIS | Z_AXIS, bool pInToCube=true) {
+  template<typename T1, typename T2> Cube3DTransformationTemplate &zoom(const FixedDimensionVector<T1, 3> &v, const T2 &factor, int flags = X_AXIS | Y_AXIS | Z_AXIS, bool pInToCube=true) {
     if(flags & X_AXIS) {
       (*this)[0].zoom(v[0], factor, pInToCube);
     }

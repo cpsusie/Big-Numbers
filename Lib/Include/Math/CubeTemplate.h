@@ -52,13 +52,13 @@ public:
 
   // Move this by offset +v
   // Return *this
-  template<typename S> CubeTemplate &operator+=(const FixedSizeVectorTemplate<S, dimension> &v) {
+  template<typename S> CubeTemplate &operator+=(const FixedDimensionVector<S, dimension> &v) {
     m_p0 += v;
     return *this;
   }
   // Move this by offset -v
   // Return *this
-  template<typename S> CubeTemplate &operator-=(const FixedSizeVectorTemplate<S, dimension> &v) {
+  template<typename S> CubeTemplate &operator-=(const FixedDimensionVector<S, dimension> &v) {
     m_p0 -= v;
     return *this;
   }
@@ -102,7 +102,7 @@ public:
     return p0() + size()/2;
   }
 
-  template<typename S> bool contains(const FixedSizeVectorTemplate<S, dimension> &v) const {
+  template<typename S> bool contains(const FixedDimensionVector<S, dimension> &v) const {
     for(UINT i = 0; i < dimension; i++) {
       if(!getInterval(i).contains(v[i])) {
         return false;
@@ -116,7 +116,7 @@ public:
 
   // Return v if v is inside or on edge/corner of cube
   // else return surface point on cube nearest to v
-  template<typename S> PointType getProjection(const FixedSizeVectorTemplate<S, dimension> &v) const {
+  template<typename S> PointType getProjection(const FixedDimensionVector<S, dimension> &v) const {
     PointType result;
     for(UINT i = 0; i < dimension; i++) {
       result[i] = minMax(v[i], getMin(i), getMax(i));
@@ -158,7 +158,7 @@ template<typename ISTREAMTYPE, typename PT, typename ST, typename T, UINT dimens
     in.setstate(std::ios::failbit);
     return in;
   }
-  FixedSizeVectorTemplate<T,dimension> p0, size;
+  FixedDimensionVector<T,dimension> p0, size;
   in >> p0;
   if(in.peek() == ',') {
     in.get();
@@ -220,11 +220,11 @@ public:
   explicit PointArrayTemplate(size_t capacity) : CompactArray<PointType>(capacity)
   {
   }
-  template<typename T> PointArrayTemplate(const CollectionBase<FixedSizeVectorTemplate<T, dimension> > &src) {
+  template<typename T> PointArrayTemplate(const CollectionBase<FixedDimensionVector<T, dimension> > &src) {
     setCapacity(src.size());
     addAll(src.getIterator());
   }
-  template<typename T> PointArrayTemplate &operator=(const CollectionBase<FixedSizeVectorTemplate<T, dimension> > &src) {
+  template<typename T> PointArrayTemplate &operator=(const CollectionBase<FixedDimensionVector<T, dimension> > &src) {
     if((void*)&src == (void*)this) {
       return *this;
     }
@@ -233,11 +233,11 @@ public:
     return *this;
   }
 
-  template<typename T> bool add(const FixedSizeVectorTemplate<T, dimension> &v) {
+  template<typename T> bool add(const FixedDimensionVector<T, dimension> &v) {
     return __super::add(v);
   }
 
-  template<typename T> PointArrayTemplate &operator+=(const FixedSizeVectorTemplate<T, dimension> &v) {
+  template<typename T> PointArrayTemplate &operator+=(const FixedDimensionVector<T, dimension> &v) {
     for(PointType *p = begin(), *endp = end(); p < endp;) {
       *(p++) += v;
     }

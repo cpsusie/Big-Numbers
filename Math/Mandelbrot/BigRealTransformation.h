@@ -21,7 +21,7 @@ public:
   inline DigitPool *getDigitPool() const {
     return cx().getDigitPool();
   }
-  template<typename T> BigRealSize2D &operator=(const FixedSizeVectorTemplate<T,2> &src) {
+  template<typename T> BigRealSize2D &operator=(const FixedDimensionVector<T, 2> &src) {
     DigitPool *dp = getDigitPool();
     cx() = BigReal(src.cx(),dp);
     cy() = BigReal(src.cy(),dp);
@@ -62,7 +62,7 @@ public:
   inline DigitPool *getDigitPool() const {
     return x().getDigitPool();
   }
-  template<typename T> BigRealSize2D &operator=(const FixedSizeVectorTemplate<T,2> &src) {
+  template<typename T> BigRealSize2D &operator=(const FixedDimensionVector<T, 2> &src) {
     DigitPool *dp = getDigitPool();
     cx() = BigReal(src.cx(),dp);
     cy() = BigReal(src.cy(),dp);

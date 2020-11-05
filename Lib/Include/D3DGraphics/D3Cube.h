@@ -19,11 +19,11 @@ public:
     : FloatCube3D(FloatPoint3D(minX, minY, minZ), FloatPoint3D(maxX, maxY, maxZ))
   {
   }
-  template<typename P, typename S> D3Cube(const PointTemplate<P,3> &lbn, const SizeTemplate<S,3> &size)
+  template<typename P, typename S> D3Cube(const PointTemplate<P, 3> &lbn, const SizeTemplate<S, 3> &size)
     : FloatCube3D(lbn, size)
   {
   }
-  template<typename S> D3Cube(const D3DXVECTOR3 &lbn, const SizeTemplate<S,3> &size)
+  template<typename S> D3Cube(const D3DXVECTOR3 &lbn, const SizeTemplate<S, 3> &size)
     : FloatCube3D(FloatPoint3D(lbn), size)
   {
   }

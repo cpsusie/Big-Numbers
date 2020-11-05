@@ -9,7 +9,7 @@ template<typename T> class Size3DTemplate : public SizeTemplate<T, 3> {
 public:
   inline Size3DTemplate() : SizeTemplate<T, 3>(0,0,0) {
   }
-  template<typename S> Size3DTemplate(const FixedSizeVectorTemplate<S, 3> &v)
+  template<typename S> Size3DTemplate(const FixedDimensionVector<S, 3> &v)
     : SizeTemplate<T, 3>(v[0],v[1],v[2])
   {
   }
@@ -17,7 +17,7 @@ public:
     : SizeTemplate<T, 3>(cx, cy, cz)
   {
   }
-  template<typename S> Size3DTemplate<T> &operator=(const FixedSizeVectorTemplate<S, 3> &v) {
+  template<typename S> Size3DTemplate<T> &operator=(const FixedDimensionVector<S, 3> &v) {
     __super::operator=(v);
     return *this;
   }
@@ -40,7 +40,7 @@ template<typename T> class Point3DTemplate : public PointTemplate<T, 3> {
 public:
   inline Point3DTemplate() : PointTemplate<T, 3>(0,0,0) {
   }
-  template<typename S> Point3DTemplate(const FixedSizeVectorTemplate<S, 3> &v)
+  template<typename S> Point3DTemplate(const FixedDimensionVector<S, 3> &v)
     : PointTemplate<T, 3>(v[0],v[1],v[2])
   {
   }
@@ -48,7 +48,7 @@ public:
     : PointTemplate<T, 3>(x, y, z)
   {
   }
-  template<typename S> Point3DTemplate<T> &operator=(const FixedSizeVectorTemplate<S, 3> &v) {
+  template<typename S> Point3DTemplate<T> &operator=(const FixedDimensionVector<S, 3> &v) {
     __super::operator=(v);
     return *this;
   }
@@ -74,17 +74,17 @@ public:
   inline const T &y() const { return (*this)[1];  }
   inline const T &z() const { return (*this)[2];  }
 
-  template<typename S> Point3DTemplate<T> operator+(const FixedSizeVectorTemplate<S, 3> &v) const {
+  template<typename S> Point3DTemplate<T> operator+(const FixedDimensionVector<S, 3> &v) const {
     return __super::operator+(v);
   }
-  template<typename S> Point3DTemplate<T> operator-(const FixedSizeVectorTemplate<S, 3> &v) const {
+  template<typename S> Point3DTemplate<T> operator-(const FixedDimensionVector<S, 3> &v) const {
     return __super::operator-(v);
   }
   template<typename S> Size3DTemplate<T>  operator-(const Point3DTemplate<S>           &p) const {
     return __super::operator-(p);
   }
   // Return dot product = *this * v
-  template<typename S> T                  operator*(const FixedSizeVectorTemplate<S, 3> &v) const {
+  template<typename S> T                  operator*(const FixedDimensionVector<S, 3> &v) const {
     return __super::operator*(v);
   }
 };

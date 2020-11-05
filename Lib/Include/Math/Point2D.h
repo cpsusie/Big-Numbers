@@ -10,7 +10,7 @@ template<typename T> class Size2DTemplate : public SizeTemplate<T, 2> {
 public:
   inline Size2DTemplate() : SizeTemplate<T, 2>(0,0) {
   }
-  template<typename S> Size2DTemplate(const FixedSizeVectorTemplate<S, 2> &v)
+  template<typename S> Size2DTemplate(const FixedDimensionVector<S, 2> &v)
     : SizeTemplate<T, 2>(v[0],v[1])
   {
   }
@@ -18,7 +18,7 @@ public:
     : SizeTemplate<T, 2>(cx, cy)
   {
   }
-  template<typename S> Size2DTemplate<T> &operator=(const FixedSizeVectorTemplate<S, 2> &v) {
+  template<typename S> Size2DTemplate<T> &operator=(const FixedDimensionVector<S, 2> &v) {
     __super::operator=(v);
     return *this;
   }
@@ -48,7 +48,7 @@ public:
   Size2DTemplate                      operator/(const T &k) const {
     return __super::operator/(k);
   }
-  template<typename S> T              operator*(const FixedSizeVectorTemplate<S, 2> &v) const {
+  template<typename S> T              operator*(const FixedDimensionVector<S, 2> &v) const {
     return __super::operator*(v);
   }
 };
@@ -61,7 +61,7 @@ template<typename T> class Point2DTemplate : public PointTemplate<T, 2> {
 public:
   inline Point2DTemplate() : PointTemplate<T, 2>(0,0) {
   }
-  template<typename S> Point2DTemplate(const FixedSizeVectorTemplate<S, 2> &v)
+  template<typename S> Point2DTemplate(const FixedDimensionVector<S, 2> &v)
     : PointTemplate<T, 2>(v[0],v[1])
   {
   }
@@ -73,7 +73,7 @@ public:
     : PointTemplate<T, 2>(fixedToFloat(p.x), fixedToFloat(p.y))
   {
   }
-  template<typename S> Point2DTemplate<T> &operator=(const FixedSizeVectorTemplate<S, 2> &v) {
+  template<typename S> Point2DTemplate<T> &operator=(const FixedDimensionVector<S, 2> &v) {
     __super::operator=(v);
     return *this;
   }
@@ -117,17 +117,17 @@ public:
   Point2DTemplate                        operator/(const T &k) const {
     return __super::operator/(k);
   }
-  template<typename S> Point2DTemplate   operator+(const FixedSizeVectorTemplate<S, 2> &v) const {
+  template<typename S> Point2DTemplate   operator+(const FixedDimensionVector<S, 2> &v) const {
     return __super::operator+(v);
   }
-  template<typename S> Point2DTemplate   operator-(const FixedSizeVectorTemplate<S, 2> &v) const {
+  template<typename S> Point2DTemplate   operator-(const FixedDimensionVector<S, 2> &v) const {
     return __super::operator-(v);
   }
   template<typename S> Size2DTemplate<T> operator-(const Point2DTemplate<S>            &p) const {
     return __super::operator-(p);
   }
   // Return dot product = *this * v
-  template<typename S> T                 operator*(const FixedSizeVectorTemplate<S, 2> &v) const {
+  template<typename S> T                 operator*(const FixedDimensionVector<S, 2> &v) const {
     return __super::operator*(v);
   }
   Point2DTemplate                        operator-() const {

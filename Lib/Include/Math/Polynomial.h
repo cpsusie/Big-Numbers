@@ -21,7 +21,7 @@ public:
     y = (Real)_y;
     w = (Real)_w;
   }
-  template<typename T> DataPoint(const FixedSizeVectorTemplate<T,2> &p) {
+  template<typename T> DataPoint(const FixedDimensionVector<T, 2> &p) {
     x = (Real)p[0];
     y = (Real)p[1];
     w = 1;

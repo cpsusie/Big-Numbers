@@ -2,25 +2,25 @@
 
 #include <BasicIncludes.h>
 #include "MathLib.h"
-#include "FixedSizeVector.h"
+#include "FixedDimensionVector.h"
 
 
-template<typename T, UINT dimension> class SizeTemplate : public FixedSizeVectorTemplate<T, dimension> {
+template<typename T, UINT dimension> class SizeTemplate : public FixedDimensionVector<T, dimension> {
 public:
   inline SizeTemplate() {
   }
   // copy constructor
-  template<typename S> SizeTemplate(const FixedSizeVectorTemplate<S, dimension> &src)
-    : FixedSizeVectorTemplate<T, dimension>(src)
+  template<typename S> SizeTemplate(const FixedDimensionVector<S, dimension> &src)
+    : FixedDimensionVector<T, dimension>(src)
   {
   }
   // copy constructor
   template<typename S> SizeTemplate(const S *src)
-    : FixedSizeVectorTemplate<T, dimension>(src)
+    : FixedDimensionVector<T, dimension>(src)
   {
   }
   template<typename S, typename... Tail> inline SizeTemplate(const S &x0, Tail... tail)
-    : FixedSizeVectorTemplate<T, dimension>(x0, tail...)
+    : FixedDimensionVector<T, dimension>(x0, tail...)
   {
   }
   SizeTemplate                      operator*(const T &k) const {
@@ -29,30 +29,30 @@ public:
   SizeTemplate                      operator/(const T &k) const {
     return __super::operator/(k);
   }
-  template<typename S> T            operator*(const FixedSizeVectorTemplate<S, dimension> &v) const {
+  template<typename S> T            operator*(const FixedDimensionVector<S, dimension> &v) const {
     return __super::operator*(v);
   }
 };
 
-template<typename T, UINT dimension> class PointTemplate : public FixedSizeVectorTemplate<T, dimension> {
+template<typename T, UINT dimension> class PointTemplate : public FixedDimensionVector<T, dimension> {
 public:
   inline PointTemplate() {
   }
   // copy constructor
-  template<typename S> PointTemplate(const FixedSizeVectorTemplate<S, dimension> &src)
-    : FixedSizeVectorTemplate<T, dimension>(src)
+  template<typename S> PointTemplate(const FixedDimensionVector<S, dimension> &src)
+    : FixedDimensionVector<T, dimension>(src)
   {
   }
   // copy constructor
   template<typename S> PointTemplate(const S *src)
-    : FixedSizeVectorTemplate<T, dimension>(src)
+    : FixedDimensionVector<T, dimension>(src)
   {
   }
   template<typename S, typename... Tail> inline PointTemplate(const S &x0, Tail... tail)
-    : FixedSizeVectorTemplate<T, dimension>(x0, tail...)
+    : FixedDimensionVector<T, dimension>(x0, tail...)
   {
   }
-  template<typename S> PointTemplate            &operator=(const FixedSizeVectorTemplate<S, dimension> &v) {
+  template<typename S> PointTemplate            &operator=(const FixedDimensionVector<S, dimension> &v) {
     __super::operator=(v);
     return *this;
   }
@@ -62,18 +62,18 @@ public:
   PointTemplate                                  operator/(const T &k) const {
     return __super::operator/(k);
   }
-  template<typename S> PointTemplate             operator+(const FixedSizeVectorTemplate<S, dimension> &v) const {
+  template<typename S> PointTemplate             operator+(const FixedDimensionVector<S, dimension> &v) const {
     return v + *this;
   }
-  template<typename S> PointTemplate             operator-(const FixedSizeVectorTemplate<S, dimension> &v) const {
+  template<typename S> PointTemplate             operator-(const FixedDimensionVector<S, dimension> &v) const {
     return (PointTemplate<T, dimension>)__super::operator-(v);
   }
 
-  template<typename S> PointTemplate             &operator+=(const FixedSizeVectorTemplate<S, dimension> &v) {
+  template<typename S> PointTemplate             &operator+=(const FixedDimensionVector<S, dimension> &v) {
     __super::operator+=(v);
     return *this;
   }
-  template<typename S> PointTemplate             &operator-=(const FixedSizeVectorTemplate<S, dimension> &v) {
+  template<typename S> PointTemplate             &operator-=(const FixedDimensionVector<S, dimension> &v) {
     __super::operator-=(v);
     return *this;
   }
@@ -87,7 +87,7 @@ public:
   }
 
   // Return dot product = *this * s
-  template<typename S> T                          operator*(const FixedSizeVectorTemplate<S, dimension> &v) const {
+  template<typename S> T                          operator*(const FixedDimensionVector<S, dimension> &v) const {
     return __super::operator*(v);
   }
 };
@@ -145,7 +145,7 @@ public:
     addAll(src);
   }
 
-  template<typename S> PointRefArrayTemplate &operator+=(const FixedSizeVectorTemplate<S,dimension> &v) {
+  template<typename S> PointRefArrayTemplate &operator+=(const FixedDimensionVector<S,dimension> &v) {
     for(PointType **p = begin(), **endp = end(); p < endp;) {
       **(p++) += v;
     }

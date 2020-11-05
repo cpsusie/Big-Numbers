@@ -61,7 +61,7 @@ public:                                                                         
   template<typename TV>                         className &setPos(const TV &v) {                                                    \
     initPOS(v.x,v.y,v.z); return *this;                                                                                             \
   }                                                                                                                                 \
-  template<typename T>                          className &setPos(const FixedSizeVectorTemplate<T,3> &v) {                          \
+  template<typename T>                          className &setPos(const FixedDimensionVector<T, 3> &v) {                            \
     initPOS(v[0],v[1],v[2]); return *this;                                                                                          \
   }                                                                                                                                 \
   inline Vertex operator-() const                        { return Vertex(     -x,-y,-z); }                                          \
@@ -144,7 +144,7 @@ public:
   }
   inline TextureVertex(const D3DXVECTOR2 &vec) : u(vec.x), v(vec.y) {
   }
-  template<typename T> TextureVertex(const FixedSizeVectorTemplate<T,2> &p) : u((float)p[0]), v((float)p[1]) {
+  template<typename T> TextureVertex(const FixedDimensionVector<T, 2> &p) : u((float)p[0]), v((float)p[1]) {
   }
 };
 
@@ -174,7 +174,7 @@ public:
   template<typename TX, typename TY, typename TZ> Vertex(TX _x, TY _y, TZ _z) {
     initPOS(_x, _y, _z);
   }
-  template<typename T> Vertex(const FixedSizeVectorTemplate<T,3> &pos) {
+  template<typename T> Vertex(const FixedDimensionVector<T, 3> &pos) {
     initPOS(pos[0], pos[1], pos[2]);
   }
   inline Vertex(const D3DXVECTOR3 &v) : x(v.x), y(v.y), z(v.z) {
@@ -192,7 +192,7 @@ public:
 
   inline VertexNormal() {
   }
-  template<typename P, typename N> VertexNormal(const FixedSizeVectorTemplate<P,3> &pos, const FixedSizeVectorTemplate<N,3> &normal) {
+  template<typename P, typename N> VertexNormal(const FixedDimensionVector<P, 3> &pos, const FixedDimensionVector<N, 3> &normal) {
     initPOS(   pos[   0], pos[   1], pos[   2]);
     initNORMAL(normal[0], normal[1], normal[2]);
   }

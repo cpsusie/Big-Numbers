@@ -78,14 +78,14 @@ public:
     return !(*this == rhs);
   }
 
-  template<typename S> PointType forwardTransform(const FixedSizeVectorTemplate<S, dimension> &v) const {
+  template<typename S> PointType forwardTransform(const FixedDimensionVector<S, dimension> &v) const {
     PointType result;
     for(UINT i = 0; i < dimension; i++) {
       result[i] = m_e[i]->forwardTransform(v[i]);
     }
     return result;
   }
-  template<typename S> PointType backwardTransform(const FixedSizeVectorTemplate<S, dimension> &v) const {
+  template<typename S> PointType backwardTransform(const FixedDimensionVector<S, dimension> &v) const {
     PointType result;
     for(UINT i = 0; i < dimension; i++) {
       result[i] = m_e[i]->backwardTransform(v[i]);
