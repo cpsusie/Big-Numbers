@@ -2,7 +2,7 @@
 #include <Math/Double80.h>
 #include <MyString.h>
 
-template<typename T, UINT dimension> class FixedSizeVectorTemplate {
+template<typename T, UINT dimension> class FixedDimensionVector {
 private:
   T m_v[dimension];
 
@@ -16,10 +16,10 @@ private:
     initList(i+1, tail...);
   }
 public:
-  inline FixedSizeVectorTemplate() {
+  inline FixedDimensionVector() {
   }
   // copy constructor
-  template<typename S> FixedSizeVectorTemplate(const FixedSizeVectorTemplate<S, dimension> &src) {
+  template<typename S> FixedDimensionVector(const FixedDimensionVector<S, dimension> &src) {
     const S *sp   = src.begin();
     const T *endp = end();
     for(T *dp = begin(); dp < endp;) {
@@ -27,7 +27,7 @@ public:
     }
   }
   // copy constructor
-  template<typename S> FixedSizeVectorTemplate(const S *src) {
+  template<typename S> FixedDimensionVector(const S *src) {
     const S *sp   = src;
     const T *endp = end();
     for(T *dp = begin(); dp < endp;) {
@@ -35,12 +35,12 @@ public:
     }
   }
 
-  template<typename S, typename... Tail> inline FixedSizeVectorTemplate(const S &x0, Tail... tail) {
+  template<typename S, typename... Tail> inline FixedDimensionVector(const S &x0, Tail... tail) {
     initList(0, x0, tail...);
   }
   // Assignment
   // return *this
-  template<typename S> FixedSizeVectorTemplate<T, dimension> &operator=(const FixedSizeVectorTemplate<S, dimension> &src) {
+  template<typename S> FixedDimensionVector<T, dimension> &operator=(const FixedDimensionVector<S, dimension> &src) {
     const S *sp   = src.begin();
     const T *endp = end();
     for(T *dp = begin(); dp < endp;) {
@@ -78,8 +78,8 @@ public:
   }
 
   // Return *this * k
-  template<typename S> FixedSizeVectorTemplate<T, dimension> operator*(const S &k) const {
-    FixedSizeVectorTemplate<T, dimension> result;
+  template<typename S> FixedDimensionVector<T, dimension> operator*(const S &k) const {
+    FixedDimensionVector<T, dimension> result;
     const T                               tmp = (T)k;
     T *dp = result.begin();
     for(const T vk : m_v) {
@@ -87,13 +87,13 @@ public:
     }
     return result;
   }
-  template<typename S> friend inline FixedSizeVectorTemplate<T, dimension> operator*(const S &k, const FixedSizeVectorTemplate<T, dimension> &s) {
+  template<typename S> friend inline FixedDimensionVector<T, dimension> operator*(const S &k, const FixedDimensionVector<T, dimension> &s) {
     return s * k;
   }
 
   // Return *this / k
-  template<typename S> FixedSizeVectorTemplate<T, dimension> operator/(const S &k) const {
-    FixedSizeVectorTemplate<T, dimension> result;
+  template<typename S> FixedDimensionVector<T, dimension> operator/(const S &k) const {
+    FixedDimensionVector<T, dimension> result;
     const T                               tmp = (T)k;
     T *dp = result.begin();
     for(const T vk : m_v) {
@@ -104,7 +104,7 @@ public:
 
   // operator*=, /= by scalar
   // Return *this
-  template<typename S> FixedSizeVectorTemplate<T, dimension> &operator*=(const S &k) {
+  template<typename S> FixedDimensionVector<T, dimension> &operator*=(const S &k) {
     const T tmp = (T)k, *endp = end();
     for(T *vp = begin(); vp < endp;) {
       *(vp++) *= tmp;
@@ -113,7 +113,7 @@ public:
   }
 
   // Return *this
-  template<typename S> FixedSizeVectorTemplate<T, dimension> &operator/=(const S &k) {
+  template<typename S> FixedDimensionVector<T, dimension> &operator/=(const S &k) {
     const T tmp = (T)k, *endp = end();
     for(T *vp = begin(); vp < endp;) {
       *(vp++) /= tmp;
@@ -122,8 +122,8 @@ public:
   }
 
   // Return *this + s
-  template<typename S> FixedSizeVectorTemplate<T, dimension> operator+(const FixedSizeVectorTemplate<S, dimension> &s) const {
-    FixedSizeVectorTemplate<T, dimension> result;
+  template<typename S> FixedDimensionVector<T, dimension> operator+(const FixedDimensionVector<S, dimension> &s) const {
+    FixedDimensionVector<T, dimension> result;
     const S *sp = s.begin();
     T       *dp = result.begin();
     for(const T vk : m_v) {
@@ -132,8 +132,8 @@ public:
     return result;
   }
   // Return *this - s
-  template<typename S> FixedSizeVectorTemplate<T, dimension> operator-(const FixedSizeVectorTemplate<S, dimension> &v) const {
-    FixedSizeVectorTemplate<T, dimension> result;
+  template<typename S> FixedDimensionVector<T, dimension> operator-(const FixedDimensionVector<S, dimension> &v) const {
+    FixedDimensionVector<T, dimension> result;
     const S *sp = s.begin();
     T       *dp = result.begin();
     for(const T vk : m_v) {
@@ -144,8 +144,8 @@ public:
 
   // Unary mius
   // Return -(*this)
-  FixedSizeVectorTemplate<T, dimension> operator-() const {
-    FixedSizeVectorTemplate<T, dimension> result;
+  FixedDimensionVector<T, dimension> operator-() const {
+    FixedDimensionVector<T, dimension> result;
     T *dp = result.begin();
     for(const T vk : m_v) {
       *(dp++) = -vk;
@@ -155,7 +155,7 @@ public:
 
   // Vector operator+=, -=
   // Return *this
-  template<typename S> FixedSizeVectorTemplate<T, dimension> &operator+=(const FixedSizeVectorTemplate<S, dimension> &s) {
+  template<typename S> FixedDimensionVector<T, dimension> &operator+=(const FixedDimensionVector<S, dimension> &s) {
     const S *sp   = s.begin();
     const T *endp = end();
     for(T *vp = begin(); vp < endp;) {
@@ -165,7 +165,7 @@ public:
   }
 
   // Return *this
-  template<typename S> FixedSizeVectorTemplate<T, dimension> &operator-=(const FixedSizeVectorTemplate<S, dimension> &s) {
+  template<typename S> FixedDimensionVector<T, dimension> &operator-=(const FixedDimensionVector<S, dimension> &s) {
     const S *sp   = s.begin();
     const T *endp = end();
     for(T *vp = begin(); vp < endp;) {
@@ -175,7 +175,7 @@ public:
   }
 
   // Return dot product = *this * s
-  template<typename S> T operator*(const FixedSizeVectorTemplate<S, dimension> &s) const {
+  template<typename S> T operator*(const FixedDimensionVector<S, dimension> &s) const {
     T sum = 0;
     const S *sp = s.begin();
     for(const T vk : m_v) {
@@ -195,7 +195,7 @@ public:
 
   // Divide this by it's length to make it a unit-vector. leave unchanged if = 0-vector
   // Return *this
-  FixedSizeVectorTemplate<T, dimension> &normalize() {
+  FixedDimensionVector<T, dimension> &normalize() {
     const T l = length();
     if(l != (T)0) {
       *this /= l;
@@ -211,7 +211,7 @@ public:
     return v;
   }
 
-  inline bool operator==(const FixedSizeVectorTemplate<T, dimension> &s) const {
+  inline bool operator==(const FixedDimensionVector<T, dimension> &s) const {
     const S *sp = s.begin();
     for(T vk : m_v) {
       if(vk != *(sp++)) {
@@ -220,7 +220,7 @@ public:
     }
     return true;
   }
-  inline bool operator!=(const FixedSizeVectorTemplate<T, dimension> &s) const {
+  inline bool operator!=(const FixedDimensionVector<T, dimension> &s) const {
     return !(*this == s);
   }
 
@@ -236,9 +236,9 @@ public:
   }
 };
 
-typedef FixedSizeVectorTemplate<float   , 3> FVector3D;
-typedef FixedSizeVectorTemplate<double  , 3> DVector3D;
-typedef FixedSizeVectorTemplate<Double80, 3> D80Vector3D;
+typedef FixedDimensionVector<float   , 3> FVector3D;
+typedef FixedDimensionVector<double  , 3> DVector3D;
+typedef FixedDimensionVector<Double80, 3> D80Vector3D;
 
 int main(int argc, TCHAR **argv) {
   const DVector3D v1(DBL80_MAX, DBL80_MIN, DBL80_EPSILON);

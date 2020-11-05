@@ -89,7 +89,7 @@ public:
   virtual void        selfTest();
   void                dumpAll();
   void                dumpAsCodeTable(const String &fileName = EMPTYSTRING) const;
-  virtual String      getTestLabel() const = nullptr;
+  virtual String      getTestLabel() const = 0;
 };
 
 void ExperimentalPow10Calculator::selfTest() {
@@ -238,7 +238,7 @@ public:
   AvgPow10Cache();
   ~AvgPow10Cache();
 
-  Double80 pow10(int p) const;
+  Double80 pow10(int p) const override;
   inline NumberInterval<UINT> getLowInterval() const {
     return NumberInterval<UINT>(m_rawCacheArray[0]->getLowSize(), m_rawCacheArray.last()->getLowSize());
   }
@@ -255,9 +255,9 @@ public:
   void setavgAllMode(bool on) {
     m_avgAllMode = on;
   }
-  void selfTest();
+  void selfTest() override;
 
-  String getTestLabel() const {
+  String getTestLabel() const override {
     if(m_avgAllMode) {
       return _T("average of all");
     }
@@ -338,13 +338,13 @@ private:
   int                    m_low;
 public:
   BigRealGeneratedPow10Cache();
-  Double80 pow10(int p) const {
+  Double80 pow10(int p) const override {
     return (p < m_low) ? m_p10Table[0] * pow10(p - m_low) : m_p10Table[p - m_low];
   }
-  String getTestLabel() const {
+  String getTestLabel() const override {
     return _T("BigReal generated pow10-cache");
   }
-  void selfTest();
+  void selfTest() override;
 };
 
 BigRealGeneratedPow10Cache::BigRealGeneratedPow10Cache() {
@@ -391,16 +391,16 @@ public:
   Double80 pow5(int p) const {
     return (p < m_low) ? m_p5Table[0] * pow10(p - m_low) : m_p5Table[p - m_low];
   }
-  Double80 pow10(int p) const {
+  Double80 pow10(int p) const override {
     const Double80 p5    = pow5(p);
     const int      expo2 = getExpo2(p5);
     return FloatFields(FT_DOUBLE80, false, FloatFields::expo2ToExpoField(FT_DOUBLE80, expo2 + p), getSignificand(p5)).getDouble80();
   }
 
-  String getTestLabel() const {
+  String getTestLabel() const override {
     return _T("BigReal generated pow5-cache");
   }
-  void selfTest();
+  void selfTest() override;
 };
 
 BigRealGeneratedPow5Cache::BigRealGeneratedPow5Cache() {
