@@ -149,7 +149,7 @@ String toString(const GridElement &ge);
 class TransitionGrid {
 private:
   const CSize                 m_winSize;
-  RectangleTransformation     m_tr;
+  Rectangle2DTransformation   m_tr;
   MatrixTemplate<GridElement> m_grid;
   UINT                        m_distMatrix[3][3];
   int                         m_horzDist, m_vertDist, m_diagDist;
