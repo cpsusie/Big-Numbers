@@ -1,6 +1,6 @@
 #pragma once
 
-#include <FastSemaphore.h>
+#include <Semaphore.h>
 #include "IdentifyDialog.h"
 #include "Whist3EPlayer.h"
 #include "Whist3Player.h"
@@ -19,7 +19,7 @@ public:
   CBitmap                      m_workBitmap;
   CDC                          m_workDC;
   CSize                        m_workSize;
-  FastSemaphore                m_sync;
+  Semaphore                    m_sync;
   String                       m_gameTypeMessage, m_message, m_stateMessage;
   GameDescription              m_tmpDescription;
   int                          m_tmpCardIndex;

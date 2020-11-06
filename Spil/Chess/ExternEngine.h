@@ -124,8 +124,8 @@ private:
   AbstractMoveReceiver        *m_moveReceiver;
   mutable Game                 m_game;
   BYTE                         m_stateFlags;
-  FastSemaphore                m_lock;
-  Semaphore                    m_threadIsStarted;
+  Semaphore                    m_lock;
+  SysSemaphore                 m_threadIsStarted;
 
   mutable int                  m_callLevel;
 

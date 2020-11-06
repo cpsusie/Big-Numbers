@@ -37,7 +37,7 @@ private:
   String                       m_progressMessage;
   CompactArray<_ProgressStep>  m_stepArray;
   double                       m_sumEstimatedTimeUnits, m_timeUnitsDone;
-  mutable FastSemaphore        m_gate;
+  mutable Semaphore            m_gate;
   Timestamp                    m_stepStartTime;
 
   void updateProgressMessage();

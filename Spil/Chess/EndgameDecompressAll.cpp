@@ -47,7 +47,7 @@ public:
 class Decompressor : public InterruptableRunnable, public ByteCounter {
 private:
   DecompressJobQueue   &m_jobQueue;
-  mutable FastSemaphore m_gate;
+  mutable Semaphore     m_gate;
   DecompressSingleJob   m_currentJob;
   String                m_currentMsg;
   UINT64                m_byteCounterStart, m_currentFileSize;

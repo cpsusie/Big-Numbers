@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <MyUtil.h>
 #include <Singleton.h>
-#include <FastSemaphore.h>
+#include <Semaphore.h>
 #include <FileNameSplitter.h>
 #include <FlagTraits.h>
 #include <Date.h>
@@ -27,7 +27,7 @@ static const TCHAR *timeFormats[] = {
 
 class DebugLogger : public Singleton {
 private:
-  mutable FastSemaphore m_lock;
+  mutable Semaphore     m_lock;
   FLAGTRAITS(DebugLogger, BYTE, m_flags);
   FILE                 *m_traceFile;
   TCHAR                *m_fileName; // has to be a pointer, so it will not be deallocated before any

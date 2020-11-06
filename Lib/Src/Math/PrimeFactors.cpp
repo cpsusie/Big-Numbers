@@ -1,13 +1,14 @@
 #include "pch.h"
 #include <Singleton.h>
-#include <FastSemaphore.h>
+#include <Semaphore.h>
 #include <Math/Double80.h>
 #include <Math/PrimeFactors.h>
 
 class Primes : public Singleton {
 private:
-  BitSet        m_primeSet;
-  FastSemaphore m_lock;
+  BitSet     m_primeSet;
+  Semaphore  m_lock;
+
   Primes() : Singleton(__TFUNCTION__), m_primeSet(3) {
     m_primeSet.add(2);
   }

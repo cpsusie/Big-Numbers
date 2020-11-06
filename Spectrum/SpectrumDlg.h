@@ -2,20 +2,20 @@
 
 #include <MFCUtil/CoordinateSystem/CoordinateSystem.h>
 #include <MFCUtil/MMCapture.h>
-#include <FastSemaphore.h>
+#include <Semaphore.h>
 
 class CSpectrumDlg : public CDialog, public CaptureReceiver {
 private:
-    HICON             m_hIcon;
-    HACCEL            m_accelTable;
-    CCoordinateSystem m_waveSystem, m_frequenceSystem;
-    MMCapture        *m_capture;
-    unsigned int      m_beepFrequence;
-    bool              m_firstSample;
-    FastSemaphore     m_sampleDone;
-    bool              m_handlingEvent;
+  HICON             m_hIcon;
+  HACCEL            m_accelTable;
+  CCoordinateSystem m_waveSystem, m_frequenceSystem;
+  MMCapture        *m_capture;
+  unsigned int      m_beepFrequence;
+  bool              m_firstSample;
+  Semaphore         m_sampleDone;
+  bool              m_handlingEvent;
 public:
-    CSpectrumDlg(CWnd *pParent = nullptr);
+  CSpectrumDlg(CWnd *pParent = nullptr);
   HWND getWindow() {
     return m_hWnd;
   }

@@ -92,10 +92,10 @@ class PrimeMonitor;
 
 class PrimeSearcher : public Runnable {
 private:
-  PrimeMonitor       &m_mon;
-  const int           m_id;
-  DigitPool          *m_pool;
-  FastSemaphore       m_terminated;
+  PrimeMonitor  &m_mon;
+  const int      m_id;
+  DigitPool     *m_pool;
+  Semaphore      m_terminated;
 public:
   PrimeSearcher(PrimeMonitor *mon, int id);
   ~PrimeSearcher();
@@ -113,7 +113,7 @@ private:
   MillerRabinHandler          *m_handler;
   CompactArray<PrimeSearcher*> m_jobs;
   std::atomic<BYTE>            m_runningCount;
-  mutable FastSemaphore        m_lock;
+  mutable Semaphore            m_lock;
   Array<BigInt>                m_result;
 public:
   PrimeMonitor(int digitCount, int threadCount, DigitPool *pool, MillerRabinHandler *handler);

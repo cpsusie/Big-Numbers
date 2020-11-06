@@ -212,7 +212,7 @@ public:
 
 class DigitPoolWithLock : public DigitPool {
 private:
-  FastSemaphore m_lock;
+  Semaphore m_lock;
 public:
   DigitPoolWithLock(int id, const String &name)
     : DigitPool(id, name)

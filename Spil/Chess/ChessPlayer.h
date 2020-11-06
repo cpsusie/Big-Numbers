@@ -35,7 +35,7 @@ private:
   SocketChannel           m_channel;
   SearchMoveResult        m_searchResult;
   String                  m_messageText;
-  mutable FastSemaphore   m_lock, m_terminated;
+  mutable Semaphore       m_lock, m_terminated;
   mutable BYTE            m_callLevel;
 
   void putRequest(ChessPlayerRequest request) {

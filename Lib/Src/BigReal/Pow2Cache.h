@@ -23,7 +23,7 @@ public:
 class Pow2Cache : public CompactHashMap<Pow2ArgumentKey, const BigReal*> {
   friend class BigRealResourcePool;
 private:
-  FastSemaphore         m_lock;
+  Semaphore             m_lock;
   // All values, saved in cache, uses m_digitpool
   // cand m_workPool is used to calculate new values
   DigitPool            *m_digitPool, *m_workPool;

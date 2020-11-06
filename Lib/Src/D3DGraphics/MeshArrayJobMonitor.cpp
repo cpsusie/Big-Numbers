@@ -17,11 +17,12 @@ public:
 
 class MeshArrayJobMonitor {
 private:
-  CompactStack<double>              m_jobStack;
-  CompactArray<MeshResult>          m_resultArray;
-  int                               m_jobCount;
-  mutable FastSemaphore             m_lock;
-  StringArray                       m_errors;
+  CompactStack<double>      m_jobStack;
+  CompactArray<MeshResult>  m_resultArray;
+  int                       m_jobCount;
+  mutable Semaphore         m_lock;
+  StringArray               m_errors;
+
   void clearResultQueue();
 public:
   const AbstractMeshArrayJobParameter &m_param;

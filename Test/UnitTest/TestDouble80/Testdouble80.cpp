@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include <Math.h>
-#include <FastSemaphore.h>
+#include <Semaphore.h>
 #include <float.h>
 #include <limits.h>
 #include <Date.h>
@@ -358,11 +358,13 @@ private:
   friend Double80 f80_2Ref(const Double80 &x, const Double80 &y);
   friend double   f64_1Val(double   x);
   friend double   f64_2Val(double   x, double   y);
+
   D801ValFunc   m_d80_1ValFunc;
   D802ValFunc   m_d80_2ValFunc;
   D641RefFunc   m_d64_1RefFunc;
   D642RefFunc   m_d64_2RefFunc;
-  FastSemaphore m_lock;
+  Semaphore     m_lock;
+
   void resetAllFunctions();
 public:
   inline RefFunctionsMonitor() {

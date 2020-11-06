@@ -92,9 +92,9 @@ class CalculatorPool;
 //: format(_T("MBCalc(%d)"), id))
 class MBCalculator : public Runnable {
 private:
-  static FastSemaphore  s_followBlackEdgeGate;
-  mutable FastSemaphore m_wakeup;
-  FastSemaphore         m_gate;
+  static Semaphore      s_followBlackEdgeGate;
+  mutable Semaphore     m_wakeup;
+  Semaphore             m_gate;
   const UINT            m_id;
   double                m_startTime, m_threadTime;
   bool                  m_edgeTracing;
@@ -187,7 +187,7 @@ private:
   static CalculatorSet  s_maxSet;
   static const TCHAR   *s_stateName[3];
   MBContainer          &m_mbc;
-  mutable FastSemaphore m_gate;
+  mutable Semaphore     m_gate;
   ULONG                 m_pendingFlags;
   ULONG                 m_suspendAllPendingFlags;
   ULONG                 m_killAllPendingFlags;

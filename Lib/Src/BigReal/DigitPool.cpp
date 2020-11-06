@@ -215,14 +215,14 @@ DigitPage::DigitPage(DigitPage *nextPage, Digit *nextDigit) {
 // Helper class to allocate vectors of BigReals with DigitPool != DEFAULT_DIGITPOOL
 class BigReal1 : public BigReal {
 public:
-  static FastSemaphore s_lock;
+  static Semaphore     s_lock;
   static DigitPool    *s_currentDigitPool; // protected by BigRealResourcePool wait()
   BigReal1() : BigReal(s_currentDigitPool) {
   }
 };
 
-FastSemaphore BigReal1::s_lock;
-DigitPool    *BigReal1::s_currentDigitPool = nullptr;
+Semaphore  BigReal1::s_lock;
+DigitPool *BigReal1::s_currentDigitPool = nullptr;
 
 BigReal *DigitPool::allocVector(size_t count) {
   BigReal1::s_lock.wait();

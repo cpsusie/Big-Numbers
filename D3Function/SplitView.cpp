@@ -19,7 +19,7 @@ BEGIN_MESSAGE_MAP(CSplitView, CView)
   ON_COMMAND(ID_FILE_PRINT_DIRECT, OnFilePrint)
 END_MESSAGE_MAP()
 
-static FastSemaphore s_gate;
+static Semaphore s_gate;
 CRuntimeClass *CSplitView::s_childClass1      = nullptr;
 CRuntimeClass *CSplitView::s_childClass2      = nullptr;
 SplitDirection CSplitView::s_splitDirection   = SPLIT_NONE;

@@ -115,7 +115,7 @@
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
     </ClCompile>
     <Midl>
-      <TypeLibraryName>.\Debug\TestFastSemaphore.tlb</TypeLibraryName>
+      <TypeLibraryName>.\Debug\TestSemaphore.tlb</TypeLibraryName>
     </Midl>
     <ResourceCompile>
       <Culture>0x0406</Culture>
@@ -157,7 +157,7 @@
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
     </ClCompile>
     <Midl>
-      <TypeLibraryName>.\Debug\TestFastSemaphore.tlb</TypeLibraryName>
+      <TypeLibraryName>.\Debug\TestSemaphore.tlb</TypeLibraryName>
     </Midl>
     <ResourceCompile>
       <Culture>0x0406</Culture>
@@ -198,7 +198,7 @@
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
     </ClCompile>
     <Midl>
-      <TypeLibraryName>.\Release\TestFastSemaphore.tlb</TypeLibraryName>
+      <TypeLibraryName>.\Release\TestSemaphore.tlb</TypeLibraryName>
     </Midl>
     <ResourceCompile>
       <Culture>0x0406</Culture>
@@ -239,7 +239,7 @@
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
     </ClCompile>
     <Midl>
-      <TypeLibraryName>.\Release\TestFastSemaphore.tlb</TypeLibraryName>
+      <TypeLibraryName>.\Release\TestSemaphore.tlb</TypeLibraryName>
     </Midl>
     <ResourceCompile>
       <Culture>0x0406</Culture>
@@ -271,7 +271,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="TestFastSemaphore.cpp" />
+    <ClCompile Include="TestSemaphore.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h" />

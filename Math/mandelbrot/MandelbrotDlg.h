@@ -62,7 +62,7 @@ private:
   // in pixels
   const CSize                  m_frameSize;
   ImageListJob                *m_imageListJob;
-  FastSemaphore                m_frameReady;
+  Semaphore                    m_frameReady;
   int                          m_totalFrameCount;
   int                          m_frameIndex;
   HBITMAP                      m_bm;
@@ -167,7 +167,7 @@ private:
   CEditColorMapDlgThread        *m_colorMapEditThread;
   RealRectangleTransformation    m_realTransform;
   BigRealRectangleTransformation m_bigRealTransform;
-  FastSemaphore                  m_gate;
+  Semaphore                      m_gate;
   bool                           m_hasResized;
   BitSet8                        m_runningTimerSet;
   SynchronizedQueue<CRect>       m_jobQueue;

@@ -37,10 +37,10 @@ public:
 
 class D3SceneContainer {
 private:
-  BYTE          m_renderLevel;
-  BYTE          m_accRenderFlags;
-  CameraSet     m_accCameraSet;
-  FastSemaphore m_lock;
+  BYTE       m_renderLevel;
+  BYTE       m_accRenderFlags;
+  CameraSet  m_accCameraSet;
+  Semaphore  m_lock;
   // no lock
   void renderAccumulatedAndReset();
 protected:

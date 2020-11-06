@@ -73,7 +73,7 @@ CellCountAccessor *MBCalculator::handlePending() {
   return m_mbc.getCCA();
 }
 
-FastSemaphore MBCalculator::s_followBlackEdgeGate;
+Semaphore MBCalculator::s_followBlackEdgeGate;
 
 bool MBCalculator::enterFollowBlackEdge(const CPoint &p, CellCountAccessor *cca) {
   m_pool.setState(m_id, CALC_SUSPENDED);

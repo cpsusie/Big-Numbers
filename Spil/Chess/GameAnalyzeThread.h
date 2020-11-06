@@ -3,7 +3,7 @@
 class CGameAnalyzeThread : public CWinThread {
     DECLARE_DYNCREATE(CGameAnalyzeThread)
 private:
-  FastSemaphore      m_gotParameters;
+  Semaphore          m_gotParameters;
   const String      *m_name;
   const GameKey     *m_startPosition;
   const GameHistory *m_history;

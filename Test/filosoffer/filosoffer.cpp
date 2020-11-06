@@ -67,7 +67,7 @@ public:
 class DinnerTable {
   CompactArray<Spoon*>     m_spoonArray;
   CompactArray<Philosof*>  m_philosofArray;
-  FastSemaphore            m_gate;
+  Semaphore                m_gate;
   UINT                     m_count;
   const ScreenPoint        m_center;
   DinnerTable(           const DinnerTable &src); // not implemented

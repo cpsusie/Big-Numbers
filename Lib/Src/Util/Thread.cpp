@@ -4,7 +4,7 @@
 #include <MyUtil.h>
 #include <Singleton.h>
 #include <Thread.h>
-#include <FastSemaphore.h>
+#include <Semaphore.h>
 #include <CompactHashMap.h>
 #include <eh.h>
 
@@ -46,13 +46,13 @@ void DefaultExceptionHandler::uncaughtException(Thread &thread, Exception &e) {
 // map ThreadId -> Thread*
 class ThreadMap : public Singleton, private CompactUIntHashMap<Thread*,256>, private PropertyContainer {
 private:
-  mutable FastSemaphore m_lock;
-  mutable FastSemaphore m_activeCountLock, m_activeIsZero; // need separate locks to prevent deadlock
-                                                           // blockNewThreads calls m_lock.wait()....causing threads to terminate
-                                                           // that is, returning to threadStartup, where they will call updateActiveCount(-1)
-                                                           // If this function uses m_lock, no thread will ever terminate, but wait forever
-                                                           // until m_lock.notify() is called, which will not happen until m_activeCount = 0
-  bool                  m_blockNewThreads; // set to true, when destructor is called, so no more threads wil be started
+  mutable Semaphore m_lock;
+  mutable Semaphore m_activeCountLock, m_activeIsZero; // need separate locks to prevent deadlock
+                                                       // blockNewThreads calls m_lock.wait()....causing threads to terminate
+                                                       // that is, returning to threadStartup, where they will call updateActiveCount(-1)
+                                                       // If this function uses m_lock, no thread will ever terminate, but wait forever
+                                                       // until m_lock.notify() is called, which will not happen until m_activeCount = 0
+  bool                  m_blockNewThreads;             // Set to true, when destructor is called, so no more threads wil be started
   bool                  m_threadsRunning;
   void killDemonThreads();
   inline void blockNewThreads() {

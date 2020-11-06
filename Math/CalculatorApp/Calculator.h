@@ -45,8 +45,8 @@ private:
   bool            m_gotError;
   Trigonometric   m_trigonometricBase;
   OperandSize     m_opsize;
-  mutable FastSemaphore   m_lock;
-  FastSemaphore   m_hasInput;
+  mutable Semaphore m_lock;
+  Semaphore       m_hasInput;
   int             m_buttonPressed;
   bool            m_busy, m_killed;
 

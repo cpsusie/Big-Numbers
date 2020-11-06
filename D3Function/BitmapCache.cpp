@@ -28,7 +28,7 @@ public:
 class BitmapCache : public CompactHashMap<BitmapKey,CBitmap*,ARRAYSIZE(MarkerBitmaps)*360>, public Singleton {
 private:
   LPDIRECT3DDEVICE m_device;
-  FastSemaphore    m_lock;
+  Semaphore        m_lock;
 
   static D3DPRESENT_PARAMETERS getPresentParameters(HWND hwnd);
   void createDevice(HWND hwnd);

@@ -3,7 +3,7 @@
 #include "MyUtil.h"
 #include "Runnable.h"
 #include "ThreadBase.h"
-#include "FastSemaphore.h"
+#include "Semaphore.h"
 #include "PropertyContainer.h"
 
 //#define TRACE_THREAD
@@ -37,7 +37,7 @@ private:
   ThreadMap                       &m_map;
   DWORD                            m_threadId;
   HANDLE                           m_threadHandle;
-  FastSemaphore                    m_terminated;
+  Semaphore                        m_terminated;
   Runnable                        *m_target;
   UncaughtExceptionHandler        *m_uncaughtExceptionHandler;
   bool                             m_isDemon;

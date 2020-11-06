@@ -1,7 +1,7 @@
 #pragma once
 
 #include <HashMap.h>
-#include <FastSemaphore.h>
+#include <Semaphore.h>
 #include <PropertyContainer.h>
 
 class CPropertyDialogThread;
@@ -16,7 +16,7 @@ typedef enum {
 class PropertyDialogMap : public PropertyContainer, private PropertyChangeListener {
 private:
   IntHashMap<CPropertyDialogThread*> m_map;
-  mutable FastSemaphore              m_gate, m_lock1;
+  mutable Semaphore                  m_gate, m_lock1;
   CPropertyDialogThread             *m_visibleDialogThread;
   int                                m_visiblePropertyId;
 

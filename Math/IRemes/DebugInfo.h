@@ -18,7 +18,7 @@ public:
 
 class DebugInfo {
 private:
-  mutable FastSemaphore   m_lock, m_approxLock;
+  mutable Semaphore       m_lock, m_approxLock;
   CoefWindowData          m_coefWinData;
   ExtremaStringArray      m_extrStrArray;
   String                  m_searchEString, m_remesStateString, m_warning;

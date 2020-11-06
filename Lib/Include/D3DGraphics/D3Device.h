@@ -1,7 +1,7 @@
 #pragma once
 
 #include <PropertyContainer.h>
-#include <FastSemaphore.h>
+#include <Semaphore.h>
 #include <MFCUtil/ColorSpace.h>
 #include "D3DeviceRenderState.h"
 #include "D3AbstractTextureFactory.h"
@@ -20,7 +20,7 @@ private:
   LPDIRECT3DDEVICE m_device;
   D3DCAPS          m_deviceCaps;
   D3Material       m_material;
-  FastSemaphore    m_renderLock, m_allocLock;
+  Semaphore        m_renderLock, m_allocLock;
 
   // only set in scene.render
   const D3Camera  *m_currentCamera;

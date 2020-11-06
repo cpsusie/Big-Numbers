@@ -3,7 +3,7 @@
 #include "BitSet.h"
 #include "Runnable.h"
 #include "Singleton.h"
-#include "FastSemaphore.h"
+#include "Semaphore.h"
 #include "PropertyContainer.h"
 #include "CompactStack.h"
 #include "ThreadBase.h"
@@ -22,7 +22,7 @@ private:
   PoolThreadPool             *m_threadPool;
   ResultQueuePool            *m_queuePool;
   PoolLogger                 *m_logger;
-  mutable FastSemaphore       m_gate;
+  mutable Semaphore           m_gate;
   const int                   m_processorCount;
   int                         m_activeThreads, m_maxActiveThreads;
   bool                        m_blockExecute;

@@ -2,7 +2,7 @@
 #include <process.h>
 #include <MyUtil.h>
 #include <Pipe.h>
-#include <FastSemaphore.h>
+#include <Semaphore.h>
 #include <FileNameSplitter.h>
 #include <ExternProcess.h>
 
@@ -88,7 +88,7 @@ void ExternProcess::start(bool silent, const ArgArray &argv) {
   Pipe stdinPipe, stdoutPipe;
   const String program = argv[0];
 
-  static FastSemaphore critiacalSection; // juggle with filedescriptors for stdin/stdout. dont disturb!
+  static Semaphore critiacalSection; // juggle with filedescriptors for stdin/stdout. dont disturb!
 
   String oldWorkDir;
 

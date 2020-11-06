@@ -3,7 +3,7 @@
 #include "QueueList.h"
 #include "Date.h"
 #include "Timer.h"
-#include "FastSemaphore.h"
+#include "Semaphore.h"
 
 class _TimePctLogPoint { // For linear regression:(x,y) = (msec,pctDone)
 public:
@@ -40,7 +40,7 @@ private:
   double                       m_sumx, m_sumx2, m_sumy, m_sumxy;
   mutable bool                 m_needCalculateRegressionLine;
   mutable double               m_a, m_b;
-  mutable FastSemaphore        m_gate;
+  mutable Semaphore            m_gate;
   void logTimeAndPct();
   void appendLogPoint(double msec, double pctDone);
   void removeFirst();

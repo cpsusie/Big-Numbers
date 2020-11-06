@@ -1,7 +1,7 @@
 #pragma once
 
 #include <PropertyContainer.h>
-#include <FastSemaphore.h>
+#include <Semaphore.h>
 
 class CharacterMarker {
 private:
@@ -18,7 +18,7 @@ private:
   size_t        m_textLength;
   CRect         m_ctrlRect;
   BitSet        m_markSet;
-  FastSemaphore m_lock;
+  Semaphore     m_lock;
 
   void   paintAllMarkPositions(bool mark);
   void   paintMarkPosition(CDC &dc, size_t index, bool mark);
@@ -43,7 +43,7 @@ public:
 
 class CharacterMarkerArray : public CompactArray<CharacterMarker*>, public PropertyChangeListener {
 private:
-  FastSemaphore m_lock;
+  Semaphore m_lock;
 public:
   ~CharacterMarkerArray() {
     clear();

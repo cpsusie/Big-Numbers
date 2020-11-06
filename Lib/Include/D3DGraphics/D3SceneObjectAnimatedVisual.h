@@ -9,7 +9,7 @@ private:
   D3DFILLMODE   m_fillMode;
   D3DSHADEMODE  m_shadeMode;
   UINT          m_lastRenderedIndex;
-  FastSemaphore m_lock;
+  Semaphore     m_lock;
   void init(const MeshArray &meshArray);
 
   // return (m_lastRenderedIndex < childCount())

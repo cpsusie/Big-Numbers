@@ -322,7 +322,7 @@ void UserInput::quitAll() {
 }
 
 static void usage() {
-  _ftprintf(stderr,_T("TestFastSemaphore\n"));
+  _ftprintf(stderr,_T("TestSemaphore\n"));
   exit(-1);
 }
 

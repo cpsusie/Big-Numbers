@@ -426,9 +426,6 @@
     <ClCompile Include="Pause.cpp">
       <Filter>Source Files\Debugging and Exceptions</Filter>
     </ClCompile>
-    <ClCompile Include="Semaphore.cpp">
-      <Filter>Source Files\Process</Filter>
-    </ClCompile>
     <ClCompile Include="Tokenizer.cpp">
       <Filter>Source Files\String</Filter>
     </ClCompile>
@@ -1024,6 +1021,9 @@
     <ClCompile Include="HashMapIterator.cpp">
       <Filter>Source Files\Collection</Filter>
     </ClCompile>
+    <ClCompile Include="SysSemaphore.cpp">
+      <Filter>Source Files\Process</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -1182,9 +1182,6 @@
       <Filter>Source Files\Math\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\ExternProcess.h">
-      <Filter>Source Files\Process\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\FastSemaphore.h">
       <Filter>Source Files\Process\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\InputThread.h">
@@ -1483,6 +1480,9 @@
     </ClInclude>
     <ClInclude Include="HashSetNode.h">
       <Filter>Source Files\Collection\Private Header Fles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\SysSemaphore.h">
+      <Filter>Source Files\Process\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

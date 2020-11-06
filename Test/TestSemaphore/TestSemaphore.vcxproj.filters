@@ -18,7 +18,7 @@
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TestFastSemaphore.cpp">
+    <ClCompile Include="TestSemaphore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

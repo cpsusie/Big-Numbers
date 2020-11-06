@@ -2,7 +2,7 @@
 
 #include "Runnable.h"
 #include "FlagTraits.h"
-#include "FastSemaphore.h"
+#include "Semaphore.h"
 
 #define _SRJOB_STARTED 0x01
 #define _SRJOB_RUNNING 0x02
@@ -11,9 +11,9 @@
 
 class SafeRunnable : public Runnable {
 private:
-  FastSemaphore         m_terminated, m_started;
-  mutable FastSemaphore m_lock;
-  String                m_errorMsg;
+  Semaphore         m_terminated, m_started;
+  mutable Semaphore m_lock;
+  String            m_errorMsg;
   ATOMICFLAGTRAITS(SafeRunnable, BYTE, m_flags);
 
   void setErrorMsg(const TCHAR *msg);

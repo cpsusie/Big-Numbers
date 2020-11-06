@@ -50,8 +50,8 @@ int CPropertyDialogThread::ExitInstance() {
 class VisibleChangedNotification : public PropertyChangeListener {
 private:
   AbstractPropertyDialog *m_dlg;
-  const              bool m_initialVisibleStatus;
-  FastSemaphore           m_changed;
+  const bool              m_initialVisibleStatus;
+  Semaphore               m_changed;
 public:
   VisibleChangedNotification(AbstractPropertyDialog *dlg)
     : m_dlg(dlg)

@@ -1,41 +1,100 @@
 #pragma once
 
-//#define TRACESEMAPHORE
+// see https://vorbrodt.blog/2019/02/05/fast-semaphore/
+// Fast-Semaphore by Joe Seigh; C++ Implementation by Chris Thomasson:
+
+#include <mutex>
+#include <atomic>
+#include <condition_variable>
+#include <cassert>
+
+class SlowSemaphore {
+private:
+  int                     m_count;
+  std::mutex              m_mutex;
+  std::condition_variable m_cv;
+
+public:
+  SlowSemaphore(int count) noexcept : m_count(count) {
+    assert(count > -1);
+  }
+
+  void notify() noexcept {
+    std::unique_lock<std::mutex> lock(m_mutex);
+    ++m_count;
+    m_cv.notify_one();
+  }
+
+  void wait() noexcept {
+    std::unique_lock<std::mutex> lock(m_mutex);
+    m_cv.wait(lock, [&]() { return m_count != 0; });
+    --m_count;
+  }
+};
 
 class Semaphore {
 private:
-  HANDLE m_sem;
-  Semaphore(const Semaphore &src);            // Not defined. Class not cloneable
-  Semaphore &operator=(const Semaphore &src); // Not defined. Class not cloneable
-
+  std::atomic<int> m_count;
+  SlowSemaphore    m_slowSemaphore;
 public:
-  // initialCount is the number of threads allowed in critical section (=initial value of internal counter)
-  // maxWait is the max number of threads, allowed to wait on this semaphore
-  // Assume 0 <= initialCount <= maxwait
-  // The state of the semaphore is signaled when counter > 0, nonsignaled when counter == 0
-  // Counter is decreased by 1 whenever a call to wait returns true (not if wait returns false because of timeout)
-  // Counter is increased by 1 when notify is called (typically when a thread leaves a critical section, or a memberfunction of a monitor))
-  Semaphore(const String &name, UINT initialCount = 1, UINT maxWait = 1000000);
-  Semaphore(                    UINT initialCount = 1, UINT maxWait = 1000000);
-  ~Semaphore();
-  // Return false on timeout, true if state is signaled, throws Exception on error
-  // timeout is in milliseconds
-  // If timeout = INFINITE, wait will never return false, but wait until state is signaled
-  bool wait(UINT timeout=INFINITE);
-  void notify();
-  HANDLE getHandle() const {
-    return m_sem;
+  // count is the number of threads allowed in critical section (=initial value of internal counter). Assume 0 <= initialCount
+  // The state of the semaphore is signaled when counter >= 1, nonsignaled when counter < 1
+  Semaphore(int count = 1) noexcept : m_count(count), m_slowSemaphore(0) {
   }
-#if defined(TRACESEMAPHORE)
-  bool wait(  const TCHAR *name, const TCHAR *file, int line, const TCHAR *function, UINT timeout = INFINITE);
-  void notify(const TCHAR *name, const TCHAR *file, int line, const TCHAR *function);
-#endif  // TRACESEMAPHORE
+
+  // Increased internal counter by 1 (typically when a thread leaves a critical section, or a memberfunction of a monitor))
+  // If other threads have called wait while state was nonsignaled, hence waiting, they will be notified that state has changed
+  void notify() {
+    const int count = m_count.fetch_add(1, std::memory_order_release);
+    if(count < 0) {
+      m_slowSemaphore.notify();
+    }
+  }
+
+  // Decrease internal counter by 1. If wait is called on a nonsignaled semaphore, the calling thread will be blocked until 
+  // notify is called (by anothr thread), turning state signaled
+  void wait() {
+    const int count = m_count.fetch_sub(1, std::memory_order_acquire);
+    if(count < 1) {
+      m_slowSemaphore.wait();
+    }
+  }
 };
 
-#if defined(TRACESEMAPHORE)
-#define WAIT(  sem,...) (sem).wait(  _T(#sem), __TFILE__, __LINE__, __TFUNCTION__, __VA_ARGS___)
-#define NOTIFY(sem)     (sem).notify(_T(#sem), __TFILE__, __LINE__, __TFUNCTION__)
-#else
-#define WAIT(  sem,...) (sem).wait(__VA_ARGS__)
-#define NOTIFY(sem)     (sem).notify()
-#endif // TRACESEMAPHORE
+class TimedSemaphore {
+private:
+  std::atomic<int> m_count;
+  std::timed_mutex m_tmutex;
+public:
+  // Same functionality as Semaphore, but function wait has a timeout parameter. See below
+  TimedSemaphore(int count = 1) noexcept : m_count(count) {
+    m_tmutex.lock();
+  }
+
+  void notify() noexcept {
+    const int count = m_count.fetch_add(1, std::memory_order_release);
+    if(count < 0) {
+      m_tmutex.unlock();
+    }
+  }
+
+  // Decreased by 1 whenever a call to wait returns true (not if wait returns false because of timeout)
+  // Return true if state is already signaled or it become signaled within the specified period of timeout in milliseconds.
+  // Return false, if state does not turn signaled before timeout
+  // timeout is in milliseconds
+  // If timeout < 0, wait will work just as the function wait() in class Semaphore. See above
+  bool wait(int timeout = -1) noexcept {
+    const int count = m_count.fetch_sub(1, std::memory_order_acquire);
+    if(count >= 1) {
+      return true;
+    } else if(timeout < 0) {
+      m_tmutex.lock();
+      return true;
+    } else if(m_tmutex.try_lock_for(std::chrono::milliseconds(timeout))) {
+      return true;
+    } else {
+      m_count++;
+      return false;
+    }
+  }
+};

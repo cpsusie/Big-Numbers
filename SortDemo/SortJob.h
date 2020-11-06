@@ -21,7 +21,8 @@ class SortJob : public Runnable {
 private:
   Thread       *m_thread;
   SortPanelWnd &m_wnd;
-  FastSemaphore m_terminated;
+  Semaphore     m_terminated;
+
   void doSort();
   void doAnimatedSort();
 public:

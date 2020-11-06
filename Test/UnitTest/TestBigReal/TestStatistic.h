@@ -53,7 +53,7 @@ private:
 //  IntTreeMap<int>        m_count;
   AllTime                m_startTime;
   static bool            s_stopNow;
-  static FastSemaphore   s_lock;
+  static Semaphore       s_lock;
   static int             s_logypos;
   static tostream       *s_errorLogStream;
   static bool            s_timerIsStarted;

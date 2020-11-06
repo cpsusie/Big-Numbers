@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Thread.h>
-#include <Semaphore.h>
+#include <SysSemaphore.h>
 #include <SynchronizedQueue.h>
 
 typedef SynchronizedQueue<String> MessageQueue;
@@ -13,7 +13,7 @@ private:
   bool         m_eoi;
   bool         m_verbose;
   FILE        *m_input;
-  Semaphore    m_killed;
+  SysSemaphore m_killed;
 protected:
   // default implementation sends exceptions to debugLog, if m_verbose is true
   virtual void vverbose(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);

@@ -6,7 +6,7 @@
 
 class SynchronizedComparator : public AbstractComparator {
 private:
-  FastSemaphore       m_lock;
+  Semaphore           m_lock;
   AbstractComparator &m_cmp;
 public:
   SynchronizedComparator(AbstractComparator &cmp)
@@ -52,12 +52,13 @@ template<typename T> class PartitionWorker;
 
 template<typename T> class MTQuicksortClass {
 private:
-  RunnableArray                        m_workerArray; // 1 thread for each processor in the CPU
-  SynchronizedQueue<JobParam<T> >      m_jobQueue;    // Common jobqueue for all threads
-  AbstractComparator                  *m_comparator;  // the comparator specifying the order of the elements
-  const int                            m_processorCount;
-  FastSemaphore                        m_lock;
-  bool                                 m_killAllRequest;
+  RunnableArray                   m_workerArray; // 1 thread for each processor in the CPU
+  SynchronizedQueue<JobParam<T> > m_jobQueue;    // Common jobqueue for all threads
+  AbstractComparator             *m_comparator;  // the comparator specifying the order of the elements
+  const int                       m_processorCount;
+  Semaphore                       m_lock;
+  bool                            m_killAllRequest;
+
   void cleanup();
 public:
   MTQuicksortClass()
@@ -87,7 +88,8 @@ private:
   int                  m_id;
   MTQuicksortClass<T> &m_qc;
   AbstractComparator  &m_comparator;
-  FastSemaphore        m_terminated;
+  Semaphore            m_terminated;
+
   void doPartition(const JobParam<T> &job);
 public:
   PartitionWorker(MTQuicksortClass<T> &qc, int id);

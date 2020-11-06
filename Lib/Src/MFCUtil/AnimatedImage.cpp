@@ -22,7 +22,7 @@ private:
   AnimatedImage &m_owner;
   String         m_description;
   TimedSemaphore m_delaySem;
-  FastSemaphore  m_animatorStopped;
+  Semaphore      m_animatorStopped;
   AnimatorState  m_state;
   CPoint         m_point;
   UINT           m_frameIndex;

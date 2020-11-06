@@ -1,7 +1,7 @@
 #pragma once
 
 #include <PropertyContainer.h>
-#include <FastSemaphore.h>
+#include <Semaphore.h>
 #include <Iterator.h>
 #include <FlagTraits.h>
 #include <MFCUtil/ColorSpace.h>
@@ -26,15 +26,15 @@ typedef enum {
 class D3Camera : public D3SceneObject, public PropertyContainer {
   friend class D3CameraSlideAnimator;
 private:
-  FastSemaphore           m_renderLock;
-  HWND                    m_hwnd;
-  bool                    m_rightHanded;
-  D3DCOLOR                m_backgroundColor;
-  mutable BitSet          m_visibleLightControlSet;
-  float                   m_viewAngle;
-  float                   m_nearViewPlane, m_farViewPlane;
-  D3World                 m_world;
-  D3DXMATRIX              m_projMatrix, m_viewMatrix;
+  Semaphore           m_renderLock;
+  HWND                m_hwnd;
+  bool                m_rightHanded;
+  D3DCOLOR            m_backgroundColor;
+  mutable BitSet      m_visibleLightControlSet;
+  float               m_viewAngle;
+  float               m_nearViewPlane, m_farViewPlane;
+  D3World             m_world;
+  D3DXMATRIX          m_projMatrix, m_viewMatrix;
 
   // notify listeners with properyId=CAM_PROJECTION
   D3Camera      &setProjMatrix();

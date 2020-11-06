@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <Math/BigReal/BigRealResourcePool.h>
 
-static FastSemaphore piLock;
+static Semaphore piLock;
 
 class PiConstants {
 public:

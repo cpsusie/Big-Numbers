@@ -3,7 +3,7 @@
 #include <D3D9.h>
 #include <D3DX9.h>
 #include <CompactArray.h>
-#include <FastSemaphore.h>
+#include <Semaphore.h>
 #include <Singleton.h>
 
 typedef LPDIRECT3D9EX           LPDIRECT3D;
@@ -19,8 +19,9 @@ typedef LPDIRECT3DINDEXBUFFER9  LPDIRECT3DINDEXBUFFER;
 
 class DirectXDeviceFactory : public Singleton {
 private:
-  LPDIRECT3D    m_direct3D;
-  FastSemaphore m_lock;
+  LPDIRECT3D m_direct3D;
+  Semaphore  m_lock;
+
   void initDirect3D();
   DirectXDeviceFactory();
   ~DirectXDeviceFactory() override;

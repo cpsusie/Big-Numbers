@@ -14,7 +14,7 @@ class MultiExtremaFinder {
   friend class ExtremumFinder;
   friend class ExtremumNotifier;
 private:
-  FastSemaphore                            m_lock;
+  Semaphore                                m_lock;
   Remes                                   &m_remes;
   RationalFunction                         m_approx;
   RunnableArray                            m_jobArray;

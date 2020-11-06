@@ -1,6 +1,6 @@
 #pragma once
 
-#include <FastSemaphore.h>
+#include <Semaphore.h>
 
 class DFATables {
 private:
@@ -179,7 +179,7 @@ private:
   DFARegexStepHandler            *m_stepHandler;
   mutable DFARegexMode            m_currentMode;
   mutable const DFA              *m_currentDFA;
-  mutable FastSemaphore           m_gate;
+  mutable Semaphore               m_gate;
   void setCodeText(const String codeText);
   void setDBGCharIndexForAcceptStates(size_t patternLength);
 #endif // _DEBUG

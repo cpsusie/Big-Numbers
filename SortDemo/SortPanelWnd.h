@@ -25,11 +25,12 @@ private:
   UINT                        m_maxElementSize;
   SortJob                    *m_sortJob;
   SortJobState                m_jobState;
-  FastSemaphore               m_resume, m_lock;
+  Semaphore                   m_resume, m_lock;
   std::atomic<char>           m_jobFlags;
   intptr_t                    m_oldIndex1;
   intptr_t                    m_oldIndex2;
   CRect                       m_rect;
+
   bool invalidStateTransition(SortJobState newState);
   void saveArray();
   void drawElement(      CDC &dc, size_t index);

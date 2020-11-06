@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Singleton.h>
-#include <FastSemaphore.h>
+#include <Semaphore.h>
 #include <Math/BigReal/BigRealConfig.h>
 
 class SubProdRunnableArray;
@@ -20,7 +20,7 @@ private:
   DigitPool            *m_defaultDigitPool, *m_constDigitPool;
   Pow2Cache            *m_pow2Cache;
   UINT                  m_resourcesInUse;
-  mutable FastSemaphore m_lock;
+  mutable Semaphore     m_lock;
 
   inline BigRealResourcePool &wait() {
     m_lock.wait();

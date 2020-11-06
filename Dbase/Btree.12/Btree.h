@@ -2,7 +2,7 @@
 
 #include <SqlApi.h>
 #include <HashMap.h>
-#include <FastSemaphore.h>
+#include <Semaphore.h>
 #include <Date.h>
 
 #define BIG_DBADDR
@@ -598,12 +598,13 @@ class DbFile;
 
 class LogFile {
 private:
-  FastSemaphore m_sem;
-  ULONG         m_threadId;
-  FILE         *m_f;
-  bool          m_inTMF;
-  ULONG         m_count;
-  UINT64        m_end;
+  Semaphore m_sem;
+  ULONG     m_threadId;
+  FILE     *m_f;
+  bool      m_inTMF;
+  ULONG     m_count;
+  UINT64    m_end;
+
   void setCount( ULONG  count, UINT64 end );
   void getHead(  ULONG &count, UINT64 &end) const;
   void throwInvalidThreadId() const;
@@ -631,11 +632,13 @@ class Database;
 
 class DbFile {
 private:
-  static FastSemaphore  s_filesem;
-  LogFile              *m_logFile;
-  String                m_fileName;
-  DbFileMode            m_mode;
+  static Semaphore  s_filesem;
+  LogFile          *m_logFile;
+  String            m_fileName;
+  DbFileMode        m_mode;
+
   void init(const String &fileName, DbFileMode mode, LogFile *lf);
+
 protected:
   void appendLog(UINT64 offset, const void *buffer, ULONG size) const;
   friend class LogFile;

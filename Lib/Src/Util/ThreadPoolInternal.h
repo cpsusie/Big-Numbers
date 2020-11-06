@@ -42,7 +42,7 @@ private:
   PoolThreadPool         &m_pool;
   Runnable               *m_job;
   ThreadPoolResultQueue  *m_resultQueue;
-  FastSemaphore           m_execute;
+  Semaphore               m_execute;
   int                     m_requestCount;
   ATOMICFLAGTRAITS(ThreadPoolThread, BYTE, m_flags)
 public:
@@ -77,7 +77,7 @@ private:
   ThreadPool       &m_threadPool;
   ThreadPriority    m_threadPriority;
   bool              m_disablePriorityBoost;
-  FastSemaphore     m_lock, m_activeIs0;
+  Semaphore         m_lock, m_activeIs0;
   int               m_activeCount;
   Thread &get(size_t index) {
     return *((Thread*)((*this)[index]));

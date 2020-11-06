@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <Math/BigReal/BigRealResourcePool.h>
 
-static FastSemaphore lnLock;
+static Semaphore lnLock;
 
 class Ln10Constants {
 public:

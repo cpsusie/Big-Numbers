@@ -23,7 +23,7 @@ void TestStatistic::flushOutput() {
   s_lock.notify();
 }
 
-FastSemaphore TestStatistic::s_lock;
+Semaphore     TestStatistic::s_lock;
 bool          TestStatistic::s_stopNow        = false;
 static const int logyStartPos = getProcessorCount() + 1;
 int           TestStatistic::s_logypos = logyStartPos;

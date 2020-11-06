@@ -11,7 +11,7 @@ private:
   bool          m_edgeDetectionOn;
   PixRect      *m_lastImage;
   MMCapture    *m_capture;
-  FastSemaphore m_gate;
+  Semaphore     m_gate;
 public:
   CTestWebCamDlg(CWnd *pParent = nullptr);   // standard constructor
   HWND getWindow() {

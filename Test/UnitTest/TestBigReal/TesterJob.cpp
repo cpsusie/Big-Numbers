@@ -5,7 +5,7 @@
 #include <Thread.h>
 #include "FunctionTest.h"
 
-FastSemaphore   TesterJob::s_lock;
+Semaphore       TesterJob::s_lock;
 bool            TesterJob::s_allOk           = true;
 bool            TesterJob::s_stopOnError     = false;
 double          TesterJob::s_totalThreadTime = 0;

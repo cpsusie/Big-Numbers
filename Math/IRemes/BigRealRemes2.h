@@ -207,7 +207,7 @@ private:
   BigRealVector                m_coefficientVector;
   // set to true the first time m_coefficient vector is calculated
   bool                         m_hasCoefficients;
-  mutable FastSemaphore        m_lock;
+  mutable Semaphore            m_lock;
   RationalFunction             m_currentApprox;
   bool                         m_extremaCountChangedNotificationEnabled;
   mutable bool                 m_reduceToInterpolate;

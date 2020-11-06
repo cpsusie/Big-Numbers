@@ -797,7 +797,6 @@
     <ClInclude Include="..\..\Include\CompactLineArray.h" />
     <ClInclude Include="..\..\Include\Config.h" />
     <ClInclude Include="..\..\Include\DebugLog.h" />
-    <ClInclude Include="..\..\Include\FastSemaphore.h" />
     <ClInclude Include="..\..\Include\FlagTraits.h" />
     <ClInclude Include="..\..\Include\GenericDebugger.h" />
     <ClInclude Include="..\..\Include\HeapObjectPool.h" />
@@ -881,6 +880,7 @@
     <ClInclude Include="..\..\Include\StrStream.h" />
     <ClInclude Include="..\..\Include\MemSwap.h" />
     <ClInclude Include="..\..\Include\SynchronizedQueue.h" />
+    <ClInclude Include="..\..\Include\SysSemaphore.h" />
     <ClInclude Include="..\..\Include\targetver.h" />
     <ClInclude Include="..\..\Include\Tcp.h" />
     <ClInclude Include="..\..\Include\TeeOutputStream.h" />
@@ -1056,6 +1056,7 @@
     <ClCompile Include="StraHash.cpp" />
     <ClCompile Include="StraIHash.cpp" />
     <ClCompile Include="StrStream.cpp" />
+    <ClCompile Include="SysSemaphore.cpp" />
     <ClCompile Include="ThreadAffinityMask.cpp" />
     <ClCompile Include="ThreadDescription.cpp" />
     <ClCompile Include="ThreadExitCode.cpp" />
@@ -1149,7 +1150,6 @@
     <ClCompile Include="Scanner.cpp" />
     <ClCompile Include="ScrollBar.cpp" />
     <ClCompile Include="searchenv.cpp" />
-    <ClCompile Include="Semaphore.cpp" />
     <ClCompile Include="SetFileMode.cpp" />
     <ClCompile Include="SHA256.cpp" />
     <ClCompile Include="Sleep.cpp" />

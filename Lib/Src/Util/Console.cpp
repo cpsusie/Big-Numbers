@@ -6,10 +6,10 @@
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
 
-HANDLE        Console::s_hStdIn  = GetStdHandle( STD_INPUT_HANDLE  );
-HANDLE        Console::s_hStdOut = GetStdHandle( STD_OUTPUT_HANDLE );
-HANDLE        Console::s_hStdErr = GetStdHandle( STD_ERROR_HANDLE  );
-FastSemaphore Console::s_gate;
+HANDLE    Console::s_hStdIn  = GetStdHandle( STD_INPUT_HANDLE  );
+HANDLE    Console::s_hStdOut = GetStdHandle( STD_OUTPUT_HANDLE );
+HANDLE    Console::s_hStdErr = GetStdHandle( STD_ERROR_HANDLE  );
+Semaphore Console::s_gate;
 
 static const TCHAR *thisFile = __TFILE__;
 

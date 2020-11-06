@@ -1,7 +1,7 @@
 #pragma once
 
 #include <MyUtil.h>
-#include <FastSemaphore.h>
+#include <Semaphore.h>
 #include <StreamParameters.h>
 #include <Random.h>
 #include <Math/Double80.h>

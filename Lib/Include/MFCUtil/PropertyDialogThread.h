@@ -1,6 +1,6 @@
 #pragma once
 
-#include <FastSemaphore.h>
+#include <Semaphore.h>
 
 class AbstractPropertyDialog;
 class PropertyContainer;
@@ -11,7 +11,7 @@ private:
   bool                    m_setVisibleBusy : 1;
   bool                    m_inModalLoop    : 1;
   bool                    m_killed         : 1;
-  mutable FastSemaphore   m_lock;
+  mutable Semaphore       m_lock;
   void noDialogException(const TCHAR *method) const;
   // no lock-protection
   bool isDialogVisible1() const;

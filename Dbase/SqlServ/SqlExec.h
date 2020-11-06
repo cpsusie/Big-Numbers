@@ -42,9 +42,10 @@ public:
 
 class PipeLine {
 private:
-  Tuple *m_buffer;
-  int m_head,m_tail,m_count;
-  FastSemaphore m_gate,m_fullsem,m_emptysem;
+  Tuple    *m_buffer;
+  int       m_head,m_tail,m_count;
+  Semaphore m_gate,m_fullsem,m_emptysem;
+
   PipeLine(const PipeLine &pipe);                     // Not defined. Class not cloneable
   PipeLine &operator=(const PipeLine &src);           // Not defined. Class not cloneable
 public:

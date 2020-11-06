@@ -1,12 +1,12 @@
 #pragma once
 
-#include "FastSemaphore.h"
+#include "Semaphore.h"
 #include "QueueList.h"
 
 template <typename T> class SynchronizedQueue : private QueueList<T> {
 private:
-  mutable FastSemaphore m_lock;
-  TimedSemaphore        m_emptySem;
+  mutable Semaphore m_lock;
+  TimedSemaphore    m_emptySem;
 public:
   SynchronizedQueue() : m_emptySem(0) {
   }
