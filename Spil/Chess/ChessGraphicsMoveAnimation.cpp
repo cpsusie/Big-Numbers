@@ -3,9 +3,9 @@
 #include "ChessGraphicsAnimation.h"
 
 MoveSinglePieceAnimation::MoveSinglePieceAnimation(ChessGraphics *graphics, const int from, const int to, int steps)
-: AbstractPieceMoveAnimation(graphics, graphics->getPieceImage(from), graphics->getFieldSize(false))
-, m_from(graphics->getFieldPosition(from, false))
-, m_to(  graphics->getFieldPosition(to  , false))
+: AbstractPieceMoveAnimation(graphics, graphics->getPieceImage0(from), FIELDSIZE0)
+, m_from(graphics->getFieldPosition0(from))
+, m_to(  graphics->getFieldPosition0(to  ))
 , m_it(0,1, steps ? steps : (int)(sqrt(Game::getWalkDistance(from,to))*28))
 {
 
@@ -17,7 +17,7 @@ MoveSinglePieceAnimation::MoveSinglePieceAnimation(ChessGraphics *graphics, cons
 }
 
 void MoveSinglePieceAnimation::paint() {
-  paintImage(m_pos);
+  paintImage((CPoint)m_pos);
 }
 
 void MoveSinglePieceAnimation::unpaint() {
@@ -29,7 +29,7 @@ bool MoveSinglePieceAnimation::step() {
     return false;
   }
   const double d = m_it.next();
-  m_pos = (1-d) * m_from + d * m_to;
+  m_pos = (1-d) * (Point2D)m_from + d * (Point2D)m_to;
   return true;
 }
 

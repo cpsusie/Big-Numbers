@@ -3,35 +3,38 @@
 #include "ChessGraphics.h"
 
 int           ChessResources::s_instanceCount    = 0;
-const Point2D ChessResources::s_upperLeftCorner0 = CPoint(351,110);
-const Size2D  ChessResources::s_fieldSize0       = CSize(74,74);
+const CPoint  ChessResources::s_upperLeftCorner0(351,110);
+const CSize   ChessResources::s_fieldSize0(      74 ,74 );
+CSize         ChessResources::s_imageSize0;
+CSize         ChessResources::s_boardSize0;
+CSize         ChessResources::s_selectionFrameSize0;
 
-Image        *ChessResources::s_boardImage;
-ImageArray    ChessResources::s_pieceImage[2];
-ImageArray    ChessResources::s_markImage;
-Image        *ChessResources::s_selectionFrameImage;
-Image        *ChessResources::s_playerIndicator;
-CFont         ChessResources::s_boardTextFont;
+Image        *ChessResources::s_boardImage0;
+ImageArray    ChessResources::s_pieceImage0[2];
+ImageArray    ChessResources::s_markImage0;
+Image        *ChessResources::s_selectionFrameImage0;
+Image        *ChessResources::s_playerIndicator0;
+CFont         ChessResources::s_boardTextFont0;
 CFont         ChessResources::s_debugInfoFont;
 
 #define MINSCALE 0.4
 
 ChessResources::ChessResources()
-: m_hourGlassImage(     IDB_HOURGLASS, 6)
+: m_hourGlassImage0(     IDB_HOURGLASS, 6)
 {
   m_scale = Point2D(1,1);
-  m_hourGlassImage.setSecondsPerCycle(2,0.6);
+  m_hourGlassImage0.setSecondsPerCycle(2,0.6);
 
   if(s_instanceCount++ == 0) {
-    s_boardTextFont.CreateFont( 18, 18, 0, 0, 700, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS
-                                ,CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY
-                                ,DEFAULT_PITCH | FF_MODERN
-                                ,_T("Courier") );
+    s_boardTextFont0.CreateFont( 18, 18, 0, 0, 700, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS
+                               ,CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY
+                               ,DEFAULT_PITCH | FF_MODERN
+                               ,_T("Courier") );
 
     s_debugInfoFont.CreateFont(8, 8, 0, 0, 400, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS
-                                ,CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY
-                                ,DEFAULT_PITCH | FF_MODERN
-                                ,_T("Courier") );
+                              ,CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY
+                              ,DEFAULT_PITCH | FF_MODERN
+                              ,_T("Courier") );
     load();
   }
 }
@@ -66,15 +69,15 @@ static const FieldMarkAttributes fmattr[] = {
 };
 
 void ChessResources::load() {
-  s_boardImage              = new Image(IDR_BOARD, RESOURCE_JPEG); TRACE_NEW(s_boardImage);
+  s_boardImage0              = new Image(IDR_BOARD, RESOURCE_JPEG); TRACE_NEW(s_boardImage0);
   for(int i = 0; i < ARRAYSIZE(fmattr); i++) {
     const FieldMarkAttributes &fma = fmattr[i];
     Image *im = new Image(fma.m_resid, fma.m_type, fma.m_transparentWhite); TRACE_NEW(im);
-    s_markImage.add(im);
+    s_markImage0.add(im);
   }
 
-  s_selectionFrameImage     = new Image(IDB_SELECTIONFRAME , RESOURCE_PNG); TRACE_NEW(s_selectionFrameImage);
-  s_playerIndicator         = new Image(IDB_PLAYERINDICATOR, RESOURCE_PNG); TRACE_NEW(s_playerIndicator    );
+  s_selectionFrameImage0    = new Image(IDB_SELECTIONFRAME , RESOURCE_PNG); TRACE_NEW(s_selectionFrameImage0);
+  s_playerIndicator0        = new Image(IDB_PLAYERINDICATOR, RESOURCE_PNG); TRACE_NEW(s_playerIndicator0    );
 
   static const int pieceImages[][7] = {
     {  IDB_BITMAPNOPIECE
@@ -96,70 +99,77 @@ void ChessResources::load() {
   };
 
   forEachPlayer(p) {
-    ImageArray &imageArray = s_pieceImage[p];
+    ImageArray &imageArray = s_pieceImage0[p];
     for(int i = 0; i < ARRAYSIZE(pieceImages[p]); i++) {
       Image *im = new Image(pieceImages[p][i],RESOURCE_PNG); TRACE_NEW(im);
       imageArray.add(im);
     }
   }
 
-  m_boardSize0           = s_boardImage->getSize();
-  m_imageSize0           = s_pieceImage[0][0]->getSize();
-  m_selectionFrameSize0  = s_selectionFrameImage->getSize();
-  setClientRectSize(s_boardImage->getSize());
+  s_boardSize0           = s_boardImage0->getSize();
+  s_imageSize0           = s_pieceImage0[0][0]->getSize();
+  s_selectionFrameSize0  = s_selectionFrameImage0->getSize();
+  setClientRectSize(s_boardImage0->getSize());
 }
 
 void ChessResources::unload() {
   for(int i = 0; i < 2; i++) {
-    ImageArray &a = s_pieceImage[i];
+    ImageArray &a = s_pieceImage0[i];
     for(size_t j = 0; j < a.size(); j++) {
       SAFEDELETE(a[j]);
     }
     a.clear();
   }
-  SAFEDELETE(s_boardImage);
-  for(size_t i = 0; i < s_markImage.size(); i++) {
-    SAFEDELETE(s_markImage[i]);
+  SAFEDELETE(s_boardImage0);
+  for(size_t i = 0; i < s_markImage0.size(); i++) {
+    SAFEDELETE(s_markImage0[i]);
   }
-  s_markImage.clear();
+  s_markImage0.clear();
 
-  SAFEDELETE(s_selectionFrameImage);
-  SAFEDELETE(s_playerIndicator    );
+  SAFEDELETE(s_selectionFrameImage0);
+  SAFEDELETE(s_playerIndicator0    );
 }
 
 CBitmap &ChessResources::getSmallPieceBitmap(CBitmap &dst, PieceKey pk) const { // for promote-menu
-  const Size2D size0     = s_fieldSize0;
-  const CSize  imageSize = Size2D(max(getAvgScale()*0.8,MINSCALE) * size0);
+  const Size2D size0(FIELDSIZE0);
+  const CSize imageSize = (CSize)Size2D(max(getAvgScale()*0.8,MINSCALE) * size0);
   PixRect pr(theApp.m_device, PIXRECT_PLAINSURFACE, s_fieldSize0);
   pr.rop(ORIGIN
         ,s_fieldSize0
         ,SRCCOPY
-        ,getBoardImage()
+        ,getBoardImage0()
         ,(GET_PLAYER_FROMKEY(pk)==WHITEPLAYER)
-        ?Point2D(s_upperLeftCorner0+Size2D(0,s_fieldSize0.cy))
+        ?s_upperLeftCorner0+CSize(0,s_fieldSize0.cy)
         :s_upperLeftCorner0);
-  getPieceImage(pk)->paintImage(pr, ORIGIN);
+  getPieceImage0(pk)->paintImage(pr, ORIGIN);
 
   HDC tmpDC = CreateCompatibleDC(nullptr);
   dst.CreateBitmap(imageSize.cx, imageSize.cy, GetDeviceCaps(tmpDC, PLANES), GetDeviceCaps(tmpDC, BITSPIXEL), nullptr);
   HGDIOBJ oldBitmap = SelectObject(tmpDC, dst);
-  SetStretchBltMode(tmpDC, COLORONCOLOR /*HALFTONE*/);
-  PixRect::stretchBlt(tmpDC, ORIGIN,imageSize,SRCCOPY,&pr,ORIGIN,size0);
-  SelectObject(tmpDC, oldBitmap);
-  DeleteDC(tmpDC);
+  SetStretchBltMode(  tmpDC, COLORONCOLOR /*HALFTONE*/);
+  PixRect::stretchBlt(tmpDC, ORIGIN,imageSize,SRCCOPY,&pr,ORIGIN,FIELDSIZE0);
+  SelectObject(       tmpDC, oldBitmap);
+  DeleteDC(           tmpDC);
   return dst;
 }
 
-const Image *ChessResources::getFieldMarkImage(FieldMark m) const {
-  return s_markImage[m];
+const Image *ChessResources::getFieldMarkImage0(FieldMark m) const {
+  return s_markImage0[m];
 }
 
 void ChessResources::setClientRectSize(const CSize &size) {
   if(size != m_crSize) {
-    m_crSize  = size;
-    m_scale.x = max((double)m_crSize.cx / m_boardSize0.cx, MINSCALE);
-    m_scale.y = max((double)m_crSize.cy / m_boardSize0.cy, MINSCALE);
+    m_crSize       = size;
+    const CSize &bs0 = BOARDSIZE0;
+    m_scale.x() = max((double)m_crSize.cx / bs0.cx, MINSCALE);
+    m_scale.y() = max((double)m_crSize.cy / bs0.cy, MINSCALE);
   }
+}
+
+Rectangle2D ChessResources::scaleRect(const CRect &r) const {
+  CPoint lb(r.left, r.bottom);
+  CSize  sz(r.Size());
+  return Rectangle2D(scalePoint(lb), scaleSize(sz));
 }
 
 void ChessResources::loadBitmap(CBitmap &dst, int resId, ImageType type) { // static
@@ -172,9 +182,9 @@ void ChessResources::loadBitmap(CBitmap &dst, int resId, ImageType type) { // st
     break;
   case RESOURCE_JPEG  :
     { Image tmp(resId, type);
-      HDC hdc   = tmp.getDC();
-      HDC tmpDC = CreateCompatibleDC(nullptr);
-      CDC *dcp = CDC::FromHandle(tmpDC);
+      HDC  hdc   = tmp.getDC();
+      HDC  tmpDC = CreateCompatibleDC(nullptr);
+      CDC *dcp   = CDC::FromHandle(tmpDC);
       dst.CreateBitmap(tmp.getWidth(), tmp.getHeight(), GetDeviceCaps(tmpDC, PLANES), GetDeviceCaps(tmpDC, BITSPIXEL), nullptr);
       CBitmap *oldBitmap = dcp->SelectObject(&dst);
       BitBlt(*dcp, 0, 0, tmp.getWidth(), tmp.getHeight(), hdc, 0, 0, SRCCOPY);

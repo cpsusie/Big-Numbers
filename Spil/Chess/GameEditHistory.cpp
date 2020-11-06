@@ -69,7 +69,7 @@ Game &GameEditHistory::saveState() {
 void GameEditHistory::undo(bool all) {
   CHECKINVARIANT(ENTER);
   if(canUndo()) {
-    const size_t newIndex = all ? 0 : (m_index-1);
+    const int newIndex = all ? 0 : (m_index-1);
     if(!canRedo() && canAddKey()) {
       addKey();
     }
@@ -100,27 +100,31 @@ bool GameEditHistory::canRedo() const {
 
 // ------------------------------------------ private ------------------------------------------------
 
+String GameEditHistory::getFen(int index) const {
+  if((index >= 0) && (index < getHistorySize())) {
+    return getKey(index).toFENString();
+  } else {
+    return format(_T("fen[%d] = out of range"), index);
+  }
+}
+
 #if defined(_DEBUG)
   // Invariant: (0 < m_historySize()) && (0 <= m_index < m_history.size())
   //        &&  m_history[i-1] != m_history[i], i = [1..m_history.size()-1]
   // index < m_history.size()-1 => m_game.key() == m_history[m_index]
 void GameEditHistory::checkInvariant(const TCHAR *method, bool enter) const {
-  if((m_index < 0) || (m_index >= m_history.size())
-   || (!enter && (m_index < m_history.size()-1) && (m_game.getKey() != getKey(m_index)))
-    ) {
-    showWarning(_T("Broken invariant in %s, %s:index=%zu, historySize=%zu\nm_game.key;%s\ngetKey(%zu);%s")
+  const int n = getHistorySize();
+  if(((m_index < 0) || m_index >= n) || (!enter && (m_index < n-1) && (m_game.getKey() != getKey(m_index))) ) {
+    showWarning(_T("Broken invariant in %s, %s:index=%d, historySize=%d\nm_game.key;%s\ngetKey(%d);%s")
                ,method, enter?_T("Enter"):_T("Leave")
-               ,m_index,m_history.size()
+               ,m_index,n
                ,m_game.getKey().toFENString().cstr()
-               ,m_index,getKey(m_index).toFENString().cstr()
+               ,m_index,getFen(m_index).cstr()
                );
   }
-  const size_t n = m_history.size();
-  for(size_t i = 1; i < n; i++) {
+  for(int i = 1; i < n; i++) {
     if(getKey(i-1) == getKey(i)) {
-      showWarning(_T("Broken invariant in %s, %s:key[%zu] == key[%zu]")
-                 ,method, enter?_T("Enter"):_T("Leave")
-                 ,i-1, i);
+      showWarning(_T("Broken invariant in %s, %s:key[%d] == key[%d]"),method, enter?_T("Enter"):_T("Leave"),i-1, i);
       break;
     }
   }
@@ -129,7 +133,7 @@ void GameEditHistory::checkInvariant(const TCHAR *method, bool enter) const {
 void GameEditHistory::printState(const TCHAR *method) const {
   clearVerbose();
   updateMessageField(0
-                    ,_T("%s:history.size:%zu, index:%zu canundo:%s canredo:%s")
+                    ,_T("%s:history.size:%d, index:%d canundo:%s canredo:%s")
                     ,method
                     ,getHistorySize()
                     ,m_index
@@ -137,10 +141,9 @@ void GameEditHistory::printState(const TCHAR *method) const {
                     ,boolToStr(canRedo())
    );
 
-   const size_t n = m_history.size();
-   for(size_t i = 0; i < n; i++) {
-     verbose(_T("his[%2zu] :%s%s"), i, m_history[i].toFENString().cstr()
-            ,(i==m_index) ? _T("<---\n") : _T("\n"));
+  const int n = getHistorySize();
+   for(int i = 0; i < n; i++) {
+     verbose(_T("his[%2d] :%s%s"), i, m_history[i].toFENString().cstr(), (i==m_index) ? _T("<---\n") : _T("\n"));
    }
    verbose(_T("game    :%s\n"), m_game.getKey().toFENString().cstr());
 }

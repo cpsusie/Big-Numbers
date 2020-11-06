@@ -2,7 +2,7 @@
 #include "ChessGraphicsAnimation.h"
 
 PieceDragger::PieceDragger(ChessGraphics *graphics, const CPoint &point, const OffboardPiece *obp)
-: AbstractPieceMoveAnimation(graphics, getResources().getPieceImage(obp->getKey()), graphics->getResources().getImageSize0())
+: AbstractPieceMoveAnimation(graphics, getResources().getPieceImage0(obp->getKey()), graphics->getResources().getImageSize0())
 , m_obp(*obp)
 {
   restoreBackground(m_obp);

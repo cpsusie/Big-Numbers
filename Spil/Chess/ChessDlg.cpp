@@ -464,7 +464,7 @@ void CChessDlg::OnSizing(UINT fwSide, LPRECT pRect) {
   __super::OnSizing(fwSide, pRect);
   BEGINPAINT();
   ENDPAINT();
-  getOptions().setBoardSize(m_graphics->getBoardSize(true));
+  getOptions().setBoardSize(m_graphics->getBoardSize());
 }
 
 // ------------------------- Painting ---------------------------

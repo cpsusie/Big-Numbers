@@ -8,24 +8,24 @@ MateAnimation::MateAnimation(ChessGraphics *graphics, int position)
 }
 
 void MateAnimation::animate() {
-  const Image         *pieceImage    = m_graphics.getPieceImage(m_position);
-  const Point2D        pos           = m_graphics.getFieldPosition(m_position, false);
-  const Size2D         fieldSize     = m_graphics.getFieldSize(false);
-  const Size2D         field45Size   = PixRect::getRotatedSize(fieldSize,45); // maximal size of rotated square. (= fieldsize/cos(45) = ceil(fieldsize * sqrt(2)))
-  const Size2D         margin        = (field45Size-fieldSize)/2;
-  const Point2D        pos2          = pos - margin;
-  PixRect              background(theApp.m_device, PIXRECT_PLAINSURFACE, field45Size);
-  PixRect              helper(    theApp.m_device, PIXRECT_PLAINSURFACE, field45Size);
+  const Image   *pieceImage    = m_graphics.getPieceImage0(m_position);
+  const CPoint   pos0          = m_graphics.getFieldPosition0(m_position);
+  const CSize    fieldSize0    = FIELDSIZE0;
+  const CSize    fieldSize45   = PixRect::getRotatedSize(fieldSize0,45); // maximal size of rotated square. (= fieldsize/cos(45) = ceil(fieldsize * sqrt(2)))
+  const CSize    margin        = (fieldSize45-fieldSize0)/2;
+  const CPoint   pos2          = pos0 - margin;
+  PixRect        background(theApp.m_device, PIXRECT_PLAINSURFACE, fieldSize45);
+  PixRect        helper(    theApp.m_device, PIXRECT_PLAINSURFACE, fieldSize45);
 
-  background.rop(ORIGIN, field45Size, SRCCOPY, m_graphics.m_bufferPr, pos2);
-  getResources().getFieldMarkImage(CHECKEDKING)->paintImage(background, Point2D(margin.cx,margin.cy));
+  background.rop(ORIGIN, fieldSize45, SRCCOPY, m_graphics.m_bufferPr, pos2);
+  getResources().getFieldMarkImage0(CHECKEDKING)->paintImage(background, margin);
 
   for(SigmoidIterator it(0,180,30); it.hasNext();) {
-    const double degree = it.next();
-    const Size2D rotatedSize = PixRect::getRotatedSize(fieldSize, degree), pos((field45Size - rotatedSize) / 2);
-    helper.rop(ORIGIN, field45Size, SRCCOPY, &background, ORIGIN);
-    pieceImage->paintImage(helper, Point2D(pos.cx,pos.cy), 1, degree);
-    m_graphics.m_bufferPr->rop(pos2, field45Size, SRCCOPY, &helper, ORIGIN);
+    const double degree      = it.next();
+    const CSize  rotatedSize = PixRect::getRotatedSize(fieldSize0, degree), pos((fieldSize45 - rotatedSize) / 2);
+    helper.rop(ORIGIN, fieldSize45, SRCCOPY, &background, ORIGIN);
+    pieceImage->paintImage(helper, pos, 1, degree);
+    m_graphics.m_bufferPr->rop(pos2, fieldSize45, SRCCOPY, &helper, ORIGIN);
     m_graphics.render();
     Sleep(40);
   }

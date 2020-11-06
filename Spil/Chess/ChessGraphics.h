@@ -92,21 +92,19 @@ typedef enum {
 
 class ChessResources {
 private:
-  static int            s_instanceCount;
-  static const Point2D  s_upperLeftCorner0;
-  static const Size2D   s_fieldSize0;
-  Size2D                m_imageSize0;
-  Size2D                m_boardSize0;
-  Size2D                m_selectionFrameSize0;
-  Point2D               m_scale;
-  CSize                 m_crSize; // current clientRect size
+  static int          s_instanceCount;
+  static const CPoint s_upperLeftCorner0;
+  static const CSize  s_fieldSize0;
+  static CSize        s_boardSize0, s_selectionFrameSize0;
+  static CSize        s_imageSize0;
+  Point2D             m_scale;
+  CSize               m_crSize; // current clientRect size
+  CFont              *m_boardTextFont0;
 
-  static Image       *s_boardImage;
-  static ImageArray   s_pieceImage[2];
-  static ImageArray   s_markImage;
-  static Image       *s_selectionFrameImage, *s_playerIndicator;
-  static CFont        s_boardTextFont, s_debugInfoFont;
-  AnimatedImage       m_hourGlassImage;
+  static Image       *s_boardImage0   ,*s_selectionFrameImage0, *s_playerIndicator0;
+  static ImageArray   s_pieceImage0[2], s_markImage0;
+  static CFont        s_boardTextFont0, s_debugInfoFont;
+  AnimatedImage       m_hourGlassImage0;
 
   ChessResources(const ChessResources &src);            // Not defined. Class not cloneable
   ChessResources &operator=(const ChessResources &src); // Not defined. Class not cloneable
@@ -117,84 +115,40 @@ public:
   void unload();
   void reload();
 
-  void setClientRectSize(const CSize &size);
-  inline const Point2D &getScale() const {
-    return m_scale;
-  }
-  inline double getAvgScale() const {
-    return (m_scale.x + m_scale.y)/2;
-  }
-  inline Point2D     scalePoint(   const Point2D &p) const {
-    return Point2D(p.x  * m_scale.x , p.y  * m_scale.y);
-  }
-  inline Point2D     unscalePoint( const Point2D &p) const {
-    return Point2D(p.x  / m_scale.x , p.y  / m_scale.y);
-  }
-  inline Size2D      scaleSize(    const Size2D  &s) const {
-    return Size2D( s.cx * m_scale.x , s.cy * m_scale.y);
-  }
-  inline Rectangle2D scaleRect(    const Rectangle2D &r) const {
-    return Rectangle2D(scalePoint(r.getTopLeft()), scalePoint(r.getBottomRight()));
-  }
-  inline CFont &getBoardFont() const {
-    return s_boardTextFont;
-  }
-  inline CFont &getDebugFont() const {
-    return s_debugInfoFont;
-  }
-  inline const Size2D &getBoardSize0() const {
-    return m_boardSize0;
-  }
-  inline const CSize &getBoardSize() const {
-    return m_crSize;
-  }
-  inline const Point2D &getUpperLeftCorner0() const {
-    return s_upperLeftCorner0;
-  }
-  inline Point2D getUpperLeftCorner() const {
-    return scalePoint(getUpperLeftCorner0());
-  }
-  inline const Size2D &getFieldSize0() const {
-    return s_fieldSize0;
-  }
-  inline const Size2D getFieldSize() const {
-    return scaleSize(getFieldSize0());
-  }
-  inline const Size2D &getImageSize0() const {
-    return m_imageSize0;
-  }
-  inline const Size2D getImageSize() const {
-    return scaleSize(getImageSize0());
-  }
-  inline const Size2D &getSelectionFrameSize0() const {
-    return m_selectionFrameSize0;
-  }
-  inline Size2D getSelectionFrameSize() const {
-    return scaleSize(getSelectionFrameSize0());
-  }
-  inline const Image *getBoardImage() const {
-    return s_boardImage;
-  }
-  inline const Image *getSelectionFrameImage() const {
-    return s_selectionFrameImage;
-  }
-  inline const Image *getPlayerIndicatorImage() const {
-    return s_playerIndicator;
-  }
-  inline const Image *getPieceImage(PieceKey pk) const {
-    return s_pieceImage[GET_PLAYER_FROMKEY(pk)][GET_TYPE_FROMKEY(pk)];
-  }
-  inline AnimatedImage &getHourGlassAnimation() {
-    return m_hourGlassImage;
-  }
-  inline const Image *getPieceImage(const Piece *piece) const {
-    return getPieceImage(piece->getKey());
-  }
+  void                        setClientRectSize(const CSize &size);
+  inline const Point2D       &getScale()                         const { return m_scale;                                                     }
+  inline double               getAvgScale()                      const { return (m_scale.x() + m_scale.y())/2;                               }
+  inline Point2D              scalePoint(   const CPoint &p)     const { return Point2D((double)p.x *m_scale.x(), (double)p.y *m_scale.y()); }
+  inline Point2D              unscalePoint( const CPoint &p)     const { return Point2D((double)p.x /m_scale.x(), (double)p.y /m_scale.y()); }
+  inline Size2D               scaleSize(    const CSize  &s)     const { return Size2D( (double)s.cx*m_scale.x(), (double)s.cy*m_scale.y()); }
+         Rectangle2D          scaleRect(    const CRect  &r)     const;
+  inline CFont               &getBoardFont0()                    const { return s_boardTextFont0;                                            }
+  inline CFont               &getScaledFont(CFont &font);
+  inline CFont               &getDebugFont()                     const { return s_debugInfoFont;                                             }
+  static inline const CSize  &getBoardSize0()                          { return s_boardSize0;                                                }
+  static inline const CPoint &getUpperLeftCorner0()                    { return s_upperLeftCorner0;                                          }
+  static inline const CSize  &getFieldSize0()                          { return s_fieldSize0;                                                }
+  static inline const CSize  &getImageSize0()                          { return s_imageSize0;                                                }
+  static inline const CSize  &getSelectionFrameSize0()                 { return s_selectionFrameSize0;                                       }
+  inline const CSize         &getBoardSize()                     const { return m_crSize;                                                    }
+  inline Point2D              getUpperLeftCorner()               const { return scalePoint(getUpperLeftCorner0()   );                        }
+  inline Size2D               getFieldSize()                     const { return scaleSize( getFieldSize0()         );                        }
+  inline Size2D               getImageSize()                     const { return scaleSize( getImageSize0()         );                        }
+  inline const Image         *getBoardImage0()                   const { return s_boardImage0;                                                }
+  inline const Image         *getSelectionFrameImage0()          const { return s_selectionFrameImage0;                                       }
+  inline const Image         *getPlayerIndicatorImage0()         const { return s_playerIndicator0;                                           }
+  inline const Image         *getPieceImage0(PieceKey pk)        const { return s_pieceImage0[GET_PLAYER_FROMKEY(pk)][GET_TYPE_FROMKEY(pk)];  }
+  inline AnimatedImage       &getHourGlassAnimation0()                 { return m_hourGlassImage0;                                            }
+  inline const Image         *getPieceImage0(const Piece *piece) const { return getPieceImage0(piece->getKey());                              }
 
-  CBitmap &getSmallPieceBitmap(CBitmap &dst, PieceKey pk) const; // return dst
-  const Image *getFieldMarkImage(FieldMark m) const;
-  static void loadBitmap(CBitmap &dst, int resId, ImageType type);
+  CBitmap     &getSmallPieceBitmap(CBitmap &dst, PieceKey pk) const; // return dst
+  const Image *getFieldMarkImage0( FieldMark m) const;
+  static void  loadBitmap(         CBitmap &dst, int resId, ImageType type);
 };
+
+#define UPPERLEFT0              ChessResources::getUpperLeftCorner0()
+#define FIELDSIZE0              ChessResources::getFieldSize0()
+#define BOARDSIZE0              ChessResources::getBoardSize0()
 
 class DebugFlags {
 public:
@@ -353,7 +307,7 @@ private:
 
   void setSelectedField(int pos);
 
-  CRect              getSelectionFrameRect(int pos) const;
+  CRect              getSelectionFrameRect0(int pos) const;
   const CPoint      &getFirstOffboardPiecePosition(Player player) const;
   OffboardPieceArray getOffboardPieces(Player player) const;
   void               clearOffboardPieces(Player player);
@@ -427,18 +381,22 @@ public:
   void  animateMove(         const MoveBase &m                            );
   void  animateCheckMate();
 
-  Point2D     getFieldPosition(int r, int c, bool scaled) const;
-  Point2D     getFieldPosition(int pos     , bool scaled) const;
-  Rectangle2D getFieldRect(    int pos     , bool scaled) const;
+  CPoint       getFieldPosition0(int r, int c) const;
+  CPoint       getFieldPosition0(int pos     ) const;
+  CRect        getFieldRect0(    int pos     ) const;
 
-  inline bool isDragging() const {
+  CPoint       getFieldPosition(int r, int c) const;
+  CPoint       getFieldPosition(int pos     ) const;
+  CRect        getFieldRect(    int pos     ) const;
+
+  inline bool  isDragging() const {
     return m_pieceDragger != nullptr;
   }
-  PieceKey getDraggedPiece() const;
-  const Image *getPieceImage(int pos) const;
+  PieceKey     getDraggedPiece() const;
+  const Image *getPieceImage0(int pos) const;
 
-  void setComputerPlayer(Player computerPlayer);
-  inline char getVisibleClocks() const {
+  void         setComputerPlayer(Player computerPlayer);
+  inline char  getVisibleClocks() const {
     return m_visibleClocks;
   }
   void setVisibleClocks(    char visible); // visible = 0,1,2,3. if(bit[i] is set, clock[i] is visible. i=[WHITE/BLACK]
@@ -447,14 +405,14 @@ public:
   void setShowPlayerInTurn( bool show );
   void setModeText(const String &text);
 
-  inline const CSize getBoardSize(bool scaled) const {
-    return scaled ? m_resources.getBoardSize() : m_resources.getBoardSize0();
+  inline const CSize &getBoardSize() const {
+    return m_resources.getBoardSize();
   }
   inline const CSize getFieldSize(bool scaled) const {
-    return scaled ? m_resources.getFieldSize() : m_resources.getFieldSize0();
+    return scaled ? ((CSize)m_resources.getFieldSize()) : m_resources.getFieldSize0();
   }
   inline const CSize getImageSize(bool scaled) const {
-    return scaled ? m_resources.getImageSize() : m_resources.getImageSize0();
+    return scaled ? ((CSize)m_resources.getImageSize()) : m_resources.getImageSize0();
   }
   inline const Game &getGame() const {
     return *m_game;

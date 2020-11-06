@@ -25,7 +25,7 @@ protected:
     return m_save.getSavedRect();
   }
   CPoint unscalePoint(const CPoint &p) const {
-    return m_graphics.getResources().unscalePoint(p);
+    return (CPoint)m_graphics.getResources().unscalePoint(p);
   }
   ChessAnimation(ChessGraphics *graphics) : m_graphics(*graphics) {
   }
@@ -56,7 +56,7 @@ public:
 
 class MoveSinglePieceAnimation : public AbstractPieceMoveAnimation {
 private:
-  const Point2D        m_from, m_to;
+  const CPoint         m_from, m_to;
   Point2D              m_pos;
   SigmoidIterator      m_it;
 public:

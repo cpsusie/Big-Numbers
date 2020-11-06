@@ -8,10 +8,8 @@
 #include "MessageDlg.h"
 #include "ChessGraphicsAnimation.h"
 
-#define UPPERLEFTCORNER(scaled) ((scaled) ? m_resources.getUpperLeftCorner() : m_resources.getUpperLeftCorner0())
-#define FIELDSIZE(      scaled) ((scaled) ? m_resources.getFieldSize()       : m_resources.getFieldSize0())
-#define FIELDSIZE0              FIELDSIZE(false)
-#define UPPERLEFT0              UPPERLEFTCORNER(false)
+#define UPPERLEFT m_resources.getUpperLeftCorner()
+#define FIELDSIZE m_resources.getFieldSize()
 
 #define KING_HAS_CHECKMARK 0x01
 #define KING_UPSIDEDOWN    0x02
@@ -51,7 +49,7 @@ void ChessGraphics::reopen() {
 }
 
 void ChessGraphics::allocate() {
-  m_bufferPr = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, m_resources.getBoardSize0()); TRACE_NEW(m_bufferPr);
+  m_bufferPr = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, BOARDSIZE0); TRACE_NEW(m_bufferPr);
   m_resources.setClientRectSize(getClientRect(m_hwnd).Size());
 }
 
@@ -63,21 +61,31 @@ void ChessGraphics::deallocate() {
 }
 
 // r,c might be an invalid position. See paintFieldNames
-Point2D ChessGraphics::getFieldPosition(int r, int c, bool scaled) const {
-  const Size2D fs = FIELDSIZE(scaled);
-  return UPPERLEFTCORNER(scaled)
-       + ((m_computerPlayer == WHITEPLAYER)
-        ? Size2D( fs.cx*(7-c),fs.cy * r   )
-        : Size2D((fs.cx* c  ),fs.cy *(7-r)))
+CPoint ChessGraphics::getFieldPosition0(int r, int c) const {
+  const CSize fs = FIELDSIZE0;
+  return UPPERLEFT0
+        + ((m_computerPlayer == WHITEPLAYER)
+        ? CSize( fs.cx*(7-c),fs.cy * r   )
+        : CSize((fs.cx* c  ),fs.cy *(7-r)))
         ;
 }
 
-Point2D ChessGraphics::getFieldPosition(int pos, bool scaled) const {
-  return getFieldPosition(GETROW(pos),GETCOL(pos), scaled);
+CPoint ChessGraphics::getFieldPosition0(int pos) const {
+  return getFieldPosition0(GETROW(pos),GETCOL(pos));
 }
 
-Rectangle2D ChessGraphics::getFieldRect(int pos, bool scaled) const {
-  return Rectangle2D(getFieldPosition(pos, scaled), FIELDSIZE(scaled));
+CRect ChessGraphics::getFieldRect0(int pos) const {
+  return CRect(getFieldPosition0(pos), FIELDSIZE0);
+}
+
+CPoint ChessGraphics::getFieldPosition(int r, int c) const {
+  return (CPoint)m_resources.scalePoint(getFieldPosition0(r, c));
+}
+CPoint ChessGraphics::getFieldPosition(int pos     ) const {
+  return (CPoint)m_resources.scalePoint(getFieldPosition0(pos));
+}
+CRect  ChessGraphics::getFieldRect(    int pos     ) const {
+  return (CRect)m_resources.scaleRect(getFieldRect0(pos));
 }
 
 void ChessGraphics::setGame(const Game &game) {
@@ -91,15 +99,15 @@ void ChessGraphics::setGame(const Game &game) {
 }
 
 int ChessGraphics::getBoardPosition(const CPoint &point) const {
-  CPoint       result = point - UPPERLEFTCORNER(true);
-  const CSize &fs     = FIELDSIZE(true);
-  result.x /= fs.cx;
-  result.y /= fs.cy;
+  const Size2D result = Point2D(point) - UPPERLEFT;
+  const Size2D fs     = FIELDSIZE;
+  int col = (int)floor(result.cx() / fs.cx());
+  int row = (int)floor(result.cy() / fs.cy());
 
-  if(!isValidPosition(result.x, result.y)) {
+  if(!isValidPosition(row, col)) {
     return -1;
   }
-  const int pos = MAKE_POSITION(result.y,result.x);
+  const int pos = MAKE_POSITION(row, col);
   return (m_computerPlayer == WHITEPLAYER) ? MIRRORCOLUMN(pos) : MIRRORROW(pos);
 }
 
@@ -185,15 +193,14 @@ void ChessGraphics::setShowBackMoves(bool show) {
   }
 }
 
-const Image *ChessGraphics::getPieceImage(int pos) const {
+const Image *ChessGraphics::getPieceImage0(int pos) const {
   const Piece *piece = m_game ? m_game->getPieceAtPosition(pos) : nullptr;
-  return piece ? m_resources.getPieceImage(piece) : nullptr;
+  return piece ? m_resources.getPieceImage0(piece) : nullptr;
 }
 
 void ChessGraphics::paintAll() {
   pushLevel();
-  const CSize &bs = m_resources.getBoardSize0();
-  m_bufferPr->rop(0,0,bs.cx,bs.cy, SRCCOPY, m_resources.getBoardImage(), 0,0);
+  m_bufferPr->rop(ORIGIN, BOARDSIZE0, SRCCOPY, m_resources.getBoardImage0(), ORIGIN);
 
   paintSelectedPiece();
 
@@ -270,13 +277,13 @@ void ChessGraphics::paintFieldNames() {
   HDC hdc = m_bufferPr->getDC();
   m_fieldNamesRectangles.clear();
 
-  HGDIOBJ oldFont = SelectObject(hdc, m_resources.getBoardFont());
-  const Size2D charSize = getTextExtent(hdc, _T("8"));
-  Size2D       offset   = FIELDSIZE0 - charSize;
+  HGDIOBJ oldFont = SelectObject(hdc, m_resources.getBoardFont0());
+  const  CSize charSize = getTextExtent(hdc, _T("8"));
+  CSize        offset   = FIELDSIZE0 - charSize;
   offset.cx /= 2;
   offset.cy /= 2;
 
-#define FN_POS(r,c) Point2D(getFieldPosition(r,c, false) + offset)
+#define FN_POS(r,c) (getFieldPosition0(r,c) + offset)
 #define FN_LEFTPOS( r) FN_POS( r,-1)
 #define FN_RIGHTPOS(r) FN_POS( r, 8)
 #define FN_UPPERPOS(c) FN_POS(-1, c)
@@ -297,10 +304,10 @@ void ChessGraphics::paintFieldNames() {
   m_bufferPr->releaseDC(hdc);
 
   if(m_fieldNamesRectangles.size() == 0) {
-    addFieldNameRectangle(FN_UPPERPOS(0), FN_UPPERPOS(7), charSize);
-    addFieldNameRectangle(FN_LOWERPOS(0), FN_LOWERPOS(7), charSize);
-    addFieldNameRectangle(FN_LEFTPOS( 0), FN_LEFTPOS( 7), charSize);
-    addFieldNameRectangle(FN_RIGHTPOS(0), FN_RIGHTPOS(7), charSize);
+    addFieldNameRectangle(FN_UPPERPOS(0), FN_UPPERPOS(7), (CSize)charSize);
+    addFieldNameRectangle(FN_LOWERPOS(0), FN_LOWERPOS(7), (CSize)charSize);
+    addFieldNameRectangle(FN_LEFTPOS( 0), FN_LEFTPOS( 7), (CSize)charSize);
+    addFieldNameRectangle(FN_RIGHTPOS(0), FN_RIGHTPOS(7), (CSize)charSize);
   }
 
   popLevel();
@@ -314,7 +321,7 @@ void ChessGraphics::addFieldNameRectangle(const CPoint &corner1, const CPoint &c
 }
 
 void ChessGraphics::paintFieldName(HDC dc, const CPoint &p, const String &str) {
-  textOutTransparentBackground(dc, p, str, m_resources.getBoardFont(), LETTERCOLOR);
+  textOutTransparentBackground(dc, p, str, m_resources.getBoardFont0(), LETTERCOLOR);
 }
 
 void ChessGraphics::unpaintFieldNames() {
@@ -332,12 +339,12 @@ void ChessGraphics::initPlayerIndicatorRect() {
 void ChessGraphics::paintPlayerIndicator() {
   pushLevel();
   unpaintPlayerIndicator();
-  const Image  *image    = m_resources.getPlayerIndicatorImage();
-  const Size2D  markSize = image->getSize();
-  const Size2D  offset   = (FIELDSIZE0 - markSize)/2;
+  const Image  *image    = m_resources.getPlayerIndicatorImage0();
+  const CSize   markSize = image->getSize();
+  const CSize   offset   = (FIELDSIZE0 - markSize)/2;
 
-  const Point2D pos      = getFieldPosition((m_game->getPlayerInTurn() == WHITEPLAYER)?-1:8
-                                           ,(m_computerPlayer          == WHITEPLAYER)?8:-1, false) + offset;
+  const CPoint pos      = getFieldPosition0((m_game->getPlayerInTurn() == WHITEPLAYER)?-1:8
+                                           ,(m_computerPlayer          == WHITEPLAYER)?8:-1) + offset;
   image->paintImage(*m_bufferPr, pos);
   m_playerIndicatorRect = CRect(pos, markSize);
   popLevel();
@@ -364,7 +371,7 @@ void ChessGraphics::paintField(int pos) {
   pushLevel();
   const Piece *piece = m_game->getPieceAtPosition(pos);
   if(piece != nullptr) {
-    const CRect r = getFieldRect(pos, false);
+    const CRect r = getFieldRect0(pos);
     bool rotated = false;
     if(piece->getType() == King && !m_matingPositions.contains(pos)) { // king needs special attention
       const BYTE flags = m_kingFlags[piece->getPlayer()];
@@ -375,14 +382,14 @@ void ChessGraphics::paintField(int pos) {
         paintEmptyField(pos);
       }
     }
-    m_resources.getPieceImage(piece)->paintImage(*m_bufferPr, r.TopLeft(), 1.0, rotated ? 180 : 0);
+    m_resources.getPieceImage0(piece)->paintImage(*m_bufferPr, r.TopLeft(), 1.0, rotated ? 180 : 0);
   }
   popLevel();
 }
 
 void ChessGraphics::paintEmptyField(int pos) {
   pushLevel();
-  const CRect r = getFieldRect(pos, false);
+  const CRect r = getFieldRect0(pos);
   restoreBackground(r);
   if(pos == m_computerFrom) {
     paintMark(pos, MOVEFROMMARK);
@@ -475,8 +482,8 @@ void ChessGraphics::animateMove(const MoveBase &m) {
 
 const CPoint &ChessGraphics::getFirstOffboardPiecePosition(Player player) const {
   static const CPoint pos[] = {
-    Point2D(UPPERLEFT0.x - FIELDSIZE0.cx*2 -  80, UPPERLEFT0.y)
-   ,Point2D(UPPERLEFT0.x + FIELDSIZE0.cx*8 + 160, UPPERLEFT0.y)
+    (CPoint)Point2D(UPPERLEFT0.x - FIELDSIZE0.cx*2 -  80, UPPERLEFT0.y)
+   ,(CPoint)Point2D(UPPERLEFT0.x + FIELDSIZE0.cx*8 + 160, UPPERLEFT0.y)
   };
   return pos[ISLEFTSIDE(player)?0:1];
 }
@@ -488,7 +495,7 @@ OffboardPieceArray ChessGraphics::getOffboardPieces(Player player) const {
     return result;
   }
   const CPoint p0 = getFirstOffboardPiecePosition(player);
-  Point2D p = p0;
+  CPoint p = p0;
   for(size_t i = 0; i < capturedPieces.size(); i++) {
     const PieceKey key = capturedPieces[i];
     if(GET_TYPE_FROMKEY(key) == Pawn && (p.x == p0.x)) {
@@ -511,7 +518,7 @@ void ChessGraphics::paintOffboardPieces(Player player) {
   m_offboardPieces[player] = offboardPieces;
   for(size_t i = 0; i < offboardPieces.size(); i++) {
     const OffboardPiece &obp = offboardPieces[i];
-    m_resources.getPieceImage(obp.getKey())->paintImage(*m_bufferPr, obp.TopLeft());
+    m_resources.getPieceImage0(obp.getKey())->paintImage(*m_bufferPr, obp.TopLeft());
   }
   popLevel();
 }
@@ -535,7 +542,7 @@ void ChessGraphics::repaintOffboardPieces(Player player) {
 }
 
 const OffboardPiece *ChessGraphics::getOffboardPieceByPosition(const CPoint &point) const {
-  const CPoint up = m_resources.unscalePoint(point);
+  const CPoint up = (CPoint)m_resources.unscalePoint(point);
   forEachPlayer(p) {
     const OffboardPieceArray &a = m_offboardPieces[p];
     for(size_t i = 0; i < a.size(); i++) {
@@ -562,7 +569,7 @@ const OffboardPiece *ChessGraphics::getOffboardPieceByKey(PieceKey key) const {
 void ChessGraphics::beginDragPiece(const CPoint &point, PieceKey key) {
   const OffboardPiece *obp = getOffboardPieceByKey(key);
   pushLevel();
-  beginDragPiece(m_resources.scalePoint(obp->CenterPoint()), obp);
+  beginDragPiece((CPoint)m_resources.scalePoint(obp->CenterPoint()), obp);
   dragPiece(point);
   popLevel();
 }
@@ -598,13 +605,13 @@ void ChessGraphics::paintModeText() {
     pushLevel();
 
     HDC          dc        = m_bufferPr->getDC();
-    HGDIOBJ      oldFont   = SelectObject(dc, m_resources.getBoardFont());
+    HGDIOBJ      oldFont   = SelectObject(dc, m_resources.getBoardFont0());
     const CSize  textSize  = getTextExtent(dc, m_modeText);
     SelectObject(dc, oldFont);
 
-    const Point2D p = Point2D((m_resources.getBoardSize0().cx - textSize.cx) / 2,20);
+    const CPoint p((BOARDSIZE0.cx - textSize.cx) / 2, 20);
 
-    textOutTransparentBackground(dc, p, m_modeText, m_resources.getBoardFont(), LETTERCOLOR);
+    textOutTransparentBackground(dc, p, m_modeText, m_resources.getBoardFont0(), LETTERCOLOR);
 
     m_bufferPr->releaseDC(dc);
     m_modeTextRect = CRect(p, textSize);
@@ -634,9 +641,9 @@ static String formatSeconds(int sec) {
 }
 
 const CPoint ChessGraphics::getTimeTextPosition(int i) const {
-  static const Point2D pos[] = {
-    Point2D(UPPERLEFT0.x + 8 * FIELDSIZE0.cx + 180, UPPERLEFT0.y - 80)
-   ,Point2D(UPPERLEFT0.x + 8 * FIELDSIZE0.cx + 180, UPPERLEFT0.y + 8 * FIELDSIZE0.cy + 40)
+  static const CPoint pos[] = {
+    CPoint(UPPERLEFT0.x + 8 * FIELDSIZE0.cx + 180, UPPERLEFT0.y - 80)
+   ,CPoint(UPPERLEFT0.x + 8 * FIELDSIZE0.cx + 180, UPPERLEFT0.y + 8 * FIELDSIZE0.cy + 40)
   };
   return pos[i];
 }
@@ -645,7 +652,7 @@ const CSize &ChessGraphics::getTimeTextSize() const {
   static CSize size(0,0);
   if(size.cx == 0) {
     HDC     tmpDC   = CreateCompatibleDC(nullptr);
-    HGDIOBJ oldFont = SelectObject(tmpDC, m_resources.getBoardFont());
+    HGDIOBJ oldFont = SelectObject(tmpDC, m_resources.getBoardFont0());
     size = getTextExtent(tmpDC, _T("00:00:00"));
     SelectObject(tmpDC, oldFont);
     DeleteDC(tmpDC);
@@ -654,9 +661,10 @@ const CSize &ChessGraphics::getTimeTextSize() const {
 }
 
 const CRect &ChessGraphics::getTimeTextRect(int i) const {
-  static const CRect rect[] = { CRect(getTimeTextPosition(0),getTimeTextSize())
-                               ,CRect(getTimeTextPosition(1),getTimeTextSize())
-                              };
+  static const CRect rect[] = {
+    CRect(getTimeTextPosition(0),getTimeTextSize())
+   ,CRect(getTimeTextPosition(1),getTimeTextSize())
+  };
   return rect[i];
 }
 
@@ -678,7 +686,7 @@ void ChessGraphics::unpaintClocks() {
 
 void ChessGraphics::paintClock(const CPoint &pos, int seconds) {
   HDC dc = m_bufferPr->getDC();
-  textOutTransparentBackground(dc, pos, formatSeconds(seconds), m_resources.getBoardFont(), LETTERCOLOR);
+  textOutTransparentBackground(dc, pos, formatSeconds(seconds), m_resources.getBoardFont0(), LETTERCOLOR);
   m_bufferPr->releaseDC(dc);
 }
 
@@ -718,7 +726,7 @@ void ChessGraphics::startHourGlassAnimation() {
 }
 
 void ChessGraphics::stopHourGlassAnimation() {
-  m_resources.getHourGlassAnimation().stopAnimation();
+  m_resources.getHourGlassAnimation0().stopAnimation();
 }
 
 void ChessGraphics::showClocks(UINT whiteTime, UINT blackTime) {
@@ -767,8 +775,7 @@ void ChessGraphics::markLegalMoves() {
   }
 
   const MoveBaseArray legalMoves = getLegalMoves();
-  for(size_t i = 0; i < legalMoves.size(); i++) {
-    const MoveBase &move = legalMoves[i];
+  for(const MoveBase move : legalMoves) {
     switch(move.m_type) {
     case NOMOVE       :
       break;
@@ -838,7 +845,7 @@ void ChessGraphics::markMatingPositions() {
   int mouse = unmarkMouse();
   unmarkMatingPositions();
   m_matingPositions = m_game->getMatingPositions();
-  for(Iterator<UINT> it = m_matingPositions.getIterator(); it.hasNext();) {
+  for(auto it = m_matingPositions.getIterator(); it.hasNext();) {
     markField(it.next(), PINKMARK);
   }
   markMouse(mouse);
@@ -854,7 +861,7 @@ void ChessGraphics::unmarkMatingPositions() {
 
 void ChessGraphics::markFields(const FieldSet &fields, FieldMark mark) {
   pushLevel();
-  for(ConstIterator<UINT> it = fields.getIterator(); it.hasNext();) {
+  for(auto it = fields.getIterator(); it.hasNext();) {
     markField(it.next(), mark);
   }
   popLevel();
@@ -862,7 +869,7 @@ void ChessGraphics::markFields(const FieldSet &fields, FieldMark mark) {
 
 void ChessGraphics::unmarkFields(const FieldSet &fields) {
   pushLevel();
-  for(ConstIterator<UINT> it = fields.getIterator(); it.hasNext();) {
+  for(auto it = fields.getIterator(); it.hasNext();) {
     unmarkField(it.next());
   }
   popLevel();
@@ -879,14 +886,14 @@ int ChessGraphics::markField(int pos, FieldMark mark) {
 
 void ChessGraphics::unmarkField(int pos) {
   pushLevel();
-  restoreBackground(getFieldRect(pos, false));
+  restoreBackground(getFieldRect0(pos));
   paintField(pos);
   popLevel();
 }
 
 void ChessGraphics::paintMark(int pos, FieldMark mark) {
   pushLevel();
-  m_resources.getFieldMarkImage(mark)->paintImage(*m_bufferPr, getFieldPosition(pos, false));
+  m_resources.getFieldMarkImage0(mark)->paintImage(*m_bufferPr, getFieldPosition0(pos));
   if((pos == m_computerFrom) && (mark != MOVEFROMMARK)) {
     paintMark(pos, MOVEFROMMARK);
   } else if((pos == m_computerTo) && (mark != MOVETOMARK)) {
@@ -907,10 +914,10 @@ void ChessGraphics::markMouse(int pos) {
     return;
   }
 
-  const CRect r = getSelectionFrameRect(pos);
+  const CRect r = getSelectionFrameRect0(pos);
 
   saveImageRect(m_selectedRect, r);
-  m_resources.getSelectionFrameImage()->paintImage(*m_bufferPr, r.TopLeft());
+  m_resources.getSelectionFrameImage0()->paintImage(*m_bufferPr, r.TopLeft());
   popLevel();
 }
 
@@ -918,7 +925,7 @@ int ChessGraphics::unmarkMouse() {
   int result = m_mouseField;
   if(isValidPosition(m_mouseField)) {
     pushLevel();
-    const CRect r = getSelectionFrameRect(m_mouseField);
+    const CRect r = getSelectionFrameRect0(m_mouseField);
     restoreImageRect(m_selectedRect);
     m_mouseField = -1;
     popLevel();
@@ -928,20 +935,20 @@ int ChessGraphics::unmarkMouse() {
 
 void ChessGraphics::restoreBackground(const CRect &r) {
   pushLevel();
-  m_bufferPr->rop(r, SRCCOPY, m_resources.getBoardImage(),r.TopLeft());
+  m_bufferPr->rop(r, SRCCOPY, m_resources.getBoardImage0(),r.TopLeft());
   popLevel();
 }
 
 void ChessGraphics::restoreBackground(const CPoint &p, const CSize &size) {
   pushLevel();
-  m_bufferPr->rop(p, size, SRCCOPY, m_resources.getBoardImage(),p);
+  m_bufferPr->rop(p, size, SRCCOPY, m_resources.getBoardImage0(),p);
   popLevel();
 }
 
-CRect ChessGraphics::getSelectionFrameRect(int pos) const {
-  const Size2D &selectFrameSize = m_resources.getSelectionFrameSize0();
-  const Size2D offset((selectFrameSize - FIELDSIZE0)/2);
-  return Rectangle2D(getFieldPosition(pos,false) - offset, selectFrameSize);
+CRect ChessGraphics::getSelectionFrameRect0(int pos) const {
+  const CSize &selectFrameSize0 = m_resources.getSelectionFrameSize0();
+  const CSize offset0((selectFrameSize0 - FIELDSIZE0)/2);
+  return CRect(getFieldPosition0(pos) - offset0, selectFrameSize0);
 }
 
 MoveBaseArray ChessGraphics::getLegalMoves() const {
@@ -961,7 +968,7 @@ MoveBaseArray ChessGraphics::getLegalMoves() const {
 #endif
 
   const Piece *piece = m_game->getPieceAtPosition(m_selectedPieceField);
-  if(piece == nullptr || piece->getPlayer() != m_game->getPlayerInTurn()) {
+  if((piece == nullptr) || (piece->getPlayer() != m_game->getPlayerInTurn())) {
     return result;
   }
   return m_game->getLegalMoves(m_selectedPieceField);
@@ -1028,7 +1035,7 @@ void ChessGraphics::unmarkSelectedPiece() {
 }
 
 PixRect *SavedImageRect::getPixRect(const CSize &size) {
-  if(m_pr == nullptr || needResize(m_pr->getSize(), size)) {
+  if((m_pr == nullptr) || needResize(m_pr->getSize(), size)) {
     cleanup();
     m_pr = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, size); TRACE_NEW(m_pr);
   }
