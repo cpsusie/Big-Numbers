@@ -101,8 +101,8 @@ void ChessGraphics::setGame(const Game &game) {
 int ChessGraphics::getBoardPosition(const CPoint &point) const {
   const Size2D result = Point2D(point) - UPPERLEFT;
   const Size2D fs     = FIELDSIZE;
-  int col = (int)floor(result.cx() / fs.cx());
-  int row = (int)floor(result.cy() / fs.cy());
+  const int    col    = (int)floor(result.cx() / fs.cx());
+  const int    row    = (int)floor(result.cy() / fs.cy());
 
   if(!isValidPosition(row, col)) {
     return -1;
@@ -140,9 +140,10 @@ void ChessGraphics::setShowFieldNames(bool show) {
     pushLevel();
     m_showFieldNames = show;
     if(show) {
-      paintFieldNames();
+      paintFieldNames0();
+      paintFieldNames0();
     } else {
-      unpaintFieldNames();
+      unpaintFieldNames0();
     }
     popLevel();
   }
@@ -210,7 +211,7 @@ void ChessGraphics::paintAll() {
     unmarkMatingPositions();
   }
   if(m_showFieldNames) {
-    paintFieldNames();
+    paintFieldNames0();
   }
 
   paintComputerMoveMarks();
@@ -271,7 +272,45 @@ void ChessGraphics::paintGamePositions() {
 #define LETTERCOLOR RGB(207,195,159)
 #define WATCHCOLOR  RGB(  3, 27, 31)
 
+
+void ChessGraphics::paintFieldName(HDC hdc, const CPoint &pos, const String &str, CFont &font) {
+  textOutTransparentBackground(hdc, pos, str, font, LETTERCOLOR);
+}
+
 void ChessGraphics::paintFieldNames() {
+  HDC          hdc       = GetDC(m_hwnd);
+  CFont       &font      = getResources().getBoardFont();
+  HGDIOBJ      oldFont   = SelectObject(hdc, font);
+  const CSize  charSize  = getTextExtent(hdc, _T("A"));
+  const CSize  fieldSize = (CSize)getResources().getFieldSize();
+  SelectObject(hdc, oldFont);
+
+  CSize        offset   = (CSize)FIELDSIZE - charSize;
+  offset.cx /= 2;
+  offset.cy /= 2;
+
+#define FN_POS(r,c) (getFieldPosition(r,c) + offset)
+#define FN_LEFTPOS( r) FN_POS( r,-1)
+#define FN_RIGHTPOS(r) FN_POS( r, 8)
+#define FN_UPPERPOS(c) FN_POS(-1, c)
+#define FN_LOWERPOS(c) FN_POS( 8, c)
+
+  for(int r = 0; r < 8; r++) {
+    const String text = format(_T("%d"),r+1);
+    paintFieldName(hdc, FN_LEFTPOS( r), text, font);
+    paintFieldName(hdc, FN_RIGHTPOS(r), text, font);
+  }
+  for(int c = 0; c < 8; c++) {
+    const String text = format(_T("%c"),'A'+c);
+    paintFieldName(hdc, FN_UPPERPOS(c), text, font);
+    paintFieldName(hdc, FN_LOWERPOS(c), text, font);
+  }
+
+  ReleaseDC(m_hwnd, hdc);
+}
+
+void ChessGraphics::paintFieldNames0() {
+  return;
   pushLevel();
 
   HDC hdc = m_bufferPr->getDC();
@@ -283,48 +322,48 @@ void ChessGraphics::paintFieldNames() {
   offset.cx /= 2;
   offset.cy /= 2;
 
-#define FN_POS(r,c) (getFieldPosition0(r,c) + offset)
-#define FN_LEFTPOS( r) FN_POS( r,-1)
-#define FN_RIGHTPOS(r) FN_POS( r, 8)
-#define FN_UPPERPOS(c) FN_POS(-1, c)
-#define FN_LOWERPOS(c) FN_POS( 8, c)
+#define FN_POS0(r,c) (getFieldPosition0(r,c) + offset)
+#define FN_LEFTPOS0( r) FN_POS0( r,-1)
+#define FN_RIGHTPOS0(r) FN_POS0( r, 8)
+#define FN_UPPERPOS0(c) FN_POS0(-1, c)
+#define FN_LOWERPOS0(c) FN_POS0( 8, c)
 
   for(int r = 0; r < 8; r++) {
     const String text = format(_T("%d"),r+1);
-    paintFieldName(hdc, FN_LEFTPOS( r), text);
-    paintFieldName(hdc, FN_RIGHTPOS(r), text);
+    paintFieldName0(hdc, FN_LEFTPOS0( r), text);
+    paintFieldName0(hdc, FN_RIGHTPOS0(r), text);
   }
   for(int c = 0; c < 8; c++) {
     const String text = format(_T("%c"),'A'+c);
-    paintFieldName(hdc, FN_UPPERPOS(c), text);
-    paintFieldName(hdc, FN_LOWERPOS(c), text);
+    paintFieldName0(hdc, FN_UPPERPOS0(c), text);
+    paintFieldName0(hdc, FN_LOWERPOS0(c), text);
   }
 
   SelectObject(hdc, oldFont);
   m_bufferPr->releaseDC(hdc);
 
   if(m_fieldNamesRectangles.size() == 0) {
-    addFieldNameRectangle(FN_UPPERPOS(0), FN_UPPERPOS(7), (CSize)charSize);
-    addFieldNameRectangle(FN_LOWERPOS(0), FN_LOWERPOS(7), (CSize)charSize);
-    addFieldNameRectangle(FN_LEFTPOS( 0), FN_LEFTPOS( 7), (CSize)charSize);
-    addFieldNameRectangle(FN_RIGHTPOS(0), FN_RIGHTPOS(7), (CSize)charSize);
+    addFieldNameRectangle0(FN_UPPERPOS0(0), FN_UPPERPOS0(7), (CSize)charSize);
+    addFieldNameRectangle0(FN_LOWERPOS0(0), FN_LOWERPOS0(7), (CSize)charSize);
+    addFieldNameRectangle0(FN_LEFTPOS0( 0), FN_LEFTPOS0( 7), (CSize)charSize);
+    addFieldNameRectangle0(FN_RIGHTPOS0(0), FN_RIGHTPOS0(7), (CSize)charSize);
   }
 
   popLevel();
 }
 
-void ChessGraphics::addFieldNameRectangle(const CPoint &corner1, const CPoint &corner2, const CSize &charSize) {
+void ChessGraphics::addFieldNameRectangle0(const CPoint &corner1, const CPoint &corner2, const CSize &charSize) {
   CRect tr = makePositiveRect(CRect(corner1, corner2));
   tr.right  += charSize.cx;
   tr.bottom += charSize.cy;
   m_fieldNamesRectangles.add(tr);
 }
 
-void ChessGraphics::paintFieldName(HDC dc, const CPoint &p, const String &str) {
+void ChessGraphics::paintFieldName0(HDC dc, const CPoint &p, const String &str) {
   textOutTransparentBackground(dc, p, str, m_resources.getBoardFont0(), LETTERCOLOR);
 }
 
-void ChessGraphics::unpaintFieldNames() {
+void ChessGraphics::unpaintFieldNames0() {
   pushLevel();
   for(size_t i = 0; i < m_fieldNamesRectangles.size(); i++) {
     restoreBackground(m_fieldNamesRectangles[i]);
@@ -418,10 +457,10 @@ void ChessGraphics::paintKing(Player player) {
     const bool kingIsAttacked   = king->getState().m_kingAttackState != 0;
     const bool kingIsCheckMate  = kingIsAttacked && m_game->isCheckmate();
     const bool kingIsMoveMarked = (pos == m_computerFrom) || (pos == m_computerTo);
-    const BYTE newFlags         = (kingIsAttacked    ? KING_HAS_CHECKMARK : 0)
-                                 | (kingIsCheckMate  ? KING_UPSIDEDOWN    : 0)
-                                 | (kingIsMoveMarked ? KING_HAS_MOVEMARK  : 0)
-                                 ;
+    const BYTE newFlags         = (kingIsAttacked   ? KING_HAS_CHECKMARK : 0)
+                                | (kingIsCheckMate  ? KING_UPSIDEDOWN    : 0)
+                                | (kingIsMoveMarked ? KING_HAS_MOVEMARK  : 0)
+                                ;
 
 
     if(newFlags != flags) {
@@ -709,6 +748,9 @@ CSize ChessGraphics::flushImage() {
 
   render();
 
+  if(m_showFieldNames) {
+    paintFieldNames();
+  }
   if(m_debugFlags.m_anySet) {
     paintDebugInfo();
   }

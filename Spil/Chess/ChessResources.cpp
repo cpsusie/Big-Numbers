@@ -42,6 +42,7 @@ ChessResources::ChessResources()
 ChessResources::~ChessResources() {
   if(--s_instanceCount == 0) {
     unload();
+    releaseFontCache();
   }
 }
 
@@ -172,6 +173,10 @@ Rectangle2D ChessResources::scaleRect(const CRect &r) const {
   return Rectangle2D(scalePoint(lb), scaleSize(sz));
 }
 
+CFont &ChessResources::getBoardFont() const {
+  return getScaledFont(getBoardFont0(), getAvgScale());
+}
+
 void ChessResources::loadBitmap(CBitmap &dst, int resId, ImageType type) { // static
   if(dst.m_hObject != nullptr) {
     dst.DeleteObject();
@@ -196,4 +201,30 @@ void ChessResources::loadBitmap(CBitmap &dst, int resId, ImageType type) { // st
   default:
     throwInvalidArgumentException(__TFUNCTION__, _T("Imagetype=%d"), type);
   }
+}
+
+
+CFont &ChessResources::getScaledFont(const CFont &src, double scale) const {
+  if(scale == 1) {
+    return (CFont&)src;
+  }
+  LOGFONT lf;
+  ((CFont&)src).GetLogFont(&lf);
+  UINT key = lf.lfHeight = (int)(scale * lf.lfHeight);
+  CFont *result, **fontp = m_fontCache.get(key);
+  if(fontp != nullptr) {
+    result = *fontp;
+  } else {
+    result = new CFont(); TRACE_NEW(newFont);
+    result->CreateFontIndirect(&lf);
+    m_fontCache.put(key, result);
+  }
+  return *result;
+}
+
+void ChessResources::releaseFontCache() {
+  for(auto it = m_fontCache.getIterator(); it.hasNext();) {
+    SAFEDELETE(it.next().getValue());
+  }
+  m_fontCache.clear();
 }

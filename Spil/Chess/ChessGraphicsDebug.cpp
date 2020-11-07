@@ -8,11 +8,11 @@
 void ColoredTextFields::add(bool error, const String &str) {
   const COLORREF backColor = error ? RED : PLAYERBKCOLOR(m_player);
   const COLORREF textColor = PLAYERTEXTCOLOR(m_player);
-  Array<ColoredText>::add(ColoredText(str, backColor, textColor));
+  __super::add(ColoredText(str, backColor, textColor));
 }
 
 void ColoredTextFields::add(COLORREF backColor, COLORREF textColor, const String &str) {
-  Array<ColoredText>::add(ColoredText(str, backColor, textColor));
+  __super::add(ColoredText(str, backColor, textColor));
 }
 
 #define FIELDSIZE ((CSize)m_resources.getFieldSize())
@@ -34,8 +34,8 @@ DebugFlags::DebugFlags() {
 }
 
 void ChessGraphics::paintDebugInfo() {
-  int line = 10;
-  HDC hdc = GetDC(m_hwnd);
+  int     line    = 10;
+  HDC     hdc     = GetDC(m_hwnd);
   HGDIOBJ oldFont = SelectObject(hdc, m_resources.getDebugFont());
   try {
     if(m_debugFlags.showState() || m_debugFlags.m_flags.m_showFieldAttacks) {
@@ -48,11 +48,9 @@ void ChessGraphics::paintDebugInfo() {
         paintStateString(hdc, line, *m_game, game1);
       }
     }
-
     if(m_debugFlags.m_flags.m_showLastMoveInfo) {
       paintLastMove(hdc, line);
     }
-
     SelectObject(hdc, oldFont);
     ReleaseDC(m_hwnd, hdc);
   } catch(...) {
@@ -68,7 +66,7 @@ void ChessGraphics::paintFieldAttacks(HDC dc, const Game &game1, const Game &gam
     m_lastDebugFieldSize = FIELDSIZE;
   }
   for(int pos = 0; pos < 64; pos++) {
-    const CPoint p = getFieldPosition(pos, true);
+    const CPoint p         = getFieldPosition(pos);
 #if defined(_DEBUG)
     const TCHAR *fieldName = getFieldName(pos);
 #endif
@@ -116,15 +114,15 @@ void ChessGraphics::paintFieldAttacks(HDC dc, const Game &game1, const Game &gam
       const PinnedState ps1    = piece1->getPinnedState();
       const PinnedState ps2    = game2.getPieceAtPosition(pos)->getPinnedState();
 
-      if(ps1 != NOT_PINNED || ps2 != NOT_PINNED) {
-        String str;
+      if((ps1 != NOT_PINNED) || (ps2 != NOT_PINNED)) {
+        String         str;
         const COLORREF textColor = (player == WHITEPLAYER) ? BLACK : WHITE;
-        COLORREF bkColor;
+        COLORREF       bkColor;
         if(ps1 != ps2) {
-          str = format(_T("%s(%s)"), getPinnedStateToString(ps1).cstr(), getPinnedStateToString(ps2).cstr());
+          str     = format(_T("%s(%s)"), getPinnedStateToString(ps1).cstr(), getPinnedStateToString(ps2).cstr());
           bkColor = RED;
         } else {
-          str = getPinnedStateToString(ps1);
+          str     = getPinnedStateToString(ps1);
           bkColor = (player == WHITEPLAYER) ? WHITE : BLACK;
         }
         const CSize textSize = getTextExtent(dc, str);
@@ -135,13 +133,13 @@ void ChessGraphics::paintFieldAttacks(HDC dc, const Game &game1, const Game &gam
         const KingAttackState as1  = piece1->getState().m_kingAttackState;
         const KingAttackState as2 = game2.getPieceAtPosition(pos)->getState().m_kingAttackState;
         if(as1 || as2) {
-          String str;
+          String   str;
           COLORREF bkColor;
           if(as1 != as2) {
-            str = format(_T("%s(%s)"), getKingAttackStateToString(as1).cstr(), getKingAttackStateToString(as2).cstr());
+            str     = format(_T("%s(%s)"), getKingAttackStateToString(as1).cstr(), getKingAttackStateToString(as2).cstr());
             bkColor = RED;
           } else {
-            str = getKingAttackStateToString(as1);
+            str     = getKingAttackStateToString(as1);
             bkColor = WHITE;
           }
           const CSize textSize = getTextExtent(dc, str);
@@ -155,16 +153,17 @@ void ChessGraphics::paintFieldAttacks(HDC dc, const Game &game1, const Game &gam
 static FieldAttackTextPosition offsetsComputerPlayBlack[8], offsetsComputerPlayWhite[8], offsetSDA[2];
 
 void ChessGraphics::initFieldTextOffsets(HDC dc) {
-  const CSize charSize = getTextExtent(dc, _T("/"));
+  const CSize charSize  = getTextExtent(dc, _T("/"));
+  const CSize fieldSize = FIELDSIZE;
 
   FieldAttackTextPosition *tp = offsetsComputerPlayBlack;
-  *tp++ = FieldAttackTextPosition( ALIGN_LEFT  ,  0               ,(FIELDSIZE.cy-charSize.cy)/2); // FROM_LEFT
-  *tp++ = FieldAttackTextPosition( ALIGN_RIGHT ,  FIELDSIZE.cx    ,(FIELDSIZE.cy-charSize.cy)/2); // FROM_RIGHT
-  *tp++ = FieldAttackTextPosition( ALIGN_CENTER,  FIELDSIZE.cx/2  , FIELDSIZE.cy-charSize.cy   ); // FROM_BELOVE
-  *tp++ = FieldAttackTextPosition( ALIGN_CENTER,  FIELDSIZE.cx/2  , 0                          ); // FROM_ABOVE
-  *tp++ = FieldAttackTextPosition( ALIGN_LEFT  ,  0               , FIELDSIZE.cy-charSize.cy   ); // FROM_LOWERDIAG1
-  *tp++ = FieldAttackTextPosition( ALIGN_RIGHT ,  FIELDSIZE.cx    , 0                          ); // FROM_UPPERDIAG1
-  *tp++ = FieldAttackTextPosition( ALIGN_RIGHT ,  FIELDSIZE.cx    , FIELDSIZE.cy-charSize.cy   ); // FROM_LOWERDIAG2
+  *tp++ = FieldAttackTextPosition( ALIGN_LEFT  ,  0               ,(fieldSize.cy-charSize.cy)/2); // FROM_LEFT
+  *tp++ = FieldAttackTextPosition( ALIGN_RIGHT ,  fieldSize.cx    ,(fieldSize.cy-charSize.cy)/2); // FROM_RIGHT
+  *tp++ = FieldAttackTextPosition( ALIGN_CENTER,  fieldSize.cx/2  , fieldSize.cy-charSize.cy   ); // FROM_BELOVE
+  *tp++ = FieldAttackTextPosition( ALIGN_CENTER,  fieldSize.cx/2  , 0                          ); // FROM_ABOVE
+  *tp++ = FieldAttackTextPosition( ALIGN_LEFT  ,  0               , fieldSize.cy-charSize.cy   ); // FROM_LOWERDIAG1
+  *tp++ = FieldAttackTextPosition( ALIGN_RIGHT ,  fieldSize.cx    , 0                          ); // FROM_UPPERDIAG1
+  *tp++ = FieldAttackTextPosition( ALIGN_RIGHT ,  fieldSize.cx    , fieldSize.cy-charSize.cy   ); // FROM_LOWERDIAG2
   *tp++ = FieldAttackTextPosition( ALIGN_LEFT  ,  0               , 0                          ); // FROM_UPPERDIAG2
 
 
@@ -179,7 +178,7 @@ void ChessGraphics::initFieldTextOffsets(HDC dc) {
   *tp++ = offsetsComputerPlayBlack[FROM_LOWERDIAG2];                                              // FROM_UPPERDIAG2
 
    tp   = offsetSDA;
-  *tp++ = FieldAttackTextPosition( ALIGN_LEFT, 2*charSize.cx, max(FIELDSIZE.cy - 2*charSize.cy, 2*charSize.cy));
+  *tp++ = FieldAttackTextPosition( ALIGN_LEFT, 2*charSize.cx, max(fieldSize.cy - 2*charSize.cy, 2*charSize.cy));
   *tp++ = FieldAttackTextPosition( ALIGN_LEFT, 2*charSize.cx, charSize.cy                                     );
 }
 
@@ -262,8 +261,8 @@ void ChessGraphics::paintStateString(HDC dc, int &line, const Game &game1, const
 #if defined(TABLEBASE_BUILDER)
     const String str = _T(" No repetition count");
 #else
-    const int repeats = m_game->getPositionRepeats();
-    const String str = format(_T("Position occurred %d %s"), repeats, (repeats==1)?_T("time"):_T("times"));
+    const int    repeats = m_game->getPositionRepeats();
+    const String str     = format(_T("Position occurred %d %s"), repeats, (repeats==1)?_T("time"):_T("times"));
 #endif
     dtextOut(dc, 0, line, str);
     line += 16;

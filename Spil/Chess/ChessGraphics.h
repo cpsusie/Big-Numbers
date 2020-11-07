@@ -92,22 +92,24 @@ typedef enum {
 
 class ChessResources {
 private:
-  static int          s_instanceCount;
-  static const CPoint s_upperLeftCorner0;
-  static const CSize  s_fieldSize0;
-  static CSize        s_boardSize0, s_selectionFrameSize0;
-  static CSize        s_imageSize0;
-  Point2D             m_scale;
-  CSize               m_crSize; // current clientRect size
-  CFont              *m_boardTextFont0;
+  static int                    s_instanceCount;
+  static const CPoint           s_upperLeftCorner0;
+  static const CSize            s_fieldSize0;
+  static CSize                  s_boardSize0, s_selectionFrameSize0;
+  static CSize                  s_imageSize0;
+  static Image                 *s_boardImage0   ,*s_selectionFrameImage0, *s_playerIndicator0;
+  static ImageArray             s_pieceImage0[2], s_markImage0;
+  static CFont                  s_boardTextFont0, s_debugInfoFont;
+  AnimatedImage                 m_hourGlassImage0;
+  Point2D                       m_scale;
+  CSize                         m_crSize; // current clientRect size
+  mutable CompactUIntHashMap<CFont*,30> m_fontCache;
 
-  static Image       *s_boardImage0   ,*s_selectionFrameImage0, *s_playerIndicator0;
-  static ImageArray   s_pieceImage0[2], s_markImage0;
-  static CFont        s_boardTextFont0, s_debugInfoFont;
-  AnimatedImage       m_hourGlassImage0;
 
   ChessResources(const ChessResources &src);            // Not defined. Class not cloneable
   ChessResources &operator=(const ChessResources &src); // Not defined. Class not cloneable
+  CFont &getScaledFont(const CFont &src, double scale) const;
+  void releaseFontCache();
 public:
   ChessResources();
   ~ChessResources();
@@ -123,7 +125,7 @@ public:
   inline Size2D               scaleSize(    const CSize  &s)     const { return Size2D( (double)s.cx*m_scale.x(), (double)s.cy*m_scale.y()); }
          Rectangle2D          scaleRect(    const CRect  &r)     const;
   inline CFont               &getBoardFont0()                    const { return s_boardTextFont0;                                            }
-  inline CFont               &getScaledFont(CFont &font);
+         CFont               &getBoardFont()                     const;
   inline CFont               &getDebugFont()                     const { return s_debugInfoFont;                                             }
   static inline const CSize  &getBoardSize0()                          { return s_boardSize0;                                                }
   static inline const CPoint &getUpperLeftCorner0()                    { return s_upperLeftCorner0;                                          }
@@ -288,9 +290,13 @@ private:
   void unmarkMatingPositions();
   void paintMark(int pos, FieldMark mark);
   void paintComputerMoveMarks();
+  void paintFieldNames0();
+  void paintFieldName0(HDC hdc, const CPoint &p, const String &str);
+  void unpaintFieldNames0();
+
   void paintFieldNames();
-  void paintFieldName(HDC hdc, const CPoint &p, const String &str);
-  void unpaintFieldNames();
+  void paintFieldName(HDC hdc, const CPoint &p, const String &str, CFont &font);
+
   void paintKing(Player player);
   void paintKings();
   void paintPlayerIndicator();
@@ -338,7 +344,7 @@ private:
   inline void restoreImageRect(const SavedImageRect &sr) const {
     sr.restore(m_bufferPr);
   }
-  void addFieldNameRectangle( const CPoint &corner1, const CPoint &corner2, const CSize &charSize);
+  void addFieldNameRectangle0( const CPoint &corner1, const CPoint &corner2, const CSize &charSize);
   void updatePlayerIndicator();
   MoveBaseArray getLegalMoves() const;
 public:
