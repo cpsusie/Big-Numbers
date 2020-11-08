@@ -86,9 +86,9 @@ public:
   }
 };
 
-class ShortTreeSet : public TreeSet<short>  {
+class ShortTreeSet : public TreeSet<SHORT>  {
 public:
-  ShortTreeSet() : TreeSet<short>(shortHashCmp) {
+  ShortTreeSet() : TreeSet<SHORT>(shortHashCmp) {
   }
 };
 
@@ -98,9 +98,9 @@ public:
   }
 };
 
-class IntTreeSet : public TreeSet<int> {
+class IntTreeSet : public TreeSet<INT> {
 public:
-  IntTreeSet() : TreeSet<int>(intHashCmp) {
+  IntTreeSet() : TreeSet<INT>(intHashCmp) {
   }
 };
 
@@ -110,9 +110,9 @@ public:
   }
 };
 
-class LongTreeSet : public TreeSet<long> {
+class LongTreeSet : public TreeSet<LONG> {
 public:
-  LongTreeSet() : TreeSet<long>(longHashCmp) {
+  LongTreeSet() : TreeSet<LONG>(longHashCmp) {
   }
 };
 
@@ -134,15 +134,15 @@ public:
   }
 };
 
-class FloatTreeSet : public TreeSet<float> {
+class FloatTreeSet : public TreeSet<FLOAT> {
 public:
-  FloatTreeSet()  : TreeSet<float>(floatHashCmp) {
+  FloatTreeSet()  : TreeSet<FLOAT>(floatHashCmp) {
   }
 };
 
-class DoubleTreeSet : public TreeSet<double> {
+class DoubleTreeSet : public TreeSet<DOUBLE> {
 public:
-  DoubleTreeSet()  : TreeSet<double>(doubleHashCmp) {
+  DoubleTreeSet()  : TreeSet<DOUBLE>(doubleHashCmp) {
   }
 };
 

@@ -127,7 +127,7 @@ namespace TestPacker {
     TEST_METHOD(PackerUint) {
       try {
         Packer s,d;
-        CompactUintArray a;
+        CompactUIntArray a;
         UINT64 i;
         for(i = 0; i <= USHRT_MAX; i++) {
           a.add((UINT)i);
@@ -185,7 +185,7 @@ namespace TestPacker {
     TEST_METHOD(PackerUint64) {
       try {
         Packer s,d;
-        CompactUint64Array a;
+        CompactUInt64Array a;
         UINT64 i;
         for(i = 0; i <= USHRT_MAX; i++) {
           a.add(i);

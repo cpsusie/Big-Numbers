@@ -419,7 +419,7 @@ public:
     return getSubMatrix(row, column, getRowCount()-row, getColumnCount()-column);
   }
 
-  // Return this
+  // Return *this
   MatrixTemplate<T> &setSubMatrix(size_t  row, size_t  column, const MatrixTemplate<T> &src) {
     const size_t rn          = getRowCount();
     const size_t cn          = getColumnCount();

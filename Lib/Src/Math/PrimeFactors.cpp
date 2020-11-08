@@ -117,7 +117,7 @@ bool PrimeFactorArray::hasFactorsWithNonDividableMultiplicity(UINT m) const {
 CompactInt64Array PrimeFactorArray::getAllFactors() const {
   const PrimeFactorArray &pfa        = *this;
   const UINT              digitCount = (UINT)pfa.size();
-  CompactUintArray        digit(digitCount);
+  CompactUIntArray        digit(digitCount);
   CompactInt64Array       maxProd(digitCount);
   UINT resultCapacity = 1;
   for(UINT i = 0; i < digitCount; i++) {

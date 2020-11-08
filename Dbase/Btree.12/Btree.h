@@ -253,7 +253,8 @@ public:
     return m_defined;
   }
 
-  TupleField &setUndefined(); // return this
+  // Return *this
+  TupleField &setUndefined();
   String toString() const;
   void dump(FILE *f = stdout) const;
 };

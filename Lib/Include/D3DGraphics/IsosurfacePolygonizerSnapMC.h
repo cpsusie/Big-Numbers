@@ -460,7 +460,7 @@ public:
 class PolygonizerCubeArrayTable {
 private:
   static const BYTE  s_isosurfaceLookup[];
-  CompactUshortArray m_vlistStart; // index by cubes index and initialized in constructor
+  CompactUShortArray m_vlistStart; // index by cubes index and initialized in constructor
   inline const BYTE *lookup(UINT index) const {
     return s_isosurfaceLookup + m_vlistStart[index];
   }

@@ -24,10 +24,7 @@ private:
 
   LinkObject<SetEntry<K> > **allocateBuffer(size_t capacity) const {
     LinkObject<SetEntry<K> > **result = capacity ? new LinkObject<SetEntry<K> >*[capacity] : nullptr; TRACE_NEW(result);
-    if(capacity) {
-      memset(result, 0, sizeof(result[0])*capacity);
-    }
-    return result;
+    return resetPointerArray(result, capacity);
   }
 
   void init(size_t capacity) {
@@ -63,8 +60,7 @@ public:
     if(this == &src) {
       return *this;
     }
-    clear();
-    setCapacity(src.size());
+    clear(src.getCapacity());
     addAll(src);
     return *this;
   }
@@ -73,13 +69,56 @@ public:
     clear();
   }
 
-  void clear() override {
+  CompactHashSet &setCapacity(size_t capacity) {
+    if(capacity < m_size) {
+      capacity = m_size;
+    }
+    if(capacity == m_capacity) {
+      return *this;
+    }
+    LinkObject<SetEntry<K> > **oldBuffer   = m_buffer;
+    const size_t               oldCapacity = m_capacity;
+
+    m_capacity = capacity;
+    m_buffer   = allocateBuffer(capacity);
+
+    if(!isEmpty()) {
+      for(size_t i = 0; i < oldCapacity; i++) {
+        for(auto n = oldBuffer[i]; n;) {
+          const ULONG index = n->m_e.m_key.hashCode() % m_capacity;
+          LinkObject<SetEntry<K> > *&bp = m_buffer[index];
+          LinkObject<SetEntry<K> > *next = n->m_next;
+          n->m_next = bp;
+          bp        = n;
+          n         = next;
+        }
+      }
+    }
+    SAFEDELETEARRAY(oldBuffer);
+    return *this;
+  }
+
+  inline size_t getCapacity() const {
+    return m_capacity;
+  }
+
+  // If capacity < 0, it's left unchanged
+  // Return *this
+  CompactHashSet &clear(intptr_t capacity) {
     m_entryPool.releaseAll();
     if(m_size) {
       m_size = 0;
       m_updateCount++;
     }
-    setCapacity(0);
+    if(capacity >= 0) {
+      setCapacity(capacity);
+    }
+    resetPointerArray(m_buffer, getCapacity());
+    return *this;
+  }
+
+  void clear() override {
+    clear(0);
   }
 
   size_t size() const override {
@@ -140,38 +179,6 @@ public:
       }
     }
     return false;
-  }
-
-  void setCapacity(size_t capacity) {
-    if(capacity < m_size) {
-      capacity = m_size;
-    }
-    if(capacity == m_capacity) {
-      return;
-    }
-    LinkObject<SetEntry<K> > **oldBuffer   = m_buffer;
-    const size_t               oldCapacity = m_capacity;
-
-    m_capacity = capacity;
-    m_buffer   = allocateBuffer(capacity);
-
-    if(!isEmpty()) {
-      for(size_t i = 0; i < oldCapacity; i++) {
-        for(auto n = oldBuffer[i]; n;) {
-          const ULONG index = n->m_e.m_key.hashCode() % m_capacity;
-          LinkObject<SetEntry<K> > *&bp = m_buffer[index];
-          LinkObject<SetEntry<K> > *next = n->m_next;
-          n->m_next = bp;
-          bp        = n;
-          n         = next;
-        }
-      }
-    }
-    SAFEDELETEARRAY(oldBuffer);
-  }
-
-  inline size_t getCapacity() const {
-    return m_capacity;
   }
 
   inline int getPageCount() const {

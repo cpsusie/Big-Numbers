@@ -130,8 +130,7 @@ void DiffDoc::readTextFile(DiffFilter &filter, LineArray &la, InterruptableRunna
       content[i] = _T(' '); // remove any 0-character from file
     }
   }
-  TCHAR zterminator = 0;
-  content.add((BYTE*)&zterminator, sizeof(zterminator));
+  content.addZeroes(sizeof(TCHAR));
 
   String buf = content.converToString();
   content.clear();

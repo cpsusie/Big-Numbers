@@ -16,7 +16,7 @@ class D3ReductionArray : public CompactArray<D3Index> {
 private:
   const float      m_eps;
   VertexArray      m_reducedArray;
-  CompactUintArray m_translateTable;
+  CompactUIntArray m_translateTable;
   D3ReductionArray &sort();
   D3ReductionArray &setTranslation();
   static float findEps(const VertexArray &a);
@@ -25,7 +25,7 @@ public:
   const VertexArray &getReducedArray() const {
     return m_reducedArray;
   }
-  const CompactUintArray &getTranslateTable() const {
+  const CompactUIntArray &getTranslateTable() const {
     return m_translateTable;
   }
 };

@@ -54,14 +54,14 @@ public:
     init(capacity, 0);
   }
 
-  CompactArray(const CompactArray<T> &src) {
+  CompactArray(const CompactArray &src) {
     init(src.m_size, src.m_size);
     if(m_size) {
       memcpy(m_array, src.m_array, m_size * sizeof(T));
     }
   }
 
-  CompactArray<T> &operator=(const CompactArray<T> &src) {
+  CompactArray &operator=(const CompactArray &src) {
     if(this == &src) {
       return *this;
     }
@@ -78,27 +78,12 @@ public:
     SAFEDELETEARRAY(m_array);
   }
 
-  // if capacity < 0, it's left unchanged
-  CompactArray<T> &clear(intptr_t capacity) {
-    if(m_size != 0) {
-      m_updateCount++;
-    }
-    m_size = 0;
-    if(capacity >= 0) {
-      setCapacity(capacity);
-    }
-    return *this;
+  inline size_t getCapacity() const {
+    return m_capacity;
   }
 
-  void clear() override {
-    clear(0);
-  }
-
-  size_t size() const override {
-    return m_size;
-  }
-
-  CompactArray<T> &setCapacity(size_t capacity) {
+  // Return *this
+  CompactArray &setCapacity(size_t capacity) {
     if(capacity < m_size) {
       capacity = m_size;
     }
@@ -120,8 +105,26 @@ public:
     return *this;
   }
 
-  inline size_t getCapacity() const {
-    return m_capacity;
+
+  // If capacity < 0, it's left unchanged
+  // Return *this
+  CompactArray &clear(intptr_t capacity) {
+    if(m_size != 0) {
+      m_updateCount++;
+    }
+    m_size = 0;
+    if(capacity >= 0) {
+      setCapacity(capacity);
+    }
+    return *this;
+  }
+
+  void clear() override {
+    clear(0);
+  }
+
+  size_t size() const override {
+    return m_size;
   }
 
   inline T &operator[](size_t index) {
@@ -132,37 +135,6 @@ public:
   inline const T &operator[](size_t index) const {
     if(index >= m_size) indexError(__TFUNCTION__, index);
     return m_array[index];
-  }
-
-  inline const T &select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) const {
-    if(isEmpty()) emptyArrayError(__TFUNCTION__);
-    return m_array[randSizet(m_size,rnd)];
-  }
-
-  inline T &select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
-    if(isEmpty()) emptyArrayError(__TFUNCTION__);
-    return m_array[randSizet(m_size,rnd)];
-  }
-
-  CompactArray<T> getRandomSample(size_t k, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) const {
-    if(k > m_size) {
-      throwInvalidArgumentException(__TFUNCTION__, _T("k(=%s) > size(=%s)")
-                                   ,format1000(k).cstr()
-                                   ,format1000(m_size).cstr());
-    }
-    CompactArray<T> result(k);
-    for(size_t i = 0; i < k; i++) {
-      result.add(m_array[i]);
-    }
-    if(k > 0) {
-      for(size_t i = k; i < m_size; i++) {
-        const size_t j = randSizet(i+1, rnd);
-        if(j < k) {
-          result[j] = m_array[i];
-        }
-      }
-    }
-    return result;
   }
 
   inline T &first() {
@@ -185,8 +157,21 @@ public:
     return m_array[m_size-1];
   }
 
-  inline bool contains(const T &e) const {
-    return getFirstIndex(e) >= 0;
+  bool operator==(const CompactArray &a) const {
+    size_t count = size();
+    if(count != a.size()) {
+      return false;
+    }
+    for(const T *p1 = m_array, *p2 = a.m_array; count--;) {
+      if(!(*(p1++) == *(p2++))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  inline bool operator!=(const CompactArray &a) const {
+    return !(*this == a);
   }
 
   // Return min(k) so (*this)[k] == e, if such k exist, or else return -1
@@ -202,18 +187,48 @@ public:
     return -1;
   }
 
-  bool add(const T &e) override {
-    if(m_size == m_capacity) {
-      setCapacity(3*m_capacity+5);
-    }
-    m_array[m_size++] = e;
-    m_updateCount++;
-    return true;
+  inline bool contains(const T &e) const {
+    return getFirstIndex(e) >= 0;
   }
 
-  void insert(size_t index, const T &e, size_t count = 1) {
+  inline const T &select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) const {
+    if(isEmpty()) emptyArrayError(__TFUNCTION__);
+    return m_array[randSizet(m_size,rnd)];
+  }
+
+  inline T &select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
+    if(isEmpty()) emptyArrayError(__TFUNCTION__);
+    return m_array[randSizet(m_size,rnd)];
+  }
+
+  CompactArray getRandomSample(size_t k, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) const {
+    if(k > m_size) {
+      throwInvalidArgumentException(__TFUNCTION__, _T("k(=%s) > size(=%s)")
+                                   ,format1000(k).cstr()
+                                   ,format1000(m_size).cstr());
+    }
+    CompactArray result(k);
+    for(size_t i = 0; i < k; i++) {
+      result.add(m_array[i]);
+    }
+    if(k > 0) {
+      for(size_t i = k; i < m_size; i++) {
+        const size_t j = randSizet(i+1, rnd);
+        if(j < k) {
+          result[j] = m_array[i];
+        }
+      }
+    }
+    return result;
+  }
+
+  // Insert the same element e position [index..index+count-1]
+  // Return *this
+  CompactArray &insert(size_t index, const T &e, size_t count = 1) {
     if(index > m_size) indexError(__TFUNCTION__, index);
-    if(count == 0) return;
+    if(count == 0) {
+      return *this;
+    }
     const size_t newSize = m_size + count;
     if(newSize > m_capacity) {
       setCapacity(3*(newSize) + 5);
@@ -226,11 +241,16 @@ public:
       m_array[index++] = e;
     }
     m_updateCount++;
+    return *this;
   }
 
-  void insert(size_t index, const T *ep, size_t count) {
+  // Insert the elements e[0..count-1] at position [index..index+count-1]
+  // Return *this
+  CompactArray &insert(size_t index, const T *ep, size_t count) {
     if(index > m_size) indexError(__TFUNCTION__, index);
-    if(count == 0) return;
+    if(count == 0) {
+      return *this;
+    }
     const size_t newSize = m_size + count;
     if(newSize > m_capacity) {
       setCapacity(3*(newSize) + 5);
@@ -243,13 +263,23 @@ public:
       m_array[index++] = *(ep++);
     }
     m_updateCount++;
+    return *this;
+  }
+
+  bool add(const T &e) override {
+    if(m_size == m_capacity) {
+      setCapacity(3*m_capacity+5);
+    }
+    m_array[m_size++] = e;
+    m_updateCount++;
+    return true;
   }
 
   void append(const T *ep, size_t count) {
     insert(size(), ep, count);
   }
 
-  bool addAll(const CompactArray<T> &src) {
+  bool addAll(const CompactArray &src) {
     if(src.isEmpty()) {
       return false;
     }
@@ -281,12 +311,15 @@ public:
     m_updateCount++;
   }
 
-  void removeLast() {
+  // Return *this
+  CompactArray &removeLast() {
     if(isEmpty()) emptyArrayError(__TFUNCTION__);
     remove(m_size-1);
+    return *this;
   }
 
-  CompactArray<T> &swap(size_t i1, size_t i2) {
+  // Return *this
+  CompactArray &swap(size_t i1, size_t i2) {
     if(i1 >= m_size) indexError(__TFUNCTION__, i1);
     if(i2 >= m_size) indexError(__TFUNCTION__, i2);
     const T tmp = m_array[i1];
@@ -296,7 +329,8 @@ public:
     return *this;
   }
 
-  CompactArray<T> &shuffle(size_t from, size_t count, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
+  // Return *this
+  CompactArray &shuffle(size_t from, size_t count, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
     if(from >= size()) {
       return *this;
     }
@@ -309,9 +343,26 @@ public:
     return *this;
   }
 
+  // Return *this
+  CompactArray &shuffle() {
+    return shuffle(0, size());
+  }
+
+  // Return *this
+  CompactArray &reverse() {
+    if(size() == 0) {
+      return *this;
+    }
+    for(T *p1 = &first(), *p2 = &last(); p1 < p2; p1++, p2--) {
+      const T tmp = *p1; *p1 = *p2; *p2 = tmp;
+    }
+    m_updateCount++;
+    return *this;
+  }
+
   class PermutationHandler {
     public:
-      virtual bool handlePermutation(const CompactArray<T> &a) = 0;
+      virtual bool handlePermutation(const CompactArray &a) = 0;
   };
 
 private:
@@ -335,44 +386,36 @@ private:
   }
 
 public:
-  CompactArray<T> &shuffle() {
-    return shuffle(0, size());
-  }
-
-  CompactArray<T> &reverse() {
-    if(size() == 0) return *this;
-    for(T *p1 = &first(), *p2 = &last(); p1 < p2; p1++, p2--) {
-      const T tmp = *p1; *p1 = *p2; *p2 = tmp;
-    }
-    m_updateCount++;
-    return *this;
-  }
 
   bool generateAllPermuations(PermutationHandler &handler) {
     return permuter(size(), handler);
   }
 
-  CompactArray<T> &sort(size_t from, size_t count, Comparator<T> &cmp) {
-    if(from >= (size_t)size()) {
+  // Return *this
+  CompactArray &sort(size_t from, size_t count, Comparator<T> &comparator) {
+    if(from >= size()) {
       return *this;
     }
     if((count = getSortCount(from, count)) > 1) {
-      quickSort(m_array+from, count, sizeof(T), cmp);
+      quickSort(m_array+from, count, sizeof(T), comparator);
       m_updateCount++;
     }
     return *this;
   }
 
-  CompactArray<T> &sort(Comparator<T> &cmp) {
-    return sort(0, size(), cmp);
+  // Return *this
+  CompactArray &sort(Comparator<T> &comparator) {
+    return sort(0, size(), comparator);
   }
 
-  CompactArray<T> &sort(size_t from, size_t count, int (*cmp)(const T &e1, const T &e2)) {
-    return sort(from, count, FunctionComparator<T>(cmp));
+  // Return *this
+  CompactArray &sort(size_t from, size_t count, int (*compare)(const T &e1, const T &e2)) {
+    return sort(from, count, FunctionComparator<T>(compare));
   }
 
-  CompactArray<T> &sort(int (*cmp)(const T &e1, const T &e2)) {
-    return sort(0, size(), FunctionComparator<T>(cmp));
+  // Return *this
+  CompactArray &sort(int (*compare)(const T &e1, const T &e2)) {
+    return sort(0, size(), compare);
   }
 
   // Return index i so a[i] == key. If none exist, return -1
@@ -450,23 +493,6 @@ public:
     return binaryInsert(key, FunctionComparator<T>(cmp));
   }
 
-  bool operator==(const CompactArray<T> &a) const {
-    size_t count = size();
-    if(count != a.size()) {
-      return false;
-    }
-    for(const T *p1 = m_array, *p2 = a.m_array; count--;) {
-      if(!(*(p1++) == *(p2++))) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  inline bool operator!=(const CompactArray<T> &a) const {
-    return !(*this == a);
-  }
-
   ULONG hashCode() const {
     ULONG sum = 0;
     size_t count = size();
@@ -519,7 +545,7 @@ public:
 
   class CompactArrayIterator : public AbstractIterator {
   private:
-    CompactArray<T> &m_a;
+    CompactArray    &m_a;
     size_t           m_next;
     intptr_t         m_current;
     size_t           m_updateCount;
@@ -529,7 +555,7 @@ public:
       }
     }
   public:
-    CompactArrayIterator(const CompactArray<T> *a) : m_a(*(CompactArray<T>*)a) {
+    CompactArrayIterator(const CompactArray *a) : m_a(*(CompactArray*)a) {
       m_next        = 0;
       m_current     = -1;
       m_updateCount = m_a.getUpdateCount();
@@ -582,17 +608,17 @@ public:
 };
 
 typedef CompactArray<TCHAR*> CompactStrArray;
-typedef CompactArray<char>   CompactCharArray;
-typedef CompactArray<short>  CompactShortArray;
-typedef CompactArray<USHORT> CompactUshortArray;
-typedef CompactArray<int>    CompactIntArray;
-typedef CompactArray<UINT>   CompactUintArray;
-typedef CompactArray<long>   CompactLongArray;
-typedef CompactArray<ULONG>  CompactUlongArray;
-typedef CompactArray<INT64>  CompactInt64Array;
-typedef CompactArray<UINT64> CompactUint64Array;
-typedef CompactArray<float>  CompactFloatArray;
-typedef CompactArray<double> CompactDoubleArray;
+typedef CompactArray<CHAR  > CompactCharArray;
+typedef CompactArray<SHORT > CompactShortArray;
+typedef CompactArray<USHORT> CompactUShortArray;
+typedef CompactArray<INT   > CompactIntArray;
+typedef CompactArray<UINT  > CompactUIntArray;
+typedef CompactArray<LONG  > CompactLongArray;
+typedef CompactArray<ULONG > CompactULongArray;
+typedef CompactArray<INT64 > CompactInt64Array;
+typedef CompactArray<UINT64> CompactUInt64Array;
+typedef CompactArray<FLOAT > CompactFloatArray;
+typedef CompactArray<DOUBLE> CompactDoubleArray;
 typedef CompactArray<size_t> CompactSizetArray;
 
 template <typename T> class CompactFileArray {

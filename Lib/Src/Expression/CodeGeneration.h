@@ -155,8 +155,8 @@ public:
 
 class JumpList : public CodeLabelPair {
 public:
-  CompactUintArray m_trueJumps;
-  CompactUintArray m_falseJumps;
+  CompactUIntArray m_trueJumps;
+  CompactUIntArray m_falseJumps;
   inline JumpList(const CodeLabelPair &clp) : CodeLabelPair(clp) {
   }
   inline JumpList(CodeLabel falseLabel, CodeLabel trueLabel) : CodeLabelPair(falseLabel, trueLabel) {
@@ -173,10 +173,10 @@ public:
   inline bool hasJumps() const {
     return hasFalseJumps() || hasTrueJumps();
   }
-  inline CompactUintArray &getJumps(bool b) {
+  inline CompactUIntArray &getJumps(bool b) {
     return b ? m_trueJumps : m_falseJumps;
   }
-  inline const CompactUintArray &getJumps(bool b) const {
+  inline const CompactUIntArray &getJumps(bool b) const {
     return b ? m_trueJumps : m_falseJumps;
   }
   inline JumpList &operator^=(const JumpList &jl) {

@@ -51,7 +51,7 @@ public:
     }
   }
 
-  // Decrease internal counter by 1. If wait is called on a nonsignaled semaphore, the calling thread will be blocked until 
+  // Decrease internal counter by 1. If wait is called on a nonsignaled semaphore, the calling thread will be blocked until
   // notify is called (by anothr thread), turning state signaled
   void wait() {
     const int count = m_count.fetch_sub(1, std::memory_order_acquire);

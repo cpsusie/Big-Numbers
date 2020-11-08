@@ -58,7 +58,7 @@ void getValue(XMLDoc &doc, XMLNodePtr n, D3CameraArray &a) {
     throwInvalidArgumentException(__TFUNCTION__, _T("a.size()=%zu, xmldoc.count=%u"), a.size(), count);
   }
   if(count == 0) return;
-  
+
   for(XMLNodePtr child = doc.getChild(n, _T("cam0")); child; child = child->nextSibling) {
     const String idStr = (wchar_t*)child->nodeName;
     UINT  id;

@@ -85,7 +85,7 @@ public:
     return m_fileSize == 0;
   }
   inline double getAvgTimePerKb() const {
-    return m_fileSize 
+    return m_fileSize
          ? ((double)m_writeTime / (double)m_fileSize * 1024.0)
          : 0.0;
   }

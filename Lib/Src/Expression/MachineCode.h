@@ -23,7 +23,6 @@ private:
 public:
   MachineCode() : m_entryPoint(nullptr), m_esi(nullptr) {
   }
-  int  addBytes(const void *bytes, int count);
   void finalize(void *esi);
 
   inline Real evaluateReal() const {

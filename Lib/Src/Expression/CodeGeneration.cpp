@@ -45,7 +45,7 @@ InstructionInfo CodeGeneration::insertIns(UINT pos, const InstructionBase &ins) 
     insertZeroes(pos,n);
     m_code.setBytes(pos, ins.getBytes(), n);
   } else {
-    m_code.add(ins.getBytes(), n);
+    m_code.append(ins.getBytes(), n);
   }
   return InstructionInfo(pos,ins);
 }
@@ -175,7 +175,7 @@ UINT CodeGeneration::emitJump(const OpcodeBase &opcode, CodeLabel label) {
 }
 
 void CodeGeneration::fixupJumps(const JumpList &list, bool b) {
-  const CompactUintArray &jumps = list.getJumps(b);
+  const CompactUIntArray &jumps = list.getJumps(b);
   const size_t            n     = jumps.size();
   if(n) {
     const UINT jmpTo = size();
@@ -249,7 +249,7 @@ void CodeGeneration::changeShortJumpToNearJump(JumpFixup &jf) {
 }
 
 void CodeGeneration::insertZeroes(UINT pos, UINT count) {
-  m_code.addZeroes(pos, count);
+  m_code.insertZeroes(pos, count);
   for(size_t i = 0; i < m_jumpFixups.size(); i++) {
     JumpFixup &jf1 = m_jumpFixups[i];
     if(jf1.m_instructionPos > pos) jf1.m_instructionPos += count;

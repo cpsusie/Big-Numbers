@@ -65,7 +65,7 @@ public:
   inline bool containsCtrlId(int ctrlId) const {
     return (ctrlId >= getFirstCtrlId()) && (ctrlId <= getLastCtrlId());
   }
-  CompactUintArray getTabOrderArray() const;
+  CompactUIntArray getTabOrderArray() const;
   DiffEquationField findFieldByCtrlId(UINT id) const;
   inline DiffEquationField getFocusField() const {
     return findFieldByCtrlId(getFocusCtrlId(this));

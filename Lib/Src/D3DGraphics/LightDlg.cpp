@@ -113,14 +113,14 @@ void CLightDlg::enableSliders(const D3Light &v) {
   const bool isSpot        = v.Type == D3DLIGHT_SPOT;
   const bool isDirectional = v.Type == D3DLIGHT_DIRECTIONAL;
   enableWindowList(*this,!isDirectional
-                  ,IDC_STATIC_RANGE               ,IDC_SLIDER_RANGE               
-                  ,IDC_STATIC_CONSTANTATTENUATION ,IDC_SLIDER_CONSTANTATTENUATION 
-                  ,IDC_STATIC_LINEARATTENUATION   ,IDC_SLIDER_LINEARATTENUATION   
+                  ,IDC_STATIC_RANGE               ,IDC_SLIDER_RANGE
+                  ,IDC_STATIC_CONSTANTATTENUATION ,IDC_SLIDER_CONSTANTATTENUATION
+                  ,IDC_STATIC_LINEARATTENUATION   ,IDC_SLIDER_LINEARATTENUATION
                   ,IDC_STATIC_QUADRATICATTENUATION,IDC_SLIDER_QUADRATICATTENUATION
                   ,0);
 
   enableWindowList(*this,isSpot
-                  ,IDC_STATIC_FALLOFF             ,IDC_SLIDER_FALLOFF             
+                  ,IDC_STATIC_FALLOFF             ,IDC_SLIDER_FALLOFF
                   ,IDC_STATIC_SPOTANGLEOUTER      ,IDC_SLIDER_SPOTANGLEOUTER
                   ,IDC_STATIC_SPOTANGLEINNER      ,IDC_SLIDER_SPOTANGLEINNER
                   ,0);

@@ -73,7 +73,7 @@ public:
   }
 };
 
-template <typename T> class LinkObject {
+template<typename T> class LinkObject {
 public:
   LinkObject *m_next;
   T           m_e;

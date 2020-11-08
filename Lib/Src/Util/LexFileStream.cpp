@@ -119,7 +119,7 @@ size_t ByteQueue::readUntilHasNewLine(FILE *f) {
     const intptr_t n = fread(tmp, 1, sizeof(tmp), f);
     if(n > 0) {
       const size_t oldSize = size();
-      add(tmp, n);
+      append(tmp, n);
       nl = memrchr(tmp, '\n', n);
       if(nl) {
         nl = getData() + oldSize + (nl - tmp);

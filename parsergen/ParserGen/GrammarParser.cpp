@@ -391,7 +391,7 @@ void GrammarParser::checkTerminal(UINT t) { // check, that terminal-symbol is us
 
 void GrammarParser::checkDuplicateProd() {
   for(UINT nt = m_grammar.getTerminalCount(); nt < m_grammar.getSymbolCount(); nt++) { // for all nonterminals
-    const CompactUintArray &prodlist  = m_grammar.getSymbol(nt).m_leftSideOf;
+    const CompactUIntArray &prodlist  = m_grammar.getSymbol(nt).m_leftSideOf;
     const UINT              prodCount = (UINT)prodlist.size();
     for(UINT i = 0; i < prodCount; i++) {
       const Production &prodi = m_grammar.getProduction(prodlist[i]);

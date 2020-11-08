@@ -40,7 +40,7 @@ typedef long      BRExpoTypex86;
 typedef long      BRDigitDiffTypex86;
 
 
-#define           BIGREAL_LOG10BASEx64                         18 
+#define           BIGREAL_LOG10BASEx64                         18
 constexpr int     BIGREAL_POW10TABLESIZEx64 =                  20;
 constexpr __int64 BIGREAL_NONNORMALx64      = -900000000000000000;
 constexpr __int64 BIGREAL_MAXEXPOx64        =   99999999999999999;

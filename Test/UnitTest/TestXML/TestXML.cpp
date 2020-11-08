@@ -53,7 +53,7 @@ namespace TestXML {
 
   TEST_CLASS(TestXML)	{
     public:
-        
+
     TEST_METHOD(TestXMLDocBasic) {
       SHORT  i16_1   = SHRT_MIN , i16_2   = SHRT_MAX;
       USHORT ui16_1  = 0        , ui16_2  = USHRT_MAX;
@@ -106,13 +106,13 @@ namespace TestXML {
 
       setValue(doc, boolNode  , _T("F"         ), false );
       setValue(doc, boolNode  , _T("T"         ), true  );
-     
+
       CompactIntArray i32carray;
       for(int i = 0; i < 100; i++) {
         i32carray.add(randInt());
       }
       setValue(doc, collNode  , _T("i32carray"   ), i32carray );
-     
+
       IntArray i32array;
       i32array.addAll(i32carray);
       setValue(doc, collNode  , _T("i32array"   ), i32array );
@@ -217,7 +217,7 @@ namespace TestXML {
 
       CompactIntArray I32CARRAY;
       getValue(doc, collNode1 , _T("i32carray"   ), I32CARRAY );
-     
+
       verify(I32CARRAY == i32carray);
 
       IntArray I32ARRAY;

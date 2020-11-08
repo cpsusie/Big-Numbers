@@ -185,7 +185,7 @@ DinnerTable::DinnerTable(const ScreenPoint &center, UINT count) : m_center(cente
 
   for(UINT i = 0; i < m_count; i++) {
     Spoon *sp = new Spoon(*this, i); TRACE_NEW(sp);
-    m_spoonArray.add(sp); 
+    m_spoonArray.add(sp);
   }
 
   for(UINT i = 0; i < m_count; i++) {

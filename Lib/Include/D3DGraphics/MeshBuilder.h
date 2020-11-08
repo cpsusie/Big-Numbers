@@ -184,7 +184,7 @@ public:
     return m_textureVertexArray;
   }
 
-  // return this;
+  // Return *this;
   MeshBuilder &optimize();
   D3Cube getBoundingBox() const;
   LPD3DXMESH createMesh(AbstractMeshFactory &amf, bool doubleSided) const;

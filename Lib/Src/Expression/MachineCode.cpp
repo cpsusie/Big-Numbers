@@ -9,10 +9,4 @@ void MachineCode::finalize(void *esi) {
   flushInstructionCache();
 }
 
-int MachineCode::addBytes(const void *bytes, int count) {
-  const int ret = (int)size();
-  add((BYTE*)bytes,count);
-  return ret;
-}
-
 }; // namespace Expr

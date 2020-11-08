@@ -26,7 +26,7 @@ bool Packer::read(ByteInputStream &s) {
   for(int total = 0; total < len;) {
     const int n = min(sizeof(buffer), len - total);
     s.getBytesForced(buffer,n);
-    m_buffer.add(buffer, n);
+    m_buffer.append(buffer, n);
     total += n;
   }
   m_first = 0; // get ready to unpack with >>
@@ -44,9 +44,7 @@ void Packer::clear() {
 }
 
 Packer &Packer::addElement(ElementType t, const void *e, size_t size) {
-  const BYTE ct = (BYTE)t;
-  m_buffer.add(&ct            ,1   );
-  m_buffer.add((const BYTE *)e,size);
+  m_buffer.add((BYTE)t).append((const BYTE *)e,size);
   return *this;
 }
 

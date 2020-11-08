@@ -77,7 +77,7 @@ bool SortPanelWnd::invalidStateTransition(SortJobState newState) {
   return false;
 }
 
-static const bool legalTransitions[6][6] = {       
+static const bool legalTransitions[6][6] = {
 //New state: CREATED,  IDLE  , RUNNING, PAUSED ,  ERROR , KILLED     OldState
              false  ,  true  , false  , false  ,  true  ,  true   // CREATED
             ,false  , false  ,  true  , false  , false  ,  true   // IDLE

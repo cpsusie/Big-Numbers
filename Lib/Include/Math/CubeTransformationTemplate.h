@@ -174,7 +174,7 @@ public:
     return result;
   }
 
-  // Return this
+  // Return *this
   template<typename PT, typename ST, typename S> CubeTransformationTemplate &setToCube(const CubeTemplate<PT,ST,S,dimension> &cube) {
     for(UINT d = 0; d < dimension; d++) {
       m_e[d]->setToInterval(cube.getInterval(d));

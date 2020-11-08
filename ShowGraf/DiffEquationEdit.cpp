@@ -167,8 +167,8 @@ DiffEquationField CDiffEquationEdit::findFieldByCtrlId(UINT id) const {
   }
 }
 
-CompactUintArray CDiffEquationEdit::getTabOrderArray() const {
-  CompactUintArray a;
+CompactUIntArray CDiffEquationEdit::getTabOrderArray() const {
+  CompactUIntArray a;
   a.add(getNameId());
   a.add(getExprId());
   a.add(getStartVId());

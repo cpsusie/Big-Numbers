@@ -4,7 +4,7 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
 
-namespace TestMatrix {      
+namespace TestMatrix {
 
 #include <UnitTestTraits.h>
 

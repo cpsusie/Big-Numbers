@@ -372,10 +372,14 @@ private:
   DECLARECLASSNAME;
   static UINT             s_emitCount;
   static void checkKeyboard();
-  int         addBytes(const void *bytes, int count);
+  int addBytes(const void *bytes, int count) {
+    const int ret = (int)size();
+    append((BYTE*)bytes,count);
+    return ret;
+  }
+
 public:
-  CodeArray() {
-    setCapacity(0x1000000);
+  CodeArray() : ExecutableByteArray(0x1000000) {
   }
   inline int emit(const InstructionBase &ins) {
     if((s_emitCount++ & 0x3ff) == 0) checkKeyboard();
@@ -391,12 +395,6 @@ public:
 };
 
 UINT CodeArray::s_emitCount = 0;
-
-int CodeArray::addBytes(const void *bytes, int count) {
-  const int ret = (int)size();
-  add((BYTE*)bytes,count);
-  return ret;
-}
 
 void CodeArray::checkKeyboard() { // static
   if(shiftKeyPressed()) {

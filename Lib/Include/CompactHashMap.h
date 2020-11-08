@@ -22,10 +22,7 @@ private:
 
   LinkObject<MapEntry<K,V> > **allocateBuffer(size_t capacity) const {
     LinkObject<MapEntry<K,V> > **result = capacity ? new LinkObject<MapEntry<K,V> >*[capacity] : nullptr; TRACE_NEW(result);
-    if(capacity) {
-      memset(result, 0, sizeof(result[0])*capacity);
-    }
-    return result;
+    return resetPointerArray(result, capacity);
   }
 
   void init(size_t capacity) {
@@ -71,13 +68,23 @@ public:
     clear();
   }
 
-  void clear() override {
+  // If capacity < 0, it's left unchanged
+  // Return *this
+  CompactHashMap &clear(intptr_t capacity) {
     m_entryPool.releaseAll();
     if(m_size) {
       m_size = 0;
       m_updateCount++;
     }
-    setCapacity(0);
+    if(capacity >= 0) {
+      setCapacity(capacity);
+    }
+    resetPointerArray(m_buffer, getCapacity());
+    return *this;
+  }
+
+  void clear() override {
+    clear(0);
   }
 
   size_t size() const override {
@@ -150,12 +157,12 @@ public:
     return false;
   }
 
-  void setCapacity(size_t capacity) {
+  CompactHashMap &setCapacity(size_t capacity) {
     if(capacity < m_size) {
       capacity = m_size;
     }
     if(capacity == m_capacity) {
-      return;
+      return *this;
     }
     LinkObject<MapEntry<K,V> > **oldBuffer   = m_buffer;
     const size_t                 oldCapacity = m_capacity;
@@ -176,6 +183,7 @@ public:
       }
     }
     SAFEDELETEARRAY(oldBuffer);
+    return *this;
   }
 
   inline size_t getCapacity() const {
@@ -365,7 +373,7 @@ public:
   }
   explicit CompactShortHashMap(size_t capacity) : CompactHashMap(capacity) {
   }
-  CompactShortHashMap(const CompactShortHashMap<T> &src) : CompactHashMap(src) {
+  CompactShortHashMap(const CompactShortHashMap &src) : CompactHashMap(src) {
   }
 };
 
@@ -375,7 +383,7 @@ public:
   }
   explicit CompactUShortHashMap(size_t capacity) : CompactHashMap(capacity) {
   }
-  CompactUShortHashMap(const CompactUShortHashMap<T> &src) : CompactHashMap(src) {
+  CompactUShortHashMap(const CompactUShortHashMap &src) : CompactHashMap(src) {
   }
 };
 
@@ -385,7 +393,7 @@ public:
   }
   explicit CompactIntHashMap(size_t capacity) : CompactHashMap(capacity) {
   }
-  CompactIntHashMap(const CompactIntHashMap<T> &src) : CompactHashMap(src) {
+  CompactIntHashMap(const CompactIntHashMap &src) : CompactHashMap(src) {
   }
 };
 
@@ -395,7 +403,7 @@ public:
   }
   explicit CompactUIntHashMap(size_t capacity) : CompactHashMap(capacity) {
   }
-  CompactUIntHashMap(const CompactUIntHashMap<T> &src) : CompactHashMap(src) {
+  CompactUIntHashMap(const CompactUIntHashMap &src) : CompactHashMap(src) {
   }
 };
 
@@ -405,7 +413,7 @@ public:
   }
   explicit CompactFloatHashMap(size_t capacity) : CompactHashMap(capacity) {
   }
-  CompactFloatHashMap(const CompactFloatHashMap<T> &src) : CompactHashMap(src) {
+  CompactFloatHashMap(const CompactFloatHashMap &src) : CompactHashMap(src) {
   }
 };
 
@@ -415,7 +423,7 @@ public:
   }
   explicit CompactDoubleHashMap(size_t capacity)  : CompactHashMap(capacity) {
   }
-  CompactDoubleHashMap(const CompactDoubleHashMap<T> &src) : CompactHashMap(src) {
+  CompactDoubleHashMap(const CompactDoubleHashMap &src) : CompactHashMap(src) {
   }
 };
 
@@ -425,7 +433,7 @@ public:
   }
   explicit CompactStrHashMap(size_t capacity)  : CompactHashMap(capacity) {
   }
-  CompactStrHashMap(const CompactStrHashMap<T> &src) : CompactHashMap(src) {
+  CompactStrHashMap(const CompactStrHashMap &src) : CompactHashMap(src) {
   }
 };
 
@@ -435,6 +443,6 @@ public:
   }
   explicit CompactStrIHashMap(size_t capacity)  : CompactHashMap(capacity) {
   }
-  CompactStrIHashMap(const CompactStrIHashMap<T> &src) : CompactHashMap(src) {
+  CompactStrIHashMap(const CompactStrIHashMap &src) : CompactHashMap(src) {
   }
 };

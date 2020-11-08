@@ -43,7 +43,7 @@ public:
   SymbolSet        m_first1;            // Only for nonterminals;
   int              m_precedence;        // Only for terminals.
   SourcePosition   m_pos;               // Specified at this position in the inputfile
-  CompactUintArray m_leftSideOf;        // Only for nonterminals. List of productions, where this symbol is leftside
+  CompactUIntArray m_leftSideOf;        // Only for nonterminals. List of productions, where this symbol is leftside
 
   GrammarSymbol(UINT index, const String &name, SymbolType type, int precedence, const SourcePosition &pos, UINT terminalCount);
   const TCHAR *getTypeString() const;
@@ -74,7 +74,7 @@ public:
   const SourcePosition          m_pos;        // Position in the inputfile
 
   Production(UINT leftSide, const SourcePosition &pos)
-    : m_leftSide(leftSide) 
+    : m_leftSide(leftSide)
     , m_pos(     pos     )
   {
     m_precedence = 0;
@@ -93,11 +93,11 @@ public:
   const UINT m_dot;
   SymbolSet  m_la;
   int        m_succ; // Must be signed, initialized to -1. if >= 0, then index of successor-state
-  inline LR1Item(bool kernelItem, UINT prod, UINT dot, const SymbolSet &la) 
+  inline LR1Item(bool kernelItem, UINT prod, UINT dot, const SymbolSet &la)
     : m_kernelItem(kernelItem)
     , m_prod(      prod      )
     , m_dot(       dot       )
-    , m_la(        la        ) 
+    , m_la(        la        )
     , m_succ(      -1        )
   {
   }
@@ -154,7 +154,7 @@ public:
 };
 
 typedef CompactShortArray  RawActionArray;
-typedef CompactUshortArray SuccesorArray;
+typedef CompactUShortArray SuccesorArray;
 
 inline int compactShortArrayCmp(const CompactShortArray &a1, const CompactShortArray &a2) {
   const size_t n = a1.size();

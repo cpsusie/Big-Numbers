@@ -60,7 +60,7 @@ ByteArray &ByteArray::clear(intptr_t newCapacity) {
   return *this;
 }
 
-ByteArray &ByteArray::add(size_t index, const BYTE *data, size_t size) {
+ByteArray &ByteArray::insert(size_t index, const BYTE *data, size_t size) {
   if(size == 0) {
     return *this;
   }
@@ -95,11 +95,13 @@ ByteArray &ByteArray::add(size_t index, const BYTE *data, size_t size) {
   return *this;
 }
 
-ByteArray &ByteArray::add(size_t index, BYTE b, size_t count) {
+ByteArray &ByteArray::insert(size_t index, BYTE b, size_t count) {
   if(count == 0) {
     return *this;
   }
-  if(index > m_size) indexError(__TFUNCTION__, index);
+  if(index > m_size) {
+    indexError(__TFUNCTION__, index);
+  }
   const size_t newSize = m_size + count;
   if(newSize > m_capacity) {
     const size_t newCapacity = getCapacityCeil(2 * newSize);
@@ -142,7 +144,8 @@ ByteArray &ByteArray::setData(const BYTE *data, size_t size) {
   return *this;
 }
 
-// return this. Assume index + count <= size
+// Assume index + count <= size
+// Return *this
 ByteArray &ByteArray::setBytes(size_t index, const BYTE *data, size_t count) {
   if(count > 0) {
     if(index + count > m_size) indexError(__TFUNCTION__, index, count);
@@ -151,6 +154,7 @@ ByteArray &ByteArray::setBytes(size_t index, const BYTE *data, size_t count) {
   return *this;
 }
 
+// Return *this
 ByteArray &ByteArray::remove(size_t index, size_t count) {
   if(count > 0) {
     const size_t j = index + count;
@@ -195,7 +199,8 @@ void ByteArray::cleanup() {
   init();
 }
 
-void ByteArray::setCapacity(size_t capacity) {
+// Return *this
+ByteArray &ByteArray::setCapacity(size_t capacity) {
   if(capacity < m_size) {
     capacity = m_size;
   }
@@ -211,6 +216,7 @@ void ByteArray::setCapacity(size_t capacity) {
     m_data     = newData;
     m_capacity = capacity;
   }
+  return *this;
 }
 
 bool ByteArray::operator==(const ByteArray &a) const {

@@ -301,7 +301,7 @@ ByteCount GrammarTables::printSuccessorMatrixCpp(MarginFile &output) const {
   } else {
     { const SymbolSetIndexArray ntSetArray = ntSetMap.getEntryArray();
       ntSetMap.clear();
-      
+
       outputBeginArrayDefinition(output1, _T("NTindexListTable"), m_NTIndexType, ntSetArray.getElementCount(true));
       UINT  tableSize = 0;
       TCHAR delim     = ' ';

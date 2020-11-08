@@ -81,24 +81,37 @@ public:
   Array() : Collection<T>(new ArrayImpl(ObjectManager<T>(), 10)) {
   }
 
-  explicit Array(size_t capacity) : Collection<T>(new ArrayImpl(ObjectManager<T>(), capacity)) {
+  explicit Array(size_t capacity) : Collection(new ArrayImpl(ObjectManager<T>(), capacity)) {
   }
 
-  Array(const CollectionBase<T> &src) : Collection<T>(new ArrayImpl(ObjectManager<T>(), src.size())) {
+  Array(const CollectionBase<T> &src) : Collection(new ArrayImpl(ObjectManager<T>(), src.size())) {
     addAll(src);
   }
 
-  // If capacity < 0, it's left unchanged
-  void clear(intptr_t capacity) {
-    ((ArrayImpl *)m_collection)->clear(capacity);
-  }
-  void clear() override {
-    ((ArrayImpl *)m_collection)->clear();
-  }
-
-  Array<T> &operator=(const CollectionBase<T> &src) {
+  Array &operator=(const CollectionBase<T> &src) {
     __super::operator=(src);
     return *this;
+  }
+
+  inline size_t getCapacity() const {
+    return ((ArrayImpl*)m_collection)->getCapacity();
+  }
+
+  // Return *this
+  inline Array &setCapacity(size_t capacity) {
+    ((ArrayImpl*)m_collection)->setCapacity(capacity);
+    return *this;
+  }
+
+  // If capacity < 0, it's left unchanged
+  // Return *this
+  Array &clear(intptr_t capacity) {
+    ((ArrayImpl *)m_collection)->clear(capacity);
+    return *this;
+  }
+
+  void clear() override {
+    ((ArrayImpl *)m_collection)->clear();
   }
 
   inline T &operator[](size_t i) {
@@ -125,7 +138,8 @@ public:
     return *(T*)(((ArrayImpl*)m_collection)->getElement(m_collection->size()-1));
   }
 
-  bool operator==(const Array<T> &a) const { // NB not virtual in Collection, because of ==
+  // NB not virtual in Collection, because of ==
+  bool operator==(const Array &a) const {
     const size_t n = size();
     if(n != a.size()) {
       return false;
@@ -138,10 +152,27 @@ public:
     return true;
   }
 
-  inline bool operator!=(const Array<T> &a) const {
+  inline bool operator!=(const Array &a) const {
     return !(operator==(a));
   }
 
+  // Return min(k) so (*this)[k] == e, if such k exist, or else return -1
+  intptr_t getFirstIndex(const T &e) const {
+    const size_t n = size();
+    for(size_t i = 0; i < n; i++) {
+      if((*this)[i] == e) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  // NB not virtual in Collection, because of ==
+  inline bool contains(const T &e) const {
+    return getFirstIndex(e) >= 0;
+  }
+
+  // Insert the same element e position [index..index+count-1]
   inline bool insert(size_t index, const T &e, size_t count=1) {
     return ((ArrayImpl*)m_collection)->insert(index, &e, count);
   }
@@ -166,46 +197,38 @@ public:
     return count > 0;
   }
 
-  inline void removeLast() {
+  // Return *this
+  inline Array &removeLast() {
     ((ArrayImpl*)m_collection)->removeIndex(size()-1, 1);
+    return *this;
   }
 
-  inline bool contains(const T &e) const {            // NB not virtual in Collection, because of ==
-    return getFirstIndex(e) >= 0;
-  }
-
-  intptr_t getFirstIndex(const T &e) const {
-    const size_t n = size();
-    for(size_t i = 0; i < n; i++) {
-      if((*this)[i] == e) {
-        return i;
-      }
-    }
-    return -1;
-  }
-
-  inline Array<T> &swap(size_t i1, size_t i2) {
+  // Return *this
+  inline Array &swap(size_t i1, size_t i2) {
     ((ArrayImpl*)m_collection)->swap(i1, i2);
     return *this;
   }
 
-  inline Array<T> &shuffle(size_t from, size_t count, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
+  // Return *this
+  inline Array &shuffle(size_t from, size_t count, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
     ((ArrayImpl*)m_collection)->shuffle(from, count, rnd);
     return *this;
   }
 
-  inline Array<T> &shuffle(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
+  // Return *this
+  inline Array &shuffle(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
     return shuffle(0, size(), rnd);
   }
 
-  inline Array<T> &reverse() {
+  // Return *this
+  inline Array &reverse() {
     ((ArrayImpl*)m_collection)->reverse();
     return *this;
   }
 
   class PermutationHandler {
   public:
-    virtual bool handlePermutation(const Array<T> &a) = 0;
+    virtual bool handlePermutation(const Array &a) = 0;
   };
 
 private:
@@ -234,31 +257,37 @@ public:
     return permuter(size(), handler);
   }
 
-  inline Array<T> &sort(size_t from, size_t count, int (*compare)(const T **e1, const T **e2)) {
-    ((ArrayImpl*)m_collection)->arraySort(from, count, (int(*)(const void **, const void **))compare);
-    return *this;
-  }
-
-  inline Array<T> &sort(int (*compare)(const T **e1, const T **e2)) {
-    return sort(0, size(), compare);
-  }
-
-  Array<T> &sort(size_t from, size_t count, int (*compare)(const T &e1 , const T &e2)) {
-    ((ArrayImpl*)m_collection)->arraySort(from, count, (int(*)(const void *, const void *))compare);
-    return *this;
-  }
-
-  inline Array<T> &sort(int (*compare)(const T &e1, const T &e2)) {
-    return sort(0, size(), compare);
-  }
-
-  Array<T> &sort(size_t from, size_t count, Comparator<T> &comparator) {
+  // Return *this
+  Array &sort(size_t from, size_t count, Comparator<T> &comparator) {
     ((ArrayImpl*)m_collection)->arraySort(from, count, comparator);
     return *this;
   }
 
-  inline Array<T> &sort(Comparator<T> &comparator) {
+  // Return *this
+  inline Array &sort(Comparator<T> &comparator) {
     return sort(0, size(), comparator);
+  }
+
+  // Return *this
+  inline Array &sort(size_t from, size_t count, int (*compare)(const T **e1, const T **e2)) {
+    ((ArrayImpl*)m_collection)->arraySort(from, count, (int(*)(const void **, const void **))compare);
+    return *this;
+  }
+
+  // Return *this
+  inline Array &sort(int (*compare)(const T **e1, const T **e2)) {
+    return sort(0, size(), compare);
+  }
+
+  // Return *this
+  Array &sort(size_t from, size_t count, int (*compare)(const T &e1 , const T &e2)) {
+    ((ArrayImpl*)m_collection)->arraySort(from, count, (int(*)(const void *, const void *))compare);
+    return *this;
+  }
+
+  // Return *this
+  inline Array &sort(int (*compare)(const T &e1, const T &e2)) {
+    return sort(0, size(), compare);
   }
 
   intptr_t search(const T &key, size_t from, size_t count, int (*compare)(const T **e1, const T **e2)) const {
@@ -324,21 +353,13 @@ public:
   intptr_t binaryInsert(const T &key, Comparator<T> &comparator) {
     return ((ArrayImpl*)m_collection)->bInsert(&key, comparator);
   }
-
-  inline size_t getCapacity() const {
-    return ((ArrayImpl*)m_collection)->getCapacity();
-  }
-
-  inline void setCapacity(size_t capacity) {
-    ((ArrayImpl*)m_collection)->setCapacity(capacity);
-  }
 };
 
 typedef Array<const TCHAR*> StrArray;
 
-typedef Array<char>   CharArray;
-typedef Array<short>  ShortArray;
-typedef Array<int>    IntArray;
-typedef Array<long>   LongArray;
-typedef Array<float>  FloatArray;
-typedef Array<double> DoubleArray;
+typedef Array<CHAR  > CharArray;
+typedef Array<SHORT > ShortArray;
+typedef Array<INT   > IntArray;
+typedef Array<LONG  > LongArray;
+typedef Array<FLOAT > FloatArray;
+typedef Array<DOUBLE> DoubleArray;

@@ -58,9 +58,9 @@ public:
   }
 };
 
-template <typename T> class ShortTreeMap : public TreeMap<short, T>  {
+template <typename T> class ShortTreeMap : public TreeMap<SHORT, T>  {
 public:
-  ShortTreeMap() : TreeMap<short, T>(shortHashCmp) {
+  ShortTreeMap() : TreeMap<SHORT, T>(shortHashCmp) {
   }
 };
 
@@ -70,9 +70,9 @@ public:
   }
 };
 
-template <typename T> class IntTreeMap : public TreeMap<int, T>    {
+template <typename T> class IntTreeMap : public TreeMap<INT, T>    {
 public:
-  IntTreeMap() : TreeMap<int, T>(intHashCmp) {
+  IntTreeMap() : TreeMap<INT, T>(intHashCmp) {
   }
 };
 
@@ -82,9 +82,9 @@ public:
   }
 };
 
-template <typename T> class LongTreeMap : public TreeMap<long, T> {
+template <typename T> class LongTreeMap : public TreeMap<LONG, T> {
 public:
-  LongTreeMap() : TreeMap<long, T>(longHashCmp) {
+  LongTreeMap() : TreeMap<LONG, T>(longHashCmp) {
   }
 };
 
@@ -106,15 +106,15 @@ public:
   }
 };
 
-template <typename T> class FloatTreeMap      : public TreeMap<float, T> {
+template <typename T> class FloatTreeMap      : public TreeMap<FLOAT, T> {
 public:
-  FloatTreeMap()  : TreeMap<float, T>(floatHashCmp) {
+  FloatTreeMap()  : TreeMap<FLOAT, T>(floatHashCmp) {
   }
 };
 
-template <typename T> class DoubleTreeMap      : public TreeMap<double, T> {
+template <typename T> class DoubleTreeMap      : public TreeMap<DOUBLE, T> {
 public:
-  DoubleTreeMap()  : TreeMap<double, T>(doubleHashCmp) {
+  DoubleTreeMap()  : TreeMap<DOUBLE, T>(doubleHashCmp) {
   }
 };
 

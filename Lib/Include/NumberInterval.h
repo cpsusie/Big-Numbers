@@ -13,7 +13,7 @@ public:
   template<typename T1, typename T2> inline NumberInterval(const T1 &from, const T2 &to) : m_from((T)from), m_to((T)to) {
   }
 
-  template<typename S> NumberInterval<T> &operator=(const NumberInterval<S> &src) {
+  template<typename S> NumberInterval &operator=(const NumberInterval<S> &src) {
     return setFrom(src.getFrom()).setTo(src.getTo())
   }
 
@@ -25,14 +25,14 @@ public:
     return m_to;
   }
 
-  // return this
-  template<typename S> NumberInterval<T> &setFrom(const S &v) {
+  // Return *this
+  template<typename S> NumberInterval &setFrom(const S &v) {
     m_from = (T)v;
     return *this;
   }
 
-  // return this
-  template<typename S> NumberInterval<T> &setTo(const S &v) {
+  // Return *this
+  template<typename S> NumberInterval &setTo(const S &v) {
     m_to   = (T)v;
     return *this;
   }
@@ -66,16 +66,17 @@ public:
 
   // Return NumberInterval(max(getMin(), i.getMin()), min(getMax(), i.getMax())) if this.overlap(i)
   // else return Interval(0,0)
-  NumberInterval<T> interSection(const NumberInterval<T> &i) const {
+  NumberInterval interSection(const NumberInterval &i) const {
     if(!overlap(i)) {
-      return NumberInterval<T>(T(0), T(0));
+      return NumberInterval(T(0), T(0));
     } else {
-      return NumberInterval<T>(max(getMin(), i.getMin()), min(getMax(), i.getMax()));
+      return NumberInterval(max(getMin(), i.getMin()), min(getMax(), i.getMax()));
     }
   }
 
   // union operator
-  NumberInterval<T> &operator+=(const NumberInterval<T> &rhs) {
+  // Return *this
+  NumberInterval &operator+=(const NumberInterval &rhs) {
     const T l = rhs.getMin();
     const T r = rhs.getMax();
     if(m_from < m_to) {
@@ -95,19 +96,21 @@ public:
     return m_to - m_from;
   }
 
-  inline NumberInterval<T> &invert() {
+  // Return *this
+  inline NumberInterval &invert() {
     std::swap(m_from, m_to);
     return *this;
   }
 
-  inline NumberInterval<T> &makePositive() {
+  // Return *this
+  inline NumberInterval &makePositive() {
     return isNegativeLength() ? invert() : *this;
   }
 
-  bool operator==(const NumberInterval<T> &rhs) const {
+  bool operator==(const NumberInterval &rhs) const {
     return (getFrom() == rhs.getFrom()) && (getTo() == rhs.getTo());
   }
-  bool operator!=(const NumberInterval<T> &rhs) const {
+  bool operator!=(const NumberInterval &rhs) const {
     return !(*this == rhs);
   }
   String toString(int precision = 3) const {
@@ -115,6 +118,6 @@ public:
   }
 };
 
-typedef NumberInterval<float   > FloatInterval;
-typedef NumberInterval<double  > DoubleInterval;
-typedef NumberInterval<int>      IntInterval;
+typedef NumberInterval<FLOAT  > FloatInterval;
+typedef NumberInterval<DOUBLE > DoubleInterval;
+typedef NumberInterval<INT    > IntInterval;

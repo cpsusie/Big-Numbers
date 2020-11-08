@@ -322,7 +322,7 @@ private:
   // Assume &x != this && this->_isnormal() && x._isnormal() && |x| < |*this|
   // Does NOT call CHECKISMUTABLE
   // Return *this
-  inline BigReal &subAbs(const BigReal &x) {                                                      // return this
+  inline BigReal &subAbs(const BigReal &x) {
     return subAbs(x, (BigReal&)m_digitPool._0());
   }
 
@@ -330,7 +330,8 @@ private:
 
   void    baseb(const BigReal &x);
   void    baseb(const BigReal &x, int low);
-  BigReal &baseB(const BigReal &x);                                                               // return this
+  // Return *this
+  BigReal &baseB(const BigReal &x);
   void    addSubProduct(BR2DigitType n);
 
 #elif(SP_OPT_METHOD == SP_OPT_BY_FPU)

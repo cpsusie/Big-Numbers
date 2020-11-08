@@ -36,8 +36,8 @@ namespace TestRandom {
     fclose(f);
   }
 
-  static CompactUintArray filterFactors(const CompactInt64Array &a) {
-    CompactUintArray result;
+  static CompactUIntArray filterFactors(const CompactInt64Array &a) {
+    CompactUIntArray result;
     for(size_t i = 0; i < a.size(); i++) {
       const INT64 f = a[i];
       if((f == 1) || (f > 256)) continue;
@@ -56,7 +56,7 @@ namespace TestRandom {
       b.last() -= from;
     }
     const _int128           length = (_int128)to - from + 1;
-    const CompactUintArray  allFactors = filterFactors(PrimeFactorArray((length > ULLONG_MAX)?((INT64)256):((INT64)length),227).getAllFactors().sort(int64HashCmp));
+    const CompactUIntArray  allFactors = filterFactors(PrimeFactorArray((length > ULLONG_MAX)?((INT64)256):((INT64)length),227).getAllFactors().sort(int64HashCmp));
     CompactDoubleArray      allPValues;
     for(size_t i = 0; i < allFactors.size(); i++) {
       const UINT bucketCount = allFactors[i];
@@ -183,7 +183,7 @@ namespace TestRandom {
         RandomGenerator &newRnd = *randomGenerators[i];
         RandomGenerator &oldRnd = RandomGenerator::setStdGenerator(newRnd);
         randomize();
-        CompactUintArray samples(SAMPLECOUNT);
+        CompactUIntArray samples(SAMPLECOUNT);
         for(int i = 0; i < SAMPLECOUNT; i++) {
           const UINT x = randInt();
           samples.add(x);
@@ -198,7 +198,7 @@ namespace TestRandom {
         RandomGenerator &newRnd = *randomGenerators[i];
         RandomGenerator &oldRnd = RandomGenerator::setStdGenerator(newRnd);
         randomize();
-        CompactUint64Array samples(SAMPLECOUNT);
+        CompactUInt64Array samples(SAMPLECOUNT);
         for(int i = 0; i < SAMPLECOUNT; i++) {
           const UINT64 x = randInt64();
           samples.add(x);
@@ -215,7 +215,7 @@ namespace TestRandom {
         randomize();
         CompactDoubleArray allPValues;
         for(INT64 n = 10; n <= UINT_MAX; n = n * 3 + 1) {
-          CompactUintArray samples(SAMPLECOUNT);
+          CompactUIntArray samples(SAMPLECOUNT);
           for(int i = 0; i < SAMPLECOUNT; i++) {
             const UINT x = randInt((UINT)n);
             samples.add(x);
@@ -234,7 +234,7 @@ namespace TestRandom {
         randomize();
         CompactDoubleArray allPValues;
         for(UINT64 n = 10; n <= LLONG_MAX; n = n * 3 + 1) {
-          CompactUint64Array samples(SAMPLECOUNT);
+          CompactUInt64Array samples(SAMPLECOUNT);
           for(int i = 0; i < SAMPLECOUNT; i++) {
             const UINT64 x = randInt64(n);
             samples.add(x);

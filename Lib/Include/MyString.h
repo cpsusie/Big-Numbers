@@ -198,40 +198,50 @@ public:
     return *this += tmp;
   }
 
-  // Substitute every occurrence of from in s with to. Return this
+  // Substitute every occurrence of from in s with to.
+  // Return *this
   String &replace(  TCHAR         from, TCHAR         to);
 
-  // Substitute every occurrence of from in s with to. Return this
+  // Substitute every occurrence of from in s with to.
+  // Return *this
   template<typename ToType> String &replace(TCHAR from, const ToType *to) {
     return replace(from, String(to));
   }
 
-  // Substitute every occurrence of from in s with to. Return this
+  // Substitute every occurrence of from in s with to.
+  // Return *this
   template<typename FromType> String &replace(const FromType *from, TCHAR to) {
     return replace(String(from), to);
   }
 
-  // Substitute every occurrence of from in s with to. Return this
+  // Substitute every occurrence of from in s with to.
+  // Return *this
   template<typename FromType, typename ToType> String &replace(const FromType *from, const ToType *to) {
     return replace(String(from), String(to));
   }
 
-  // Substitute every occurrence of from in s with to. Return this
+  // Substitute every occurrence of from in s with to.
+  // Return *this
   String &replace(  TCHAR         from, const String &to);
 
-  // Substitute every occurrence of from in s with to. Return this
+  // Substitute every occurrence of from in s with to.
+  // Return *this
   String &replace(  const String &from, TCHAR         to);
 
-  // Substitute every occurrence of from in s with to. Return this
+  // Substitute every occurrence of from in s with to.
+  // Return *this
   String &replace(  const String &from, const String &to);
 
-  // Remove leading and trailing spaces. Return this
+  // Remove leading and trailing spaces.
+  // Return *this
   String &trim();
 
-  // Remove leading spaces. Return this
+  // Remove leading spaces.
+  // Return *this
   String &trimLeft();
 
-  // Remove trailing spaces. Return this
+  // Remove trailing spaces.
+  // Return *this
   String &trimRight();
 
   // Return index of first occurrence of str starting at position from, -1 if not found
@@ -267,9 +277,11 @@ public:
   // Same as vsprintf. Return *this
   String &vprintf(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
 
-  // Same as sprintf. Return *this
+  // Same as sprintf.
+  // Return *this
   String &printf( _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 
+  // Return *this
   inline const String &toString() const {
     return *this;
   }
@@ -385,9 +397,9 @@ public:
   virtual String toString(const T &e) = 0;
 };
 
-class IntStringifier : public AbstractStringifier<int> {
+class IntStringifier : public AbstractStringifier<INT> {
 public:
-  String toString(const int &e);
+  String toString(const INT &e);
 };
 
 class UIntStringifier : public AbstractStringifier<UINT> {
@@ -431,13 +443,13 @@ TCHAR *strToUpperCase(  TCHAR *s);
 TCHAR *strTabExpand(    TCHAR *dst, const TCHAR *src, int tabSize, TCHAR subst = _T(' '));
 int    findMatchingpParanthes(const TCHAR *str, int pos);
 
-String sprintbin(char    c);
+String sprintbin(CHAR    c);
 String sprintbin(UCHAR   c);
-String sprintbin(short   s);
+String sprintbin(SHORT   s);
 String sprintbin(USHORT  s);
-String sprintbin(int     i);
+String sprintbin(INT     i);
 String sprintbin(UINT    i);
-String sprintbin(long    l);
+String sprintbin(LONG    l);
 String sprintbin(ULONG   l);
 String sprintbin(INT64   i);
 String sprintbin(UINT64  i);

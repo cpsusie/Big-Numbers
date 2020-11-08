@@ -32,7 +32,7 @@ class D3SceneObjectTriangleArray : public D3SceneObjectWithIndexBuffer {
 private:
   const UINT m_vertexCount, m_primitiveCount;
 public:
-  D3SceneObjectTriangleArray(D3SceneObjectVisual *parent, const CompactArray<VertexNormal> &varray, const CompactUintArray &iarray)
+  D3SceneObjectTriangleArray(D3SceneObjectVisual *parent, const CompactArray<VertexNormal> &varray, const CompactUIntArray &iarray)
     : D3SceneObjectWithIndexBuffer(parent,varray,iarray)
     , m_vertexCount((UINT)varray.size())
     , m_primitiveCount((UINT)iarray.size()/3)
@@ -83,7 +83,7 @@ D3SceneObjectVectorArrary::D3SceneObjectVectorArrary(D3SceneObjectVisual *parent
   m_materialId = getScene().addMaterialWithColor(D3D_YELLOW);
   const size_t               n = lines.size();
   CompactArray<VertexNormal> varray(n*(TRIANGLECOUNT+1));
-  CompactUintArray           iarray(n*TRIANGLECOUNT*3);
+  CompactUIntArray           iarray(n*TRIANGLECOUNT*3);
   for(size_t i = 0; i < n; i++) {
     const Line3D      &line          = lines[i];
     const D3DXVECTOR3 &from          = line.m_p1;

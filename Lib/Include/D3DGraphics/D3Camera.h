@@ -87,10 +87,12 @@ public:
   }
   const BitSet   &getLightControlsVisible() const;
   // set visibility for many lightcontrols. notify only once (if changed)
+  // Return *this
   D3Camera       &setLightControlsVisible(const BitSet &set);
   // set property m_visibleLightControlSet with notificationid=CAM_LIGHTCONTROLSVISIBLE
   D3LightControl *setLightControlVisible(UINT lightIndex, bool visible);
   // set property m_backgroundColor with notifificationid=CAM_BACKGROUNDCOLOR)
+  // Return *this
   inline D3Camera &setBackgroundColor(D3DCOLOR color) {
     setProperty(CAM_BACKGROUNDCOLOR, m_backgroundColor, color);
     return *this;
@@ -99,19 +101,23 @@ public:
     return m_backgroundColor;
   }
 
+  // Return *this
   D3Camera &setViewAngle(float angle);
   inline float   getViewAngle() const {
     return m_viewAngle;
   }
+  // Return *this
   D3Camera &setNearViewPlane(float zn);
   inline float getNearViewPlane() const {
     return m_nearViewPlane;
   }
+  // Return *this
   D3Camera &setFarViewPlane(float fn);
   inline float getFarViewPlane() const {
     return m_farViewPlane;
   }
 
+  // Return *this
   D3Camera &setRightHanded(bool rightHanded);
   inline bool getRightHanded() const {
     return m_rightHanded;
@@ -120,6 +126,7 @@ public:
     return m_world;
   }
   // notify listeners with properyId=CAM_VIEW
+  // Return *this
   D3Camera &setD3World(const D3World &world);
   inline const D3DXVECTOR3 &getPos() const {
     return m_world.getPos();
@@ -156,15 +163,24 @@ public:
   static inline D3DXVECTOR3 getDefaultUp() {
     return D3DXVECTOR3(0, 0, 1);
   }
+  // Return *this
   D3Camera &resetBackgroundColor();
+  // Return *this
   D3Camera &resetPos();
+  // Return *this
   D3Camera &resetOrientation();
+  // Return *this
   D3Camera &resetProjection();
+  // Return *this
   D3Camera &resetAll();
 
+  // Return *this
   D3Camera &setPos(        const D3DXVECTOR3     &pos);
+  // Return *this
   D3Camera &setOrientation(const D3DXQUATERNION  &q  );
+  // Return *this
   D3Camera &setLookAt(     const D3DXVECTOR3     &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up);
+  // Return *this
   D3Camera &setLookAt(     const D3DXVECTOR3     &point);
 
   inline const D3DXMATRIX &getProjMatrix() const {

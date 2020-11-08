@@ -298,7 +298,9 @@ DrawTool &DrawTool::invertNormals() {
 }
 
 DrawTool &DrawTool::mirror(bool horizontal) {
-  if(!canMirror()) return *this;
+  if(!canMirror()) {
+    return *this;
+  }
 
   m_polygonSet.mirror(horizontal);
   return repaintAll();

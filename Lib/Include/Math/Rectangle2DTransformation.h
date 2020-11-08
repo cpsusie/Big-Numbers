@@ -109,7 +109,7 @@ public:
     return changed;
   }
 
-  template<typename CT, typename PT, typename ST, typename S> 
+  template<typename CT, typename PT, typename ST, typename S>
   static Rectangle2DTransformationTemplate<CT,PT,ST,S> &getId(Rectangle2DTransformationTemplate<CT,PT,ST,S> &tr)
   { return Rectangle2DTransformationTemplate<CT,PT,ST,S>(CT::getUnit(), CT::getUnit());
   }

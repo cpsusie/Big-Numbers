@@ -8,7 +8,7 @@ private:
   const UINT              m_stateCount;
   const String            m_parserClassName;
   const String            m_tablesClassName;
-  CompactUshortArray      m_productionLength, m_left;
+  CompactUShortArray      m_productionLength, m_left;
   StringArray             m_symbolNameArray;
   Array<CompactIntArray>  m_rightSide;
   Array<ActionArray>      m_stateActions;

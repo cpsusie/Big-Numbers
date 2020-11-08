@@ -461,7 +461,7 @@ void Grammar::computeSuccessors(LR1State &state) {
       successorItems += i;
       UINT symbolNr = origProduction.m_rightSide[origItem.m_dot];
       LR1State newState(getStateCount());
-      
+
       // newItem is A -> alfa X . beta [la] (kernelItem)
       newState.addItem(LR1Item(true, origItem.m_prod, origItem.m_dot+1, origItem.m_la));
       itemsDone += i;

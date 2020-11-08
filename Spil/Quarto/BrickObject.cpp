@@ -88,7 +88,7 @@ LPD3DXMESH BrickObject::createMesh(AbstractMeshFactory &amf, BYTE attr) { // sta
 
 class BrickMarker : public D3SceneObjectWireFrameBox {
 public:
-  BrickMarker(BrickObject *parent) 
+  BrickMarker(BrickObject *parent)
     : D3SceneObjectWireFrameBox(parent
                                ,::getBoundingBox(parent->getMesh())
                                ,format(_T("%s(Marker)"),parent->getName().cstr()))

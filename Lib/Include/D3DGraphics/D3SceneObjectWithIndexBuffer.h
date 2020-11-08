@@ -12,7 +12,7 @@ protected:
   D3SceneObjectWithIndexBuffer &lockIndexArray(    void **a);
   D3SceneObjectWithIndexBuffer &unlockIndexArray();
 
-  template<typename VertexType> void initBuffers(const CompactArray<VertexType> &varray, const CompactUintArray &iarray) {
+  template<typename VertexType> void initBuffers(const CompactArray<VertexType> &varray, const CompactUIntArray &iarray) {
     const size_t vertexCount = varray.size();
     const size_t indexCount  = iarray.size();
     const bool   useInt32    = use32BitIndices(vertexCount);
@@ -42,13 +42,13 @@ protected:
     , m_indexBuffer(nullptr)
   {
   }
-  template<typename VertexType> D3SceneObjectWithIndexBuffer(D3Scene &scene, const CompactArray<VertexType> &varray, const CompactUintArray &iarray, const String &name=_T("ObjectWithIndexBuffer")) 
+  template<typename VertexType> D3SceneObjectWithIndexBuffer(D3Scene &scene, const CompactArray<VertexType> &varray, const CompactUIntArray &iarray, const String &name=_T("ObjectWithIndexBuffer"))
     : D3SceneObjectWithVertexBuffer(scene, name)
     , m_indexBuffer(nullptr)
   {
     initBuffers(varray, iarray);
   }
-  template<typename VertexType> D3SceneObjectWithIndexBuffer(D3SceneObjectVisual *parent, const CompactArray<VertexType> &varray, const CompactUintArray &iarray, const String &name=_T("ObjectWithIndexBuffer")) 
+  template<typename VertexType> D3SceneObjectWithIndexBuffer(D3SceneObjectVisual *parent, const CompactArray<VertexType> &varray, const CompactUIntArray &iarray, const String &name=_T("ObjectWithIndexBuffer"))
     : D3SceneObjectWithVertexBuffer(parent, name)
     , m_indexBuffer(nullptr)
   {

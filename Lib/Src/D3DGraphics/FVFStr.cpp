@@ -54,7 +54,7 @@ String FVFToString(DWORD fvf) {
   caseAddStr(XYZB5            )
   caseAddStr(XYZW             )
   }
-  
+
 #undef  addFlag
 #define addFlag(flag) if(fvf & D3DFVF_##flag) { result += delim + _T(#flag); delim=_T("|"); }
 

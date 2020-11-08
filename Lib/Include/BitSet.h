@@ -136,6 +136,7 @@ public:
   // Returns a random element from non empty set. throws Exception if set is empty
   size_t   select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) const;
   // Remove all elements from set
+  // Return *this
   inline BitSet &clear() {
     memset(m_p, 0, getAtomCount() * sizeof(Atom));
     return *this;

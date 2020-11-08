@@ -1,6 +1,6 @@
 #include "pch.h"
 
-void getTabOrder(HWND dlg, CompactUintArray &tabOrder) {
+void getTabOrder(HWND dlg, CompactUIntArray &tabOrder) {
   tabOrder.clear(100);
   for(HWND child = GetNextDlgTabItem(dlg, HWND_TOP, FALSE); child != nullptr; child = GetNextDlgTabItem(dlg, child, FALSE)) {
     const int id = GetDlgCtrlID(child);
@@ -11,7 +11,7 @@ void getTabOrder(HWND dlg, CompactUintArray &tabOrder) {
   }
 }
 
-void setTabOrder(HWND dlg, const CompactUintArray &tabOrder) {
+void setTabOrder(HWND dlg, const CompactUIntArray &tabOrder) {
   if(tabOrder.size() > 1) {
     HWND prev = HWND_TOP;
     for(ConstIterator<UINT> it = tabOrder.getIterator(); it.hasNext();) {

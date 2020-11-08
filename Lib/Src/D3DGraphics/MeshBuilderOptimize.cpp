@@ -49,7 +49,7 @@ inline bool operator==(const TmpVNTI &tv1, const TmpVNTI &tv2) {
 MeshBuilder &MeshBuilder::reduceVertexArray() {
   if(m_vertices.size() >= 2) {
     const D3ReductionArray vt(m_vertices);
-    const CompactUintArray &translateTable = vt.getTranslateTable();
+    const CompactUIntArray &translateTable = vt.getTranslateTable();
     const VertexArray      &reducedArray   = vt.getReducedArray();
     if(reducedArray.size() < m_vertices.size()) {
       m_vertices = reducedArray;
@@ -102,7 +102,7 @@ MeshBuilder &MeshBuilder::reduceVertexArray() {
 MeshBuilder &MeshBuilder::reduceNormalArray() {
   if(m_normals.size() >= 2) {
     const D3ReductionArray vt(m_normals);
-    const CompactUintArray &translateTable = vt.getTranslateTable();
+    const CompactUIntArray &translateTable = vt.getTranslateTable();
     const VertexArray      &reducedArray   = vt.getReducedArray();
     if(reducedArray.size() < m_normals.size()) {
       m_normals = reducedArray;

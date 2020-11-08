@@ -190,7 +190,7 @@ static void testUint128quotrem() {
     }
 #define SAMPLECOUNT 100000
     JavaRandom rnd;
-    cout.setf(std::ios::left, std::ios_base::adjustfield); 
+    cout.setf(std::ios::left, std::ios_base::adjustfield);
     for(int yExpo = 1; yExpo < 128; yExpo++) {
       UINT okCount = 0, failCount = 0;
       cout << "Yexpo2:" << yExpo;

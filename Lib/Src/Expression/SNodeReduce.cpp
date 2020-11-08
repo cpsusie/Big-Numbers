@@ -756,7 +756,8 @@ FactorArray &SNode::getFactors(FactorArray &result, SNode exponent) {
 /*
  * symbol = POW
  * exponent is the outer exponent of this. value = pow(pow(left,right),exponent)
- * return this split into as many separate factors as possible
+ * split into as many separate factors as possible
+ * Return *this
  */
 FactorArray &SNode::getFactorsInPower(FactorArray &result, SNode exponent) {
   ENTERMETHOD2(*this, exponent);

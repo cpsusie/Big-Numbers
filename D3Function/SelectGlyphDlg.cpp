@@ -66,7 +66,7 @@ CRect CSelectGlyphDlg::getClientRect(int id) {
   return rect;
 }
 
-CRect CSelectGlyphDlg::getWindowRect(int id) { 
+CRect CSelectGlyphDlg::getWindowRect(int id) {
   CWnd *control = GetDlgItem(id);
   CRect rect;
   control->GetWindowRect(&rect);

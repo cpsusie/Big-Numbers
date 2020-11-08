@@ -326,12 +326,12 @@ void ByteBitSet::stopAdding() {
 
 void ByteBitSet::append(ByteArray &buffer) const {
   const int size0 = (int)buffer.size();
-  buffer.add((BYTE*)&m_min, sizeof(m_min)); // unpacked by CharSet
-  buffer.add((BYTE*)&m_max, sizeof(m_max));
-  const BYTE *firstByte = GETBITADDRESS(m_min);
-  const BYTE *lastByte  = GETBITADDRESS(m_max);
-  const unsigned short byteCount = (unsigned short)(lastByte - firstByte + 1);
-  buffer.add(firstByte, byteCount);
+  buffer.append((BYTE*)&m_min, sizeof(m_min)); // unpacked by CharSet
+  buffer.append((BYTE*)&m_max, sizeof(m_max));
+  const BYTE  *firstByte = GETBITADDRESS(m_min);
+  const BYTE  *lastByte  = GETBITADDRESS(m_max);
+  const size_t byteCount = lastByte - firstByte + 1;
+  buffer.append(firstByte, byteCount);
 }
 
 int ByteBitSet::compare(const ByteBitSet &s1, const ByteBitSet &s2) { // static
@@ -680,7 +680,7 @@ int Regex::compareStrings(const TCHAR *s1, const TCHAR *s2, size_t length) const
 // --------------------------------- Code generation -------------------------------------
 
 void Regex::insertZeroes(UINT addr, UINT count) {
-  m_buffer.addZeroes(addr, count);
+  m_buffer.insertZeroes(addr, count);
   m_insertHandler->insertBytes(addr, count);
 }
 
@@ -730,11 +730,11 @@ void Regex::storeShort(UINT addr, short s) {
 }
 
 void Regex::appendUShort(unsigned short s) {
-  m_buffer.add((BYTE*)&s, sizeof(s));
+  m_buffer.append((BYTE*)&s, sizeof(s));
 }
 
 void Regex::appendCharacter(TCHAR ch) {
-  m_buffer.add((BYTE*)&ch, sizeof(ch));
+  m_buffer.append((BYTE*)&ch, sizeof(ch));
 }
 
 void Regex::storeData(UINT addr, const void *data, UINT size) {

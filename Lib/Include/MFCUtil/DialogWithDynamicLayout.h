@@ -62,7 +62,7 @@ protected:
   CDialogWithDynamicLayout(int resId, CWnd *pParent) : CDialog(resId, pParent), m_layoutData(this) {
   }
   BOOL OnInitDialog();
-  
+
   // Reload MFCLayoutManager and m_layoutData
   CDialogWithDynamicLayout &reloadLayoutResource();
   const ItemLayout *getItemLayout(int ctrlId) const {

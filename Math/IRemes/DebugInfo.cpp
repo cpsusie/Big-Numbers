@@ -11,7 +11,7 @@ void CoefWindowData::initData(const Remes &r) {
 CoefWindowData::CoefWindowData() {
   clear();
 }
-  
+
 CoefWindowData::CoefWindowData(const Remes &r) {
   initData(r);
 }

@@ -163,10 +163,10 @@ template<typename T> void setEditValue(CWnd *wnd, int id, const T &v) {
   setWindowText(wnd, id, stream.str().c_str());
 }
 
-void getTabOrder(HWND  dlg,       CompactUintArray &tabOrder);
-void setTabOrder(HWND  dlg, const CompactUintArray &tabOrder);
+void getTabOrder(HWND  dlg,       CompactUIntArray &tabOrder);
+void setTabOrder(HWND  dlg, const CompactUIntArray &tabOrder);
 
-class ChildWindowArray : public CompactUintArray {
+class ChildWindowArray : public CompactUIntArray {
 private:
   friend BOOL CALLBACK childWindowArrayEnumerationProc(_In_ HWND wnd, _In_ LPARAM lParam);
   HWND m_parent;

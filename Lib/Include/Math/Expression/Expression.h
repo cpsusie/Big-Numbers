@@ -119,9 +119,9 @@ public:
   const ExpressionVariable    *getVariable(const String &name) const;
   Real                        &getValueRef(const ExpressionVariable &var) const;
   Real                        *getValueRef(const String &name) const;
-  // return this
+  // Return *this
   Expression                  &expandMarkedNodes();
-  // return this
+  // Return *this
   Expression                  &multiplyMarkedNodes();
   bool                         equal(      const Expression &e) const;
   bool                         equalMinus( const Expression &e) const;

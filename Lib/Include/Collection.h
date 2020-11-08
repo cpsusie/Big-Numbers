@@ -31,16 +31,16 @@ public:
     m_collection = collection; TRACE_NEW(collection);
   }
 
-  Collection(const Collection<T> &src) {
+  Collection(const Collection &src) {
     m_collection = src.m_collection->clone(true); TRACE_NEW(m_collection);
   }
 
-  Collection<T> &operator=(const Collection<T> &src) {
+  Collection &operator=(const Collection &src) {
     __super::operator=(src);
     return *this;
   }
 
-  Collection<T> &operator=(const CollectionBase<T> &src) {
+  Collection &operator=(const CollectionBase &src) {
     __super::operator=(src);
     return *this;
   }
@@ -73,13 +73,12 @@ public:
     return *(T*)m_collection->select(rnd);
   }
 
-  Collection<T> getRandomSample(size_t k, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) const {
+  Collection getRandomSample(size_t k, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) const {
     if(k > size()) {
       throwInvalidArgumentException(__TFUNCTION__, _T("k(=%s) > size(=%s)")
                                    ,format1000(k).cstr(), format1000(size()).cstr());
     }
-    CompactArray<const T*> tmp;
-    tmp.setCapacity(k);
+    CompactArray<const T*> tmp(k);
     ConstIterator<T> it = getIterator();
     while(tmp.size() < (int)k) {
       tmp.add(&it.next());
@@ -93,7 +92,7 @@ public:
         }
       }
     }
-    Collection<T> result(m_collection->clone(false));
+    Collection result(m_collection->clone(false));
     for(size_t i = 0; i < k; i++) {
       result.add(*tmp[i]);
     }
@@ -119,7 +118,7 @@ public:
   }
 
   // Remove every element in c from this. Return true if any elements were removed.
-  bool removeAll(const CollectionBase<T> &c) {
+  bool removeAll(const CollectionBase &c) {
     if(this == &c) {
       if(isEmpty()) return false;
       clear();
@@ -129,7 +128,7 @@ public:
   }
 
   // Remove every element from this that is not contained in c. Return true if any elements were removed.
-  bool retainAll(const Collection<T> &c) {
+  bool retainAll(const Collection &c) {
     if(this == &c) return false; // Don't change anything. every element in this is in c too => nothing needs to be removed
     bool changed = false;
     for(auto it = getIterator(); it.hasNext();) {
@@ -151,12 +150,12 @@ public:
   }
 
   // Returns true if every element in c is contained in this
-  bool containsAll(const CollectionBase<T> &c) const {
+  bool containsAll(const CollectionBase &c) const {
     if(this == &c) return true;
     return containsAll(c.getIterator());
   }
 
-  bool operator==(const Collection<T> &c) const {
+  bool operator==(const Collection &c) const {
     DEFINEMETHODNAME;
     if(this == &c) return true;
     const size_t n = size();
@@ -185,7 +184,7 @@ public:
     return true;
   }
 
-  bool operator!=(const Collection<T> &c) const {
+  bool operator!=(const Collection &c) const {
     return !(*this == c);
   }
 };

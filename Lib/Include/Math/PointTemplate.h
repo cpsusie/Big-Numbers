@@ -104,7 +104,7 @@ private:
   {
   }
 public:
-  PointComparator(bool maximum) 
+  PointComparator(bool maximum)
     : m_maximum(maximum)
   {
   }

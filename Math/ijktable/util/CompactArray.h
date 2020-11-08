@@ -385,13 +385,13 @@ public:
 typedef CompactArray<char*>  CompactStrArray;
 typedef CompactArray<char>   CompaccharArray;
 typedef CompactArray<short>  CompactShortArray;
-typedef CompactArray<USHORT> CompactUshortArray;
+typedef CompactArray<USHORT> CompactUShortArray;
 typedef CompactArray<int>    CompactIntArray;
-typedef CompactArray<UINT>   CompactUintArray;
+typedef CompactArray<UINT>   CompactUIntArray;
 typedef CompactArray<long>   CompactLongArray;
-typedef CompactArray<ULONG>  CompactUlongArray;
+typedef CompactArray<ULONG>  CompactULongArray;
 typedef CompactArray<INT64>  CompactInt64Array;
-typedef CompactArray<UINT64> CompactUint64Array;
+typedef CompactArray<UINT64> CompactUInt64Array;
 typedef CompactArray<float>  CompactFloatArray;
 typedef CompactArray<double> CompactDoubleArray;
 typedef CompactArray<size_t> CompactSizetArray;

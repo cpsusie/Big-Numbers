@@ -493,7 +493,7 @@ void CDiffEquationGraphDlg::adjustTabOrder(const TabOrder &tabs) {
   }
 
   const CDiffEquationEdit *eq             = getLastEquationEdit();
-  const CompactUintArray    eqTabOrder     = eq->getTabOrderArray();
+  const CompactUIntArray    eqTabOrder     = eq->getTabOrderArray();
   const intptr_t           xIntervalIndex = tabOrder.getFirstIndex(IDC_EDITXFROM);
   if(xIntervalIndex < 0) return; // actually an error
   tabOrder.insert(xIntervalIndex, eqTabOrder.getBuffer(), eqTabOrder.size());

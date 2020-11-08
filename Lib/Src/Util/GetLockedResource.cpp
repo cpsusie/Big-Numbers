@@ -60,7 +60,7 @@ ByteArray &ByteArray::loadFromResource(int resId, const TCHAR *typeName) {
     const int size = (UINT)SizeofResource(nullptr, hSource);
 
     clear(size);
-    add((BYTE*)r, size);
+    append((BYTE*)r, size);
 
     UnlockResource(hGlobal); // 16Bit Windows Needs This
     FreeResource(hGlobal);   // 16Bit Windows Needs This (32Bit - Automatic Release)

@@ -168,7 +168,7 @@ Expression &Expression::expandMarkedNodes() {
   if(hasSyntaxTree()) m_tree->expandMarkedNodes();
   return *this;
 }
-// return this
+// Return *this
 Expression &Expression::multiplyMarkedNodes() {
   if(hasSyntaxTree()) m_tree->multiplyMarkedNodes();
   return *this;

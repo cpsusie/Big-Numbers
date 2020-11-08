@@ -431,9 +431,9 @@ void CIRemesDlg::updateErrorPlotXRange() {
 }
 
 int CIRemesDlg::getErrorPlotXPixelCount() const {
-  const IntervalTransformation &tr = m_coorSystemError.getTransformation().getXTransformation();
-  const DoubleInterval xToRange = tr.forwardTransform(getXRange());
-  const int n = (int)xToRange.getLength()+1;
+  const IntervalTransformation &tr       = m_coorSystemError.getTransformation()[0];
+  const DoubleInterval          xToRange = tr.forwardTransform(getXRange());
+  const int                     n        = (int)xToRange.getLength()+1;
   return (n <= 0) ? 1 : n;
 }
 

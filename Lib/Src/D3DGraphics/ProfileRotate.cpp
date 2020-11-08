@@ -148,7 +148,7 @@ LPD3DXMESH rotateProfile(AbstractMeshFactory &amf, const Profile2D &profile, con
         if(isVj1Center) {
           tmp.add(v11).add(v12).add(v22); // lower left -> upper left -> upper right. v11 == v21 (va3D[j1] fixed when rotate
         } else if(isVj2Center) {
-          tmp.add(v22).add(v21).add(v11); // upper right -> lower right -> lower left. 
+          tmp.add(v22).add(v21).add(v11); // upper right -> lower right -> lower left.
         } else {
           tmp.add(v11).add(v12).add(v22).add(v21); // else  make a rectangle
         }

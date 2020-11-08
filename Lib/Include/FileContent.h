@@ -9,12 +9,12 @@ public:
   FileContent(      const String     &fileName);
   FileContent(      FILE             *f       );
   FileContent(      ByteInputStream  &in      );
-  FileContent &load(const String     &fileName);  // return this
-  FileContent &load(FILE             *f       );  // return this
-  FileContent &load(ByteInputStream  &in      );  // return this
-  FileContent &save(const String     &fileName);  // return this
-  FileContent &save(FILE             *f       );  // return this
-  FileContent &save(ByteOutputStream &out     );  // return this
+  FileContent &load(const String     &fileName);  // Return *this
+  FileContent &load(FILE             *f       );  // Return *this
+  FileContent &load(ByteInputStream  &in      );  // Return *this
+  FileContent &save(const String     &fileName);  // Return *this
+  FileContent &save(FILE             *f       );  // Return *this
+  FileContent &save(ByteOutputStream &out     );  // Return *this
 #if defined(UNICODE)
   String converToString(UINT codePage = CP_UTF8) const;
 #else
