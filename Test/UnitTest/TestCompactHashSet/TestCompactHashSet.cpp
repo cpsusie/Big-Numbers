@@ -91,10 +91,10 @@ namespace TestCompactHashSet {
       compareSetList(set, list);
     }
 
-    CompactIntArray a = set.getLength();
+    const CompactUIntArray a = set.getLength();
     String line;
     for(size_t i = 0; i < a.size(); i++) {
-      line += format(_T("Count(%zu):%d "), i, a[i]);
+      line += format(_T("Count(%zu):%u "), i, a[i]);
     }
     INFO(_T("%s"), line.cstr());
 

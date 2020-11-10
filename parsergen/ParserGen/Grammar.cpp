@@ -110,6 +110,7 @@ void LR1State::sortItems() {
 Grammar::Grammar()
 : m_stateMap(     4001)
 , m_unfinishedSet(1001)
+, m_symbolMap(    1001)
 , m_terminalCount(   0)
 , m_startSymbol(     0)
 , m_SRconflicts(     0)
@@ -121,6 +122,7 @@ Grammar::Grammar()
 Grammar::Grammar(const ParserTables &src)
 : m_stateMap(     4001)
 , m_unfinishedSet(1001)
+, m_symbolMap(    1001)
 , m_terminalCount(   0)
 , m_startSymbol(     0)
 , m_SRconflicts(     0)
@@ -146,14 +148,14 @@ Grammar::Grammar(const ParserTables &src)
 }
 
 int Grammar::findSymbol(const String &name) const {
-  const UINT *id = m_symbolMap.get(name);
+  const UINT *id = m_symbolMap.get(name.cstr());
   return id != nullptr ? *id : -1;
 }
 
 UINT Grammar::addSymbol(const GrammarSymbol &symbol) {
   const UINT index = getSymbolCount();
-  m_symbolMap.put(symbol.m_name, index);
   m_symbols.add(symbol);
+  m_symbolMap.put(m_symbols.last().m_name.cstr(), index);
   return index;
 }
 

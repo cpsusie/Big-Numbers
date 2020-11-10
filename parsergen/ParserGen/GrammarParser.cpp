@@ -160,7 +160,7 @@ void GrammarParser::parseRightSide(int leftSide) {
 
     next();
     const SymbolModifier modifier   = parseModifier();
-    int rightIndex = m_grammar.findSymbol(name);
+    int                  rightIndex = m_grammar.findSymbol(name);
     if(rightIndex < 0) {
       rightIndex = m_grammar.addNonTerminal(name, pos);
     } else if(m_grammar.isTerminal(rightIndex)) {

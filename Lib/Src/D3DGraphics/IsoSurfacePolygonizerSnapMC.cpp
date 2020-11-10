@@ -1027,7 +1027,7 @@ String StackedCube::toString(int precision) const {
   return result;
 }
 
-static String intArrayToString(const CompactIntArray &a) {
+static String uintArrayToString(const CompactUIntArray &a) {
   if(a.size() == 0) {
     return EMPTYSTRING;
   } else {
@@ -1044,9 +1044,9 @@ void IsoSurfacePolygonizer::saveStatistics(double startTime) {
   m_statistics.m_vertexCount  = (UINT)m_vertexArray.size();
   m_statistics.m_cornerCount  = (UINT)m_cornerMap.size();
   m_statistics.m_edgeCount    = (UINT)m_edgeMap.size();
-  m_statistics.m_hashStat     = _T("  CornerMap:") + intArrayToString(m_cornerMap.getLength())    + _T("\n")
-                              + _T("  EdgeMap  :") + intArrayToString(m_edgeMap.getLength())      + _T("\n")
-                              + _T("  DoneSet  :") + intArrayToString(m_cubesDoneSet.getLength()) + _T("\n");
+  m_statistics.m_hashStat     = _T("  CornerMap:") + uintArrayToString(m_cornerMap.getLength())    + _T("\n")
+                              + _T("  EdgeMap  :") + uintArrayToString(m_edgeMap.getLength())      + _T("\n")
+                              + _T("  DoneSet  :") + uintArrayToString(m_cubesDoneSet.getLength()) + _T("\n");
   m_statistics.m_faceCount    = (UINT)m_faceArray.size();
 }
 

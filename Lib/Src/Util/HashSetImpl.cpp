@@ -47,7 +47,7 @@ size_t HashSetImpl::size() const {
   return m_table->size();
 }
 
-CompactIntArray HashSetImpl::getLength() const {
+CompactUIntArray HashSetImpl::getLength() const {
   return m_table->getLength();
 }
 
@@ -55,7 +55,7 @@ size_t HashSetImpl::getCapacity() const {
   return m_table->getCapacity();
 }
 
-int HashSetImpl::getMaxChainLength() const {
+UINT HashSetImpl::getMaxChainLength() const {
   return m_table->getMaxChainLength();
 }
 

@@ -4,7 +4,7 @@
 #include "CompactKeyType.h"
 #include "HeapObjectPool.h"
 
-template <typename K> class SetEntry {
+template<typename K> class SetEntry {
 public:
   K m_key;
   inline SetEntry() {}
@@ -14,7 +14,7 @@ public:
 
 // Assume K has public member-function ULONG hashCode() const...
 // and bool operator==(const K &) defined
-template <typename K, UINT pageSize=20000> class CompactHashSet : public CollectionBase<K> {
+template<typename K, UINT pageSize=20000> class CompactHashSet : public CollectionBase<K> {
 private:
   size_t                                             m_size;
   size_t                                             m_capacity;
@@ -34,8 +34,28 @@ private:
     m_updateCount = 0;
   }
 
-  int getChainLength(size_t index) const {
-    int count = 0;
+  LinkObject<SetEntry<K> > *selectNonNullLinkObject(RandomGenerator &rnd) const {
+    if(size() == 0) throwEmptySetException(__TFUNCTION__);
+    const size_t n = m_capacity, k = randSizet(n, rnd);
+    LinkObject<SetEntry<K> > **first = m_buffer, **endp = first + n, **lpk = first + k, **p = lpk;
+    for(; (p < endp) && (*p == nullptr); p++);
+    if(p == endp) {
+      for(p = lpk - 1; (p >= first) && (*p == nullptr); p--);
+    }
+    return *p;
+  }
+
+  LinkObject<SetEntry<K> > *selectLinkObject(RandomGenerator &rnd) const {
+    for(auto p = selectNonNullLinkObject(rnd);; p = p->m_next) {
+      if((p->m_next == nullptr) || rnd.nextBool()) {
+        return p;
+      }
+    }
+    return nullptr;
+  }
+
+  UINT getChainLength(size_t index) const {
+    UINT count = 0;
     for(auto p = m_buffer[index]; p; p = p->m_next) {
       count++;
     }
@@ -57,11 +77,9 @@ public:
   }
 
   CompactHashSet &operator=(const CompactHashSet &src) {
-    if(this == &src) {
-      return *this;
+    if(this != &src) {
+      clear(src.getCapacity()).addAll(src);
     }
-    clear(src.getCapacity());
-    addAll(src);
     return *this;
   }
 
@@ -181,36 +199,42 @@ public:
     return false;
   }
 
-  inline int getPageCount() const {
+  const K &select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) const {
+    return selectLinkObject(rnd)->m_e.m_key;
+  }
+
+  K &select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
+    return selectLinkObject(rnd)->m_e.m_key;
+  }
+
+  inline UINT getPageCount() const {
     return m_entryPool.getPageCount();
   }
 
-  CompactIntArray getLength() const {
+  CompactUIntArray getLength() const {
     const size_t capacity = getCapacity();
-    CompactIntArray tmp(capacity);
-    int m = 0;
+    CompactUIntArray tmp(capacity);
+    UINT m = 0;
     for(size_t index = 0; index < capacity; index++) {
-      const int l = getChainLength(index);
+      const UINT l = getChainLength(index);
       tmp.add(l);
       if(l > m) {
         m = l;
       }
     }
-    CompactIntArray result(m+1);
-    for(int i = 0; i <= m; i++) {
-      result.add(0);
-    }
+    CompactUIntArray result(m+1);
+    result.insert(0, (UINT)0, m + 1);
     for(size_t index = 0; index < capacity; index++) {
       result[tmp[index]]++;
     }
     return result;
   }
 
-  int getMaxChainLength() const {
-    int m = 0;
+  UINT getMaxChainLength() const {
+    UINT m = 0;
     const size_t capacity = getCapacity();
     for(size_t i = 0; i < capacity; i++) {
-      const int l = getChainLength(i);
+      const UINT l = getChainLength(i);
       if(l > m) {
         m = l;
       }
@@ -432,9 +456,24 @@ public:
   }
 };
 
-typedef CompactHashSet<CompactShortKeyType > CompactShortHashSet;
-typedef CompactHashSet<CompactUShortKeyType> CompactUShortHashSet;
-typedef CompactHashSet<CompactIntKeyType   > CompactIntHashSet;
-typedef CompactHashSet<CompactUIntKeyType  > CompactUIntHashSet;
-typedef CompactHashSet<CompactFloatKeyType > CompactFloatHashSet;
-typedef CompactHashSet<CompactDoubleKeyType> CompactDoubleHashSet;
+#define DEFINECOMPACTHASHSETTEMPLATE(ktype)                                                                                             \
+template<UINT pageSize=20000> class Compact##ktype##HashSet : public CompactHashSet<Compact##ktype##KeyType, pageSize> {                \
+  public:                                                                                                                               \
+  Compact##ktype##HashSet() {                                                                                                           \
+  }                                                                                                                                     \
+  explicit Compact##ktype##HashSet(size_t capacity) : CompactHashSet(capacity) {                                                        \
+  }                                                                                                                                     \
+  Compact##ktype##HashSet(const CompactHashSet &src) : CompactHashSet(src) {                                                            \
+  }                                                                                                                                     \
+  Compact##ktype##HashSet &operator=(const CompactHashSet &src) {                                                                       \
+    __super::operator=(src);                                                                                                            \
+    return *this;                                                                                                                       \
+  }                                                                                                                                     \
+}
+
+DEFINECOMPACTHASHSETTEMPLATE(Short );
+DEFINECOMPACTHASHSETTEMPLATE(UShort);
+DEFINECOMPACTHASHSETTEMPLATE(Int   );
+DEFINECOMPACTHASHSETTEMPLATE(UInt  );
+DEFINECOMPACTHASHSETTEMPLATE(Str   );
+DEFINECOMPACTHASHSETTEMPLATE(StrI  );

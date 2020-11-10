@@ -1,6 +1,7 @@
 #pragma once
 
 #include <HashMap.h>
+#include <CompactHashMap.h>
 #include <LRParser.h>
 #include <MarginFile.h>
 #include "ByteCount.h"
@@ -220,14 +221,14 @@ public:
 
 class Grammar : public SymbolNameContainer {
 private:
-  String                 m_name;
-  Array<GrammarSymbol>   m_symbols;
-  StringHashMap<UINT>    m_symbolMap;
-  Array<Production>      m_productions;
-  Array<LR1State>        m_states;
-  StateHashMap           m_stateMap; // map core(state) -> index (UINT) into m_states
-  IntHashSet             m_unfinishedSet;
-  UINT                   m_terminalCount, m_startSymbol;
+  String                       m_name;
+  Array<GrammarSymbol>         m_symbols;
+  CompactStrHashMap<UINT,300>  m_symbolMap;
+  Array<Production>            m_productions;
+  Array<LR1State>              m_states;
+  StateHashMap                 m_stateMap; // map core(state) -> index (UINT) into m_states
+  CompactUIntHashSet<1000>     m_unfinishedSet;
+  UINT                         m_terminalCount, m_startSymbol;
 
 
   UINT   addSymbol(            const GrammarSymbol &symbol);

@@ -16,9 +16,9 @@ private:
   HashSetNode        *m_firstLink, *m_lastLink;
   size_t              m_size;
   size_t              m_updateCount;
-  int chainLength(size_t index) const;
-  int getMaxChainLength()       const;
-  CompactIntArray getLength()   const;
+  UINT chainLength(size_t index) const;
+  UINT getMaxChainLength()       const;
+  CompactUIntArray getLength()   const;
 public:
   HashSetTable(const HashSetImpl &owner, size_t capacity);
   ~HashSetTable();

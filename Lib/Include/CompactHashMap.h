@@ -55,12 +55,9 @@ public:
   }
 
   CompactHashMap &operator=(const CompactHashMap &src) {
-    if(this == &src) {
-      return *this;
+    if(this != &src) {
+      clear(src.getCapacity()).addAll(src);
     }
-    clear();
-    setCapacity(src.size());
-    addAll(src);
     return *this;
   }
 
@@ -190,36 +187,34 @@ public:
     return m_capacity;
   }
 
-  inline int getPageCount() const {
+  inline UINT getPageCount() const {
     return m_entryPool.getPageCount();
   }
 
-  CompactIntArray getLength() const {
+  CompactUIntArray getLength() const {
     const size_t capacity = getCapacity();
-    CompactIntArray tmp(capacity);
-    int m = 0;
+    CompactUIntArray tmp(capacity);
+    UINT m = 0;
     for(size_t index = 0; index < capacity; index++) {
-      const int l = getChainLength(index);
+      const UINT l = getChainLength(index);
       tmp.add(l);
       if(l > m) {
         m = l;
       }
     }
-    CompactIntArray result(m+1);
-    for(int i = 0; i <= m; i++) {
-      result.add(0);
-    }
+    CompactUIntArray result(m + 1);
+    result.insert(0, (UINT)0, m + 1);
     for(size_t index = 0; index < capacity; index++) {
       result[tmp[index]]++;
     }
     return result;
   }
 
-  int getMaxChainLength() const {
-    int m = 0;
+  UINT getMaxChainLength() const {
+    UINT m = 0;
     const size_t capacity = getCapacity();
     for(size_t i = 0; i < capacity; i++) {
-      const int l = getChainLength(i);
+      const UINT l = getChainLength(i);
       if(l > m) {
         m = l;
       }
@@ -352,7 +347,7 @@ public:
     if(map.size() != size()) {
       return false;
     }
-    for(ConstIterator<Entry<K,V> > it = getIterator(); it.hasNext();) {
+    for(auto it = getIterator(); it.hasNext();) {
       const Entry<K,V> &e = it.next();
       const V *mv = map.get(e.getKey());
       if((mv == nullptr) || (*mv != e.getValue())) {
@@ -367,82 +362,24 @@ public:
   }
 };
 
-template <typename T, UINT pageSize=20000> class CompactShortHashMap : public CompactHashMap<CompactShortKeyType, T, pageSize> {
-public:
-  CompactShortHashMap() {
-  }
-  explicit CompactShortHashMap(size_t capacity) : CompactHashMap(capacity) {
-  }
-  CompactShortHashMap(const CompactShortHashMap &src) : CompactHashMap(src) {
-  }
-};
+#define DEFINECOMPACTHASHMAPTEMPLATE(ktype)                                                                                             \
+template<typename T, UINT pageSize=20000> class Compact##ktype##HashMap : public CompactHashMap<Compact##ktype##KeyType, T, pageSize> { \
+  public:                                                                                                                               \
+  Compact##ktype##HashMap() {                                                                                                           \
+  }                                                                                                                                     \
+  explicit Compact##ktype##HashMap(size_t capacity) : CompactHashMap(capacity) {                                                        \
+  }                                                                                                                                     \
+  Compact##ktype##HashMap(const CompactHashMap &src) : CompactHashMap(src) {                                                            \
+  }                                                                                                                                     \
+  Compact##ktype##HashMap &operator=(const CompactHashMap &src) {                                                                       \
+    __super::operator=(src);                                                                                                            \
+    return *this;                                                                                                                       \
+  }                                                                                                                                     \
+}
 
-template <typename T, UINT pageSize=20000> class CompactUShortHashMap : public CompactHashMap<CompactUShortKeyType, T, pageSize> {
-public:
-  CompactUShortHashMap() {
-  }
-  explicit CompactUShortHashMap(size_t capacity) : CompactHashMap(capacity) {
-  }
-  CompactUShortHashMap(const CompactUShortHashMap &src) : CompactHashMap(src) {
-  }
-};
-
-template <typename T, UINT pageSize=20000> class CompactIntHashMap : public CompactHashMap<CompactIntKeyType, T, pageSize> {
-public:
-  CompactIntHashMap() {
-  }
-  explicit CompactIntHashMap(size_t capacity) : CompactHashMap(capacity) {
-  }
-  CompactIntHashMap(const CompactIntHashMap &src) : CompactHashMap(src) {
-  }
-};
-
-template <typename T, UINT pageSize=20000> class CompactUIntHashMap : public CompactHashMap<CompactUIntKeyType, T, pageSize> {
-public:
-  CompactUIntHashMap() {
-  }
-  explicit CompactUIntHashMap(size_t capacity) : CompactHashMap(capacity) {
-  }
-  CompactUIntHashMap(const CompactUIntHashMap &src) : CompactHashMap(src) {
-  }
-};
-
-template <typename T, UINT pageSize=20000> class CompactFloatHashMap : public CompactHashMap<CompactFloatKeyType, T, pageSize> {
-public:
-  CompactFloatHashMap() {
-  }
-  explicit CompactFloatHashMap(size_t capacity) : CompactHashMap(capacity) {
-  }
-  CompactFloatHashMap(const CompactFloatHashMap &src) : CompactHashMap(src) {
-  }
-};
-
-template <typename T, UINT pageSize=20000> class CompactDoubleHashMap : public CompactHashMap<CompactDoubleKeyType, T, pageSize> {
-public:
-  CompactDoubleHashMap() {
-  }
-  explicit CompactDoubleHashMap(size_t capacity)  : CompactHashMap(capacity) {
-  }
-  CompactDoubleHashMap(const CompactDoubleHashMap &src) : CompactHashMap(src) {
-  }
-};
-
-template <typename T, UINT pageSize=20000> class CompactStrHashMap    : public CompactHashMap<CompactStrKeyType, T, pageSize> {
-public:
-  CompactStrHashMap() {
-  }
-  explicit CompactStrHashMap(size_t capacity)  : CompactHashMap(capacity) {
-  }
-  CompactStrHashMap(const CompactStrHashMap &src) : CompactHashMap(src) {
-  }
-};
-
-template <typename T, UINT pageSize=20000> class CompactStrIHashMap    : public CompactHashMap<CompactStrIKeyType, T, pageSize> {
-public:
-  CompactStrIHashMap() {
-  }
-  explicit CompactStrIHashMap(size_t capacity)  : CompactHashMap(capacity) {
-  }
-  CompactStrIHashMap(const CompactStrIHashMap &src) : CompactHashMap(src) {
-  }
-};
+DEFINECOMPACTHASHMAPTEMPLATE(Short );
+DEFINECOMPACTHASHMAPTEMPLATE(UShort);
+DEFINECOMPACTHASHMAPTEMPLATE(Int   );
+DEFINECOMPACTHASHMAPTEMPLATE(UInt  );
+DEFINECOMPACTHASHMAPTEMPLATE(Str   );
+DEFINECOMPACTHASHMAPTEMPLATE(StrI  );

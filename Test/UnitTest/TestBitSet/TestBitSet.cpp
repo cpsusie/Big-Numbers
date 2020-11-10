@@ -184,12 +184,12 @@ namespace TestBitSet {
 
   class TesterSet {
   private:
-    BitSet             m_bs;
-    CompactUIntHashSet m_hs;
-    bool               m_memberCheckEnabled;
+    BitSet               m_bs;
+    CompactUIntHashSet<> m_hs;
+    bool                 m_memberCheckEnabled;
 
     void verifyMembers() const {
-      for(ConstIterator<CompactUIntKeyType> it = m_hs.getIterator(); it.hasNext();) {
+      for(auto it = m_hs.getIterator(); it.hasNext();) {
         const UINT k = it.next();
         verify(m_bs.contains(k));
       }
@@ -267,7 +267,7 @@ namespace TestBitSet {
     TesterSet &invert() {
       m_bs.invert();
       const size_t k = m_bs.getCapacity();
-      const CompactUIntHashSet tmp(m_hs);
+      const CompactUIntHashSet<> tmp(m_hs);
       for(UINT i = 0; i < k; i++) m_hs.add(i);
       m_hs.removeAll(tmp);
       verifyConsistent();

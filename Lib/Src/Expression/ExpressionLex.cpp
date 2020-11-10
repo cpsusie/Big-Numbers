@@ -159,9 +159,9 @@ static const char lexNext[17][24] = {
   /* 16 */ {-1,-1,-1,-1,-1,-1,-1,-1,35,-1,35,-1,-1,32,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}
 };
 
-static const char lexAccept[] = {
-  /*   0 */0,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
-  /*  20 */4,4,4,4,4,4,4,4,4,0,4,0,4,0,0,0
+static const char lexAccept[36] = {
+  /*   0 */ 0,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4
+  /*  20 */,4,4,4,4,4,4,4,4,4,0,4,0,4,0,0,0
 };
 
 #line 9 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
@@ -508,13 +508,13 @@ typedef CompactStrIHashMap<ExpressionInputSymbol,ARRAYSIZE(keywordtable)> HashMa
 class ExpressionKeyWordMap : public HashMapType {
 public:
   ExpressionKeyWordMap(size_t capacity) : HashMapType(capacity) {
-    for(int i = 0; i < ARRAYSIZE(keywordtable); i++) {
-      put(keywordtable[i].m_name,keywordtable[i].m_token);
+    for(KeyWord kw : keywordtable) {
+      put(kw.m_name,kw.m_token);
     }
   }
 };
 
-static ExpressionKeyWordMap keywords(405);
+static const ExpressionKeyWordMap keywords(560);
 
 ExpressionInputSymbol ExpressionLex::nameOrKeyWord(const _TUCHAR *lexeme) { // static
   const ExpressionInputSymbol *p = keywords.get(lexeme);
@@ -528,6 +528,7 @@ void ExpressionLex::verror(const SourcePosition &pos, _In_z_ _Printf_format_stri
     Scanner::verror(pos, format, argptr);
   }
 }
+// #define CHECKKEYWORDMAP
 
 #ifdef CHECKKEYWORDMAP
 
@@ -540,14 +541,14 @@ public:
   }
 };
 
-void ExpressionLex::findBestHashMapSize() { // static
-  int  bestTableSize   = -1;
-  UINT bestChainLength = 0;
-  for(int tableSize = 20; tableSize < 2000; tableSize++) {
+void CheckKeywordMap::findBestHashMapSize() {
+  UINT  bestTableSize   = 0;
+  UINT  bestChainLength = UINT_MAX;
+  for(UINT tableSize = 20; tableSize < 2000; tableSize++) {
     ExpressionKeyWordMap ht(tableSize);
-    const int chainLength = ht.getMaxChainLength();
-    debugLog(_T("tableSize:%4d, maxChainLength:%d\n"), tableSize, chainLength);
-    if((bestTableSize < 0) || (chainLength < bestChainLength)) {
+    const UINT chainLength = ht.getMaxChainLength();
+    debugLog(_T("tableSize:%4u, maxChainLength:%u\n"), tableSize, chainLength);
+    if(chainLength < bestChainLength) {
       bestTableSize   = tableSize;
       bestChainLength = chainLength;
     }
@@ -555,13 +556,13 @@ void ExpressionLex::findBestHashMapSize() { // static
       break;
     }
   }
-  debugLog(_T("\nTablesize=%d gives best hashmap (maxchainLength=%u\n")
+  debugLog(_T("\nTablesize=%u gives best hashmap (maxchainLength=%u\n")
           ,bestTableSize, bestChainLength);
 }
 
 static CheckKeywordMap checkKeywordMap;
 
-#endif
+#endif // CHECKKEYWORDMAP
 
 }; // namespace Expr
 #line 112 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"

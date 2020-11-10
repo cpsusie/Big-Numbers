@@ -80,7 +80,7 @@ public:
     : Set<T>(new TreeSetImpl(ObjectManager<T>(), comparator))
   {
   }
-  TreeSet<T> &operator=(const CollectionBase<T> &src) {
+  TreeSet &operator=(const CollectionBase<T> &src) {
     __super::operator=(src);
     return *this;
   }
@@ -131,18 +131,6 @@ public:
 class UInt64TreeSet : public TreeSet<UINT64> {
 public:
   UInt64TreeSet() : TreeSet<UINT64>(uint64HashCmp) {
-  }
-};
-
-class FloatTreeSet : public TreeSet<FLOAT> {
-public:
-  FloatTreeSet()  : TreeSet<FLOAT>(floatHashCmp) {
-  }
-};
-
-class DoubleTreeSet : public TreeSet<DOUBLE> {
-public:
-  DoubleTreeSet()  : TreeSet<DOUBLE>(doubleHashCmp) {
   }
 };
 

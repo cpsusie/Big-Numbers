@@ -64,13 +64,13 @@ public:
   HashFunction getHashFunction() {
     return ((HashMapImpl*)m_map)->getHashFunction();
   }
-  CompactIntArray getLength() const {
+  CompactUIntArray getLength() const {
     return ((HashMapImpl*)m_map)->getLength();
   }
   size_t getCapacity() const {
     return ((HashMapImpl*)m_map)->getCapacity();
   }
-  int getMaxChainLength() const {
+  UINT getMaxChainLength() const {
     return ((HashMapImpl*)m_map)->getMaxChainLength();
   }
 };
@@ -120,18 +120,6 @@ public:
 template <typename T> class UInt64HashMap     : public HashMap<UINT64, T> {
 public:
   UInt64HashMap(size_t capacity=31) : HashMap<UINT64, T>(uint64Hash, uint64HashCmp, capacity) {
-  }
-};
-
-template <typename T> class FloatHashMap      : public HashMap<float, T> {
-public:
-  FloatHashMap(size_t capacity=31)  : HashMap<float, T>(floatHash, floatHashCmp, capacity) {
-  }
-};
-
-template <typename T> class DoubleHashMap      : public HashMap<double, T> {
-public:
-  DoubleHashMap(size_t capacity=31)  : HashMap<double, T>(doubleHash, doubleHashCmp, capacity) {
   }
 };
 

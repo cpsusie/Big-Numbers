@@ -3,10 +3,7 @@
 #include "HashSetNode.h"
 
 AbstractKey *HashSetTable::select(RandomGenerator &rnd) const {
-  if(m_size == 0) {
-    throwEmptySetException(__TFUNCTION__);
-  }
-
+  if(size() == 0) throwEmptySetException(__TFUNCTION__);
   if(rnd.nextBool()) {
     for(auto p = m_firstLink;; p = p->m_nextLink) {
       if((p->m_nextLink == nullptr) || (rnd.nextInt(3) == 0)) {

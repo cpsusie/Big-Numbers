@@ -64,8 +64,8 @@ public:
     m_freeList  = nullptr;
   }
 
-  int getPageCount() const {
-    int count = 0;
+  UINT getPageCount() const {
+    UINT count = 0;
     for(auto p = m_firstPage; p; p = p->m_next) {
       count++;
     }

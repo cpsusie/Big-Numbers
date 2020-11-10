@@ -22,11 +22,18 @@ private:
   SymbolModifier parseModifier();
 
   void checkGrammar();
+  // Check, that startsymbol exists on only one leftside, and no rightsides
   void checkStartSymbol();
+  // Check, that nonterminal occurs on both a left- and a rightside
   void checkNonTerminal(UINT nonterminal);
+  // Check, that terminal-symbol is used in at least one rightside
   void checkTerminal(   UINT terminal);
+  // Check, that all nonterminal-symbols are reachable from startsymbol
   void checkReachability();
+  // Check, that all nonterminal-symbols terminate
+  // a non-terminal A terminate iff A ->* alfa, alfa is sring of terminals with finite length
   void checkTermination();
+  // Check that all productions in the grammar are unique
   void checkDuplicateProd();
 public:
   GrammarParser(const String &fileName, Grammar &g);

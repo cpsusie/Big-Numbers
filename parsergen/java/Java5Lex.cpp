@@ -2,12 +2,12 @@
 #line 17 "C:\\Mytools2015\\ParserGen\\java\\Java5.lex"
 #include "stdafx.h"
 #include <MyUtil.h>
-#include <HashMap.h>
+#include <CompactHashMap.h>
 #include <TreeMap.h>
 #include "Java5Symbol.h"
 #include "Java5Lex.h"
 
-static int nameOrKeyWord(const TCHAR *lexeme);
+static Java5InputSymbol nameOrKeyWord(const TCHAR *lexeme);
 
 #line 7 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
 // DFA State   0 [nonAccepting]
@@ -740,11 +740,11 @@ int Java5Lex::getNextLexeme() {
 #line 127 "C:\\Mytools2015\\ParserGen\\java\\Java5.lex"
 
 typedef struct {
-  TCHAR *m_name;
-  int    m_token;
+  const TCHAR     *m_name;
+  Java5InputSymbol m_token;
 } ReservedWords;
 
-static ReservedWords wordTable[] = {
+static const ReservedWords wordTable[] = {
   _T("abstract"    ) ,ABSTRACT
  ,_T("assert"      ) ,ASSERT
  ,_T("boolean"     ) ,TYPEBOOLEAN
@@ -798,46 +798,46 @@ static ReservedWords wordTable[] = {
  ,_T("while"       ) ,WHILE
 };
 
-typedef StrHashMap<int> HashMapType;
+typedef CompactStrHashMap<Java5InputSymbol,ARRAYSIZE(wordTable) > HashMapType;
 
 class ReservedWordMap : public HashMapType {
 public:
-  ReservedWordMap(int capacity) : HashMapType(capacity) {
-    for(int i = 0; i < ARRAYSIZE(wordTable); i++) {
-      put(wordTable[i].m_name,wordTable[i].m_token);
+  ReservedWordMap(UINT capacity) : HashMapType(capacity) {
+    for(ReservedWords w : wordTable) {
+      put(w.m_name,w.m_token);
     }
   }
 };
 
-static ReservedWordMap reservedWordMap(249);
+static const ReservedWordMap reservedWordMap(249);
 
-static int nameOrKeyWord(const TCHAR *lexeme) {
-  int *p = reservedWordMap.get(lexeme);
+static Java5InputSymbol nameOrKeyWord(const TCHAR *lexeme) {
+  const Java5InputSymbol *p = reservedWordMap.get(lexeme);
   return p ? *p : IDENTIFIER;
 }
 
 void Java5Lex::findBestHashMapSize() {
-  IntTreeMap<CompactIntArray> cl;
-  int bestCapacity;
-  for(int capacity = 3; capacity < 2000; capacity++) {
+  UIntTreeMap<CompactUIntArray> cl;
+  UINT bestCapacity;
+  for(UINT capacity = 3; capacity < 2000; capacity++) {
     ReservedWordMap ht(capacity);
-    cl.put((int)ht.getCapacity(), ht.getLength());
+    cl.put((UINT)ht.getCapacity(), ht.getLength());
     if(ht.getMaxChainLength() == 1) {
       bestCapacity = capacity;
       break;
     }
   }
 
-  for(Iterator<Entry<int, CompactIntArray> > it = cl.entrySet().getIterator(); it.hasNext();) {
-    Entry<int, CompactIntArray> &e = it.next();
-    int capacity = e.getKey();
-    const CompactIntArray &chainLength = e.getValue();
-    printf("Capacity %4d:",capacity);
+  for(auto it = cl.getIterator(); it.hasNext();) {
+    Entry<UINT, CompactUIntArray> &e = it.next();
+    UINT capacity = e.getKey();
+    const CompactUIntArray &chainLength = e.getValue();
+    printf("Capacity %4u:",capacity);
     for(size_t l = 0; l < chainLength.size(); l++) {
-      printf(" (%d,%3d)",(int)l,chainLength[l]);
+      printf(" (%zu,%3u)",l,chainLength[l]);
     }
     printf("\n");
   }
-  printf("Capacity:%d gives best hashmap\n",bestCapacity);
+  printf("Capacity:%u gives best hashmap\n",bestCapacity);
 }
 #line 112 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"

@@ -74,40 +74,38 @@ void HashSetTable::clear() {
   m_updateCount++;
 }
 
-int HashSetTable::chainLength(size_t index) const {
-  int count = 0;
+UINT HashSetTable::chainLength(size_t index) const {
+  UINT count = 0;
   for(auto p = m_table[index]; p; p = p->m_next) {
     count++;
   }
   return count;
 }
 
-CompactIntArray HashSetTable::getLength() const {
-  CompactIntArray result;
-  CompactIntArray tmp;
+CompactUIntArray HashSetTable::getLength() const {
   const size_t capacity = getCapacity();
-  int m = 0;
+  CompactUIntArray tmp(capacity);
+  UINT m = 0;
   for(size_t index = 0; index < capacity; index++) {
-    const int l = chainLength(index);
+    const UINT l = chainLength(index);
     tmp.add(l);
     if(l > m) {
       m = l;
     }
   }
-  for(int i = 0; i <= m; i++) {
-    result.add(0);
-  }
+  CompactUIntArray result(m+1);
+  result.insert(0, (UINT)0, m + 1);
   for(size_t index = 0; index < capacity; index++) {
     result[tmp[index]]++;
   }
   return result;
 }
 
-int HashSetTable::getMaxChainLength() const {
-  int m = 0;
+UINT HashSetTable::getMaxChainLength() const {
+  UINT m = 0;
   const size_t capacity = getCapacity();
   for(size_t i = 0; i < capacity; i++) {
-    const int l = chainLength(i);
+    const UINT l = chainLength(i);
     if(l > m) {
       m = l;
     }

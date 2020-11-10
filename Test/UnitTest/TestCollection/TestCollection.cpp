@@ -405,10 +405,10 @@ namespace TestCollection {
       verify(comparator.compare(lastKey, *last) == 0);
       testCollectionStream(set);
     } else {
-      CompactIntArray a = ((HashSet<Key>&)set).getLength();
+      const CompactUIntArray a = ((HashSet<Key>&)set).getLength();
       String line;
       for(size_t i = 0; i < a.size(); i++) {
-        line += format(_T("Count(%zu):%d "), i, a[i]);
+        line += format(_T("Count(%zu):%u "), i, a[i]);
       }
       INFO(_T("%s"), line.cstr());
       try {

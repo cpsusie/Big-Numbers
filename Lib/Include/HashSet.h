@@ -61,13 +61,13 @@ public:
     return false;
   }
 
-  CompactIntArray            getLength()                  const;
+  CompactUIntArray           getLength()                  const;
   // return capacity, NOT number of elements
   size_t                     getCapacity()                const;
-  int                        getMaxChainLength()          const;
+  UINT                       getMaxChainLength()          const;
 };
 
-template <typename T> class HashSet : public Set<T> {
+template<typename T> class HashSet : public Set<T> {
 public:
   HashSet(ULONG (*hash)(const T &key), int (*comparator)(const T &key1, const T &key2), size_t capacity = 31)
     : Set<T>(new HashSetImpl(ObjectManager<T>(), (HashFunction)hash, FunctionComparator<T>(comparator), capacity))
@@ -81,7 +81,7 @@ public:
     : Set<T>(new HashSetImpl(ObjectManager<T>(), (HashFunction)hash, comparator, capacity))
   {
   }
-  HashSet<T> &operator=(const CollectionBase<T> &src) {
+  HashSet &operator=(const CollectionBase<T> &src) {
     __super::operator=(src);
     return *this;
   }
@@ -90,7 +90,7 @@ public:
     return ((HashSetImpl*)m_collection)->getHashFunction();
   }
 
-  CompactIntArray getLength() const {
+  CompactUIntArray getLength() const {
     return ((HashSetImpl*)m_collection)->getLength();
   }
 
@@ -98,14 +98,14 @@ public:
     return ((HashSetImpl*)m_collection)->getCapacity();
   }
 
-  int getMaxChainLength() const {
+  UINT getMaxChainLength() const {
     return ((HashSetImpl*)m_collection)->getMaxChainLength();
   }
 };
 
-class ShortHashSet : public HashSet<short> {
+class ShortHashSet : public HashSet<SHORT> {
 public:
-  ShortHashSet(size_t capacity=31) : HashSet<short>(shortHash, shortHashCmp, capacity) {
+  ShortHashSet(size_t capacity=31) : HashSet<SHORT>(shortHash, shortHashCmp, capacity) {
   }
 };
 
@@ -115,9 +115,9 @@ public:
   }
 };
 
-class IntHashSet : public HashSet<int> {
+class IntHashSet : public HashSet<INT> {
 public:
-  IntHashSet(size_t capacity=31) : HashSet<int>(intHash, intHashCmp, capacity) {
+  IntHashSet(size_t capacity=31) : HashSet<INT>(intHash, intHashCmp, capacity) {
   }
 };
 
@@ -127,9 +127,9 @@ public:
   }
 };
 
-class LongHashSet : public HashSet<long> {
+class LongHashSet : public HashSet<LONG> {
 public:
-  LongHashSet(size_t capacity=31) : HashSet<long>(longHash, longHashCmp, capacity) {
+  LongHashSet(size_t capacity=31) : HashSet<LONG>(longHash, longHashCmp, capacity) {
   }
 };
 
@@ -148,18 +148,6 @@ public:
 class UInt64HashSet : public HashSet<UINT64> {
 public:
   UInt64HashSet(size_t capacity=31) : HashSet<UINT64>(uint64Hash, uint64HashCmp, capacity) {
-  }
-};
-
-class FloatHashSet : public HashSet<float> {
-public:
-  FloatHashSet(size_t capacity=31)  : HashSet<float>(floatHash, floatHashCmp, capacity) {
-  }
-};
-
-class DoubleHashSet : public HashSet<double> {
-public:
-  DoubleHashSet(size_t capacity=31)  : HashSet<double>(doubleHash, doubleHashCmp, capacity) {
   }
 };
 
