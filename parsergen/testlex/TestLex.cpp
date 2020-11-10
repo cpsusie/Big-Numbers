@@ -133,8 +133,8 @@ static const char lexNext[8][9] = {
   /* 7 */ { 8, 8,-1,-1, 8, 8, 8, 8, 8}
 };
 
-static const char lexAccept[] = {
-  /*   0 */0,4,4,4,1,2,0,4,0,0,0
+static const char lexAccept[11] = {
+  /*   0 */ 0,4,4,4,1,2,0,4,0,0,0
 };
 
 #line 9 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"

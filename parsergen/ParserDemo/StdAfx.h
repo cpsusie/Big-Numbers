@@ -3,8 +3,10 @@
 #include "targetver.h"
 
 #include <MFCUtil/WinTools.h>
-#include "ParserDemo.h"
+#include <MyUtil.h>
+#include <Options.h>
 #include <Grammar.h>
+#include "ParserDemo.h"
 
 #undef TRY
 #undef CATCH

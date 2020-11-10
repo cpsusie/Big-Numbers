@@ -230,7 +230,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\Lib\Include\LRparser.h" />
     <ClInclude Include="ByteCount.h" />
-    <ClInclude Include="CodeFlags.h" />
+    <ClInclude Include="Options.h" />
     <ClInclude Include="CompressedActionMatrixCpp.h" />
     <ClInclude Include="CompressEncoding.h" />
     <ClInclude Include="Grammar.h" />
@@ -253,7 +253,7 @@
     <ClCompile Include="ActionArray.cpp" />
     <ClCompile Include="ActionsWriter.cpp" />
     <ClCompile Include="ByteCount.cpp" />
-    <ClCompile Include="CodeFlags.cpp" />
+    <ClCompile Include="Options.cpp" />
     <ClCompile Include="CompressedActionMatrixCpp.cpp" />
     <ClCompile Include="CompressEncoding.cpp" />
     <ClCompile Include="DocFileWriter.cpp" />

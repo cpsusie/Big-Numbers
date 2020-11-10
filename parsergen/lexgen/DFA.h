@@ -30,8 +30,6 @@ private:
   Array<BitSet>   m_groups;
   // indexed by DFAstate-number. Holds the index of the group, a state belongs to
   CompactIntArray m_inGroup;
-  bool            m_verbose;
-  Language        m_language;
   MarginFile     &m_verboseFile;
 
   // creates a set of NFA-states to be put in DFAstate
@@ -73,13 +71,19 @@ private:
   void         printStateMap(        MarginFile &f, const int *map) const;
   void         printTransitionMatrix(MarginFile &f, const BitSet &rowSave, const BitSet &columnSave) const;
   void         printAcceptTable(     MarginFile &f) const;
+  inline bool  isDFAVerbose() const {
+    return Options::getInstance().m_verboseLevel >= 2;
+  }
 public:
   Array<DFAstate> m_states;
-  DFA(const NFA &nfa, Language language, bool verbose = false);
+  DFA(const NFA &nfa);
   void printStates(MarginFile &f) const;
   // Compress and output transitionmatrix eliminating equal columns and rows
   void printTables(MarginFile &f) const;
-  Language getLanguage() const { return m_language; }
+  inline UINT getStateCount() const {
+    return (UINT)m_states.size();
+  }
+
   const SourceText getHeader()     const { return m_NFA.m_header;     }
   const SourceText getDriverHead() const { return m_NFA.m_driverHead; }
   const SourceText getDriverTail() const { return m_NFA.m_driverTail; }

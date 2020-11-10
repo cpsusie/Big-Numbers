@@ -16,22 +16,29 @@ void KeywordTrigger::verbose() const {
   }
 }
 
-TemplateWriter::TemplateWriter(const String &templateName, const String &implOutputDir, const String &headerOutputDir, const CodeFlags &codeFlags)
-: m_flags(codeFlags)
+TemplateWriter::TemplateWriter()
+: m_options(Options::getInstance())
 {
-  m_templateName    = templateName;
-  m_implOutputDir   = implOutputDir;
-  m_headerOutputDir = headerOutputDir;
   m_output          = nullptr;
   m_outputIsTemp    = false;
   openOutput(_T("stdout"));
 
   createDefaultHandlers();
+  addMacro(_T("OUTPUTDIR"), m_options.m_implOutputDir   );
+  addMacro(_T("HEADERDIR"), m_options.m_headerOutputDir );
+  addMacro(_T("NAMESPACE"), m_options.m_nameSpace       );
+  if(m_options.m_nameSpace.length() > 0) {
+    addMacro(_T("PUSHNAMESPACE" ), format(_T("\nnamespace %s {\n" ), m_options.m_nameSpace.cstr()));
+    addMacro(_T("POPNAMESPACE"  ), format(_T("}; // namespace %s" ), m_options.m_nameSpace.cstr()));
+  } else {
+    addMacro(_T("PUSHNAMESPACE" ), _T("$NOLINE$"));
+    addMacro(_T("POPNAMESPACE"  ), _T("$NOLINE$"));
+  }
 }
 
 void TemplateWriter::openOutput(const String &name) {
   closeOutput();
-  if(!m_flags.m_skipIfEqual || (ACCESS(name, 0) < 0)) {
+  if(!m_options.m_skipIfEqual || (ACCESS(name, 0) < 0)) {
     m_output             = new MarginFile(name); TRACE_NEW(m_output);
     m_outputIsTemp       = false;
   } else {
@@ -156,15 +163,21 @@ String TemplateWriter::expandMacroes(const String &line) const {
 }
 
 void TemplateWriter::generateOutput() {
-  String templateText = readTextFile(m_templateName);
-  m_currentPos = SourcePositionWithName(m_templateName, 0, 0);
+  const String templateText = readTextFile(m_options.m_templateName);
+  m_currentPos = SourcePositionWithName(m_options.m_templateName, 0, 0);
   outputText(templateText);
   closeOutput();
 }
 
+void TemplateWriter::outputLineDirective() {
+  if(m_options.m_lineDirectives) {
+    writeLineDirective(m_currentPos.getName(), m_currentPos.getLineNumber());
+  }
+}
+
 void TemplateWriter::outputText(const String &text) {
   for(Tokenizer tok(text,_T("\n\r"),0,TOK_SINGLEDELIMITERS); tok.hasNext();) {
-    String tmpLine = tok.next();
+    const String tmpLine = tok.next();
     m_currentPos.incrLineNumber();
     String line         = expandMacroes(tmpLine);
     bool   triggerFound = false;
@@ -178,7 +191,7 @@ void TemplateWriter::outputText(const String &text) {
         continue;
       }
 
-      if(m_flags.m_verbose) (*trigger)->verbose();
+      if(m_options.m_verbose) (*trigger)->verbose();
       getOutput().setLeftMargin((int)dollar);
       (*trigger)->getHandler().handleKeyword(*this, line);
       triggerFound = true;
@@ -249,9 +262,9 @@ void NewFileHandler::handleKeyword(TemplateWriter &writer, String &line) const {
     String keyword = trim(substr(line, 0, assign));
     String outputDir;
     if(keyword == _T("$NEWFILE$")) {
-      outputDir = writer.getImplOutputDir();
+      outputDir = writer.getOptions().m_implOutputDir;
     } else {
-      outputDir = writer.getHeaderOutputDir();
+      outputDir = writer.getOptions().m_headerOutputDir;
     }
     String newOutputName = FileNameSplitter::getChildName(trim(outputDir), substr(line, assign+1, line.length()).trim());
     writer.openOutput(newOutputName);

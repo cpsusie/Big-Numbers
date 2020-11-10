@@ -1,7 +1,10 @@
 #include "stdafx.h"
 #include "GrammarParser.h"
 
-GrammarParser::GrammarParser(const String &fileName, int tabSize, Grammar &g) : m_lex(fileName, tabSize), m_grammar(g) {
+GrammarParser::GrammarParser(const String &fileName, Grammar &g)
+: m_lex(fileName)
+, m_grammar(g)
+{
   m_currentPrecedence = 0;
   m_grammar.addTerminal(_T("EOI"), TERMINAL, m_currentPrecedence, SourcePosition(0, 0)); /* always make EOI symbol no. 0, see skeletonparser parser.cpp */
   m_grammar.setName(fileName);
@@ -382,7 +385,7 @@ void GrammarParser::checkTerminal(UINT t) { // check, that terminal-symbol is us
       }
     }
   }
-  if(m_grammar.getVerboseLevel() >= 2) {
+  if(Options::getInstance().m_verboseLevel >= 2) {
     const GrammarSymbol &terminal = m_grammar.getSymbol(t);
     m_lex.warning(terminal.m_pos, _T("Terminal %s is not used."), terminal.m_name.cstr());
   }

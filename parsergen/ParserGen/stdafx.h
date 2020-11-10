@@ -8,4 +8,5 @@
 #include "targetver.h"
 
 #include <MyUtil.h>
+#include "Options.h"
 #include "Grammar.h"

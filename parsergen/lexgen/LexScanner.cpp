@@ -238,55 +238,45 @@ static const Token tokenmap[] = {
     L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L, BAR, L,  L,  L
 };
 
-MacroDefinition::MacroDefinition(TCHAR *value) {
-  m_value = value;
-  m_inUse = false;
-}
-
-MacroStackElement::MacroStackElement(MacroDefinition &m, TCHAR *next) : m_macroDefinition(m) {
-  m_next = (_TUCHAR*)next;
-}
-
 void LexScanner::addMacro() {
-  String macroName = getText();
+  const String macroName = getText();
   while(_istspace(*m_next)) {
     nextChar();
   }
-  TCHAR tmp[1024];
-  int i = 0;
-  while (*m_next && !_istspace(*m_next)) {
-    tmp[i++] = *m_next;
+  String macroValue;
+  while(*m_next && !_istspace(*m_next)) {
+    macroValue += *m_next;
     nextChar();
   }
-  tmp[i] = '\0';
 //  printf(_T("macro <%s>:<%s>\n"), macroName.cstr(), tmp);
-  if (!m_macros.put(macroName, MacroDefinition(tmp))) {
+  if (!m_macros.put(macroName, MacroDefinition(macroValue))) {
     error(_T("Macro '%s' already defined"), macroName.cstr());
   }
 }
 
-MacroDefinition &LexScanner::parseMacro() {
+const MacroDefinition &LexScanner::parseMacro() {
   TCHAR *p;
   m_next++;                                     // skip {
   if(!(p = _tcschr( (TCHAR*)m_next, '}')) ) {   // and find }
     error(_T("Missing } in macro expansion"));
   } else {
     *p = '\0';                                  // overwrite close brace.
-    String tmp(m_next);
+    const String macroName(m_next);
     *p++ = '}';                                 // restore '}'
-    MacroDefinition *mac = m_macros.get(tmp);
+    const MacroDefinition *macroDef = m_macros.get(macroName);
 //    printf(_T("expanding macro:<%s>\n"), tmp.cstr());
-    if(mac == nullptr) {
-      error(_T("Macro {%s} doesn't exist"), tmp.cstr());
+    if(macroDef == nullptr) {
+      error(_T("Macro {%s} doesn't exist"), macroName.cstr());
+    } else {
+      if(macroDef->m_inUse) {
+        error(_T("Recursive macros {%s} not allowed"), macroName.cstr());
+      }
+      m_next = p;
+      return *macroDef;
     }
-    if(mac->m_inUse) {
-      error(_T("Recursive macros {%s} not allowed"), tmp.cstr());
-    }
-    m_next = p;
-
-    return *mac;
   }
-  throw Exception(_T("Internal error in getmacro")); // to make compiler happy
+  throwException(_T("Internal error in %s"),__TFUNCTION__);
+  return *m_macroStack.top().m_macroDefinition;  // to make compiler happy
 }
 
 void LexScanner::beginRuleSection() {
@@ -304,7 +294,7 @@ void LexScanner::endRuleSection() {
 Token LexScanner::nextToken() {                // called when we parse between %% and %%
   if(m_token == EOS) {                         // Get another line
     if(m_inQuote) {
-      error(_T("newline in quoted String"));       // doesn't return
+      error(_T("Newline in quoted String"));   // doesn't return
     }
     do {                                       // read ahead until a non-blank line is read into the inputarray
       if(!nextExpr()) {                        // then at end of file
@@ -320,9 +310,9 @@ Token LexScanner::nextToken() {                // called when we parse between %
 
   while(*m_next == '\0') {
     if(!m_macroStack.isEmpty()) {              // Restore previous input source
-      MacroStackElement top = m_macroStack.pop();
+      const MacroStackElement top = m_macroStack.pop();
       m_next = top.m_next;
-      top.m_macroDefinition.m_inUse = false;   // Mark macro as unused
+      top.m_macroDefinition->m_inUse = false;  // Mark macro as unused
       continue;
     }
 
@@ -333,9 +323,9 @@ Token LexScanner::nextToken() {                // called when we parse between %
 
   if(!m_inQuote) {
     while(*m_next == '{') {                    // Macro expansion required
-      MacroDefinition &m = parseMacro();       // Use macro body as input String, and set m_next to point past '}'
+      const MacroDefinition &m = parseMacro(); // Use macro body as input String, and set m_next to point past '}'
       m.m_inUse = true;                        // Mark macro as used
-      m_macroStack.push(MacroStackElement(m, (_TUCHAR*)m_next));
+      m_macroStack.push(MacroStackElement(m, m_next));
       m_next = m.m_value.cstr();
     }
   }
@@ -370,9 +360,7 @@ Token LexScanner::nextToken() {                // called when we parse between %
       nextInput();
     }
   }
-
   m_token = (m_inQuote || sawEscape || m_lexeme > 127) ? L : tokenmap[m_lexeme];
-
   return m_token;
 }
 

@@ -220,7 +220,6 @@ public:
 
 class Grammar : public SymbolNameContainer {
 private:
-  Language               m_language;
   String                 m_name;
   Array<GrammarSymbol>   m_symbols;
   StringHashMap<UINT>    m_symbolMap;
@@ -228,7 +227,6 @@ private:
   Array<LR1State>        m_states;
   StateHashMap           m_stateMap; // map core(state) -> index (UINT) into m_states
   IntHashSet             m_unfinishedSet;
-  int                    m_verboseLevel;
   UINT                   m_terminalCount, m_startSymbol;
 
 
@@ -266,7 +264,6 @@ private:
   }
   void             checkStateIsConsistent(const LR1State &state, StateResult &result);
   ConflictSolution resolveShiftReduceConflict(const GrammarSymbol &terminal, const LR1Item &item) const;
-  void             verbose(int level, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) const;
 
 public:
   UINT                   m_warningCount;
@@ -274,8 +271,8 @@ public:
   UINT                   m_SRconflicts, m_RRconflicts;         // only for doc-file
   SourceText             m_header, m_driverHead, m_driverTail; // programtext between %{ and %}
 
-  Grammar(Language language, int verboselevel = 1);
-  Grammar(Language language, const ParserTables &src);
+  Grammar();
+  Grammar(const ParserTables &src);
   ~Grammar() {
   }
 
@@ -312,11 +309,9 @@ public:
   }
 
   inline UINT        getStartSymbol()  const { return m_startSymbol;  }
-  inline Language    getLanguage()     const { return m_language;     }
   const  SourceText &getHeader()       const { return m_header;       }
   const  SourceText &getDriverHead()   const { return m_driverHead;   }
   const  SourceText &getDriverTail()   const { return m_driverTail;   }
-  int                getVerboseLevel() const { return m_verboseLevel; }
 
 
   // convert symbolset to String

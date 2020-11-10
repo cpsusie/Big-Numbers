@@ -31,7 +31,7 @@ static void printCompressedActionArrayJava(MarginFile &output, const TCHAR *tabl
   output.printf(_T(",%4d};\n"), actions[0].m_action);
 }
 
-void GrammarTables::printJava(MarginFile &output, bool useTableCompression) const {
+void GrammarTables::printJava(MarginFile &output) const {
   output.printf(
        _T("/*****************************************************************\\\n"
           "* The action matrix holds the parse action(state,terminal)        *\n"
@@ -65,12 +65,12 @@ void GrammarTables::printJava(MarginFile &output, bool useTableCompression) cons
 
   const int stateCount      = getStateCount();
   const int productionCount = getProductionCount();
-
+  const Options &options    = Options::getInstance();
   const TCHAR *tableType = _T("private static final short");
 
   for(int s = 0; s < stateCount; s++) {
     const ActionArray &actions = m_stateActions[s];
-    if(useTableCompression && isCompressibleState(s)) {
+    if(options.m_useTableCompression && isCompressibleState(s)) {
       printCompressedActionArrayJava(output, tableType, s, actions);
     } else {
       printUncompressedActionArrayJava(output, tableType, s, actions);

@@ -107,23 +107,26 @@ void LR1State::sortItems() {
   m_items.sort(itemCmp);
 }
 
-Grammar::Grammar(Language language, int verboseLevel)
-: m_stateMap(4001)
-, m_unfinishedSet(1001) {
-
-  m_language      = language;
-  m_verboseLevel  = verboseLevel;
-  m_terminalCount = 0;
+Grammar::Grammar()
+: m_stateMap(     4001)
+, m_unfinishedSet(1001)
+, m_terminalCount(   0)
+, m_startSymbol(     0)
+, m_SRconflicts(     0)
+, m_RRconflicts(     0)
+, m_warningCount(    0)
+{
 }
 
-Grammar::Grammar(Language language, const ParserTables &src)
-: m_stateMap(4001)
-, m_unfinishedSet(1001) {
-
-  m_language      = language;
-  m_verboseLevel  = 0;
-  m_terminalCount = 0;
-
+Grammar::Grammar(const ParserTables &src)
+: m_stateMap(     4001)
+, m_unfinishedSet(1001)
+, m_terminalCount(   0)
+, m_startSymbol(     0)
+, m_SRconflicts(     0)
+, m_RRconflicts(     0)
+, m_warningCount(    0)
+{
   SourcePosition dummyPos;
   for(UINT t = 0; t < src.getTerminalCount(); t++) {
     addTerminal(src.getSymbolName(t), TERMINAL, 0, dummyPos);
@@ -759,9 +762,9 @@ String Grammar::getRightSide(UINT p) const {
   for(UINT i = 0; i < n; i++) {
     const UINT s = prod.m_rightSide[i];
     if(i > 0) {
-      result += _T(" ");
+      result += ' ';
     }
-    result += getSymbol(s).m_name;
+    result += getSymbolName(s);
   }
   return result;
 }
@@ -802,13 +805,4 @@ UINT Grammar::getItemCount() const {
     count += it.next().m_items.size();
   }
   return (UINT)count;
-}
-
-void Grammar::verbose(int level, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) const {
-  if(level <= m_verboseLevel) {
-    va_list argptr;
-    va_start(argptr, format);
-    _vtprintf(format, argptr);
-    va_end(argptr);
-  }
 }

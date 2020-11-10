@@ -129,8 +129,8 @@ private:
   inline const BYTE         *getTermSet(UINT code) const {
     return m_termSetTable  + (code & 0x7fff);
   }
-  inline UINT left( UINT code) const { return m_actionCode[code & 0x7fff]; }
-  inline UINT right(UINT code) const { return m_actionCode[code >> 17   ]; }
+  inline UINT left(  UINT code) const { return m_actionCode[code >> 17   ]; }
+  inline UINT right( UINT code) const { return m_actionCode[code & 0x7fff]; }
 
 // --------------------------- getLegalInputCount -------------------------------------
 

@@ -7,16 +7,6 @@
 #include "GrammarCode.h"
 #include "Wizard.h"
 
-static int verboseLevel = 1;
-static void verbose(int level, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
-  if(level <= verboseLevel) {
-    va_list argptr;
-    va_start(argptr, format);
-    _vtprintf(format, argptr);
-    va_end(argptr);
-  }
-}
-
 static void usage() {
   _ftprintf(stderr,
     _T("Usage:parsergen [options] file\n"
@@ -28,17 +18,23 @@ static void usage() {
        "      Applies only to c++-code.\n"
        " -n : Generate nonterminalsymbols in XXXSymbol.h/XXXSymbol.java).\n"
        " -h : Write lookahead symbols in docfile.\n"
-       " -c : Disable parser tables compression. (states where all actions are reduce with the same prod). Default is on\n"
+       " [-c|+c<level>]: Disable or enable parser tables compression. If enabled, level specifies max number of recursive calls\n"
+       "                 to determine parseraction. level=[0..%u]. Default is +c%u\n"
        " -v[level]:verbose.\n"
        "     level = 0 -> silence.\n"
        "     level = 1 -> write main steps in process.\n"
        "     level = 2 -> write warnings to stdout.\n"
-       "     default level is 1.\n"
+       "     Default level is -v%u.\n"
        " -ffile :dump first1-sets to file.\n"
        " -wS: Parsergen-wizard. write template grammar-file with classname S to stdout.\n"
        " -Ooutputdir1[,outputdir2]: Output goes to outputdir1. If outputdir2 specified, .h-files will go here.\n"
-       " -ttabsize:Tabulatorcharater will expand to this many spaces. tabsize >= 1. default tabsize=4.\n"
+       " -ttabsize:Tabulatorcharater will expand to this many spaces. tabsize=[1..%u]. Default tabsize=%u.\n"
        " -j : Generate java-parser. Default is C++.\n")
+      ,Options::maxRecursiveCalls
+      ,Options::defaultRecurseLevel
+      ,Options::defaultVerboseLevel
+      ,Options::maxTabSize
+      ,Options::defaultTabSize
   );
   exit(-1);
 }
@@ -62,56 +58,68 @@ void checkhas2reduce(Grammar &g) {
 
 int _tmain(int argc, TCHAR **argv) {
   TCHAR    *cp;
-  String    implOutputDir   = _T(".");
-  String    headerOutputDir = implOutputDir;
-  String    templateName    = EMPTYSTRING;
-  String    nameSpace       = EMPTYSTRING;
-  CodeFlags flags;
-  Language  language        = CPP;
-  TCHAR    *wizardName      = EMPTYSTRING;
-  int       tabSize         = 4;
-  String    first1File;
-
+  Options  &options = Options::getInstance();
   try {
-    for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
+    for(argv++; *argv && _tcschr(_T("-+"), *(cp = *argv)); argv++) {
+      if(*cp == '+') {
+        cp++;
+        switch(*cp) {
+        case 'c':
+          { options.m_useTableCompression  = true;
+            UINT maxRecurseLevel;
+            if((_stscanf(cp + 1, _T("%u"), &maxRecurseLevel) != 1) || (maxRecurseLevel > Options::maxRecursiveCalls)) {
+              usage();
+            }
+            options.m_maxRecursiveCalls = maxRecurseLevel;
+          }
+          break;
+        default:
+          usage();
+        }
+      }
+      // *cp = '-'
       for(cp++; *cp; cp++) {
         switch(*cp) {
         case 'm':
-          templateName = cp+1;
-          if(templateName.length() == 0) {
+          options.m_templateName = cp+1;
+          if(options.m_templateName.length() == 0) {
             usage();
           }
           break;
         case 'v':
-          if(_stscanf(cp+1, _T("%d"), &verboseLevel) != 1) {
-            verboseLevel = 1;
-            continue;
-          }
-          if(verboseLevel < 0 || verboseLevel > 2) {
-            usage();
+          { UINT level;
+            if((_stscanf(cp+1, _T("%u"), &level) != 1)) {
+              options.m_verboseLevel = 1;
+              continue;
+            }
+            if(level > Options::maxVerboseLevel) {
+              usage();
+            }
+            options.m_verboseLevel = level;
           }
           break;
         case 'l':
-          flags.m_lineDirectives       = false;
+          options.m_lineDirectives       = false;
           continue;
         case 'b':
-          flags.m_generateBreaks       = false;
+          options.m_generateBreaks       = false;
           continue;
         case 'a':
-          flags.m_generateActions      = false;
+          options.m_generateActions      = false;
           continue;
         case 'h':
-          flags.m_generateLookahead    = true;
+          options.m_generateLookahead    = true;
           continue;
         case 'c':
-          flags.m_useTableCompression  = false;
+          options.m_useTableCompression  = false;
+          options.m_maxRecursiveCalls    = 0;
           continue;
         case 'n':
-          flags.m_generateNonTerminals = true;
+          options.m_generateNonTerminals = true;
           continue;
         case 'f':
-          first1File = cp+1;
-          if(first1File.length() == 0) {
+          options.m_first1File = cp+1;
+          if(options.m_first1File.length() == 0) {
             usage();
           }
           break;
@@ -119,14 +127,14 @@ int _tmain(int argc, TCHAR **argv) {
           { const String a = cp+1;
             Tokenizer tok(a, _T(","));
             if(tok.hasNext()) {
-              implOutputDir = tok.next();
+              options.m_implOutputDir = tok.next();
             } else {
               usage();
             }
             if(tok.hasNext()) {
-              headerOutputDir = tok.next();
+              options.m_headerOutputDir = tok.next();
             } else {
-              headerOutputDir = implOutputDir;
+              options.m_headerOutputDir = options.m_implOutputDir;
             }
             if(tok.hasNext()) {
               usage();
@@ -135,20 +143,23 @@ int _tmain(int argc, TCHAR **argv) {
           break;
 
         case 'w':
-          flags.m_callWizard = true;
-          wizardName = cp+1;
+          options.m_callWizard = true;
+          options.m_wizardName = cp+1;
           break;
         case 't':
-          if((_stscanf(cp+1, _T("%d"), &tabSize) != 1) || (tabSize < 1)) {
-            usage();
+          { UINT tabSize;
+            if((_stscanf(cp+1, _T("%u"), &tabSize) != 1) || (tabSize < 1) || (tabSize > Options::maxTabSize)) {
+              usage();
+            }
+            options.m_tabSize = (BYTE)tabSize;
           }
           break;
         case 'j':
-          language = JAVA;
+          options.m_language = JAVA;
           continue;
         case 'N':
-          nameSpace = cp+1;
-          if(nameSpace.length() == 0) {
+          options.m_nameSpace = cp+1;
+          if(options.m_nameSpace.length() == 0) {
             usage();
           }
           break;
@@ -161,7 +172,7 @@ int _tmain(int argc, TCHAR **argv) {
 
     String skeletonFileName = EMPTYSTRING;
     String wizardTemplate   = EMPTYSTRING;
-    switch(language) {
+    switch(options.m_language) {
 	  case CPP :
       skeletonFileName = _T("parsergencpp.par");
       wizardTemplate   = _T("parsergencpp.wzr");
@@ -169,7 +180,7 @@ int _tmain(int argc, TCHAR **argv) {
 	  case JAVA:
       skeletonFileName = _T("parsergenjava.par");
       wizardTemplate   = _T("parsergenjava.wzr");
-	    flags.m_lineDirectives   = false;
+	  options.m_lineDirectives   = false;
       break;
     default  :
       usage();
@@ -177,27 +188,18 @@ int _tmain(int argc, TCHAR **argv) {
     }
 
     bool ok = true;
-    if(flags.m_callWizard) {
-      wizard(stdout, wizardTemplate, wizardName);
+    if(options.m_callWizard) {
+      wizard(stdout, wizardTemplate, options.m_wizardName);
     } else {
       if(!*argv) {
         usage();
       }
 
-      if(templateName.length() == 0) { // template not specified in argv
-        templateName = searchenv(skeletonFileName, _T("LIB"));
-        if(templateName.length() == 0) {
-          throwException(_T("Template <%s> not found in environment LIB-path\n"), skeletonFileName.cstr());
-        }
-      } else { // -mS options used. Check if templatefile S exist
-        if(ACCESS(templateName, 0) < 0) {
-          throwException(_T("Template <%s> not found"), templateName.cstr());
-        }
-      }
+      options.checkTemplateExist(skeletonFileName);
 
       String grammarFileName = FileNameSplitter(*argv).getAbsolutePath();
-      Grammar grammar(language, verboseLevel);
-      GrammarParser parser(grammarFileName, tabSize, grammar);
+      Grammar grammar;
+      GrammarParser parser(grammarFileName, grammar);
       parser.readGrammar();
 
       if(!parser.ok()) {
@@ -208,15 +210,10 @@ int _tmain(int argc, TCHAR **argv) {
         grammar.generateStates();
   //      checkhas2reduce(g);
 
-        GrammarCode code(templateName
-                        ,grammar
-                        ,implOutputDir
-                        ,headerOutputDir
-                        ,nameSpace
-                        ,flags);
+        GrammarCode code(grammar);
 
-        if(first1File.length() != 0) {
-          FILE *f = MKFOPEN(first1File, _T("w"));
+        if(options.m_first1File.length() != 0) {
+          FILE *f = MKFOPEN(options.m_first1File, _T("w"));
           grammar.dumpFirst1Sets(f);
           fclose(f);
         }

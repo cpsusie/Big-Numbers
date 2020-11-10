@@ -3,22 +3,12 @@
 #include "TemplateWriter.h"
 #include "GrammarCode.h"
 
-GrammarCode::GrammarCode(const String  &templateName
-                        ,const Grammar &grammar
-                        ,const String  &implOutputDir
-                        ,const String  &headerOutputDir
-                        ,const String  &nameSpace
-                        ,CodeFlags      flags)
+GrammarCode::GrammarCode(const Grammar &grammar)
 : m_grammar(        grammar                                               )
-, m_templateName(   templateName                                          )
-, m_implOutputDir(  implOutputDir                                         )
-, m_headerOutputDir(headerOutputDir                                       )
-, m_flags(          flags                                                 )
 , m_sourceName(     FileNameSplitter(grammar.getName()).getAbsolutePath() )
 , m_grammarName(    FileNameSplitter(m_grammar.getName()).getFileName()   )
 , m_parserClassName(m_grammarName + _T("Parser")                          )
 , m_tablesClassName(m_grammarName + _T("Tables")                          )
-, m_nameSpace(      nameSpace                                             )
 , m_docFileName(    FileNameSplitter(m_sourceName).setExtension(_T("txt")).getFullPath())
 {
 }
@@ -69,8 +59,9 @@ void GrammarCode::generateDocFile() const {
 }
 
 void GrammarCode::generateDocFile(MarginFile &output) const {
+  const Options &options = Options::getInstance();
   int dumpformat = DUMP_DOCFORMAT;
-  if(getFlags().m_generateLookahead) {
+  if(options.m_generateLookahead) {
     dumpformat |= DUMP_LOOKAHEAD;
   }
   m_grammar.dumpStates(dumpformat, &output);
@@ -95,6 +86,7 @@ void GrammarCode::generateDocFile(MarginFile &output) const {
 }
 
 void GrammarCode::generateParser() {
+  const Options       &options = Options::getInstance();
   SourceTextWriter     headerWriter(     m_grammar.getHeader()    );
   SourceTextWriter     driverHeadWriter( m_grammar.getDriverHead());
   SourceTextWriter     driverTailWriter( m_grammar.getDriverTail());
@@ -103,7 +95,7 @@ void GrammarCode::generateParser() {
   SymbolsWriter        terminalsWriter(   *this, true );
   SymbolsWriter        nonTerminalsWriter(*this, false);
   DocFileWriter        docFileWriter(     *this       );
-  TemplateWriter writer(m_templateName, m_implOutputDir, m_headerOutputDir, m_flags);
+  TemplateWriter       writer;
 
   writer.addKeywordHandler(_T("FILEHEAD"           ), headerWriter         );
   writer.addKeywordHandler(_T("CLASSHEAD"          ), driverHeadWriter     );
@@ -121,16 +113,6 @@ void GrammarCode::generateParser() {
   writer.addMacro(         _T("SYMBOLCOUNT"        ), toString(m_grammar.getSymbolCount(    )));
   writer.addMacro(         _T("PRODUCTIONCOUNT"    ), toString(m_grammar.getProductionCount()));
   writer.addMacro(         _T("STATECOUNT"         ), toString(m_grammar.getStateCount(     )));
-  writer.addMacro(         _T("OUTPUTDIR"          ), m_implOutputDir      );
-  writer.addMacro(         _T("HEADERDIR"          ), m_headerOutputDir    );
-  writer.addMacro(         _T("NAMESPACE"          ), m_nameSpace          );
-  if(m_nameSpace.length() > 0) {
-    writer.addMacro(       _T("PUSHNAMESPACE"      ), format(_T("\nnamespace %s {\n" ), m_nameSpace.cstr()));
-    writer.addMacro(       _T("POPNAMESPACE"       ), format(_T("}; // namespace %s" ), m_nameSpace.cstr()));
-  } else {
-    writer.addMacro(       _T("PUSHNAMESPACE"      ), _T("$NOLINE$"));
-    writer.addMacro(       _T("POPNAMESPACE"       ), _T("$NOLINE$"));
-  }
 
   writer.generateOutput();
 }

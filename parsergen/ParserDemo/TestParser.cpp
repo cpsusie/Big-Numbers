@@ -78,7 +78,7 @@ UINT YaccJob::safeRun() {
   return 0;
 }
 
-TestParser::TestParser() : LRparser(*tablesToTest), m_grammar(CPP, *tablesToTest) {
+TestParser::TestParser() : LRparser(*tablesToTest), m_grammar(*tablesToTest) {
   m_scanner    = new TestScanner(*this);          TRACE_NEW(m_scanner  );
   setScanner(m_scanner);
   m_root       = nullptr;

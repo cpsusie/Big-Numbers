@@ -3,8 +3,8 @@
 #include "TemplateWriter.h"
 
 void ActionsWriter::handleKeyword(TemplateWriter &writer, String &line) const {
-  const CodeFlags flags = m_coder.getFlags();
-  if(!flags.m_generateActions) {
+  const Options &options = Options::getInstance();
+  if(!options.m_generateActions) {
     return;
   }
 
@@ -31,7 +31,7 @@ void ActionsWriter::handleKeyword(TemplateWriter &writer, String &line) const {
     writer.printf(_T("case %d: /* %s */\n"), p, grammar.getProductionString(p).cstr());
     writer.incrLeftMargin(2);
     writer.writeSourceText(prod.m_actionBody);
-    if(flags.m_generateBreaks) {
+    if(options.m_generateBreaks) {
       writer.printf(_T("break;\n"));
     }
     writer.decrLeftMargin(2);

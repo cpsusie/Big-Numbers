@@ -78,10 +78,6 @@ private:
 public:
   StateActionInfo(UINT terminalCount, UINT state, const ActionArray &actionArray, const SymbolNameContainer &symbolNames);
   ~StateActionInfo();
-  // Return m_sameReductionArray.size() + m_shiftActionArray.size()
-  inline UINT getDifferentActionCount() const {
-    return (UINT)(m_sameReductionArray.size() + m_shiftActionArray.size());
-  }
   inline UINT getState() const {
     return m_state;
   }
@@ -96,7 +92,7 @@ public:
     return m_compressMethod;
   }
   const StateActionInfo &getChild(BYTE index) const {
-    assert(getCompressionMethod() == SPLITNODECOMPRESSION);
+    assert(getCompressionMethod() == ParserTables::CompCodeSplitNode);
     assert(index < 2);
     return *m_child[index];
   }

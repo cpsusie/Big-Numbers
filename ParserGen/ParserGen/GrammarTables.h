@@ -28,14 +28,14 @@ private:
     return m_stateActions[state].size() == 1;
   }
 
-  void      printCpp( MarginFile &output, bool useTableCompression) const;
-  void      printJava(MarginFile &output, bool useTableCompression) const;
-  ByteCount printCompressedActionMatrixCpp(MarginFile &output     ) const; // return size in bytes
-  ByteCount printSuccessorMatrixCpp(       MarginFile &output     ) const; // return size in bytes
-  ByteCount printProductionLengthTableCpp( MarginFile &output     ) const; // return size in bytes
-  ByteCount printLeftSideTableCpp(         MarginFile &output     ) const; // return size in bytes
-  ByteCount printRightSideTableCpp(        MarginFile &output     ) const; // return size in bytes
-  ByteCount printSymbolNameTableCpp(       MarginFile &output     ) const; // return size in bytes
+  void      printCpp(                      MarginFile &output) const;
+  void      printJava(                     MarginFile &output) const;
+  ByteCount printCompressedActionMatrixCpp(MarginFile &output) const; // return size in bytes
+  ByteCount printSuccessorMatrixCpp(       MarginFile &output) const; // return size in bytes
+  ByteCount printProductionLengthTableCpp( MarginFile &output) const; // return size in bytes
+  ByteCount printLeftSideTableCpp(         MarginFile &output) const; // return size in bytes
+  ByteCount printRightSideTableCpp(        MarginFile &output) const; // return size in bytes
+  ByteCount printSymbolNameTableCpp(       MarginFile &output) const; // return size in bytes
 public:
   GrammarTables(const Grammar &g, const String &tableClassName, const String &parserClassName);
   int  getAction(            UINT state, UINT input     ) const override;
@@ -61,5 +61,5 @@ public:
   SuccesorArray                 getSuccessorArray(UINT state) const;
   const Array<ActionArray>     &getStateActions()             const          { return m_stateActions;                                         }
   ByteCount                     getTotalSizeInBytes()         const;
-  void print(MarginFile &output, Language language, bool useTableCompression) const;
+  void print(MarginFile &output) const;
 };

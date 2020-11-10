@@ -75,6 +75,9 @@
     <ClCompile Include="..\parsergen\Grammar.cpp">
       <Filter>Source Files\ParserGen Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\ParserGen\Options.cpp">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ParserDemo.rc">
@@ -140,6 +143,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\parsergen\Grammar.h">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ParserGen\Options.h">
       <Filter>Source Files\ParserGen Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -29,7 +29,9 @@ private:
   void checkTermination();
   void checkDuplicateProd();
 public:
-  GrammarParser(const String &fileName, int tabSize, Grammar &g);
+  GrammarParser(const String &fileName, Grammar &g);
   void readGrammar();
-  bool ok() { return m_lex.ok(); }
+  inline bool ok() const {
+    return m_lex.ok();
+  }
 };

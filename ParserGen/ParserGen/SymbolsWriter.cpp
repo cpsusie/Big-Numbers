@@ -3,8 +3,9 @@
 #include "GrammarCode.h"
 
 void SymbolsWriter::handleKeyword(TemplateWriter &writer, String &line) const {
+  const Options &options = Options::getInstance();
   const Grammar &grammar = m_coder.getGrammar();
-  switch(grammar.getLanguage()) {
+  switch(options.m_language) {
   case CPP : writeCppSymbols(writer);
              break;
   case JAVA: writeJavaSymbols(writer);
@@ -13,6 +14,7 @@ void SymbolsWriter::handleKeyword(TemplateWriter &writer, String &line) const {
 }
 
 void SymbolsWriter::writeCppSymbols(TemplateWriter &writer) const {
+  const Options &options       = Options::getInstance();
   const Grammar &grammar       = m_coder.getGrammar();
   const int      maxNameLength = grammar.getMaxSymbolNameLength();
   String text;
@@ -22,7 +24,7 @@ void SymbolsWriter::writeCppSymbols(TemplateWriter &writer) const {
       text += format(_T("%c%-*s = %3u\n"), delimiter, maxNameLength, grammar.getSymbol(s).m_name.cstr(), s);
     }
   } else {
-    if(m_coder.getFlags().m_generateNonTerminals) {
+    if(options.m_generateNonTerminals) {
       TCHAR delimiter = ' ';
       for(UINT s = grammar.getTerminalCount(); s < grammar.getSymbolCount(); s++, delimiter = ',') {
         text += format(_T("%c%-*s = %3u\n"), delimiter, maxNameLength, grammar.getSymbol(s).m_name.cstr(), s);
@@ -33,6 +35,7 @@ void SymbolsWriter::writeCppSymbols(TemplateWriter &writer) const {
 }
 
 void SymbolsWriter::writeJavaSymbols(TemplateWriter &writer) const {
+  const Options &options       = Options::getInstance();
   const Grammar &grammar       = m_coder.getGrammar();
   int            maxNameLength = grammar.getMaxSymbolNameLength();
   String         text;
@@ -41,7 +44,7 @@ void SymbolsWriter::writeJavaSymbols(TemplateWriter &writer) const {
       text += format(_T("public static final int %-*s = %3u;\n"), maxNameLength, grammar.getSymbol(s).m_name.cstr(), s);
     }
   } else {
-    if(m_coder.getFlags().m_generateNonTerminals) {
+    if(options.m_generateNonTerminals) {
       for(UINT s = grammar.getTerminalCount(); s < grammar.getSymbolCount(); s++) {
         text += format(_T("public static final int %-*s = %3u;\n"), maxNameLength, grammar.getSymbol(s).m_name.cstr(), s);
       }

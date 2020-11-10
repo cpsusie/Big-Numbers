@@ -2,19 +2,18 @@
 #include <FileNameSplitter.h>
 #include "GrammarScanner.h"
 
-GrammarScanner::GrammarScanner(const String &fileName, int tabSize)
+GrammarScanner::GrammarScanner(const String &fileName)
 : m_fileName(fileName)
-, m_tabSize(tabSize)
+, m_absoluteFileName(FileNameSplitter(fileName).getAbsolutePath())
+, m_tabSize(Options::getInstance().m_tabSize)
 {
-  m_absoluteFileName = FileNameSplitter(fileName).getAbsolutePath();
+  m_ok               = true;
+  m_debug            = false;
   m_input            = FOPEN(m_fileName, _T("r"));
   m_currentPos       = SourcePosition(0, 0);
   m_text             = m_lineBuffer;
   m_length           = 0;
   m_collecting       = false;
-  m_debug            = false;
-  m_ok               = true;
-
   nextLine();
 }
 
@@ -95,7 +94,7 @@ Token GrammarScanner::parseName() {
   }
   if(i == ARRAYSIZE(name) ) {
     error(_T("Name too long. max:%d"), MAXNAMELEN);
-    while(isalnum(*m_next) || *m_next == '_') {
+    while(isalnum(*m_next) || (*m_next == '_')) {
       advance();
     }
     i--;
@@ -112,7 +111,7 @@ void GrammarScanner::parseNumber() {
 
   if(*m_next == '0') {
     advance();
-    if(*m_next == 'x' || *m_next == 'X') {
+    if((*m_next == 'x') || (*m_next == 'X')) {
       isHex = true;
       advance();
       while(isxdigit(*m_next)) {
@@ -120,9 +119,9 @@ void GrammarScanner::parseNumber() {
         if(isdigit(*m_next) ) {
           m_number += (*m_next - '0');
         } else if(islower(*m_next)) {
-          m_number += (*m_next - 'a' + 10);
+          m_number += ((UINT)*m_next - 'a' + 10);
         } else {
-          m_number += (*m_next - 'A' + 10);
+          m_number += ((UINT)*m_next - 'A' + 10);
         }
         advance();
       }
@@ -134,14 +133,14 @@ void GrammarScanner::parseNumber() {
   if(isHex) {
     return;
   }
-  if(*m_next == '.' && isdigit(m_next[1])) {
+  if((*m_next == '.') && isdigit(m_next[1])) {
     advance();
     for(double f = 0.1; isdigit(*m_next); advance(), f *= 0.1) {
       m_number += f * (*m_next - '0');
     }
   }
   int exponent = 0;
-  if(*m_next == 'e' || *m_next == 'E') {
+  if((*m_next == 'e') || (*m_next == 'E')) {
     advance();
     int exponentSign = 1;
     if(*m_next == '-') {

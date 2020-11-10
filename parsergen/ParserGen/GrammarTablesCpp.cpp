@@ -147,10 +147,10 @@ _T("/***************************************************************************
    "* grammar, terminals and nonTerminals. Only used for debugging.                    *\n"
    "\\**********************************************************************************/\n");
 
-void GrammarTables::printCpp(MarginFile &output, bool useTableCompression) const {
+void GrammarTables::printCpp(MarginFile &output) const {
   m_countTableBytes.clear();
 
-  if(!useTableCompression) {
+  if(!Options::getInstance().m_useTableCompression) {
     m_compressibleStateSet.clear();
   }
   findTemplateTypes();
@@ -203,10 +203,10 @@ void GrammarTables::printCpp(MarginFile &output, bool useTableCompression) const
 
 void GrammarTables::findTemplateTypes() const {
   const UINT ntCount = getSymbolCount() - getTerminalCount();
-  m_terminalType     = findUintType(m_terminalCount  - 1);
-  m_NTIndexType      = findUintType(ntCount          - 1);
-  m_symbolType       = findUintType(getSymbolCount() - 1);
-  m_stateType        = findUintType(getStateCount()  - 1);
+  m_terminalType     = findIntType(0,m_terminalCount  - 1);
+  m_NTIndexType      = findIntType(0,ntCount          - 1);
+  m_symbolType       = findIntType(0,getSymbolCount() - 1);
+  m_stateType        = findIntType(0,getStateCount()  - 1);
   m_actionType       = ((getStateCount() < 128) && (getProductionCount() < 128))
                      ? TYPE_CHAR
                      : TYPE_SHORT;

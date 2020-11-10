@@ -90,11 +90,11 @@
     <ClInclude Include="StateActionInfoArray.h">
       <Filter>Source Files\GrammarOutput\ActionCompression\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CodeFlags.h">
-      <Filter>Source Files\GrammarOutput\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Lib\Include\LRparser.h">
       <Filter>Source Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Options.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -170,7 +170,7 @@
     <ClCompile Include="TemplateWriter.cpp">
       <Filter>Source Files\GrammarOutput</Filter>
     </ClCompile>
-    <ClCompile Include="CodeFlags.cpp">
+    <ClCompile Include="Options.cpp">
       <Filter>Source Files\GrammarOutput</Filter>
     </ClCompile>
   </ItemGroup>

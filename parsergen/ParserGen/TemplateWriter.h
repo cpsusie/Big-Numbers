@@ -1,7 +1,6 @@
 #pragma once
 
 #include <HashMap.h>
-#include "CodeFlags.h"
 #include "KeywordHandler.h"
 
 class KeywordTrigger {
@@ -24,14 +23,11 @@ public:
 
 class TemplateWriter {
 private:
-  String                         m_templateName;
-  String                         m_implOutputDir;
-  String                         m_headerOutputDir;
+  const Options                 &m_options;
   MarginFile                    *m_output;
   StringHashMap<KeywordTrigger*> m_keywords;
   StringHashMap<String>          m_macroes;
   SourcePositionWithName         m_currentPos;
-  const CodeFlags                m_flags;
   String                         m_wantedOutputName;
   bool                           m_outputIsTemp;
   CompactArray<KeywordHandler*>  m_defaultHandlers;
@@ -45,16 +41,15 @@ private:
   // expand macores and handle commands in text. recursive
   void outputText(const String &text);
   // output #line <m_currentPos> if m_linedirective is enabled
-  inline void outputLineDirective() {
-    if(m_flags.m_lineDirectives) {
-      writeLineDirective(m_currentPos.getName(), m_currentPos.getLineNumber());
-    }
-  }
+  void outputLineDirective();
   void createDefaultHandlers();
   void destroyDefaultHandlers();
 public:
-  TemplateWriter(const String &templateName, const String &implOutputDir, const String &headerOutputDir, const CodeFlags &flags);
+  TemplateWriter();
   virtual ~TemplateWriter();
+  const Options &getOptions() const {
+    return m_options;
+  }
   void addKeywordHandler(const String &keyword, KeywordHandler &handler, const String &verboseString=EMPTYSTRING);
   void addMacro(const String &macro, const String &value);
   void generateOutput();
@@ -73,9 +68,6 @@ public:
   void                                 writeLineDirective(const String &sourceName, int lineNumber);
 
   inline const SourcePositionWithName &getCurrentSourcePos() const { return m_currentPos;             }
-  inline const CodeFlags              &getFlags()            const { return m_flags;                  }
-  inline const String                 &getImplOutputDir()    const { return m_implOutputDir;          }
-  inline const String                 &getHeaderOutputDir()  const { return m_headerOutputDir;        }
   inline const SourcePositionWithName &getPos()              const { return m_currentPos;             }
   inline       int                     getLineNumber()       const { return getPos().getLineNumber(); }
 };

@@ -36,11 +36,11 @@ typedef enum {
 class GrammarScanner {
 private:
   const String    m_fileName;
+  const String    m_absoluteFileName;
   const int       m_tabSize;
   TCHAR           m_lineBuffer[256];
   StringCollector m_collector;
   bool            m_collecting;
-  String          m_absoluteFileName;
   SourcePosition  m_sourcePos;
   SourcePosition  m_currentPos;
   bool            m_debug;
@@ -58,7 +58,7 @@ private:
   void parseString();
   void advance();
 public:
-  GrammarScanner(const String &fileName, int tabSize);
+  GrammarScanner(const String &fileName);
   virtual ~GrammarScanner();
   String getText();
   inline double getNumber() const {
@@ -79,14 +79,11 @@ public:
   inline const String &getAbsoluteFileName() const {
     return m_absoluteFileName;
   }
-  inline int getTabSize() const {
-    return m_tabSize;
-  }
   void error(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   void error(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   void warning(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   void warning(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
-  inline bool ok() {
+  inline bool ok() const {
     return m_ok;
   }
 };

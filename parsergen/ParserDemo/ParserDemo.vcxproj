@@ -290,6 +290,7 @@
   <ItemGroup>
     <ClCompile Include="..\ParserGen\ActionArray.cpp" />
     <ClCompile Include="..\parsergen\Grammar.cpp" />
+    <ClCompile Include="..\ParserGen\Options.cpp" />
     <ClCompile Include="ErrorsDlg.cpp" />
     <ClCompile Include="FindDlg.cpp" />
     <ClCompile Include="GotoDlg.cpp" />
@@ -322,6 +323,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\parsergen\Grammar.h" />
+    <ClInclude Include="..\ParserGen\Options.h" />
     <ClInclude Include="ErrorsDlg.h" />
     <ClInclude Include="FindDlg.h" />
     <ClInclude Include="GotoDlg.h" />

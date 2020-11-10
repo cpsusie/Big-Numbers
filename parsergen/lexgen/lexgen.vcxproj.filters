@@ -51,10 +51,10 @@
     <ClCompile Include="..\parsergen\Wizard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ParserGen\CodeFlags.cpp">
+    <ClCompile Include="..\ParserGen\ByteCount.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ParserGen\ByteCount.cpp">
+    <ClCompile Include="..\ParserGen\Options.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -89,6 +89,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\ParserGen\targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ParserGen\Options.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

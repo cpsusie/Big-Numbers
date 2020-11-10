@@ -286,7 +286,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\ParserGen\ByteCount.cpp" />
-    <ClCompile Include="..\ParserGen\CodeFlags.cpp" />
+    <ClCompile Include="..\ParserGen\Options.cpp" />
     <ClCompile Include="..\parsergen\StringCollector.cpp" />
     <ClCompile Include="..\parsergen\TemplateWriter.cpp" />
     <ClCompile Include="..\parsergen\Wizard.cpp" />
@@ -314,6 +314,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ParserGen\ByteCount.h" />
+    <ClInclude Include="..\ParserGen\Options.h" />
     <ClInclude Include="..\parsergen\StringCollector.h" />
     <ClInclude Include="..\ParserGen\targetver.h" />
     <ClInclude Include="..\parsergen\TemplateWriter.h" />

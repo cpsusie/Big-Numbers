@@ -168,7 +168,7 @@ inline int macroCmpByIndex(const Macro &m1, const Macro &m2) {
   return m1.getIndex() - m2.getIndex();
 }
 
-class CompressedActionMatrix {
+class CompressedActionMatrix : public SymbolNameContainer {
 private:
   const GrammarTables          &m_tables;
   const UINT                    m_stateCount;
@@ -191,7 +191,7 @@ private:
   inline UINT getStateCount() const {
     return m_stateCount;
   }
-  inline const TCHAR *getSymbolName(UINT symbolIndex) const {
+  const TCHAR *getSymbolName(UINT symbolIndex) const override {
     return m_tables.getSymbolName(symbolIndex);
   }
   // Return point to macro with same value if it exist, or nullptr if not

@@ -2,12 +2,11 @@
 #include <string.h>
 #include "DFA.h"
 
-DFA::DFA(const NFA &nfa, Language language, bool verbose) : m_NFA(nfa), m_verboseFile(stdoutMarginFile) {
-  m_language = language;
-  m_verbose  = verbose;
+DFA::DFA(const NFA &nfa) : m_NFA(nfa), m_verboseFile(stdoutMarginFile) {
+  const Options &options = Options::getInstance();
   makeTransitions();
 
-  if(m_verbose) {
+  if(isDFAVerbose()) {
     _tprintf(_T("Unminimized DFA table:\n"));
     for(size_t i = 0; i < m_states.size(); i++) {
       m_states[i].print(m_verboseFile);
@@ -15,7 +14,7 @@ DFA::DFA(const NFA &nfa, Language language, bool verbose) : m_NFA(nfa), m_verbos
   }
   minimize();
 
-  if(m_verbose) {
+  if(isDFAVerbose()) {
     _tprintf(_T("Minimized DFA table:\n"));
     for(size_t i = 0; i < m_states.size(); i++) {
       m_states[i].print(m_verboseFile);
@@ -31,7 +30,9 @@ DFAstate::DFAstate(int id, BitSet *NFAset, AcceptAction *action) {
 }
 
 void DFA::makeTransitions() {
-  BitSet *NFAset = newNFAset();           // set of NFA states that defines the next DFA state.
+  const Options &options = Options::getInstance();
+  BitSet        *NFAset  = newNFAset();           // set of NFA states that defines the next DFA state.
+
   NFAset->add(0);
   DFAstate startState(0);
   epsClosure(*NFAset, startState.m_accept);
@@ -40,7 +41,7 @@ void DFA::makeTransitions() {
   m_states.add(startState);
   for(size_t index = 0; index < m_states.size(); index++) {
     DFAstate *current = &m_states[index];
-    if(m_verbose) {
+    if(isDFAVerbose()) {
       m_verboseFile.printf(_T("DFA state %3d. NFA states:"), current->m_id);
       printSet(m_verboseFile, *current->m_NFAset);
       m_verboseFile.printf(_T("\n"));
@@ -96,29 +97,30 @@ void DFA::epsClosure(BitSet &NFAset, AcceptAction *&accept) const {
   // 8:              push q onto stateStack
 
 
-  Stack<int> stateStack; // stack of NFA-states remaining to be tested
+  CompactStack<UINT> stateStack; // stack of NFA-states remaining to be tested
 
-  for(Iterator<size_t> it = NFAset.getIterator(); it.hasNext(); ) {                   // 1
+  for(auto it = NFAset.getIterator(); it.hasNext(); ) {                            // 1
     stateStack.push((int)it.next());
   }
 
   accept = nullptr;
   while(!stateStack.isEmpty()) {                                                   // 2
     const NFAstate &p = *m_NFA[stateStack.pop()];                                  // 3
-    if(p.m_accept && (accept == nullptr || p.m_accept->m_pos.getLineNumber() < accept->m_pos.getLineNumber())) {     // 4
+    if(p.m_accept
+       && ((accept == nullptr) || (p.m_accept->m_pos.getLineNumber() < accept->m_pos.getLineNumber()))) { // 4
       accept      = p.m_accept;
     }
 
     if(p.m_edge == EDGE_EPSILON) {                                                 // 5
       if(p.m_next1) {
-        int next = p.m_next1->getID();
+        const UINT next = p.m_next1->getID();
         if(!NFAset.contains(next)) {                                               // 6
           NFAset.add(next);                                                        // 7
           stateStack.push(next);                                                   // 8
         }
       }
       if(p.m_next2) {
-        int next = p.m_next2->getID();
+        const UINT next = p.m_next2->getID();
         if(!NFAset.contains(next)) {                                               // 6
           NFAset.add(next);                                                        // 7
           stateStack.push(next);                                                   // 8
@@ -131,8 +133,8 @@ void DFA::epsClosure(BitSet &NFAset, AcceptAction *&accept) const {
 BitSet *DFA::transition(BitSet &NFAset, int c) const {
   BitSet *result = nullptr;
 
-  for(Iterator<size_t> it = NFAset.getIterator(); it.hasNext();) {
-    int i = (int)it.next();
+  for(auto it = NFAset.getIterator(); it.hasNext();) {
+    const UINT      i = (UINT)it.next();
     const NFAstate *p = m_NFA[i]->successor(c);
     if(p) {
       if(result == nullptr) {
@@ -171,13 +173,13 @@ void DFA::printStates(MarginFile &f) const {
 }
 
 void DFA::makeInitialGroups() {
-  for(size_t i = 0; i < m_states.size(); i++) {
-    m_inGroup.add(-1);
-  }
+  const Options &options    = Options::getInstance();
+  const UINT     stateCount = getStateCount();
+  m_inGroup.insert(0, -1, stateCount);
 
-  for(size_t i = 0; i < m_states.size(); i++) {
-    BitSet newset(m_states.size());
-    for(size_t j = 0; j < i; j++) {
+  for(UINT i = 0; i < stateCount; i++) {
+    BitSet newset(stateCount);
+    for(UINT j = 0; j < i; j++) {
       // Check to see if a group already exists, ie. that has the same
       // accepting String as the current state. If so, add the current
       // state to the already existing group and skip past the code that
@@ -201,24 +203,23 @@ void DFA::makeInitialGroups() {
 Continue:; // Group already exists.
   }
 
-  if(m_verbose) {
+  if(isDFAVerbose()) {
     m_verboseFile.printf(_T("Initial groupings:\n"));
     printGroups(m_verboseFile);
   }
 }
 
 void DFA::fixupTransitions() {
-  Array<DFAstate> newStates;
-
-  for(size_t g = 0; g < m_groups.size(); g++) {
-    Iterator<size_t> it = m_groups[g].getIterator();
-    size_t state = it.next();       // there is at least one state in each group
-    newStates.add(DFAstate((int)g));
+  const UINT groupCount = (UINT)m_groups.size();
+  Array<DFAstate> newStates(groupCount);
+  for(UINT g = 0; g < groupCount; g++) {
+    const size_t state = m_groups[g].select();       // there is at least one state in each group
+    newStates.add(DFAstate(g));
     DFAstate &newState = newStates.last();
     DFAstate &oldState = m_states[state];
     newState.m_accept  = oldState.m_accept;
-    for(int c = 0; c < MAX_CHARS; c++) {
-      int trans = oldState.m_transition[c];
+    for(UINT c = 0; c < MAX_CHARS; c++) {
+      const int trans = oldState.m_transition[c];
       newState.m_transition[c] = (trans == FAILURE) ? FAILURE : m_inGroup[trans];
     }
   }
@@ -226,7 +227,8 @@ void DFA::fixupTransitions() {
 }
 
 void DFA::minimize() {
-  bool stable;                                   // did we anything in this pass
+  const Options &options = Options::getInstance();
+  bool           stable;                          // did we anything in this pass
 
   makeInitialGroups();
   do {
@@ -241,8 +243,8 @@ void DFA::minimize() {
       Iterator<size_t> it = current.getIterator();
       int first = (int)it.next();                 // state number of first element of current group
       while(it.hasNext()) {
-        int next = (int)it.next();                // state number of next  element of current group
-        for(int c = 0; c < MAX_CHARS; c++) {
+        const int next = (int)it.next();          // state number of next  element of current group
+        for(UINT c = 0; c < MAX_CHARS; c++) {
           int firstSuccessor = m_states[first].m_transition[c];
           int nextSuccessor  = m_states[next ].m_transition[c];
 
@@ -266,7 +268,7 @@ void DFA::minimize() {
     } // for
   } while(!stable);
 
-  if(m_verbose) {
+  if(isDFAVerbose()) {
     m_verboseFile.printf(_T("\nStates grouped as follows after minimization:\n"));
     printGroups(m_verboseFile);
   }
@@ -282,22 +284,22 @@ void DFAstate::print(MarginFile &f) const {
     f.printf(_T("// DFA State %3d %s"), m_id, m_accept->dumpFormat().cstr());
   }
 
-  int chars_printed = f.getLeftMargin();
-  int last_transition = FAILURE;
-  for(int j = 0; j < MAX_CHARS; j++) {
-    if(m_transition[j] != FAILURE) {
-      if(m_transition[j] != last_transition) {
-        f.printf(_T("\n//   goto %2d on "), m_transition[j]);
+  UINT chars_printed = f.getLeftMargin();
+  int  last_transition = FAILURE;
+  for(UINT c = 0; c < MAX_CHARS; c++) {
+    if(m_transition[c] != FAILURE) {
+      if(m_transition[c] != last_transition) {
+        f.printf(_T("\n//   goto %2d on "), m_transition[c]);
         chars_printed = f.getLeftMargin();
       }
-      String tmp = binToAscii(j);
+      const String tmp = binToAscii(c);
       if(f.getCurrentLineLength() + tmp.length() > RMARGIN) {
         f.printf(_T("\n//              "));
         chars_printed = f.getLeftMargin();
       }
       f.printf(_T("%s"), tmp.cstr() );
-      chars_printed += (int)tmp.length();
-      last_transition = m_transition[j];
+      chars_printed += (UINT)tmp.length();
+      last_transition = m_transition[c];
     }
   }
   f.printf(_T("\n"));

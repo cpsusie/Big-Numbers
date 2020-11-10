@@ -1,31 +1,20 @@
 #pragma once
 
-#include "CodeFlags.h"
 #include "KeywordHandler.h"
 
 class TemlateWriter;
 
 class GrammarCode {
 private:
-  const String     m_templateName;
   const Grammar   &m_grammar;
-  const String     m_implOutputDir;
-  const String     m_headerOutputDir;
-  const CodeFlags  m_flags;
   const String     m_sourceName;
   const String     m_grammarName;
   const String     m_parserClassName;
   const String     m_tablesClassName;
   const String     m_docFileName;
-  const String     m_nameSpace;
   ByteCount        m_tablesByteCount;
 public:
-  GrammarCode(const String  &templateName
-             ,const Grammar &grammar
-             ,const String  &outputDirImpl
-             ,const String  &outputDirHeaders
-             ,const String  &nameSpace
-             ,CodeFlags      flags);
+  GrammarCode(const Grammar &grammar);
   ~GrammarCode() {
   }
   void generateParser();
@@ -36,7 +25,6 @@ public:
   const String    &getSourceName()         const { return m_sourceName;      }
   const String    &getParserClassName()    const { return m_parserClassName; }
   const String    &getTablesClassName()    const { return m_tablesClassName; }
-  const CodeFlags &getFlags()              const { return m_flags;           }
   const ByteCount &getByteCount()          const { return m_tablesByteCount; }
 
   void setByteCount(const ByteCount &count) {

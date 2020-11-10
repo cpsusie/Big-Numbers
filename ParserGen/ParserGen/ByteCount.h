@@ -3,18 +3,20 @@
 #include <LRparser.h>
 
 typedef enum {
-  TYPE_CHAR
- ,TYPE_UCHAR
- ,TYPE_SHORT
- ,TYPE_USHORT
- ,TYPE_INT
- ,TYPE_UINT
+  TYPE_CHAR     // [CHAR_MIN..CHAR_MAX ]
+ ,TYPE_UCHAR    // [       0..UCHAR_MAX]
+ ,TYPE_SHORT    // [SHRT_MIN..SHRT_MAX ]
+ ,TYPE_USHORT   // [       0..USHRT_MAX]
+ ,TYPE_INT      // [INT_MIN ..INT_MAX  ]
+ ,TYPE_UINT     // [       0..UINT_MAX ]
 } IntegerType;
 
-typedef enum {
-  CPP
- ,JAVA
-} Language;
+// Used for language CPP/JAVA
+IntegerType  findIntType(int minValue, int maxValue);
+const TCHAR *getTypeName(IntegerType type);
+// Return type of TntegerType, 1,2,4 for char, short, int (signed/unsigned)
+// typesize is independent of language
+UINT         getTypeSize(IntegerType type);
 
 class ByteCount {
 private:
@@ -64,12 +66,3 @@ public:
 
   String toString() const;
 };
-
-// Used only for language CPP, as unsigned types does not exist int Java
-IntegerType  findUintType(     UINT        maxValue);
-// Used for language CPP/JAVA
-IntegerType  findIntType(int minValue, int maxValue, Language = CPP);
-const TCHAR *getTypeName(      IntegerType type    , Language = CPP);
-// Return type of TntegerType, 1,2,4 for char, short, int (signed/unsigned)
-// typesize is independent of language
-UINT         getTypeSize(      IntegerType type    );

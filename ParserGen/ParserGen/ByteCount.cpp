@@ -14,7 +14,10 @@ String ByteCount::toString() const {
                 ,format1000(m_countx64).cstr());
 }
 
-IntegerType findUintType(UINT maxValue) { // static
+
+static IntegerType findUintType(UINT maxValue) {
+  const Options &options = Options::getInstance();
+  assert(options.m_language == CPP);
   if(maxValue <= UCHAR_MAX) {
     return TYPE_UCHAR;
   } else if(maxValue <= USHRT_MAX) {
@@ -24,8 +27,9 @@ IntegerType findUintType(UINT maxValue) { // static
   }
 }
 
-IntegerType findIntType(int minValue, int maxValue, Language language) {
-  switch(language) {
+IntegerType findIntType(int minValue, int maxValue) {
+  const Options &options = Options::getInstance();
+  switch(options.m_language) {
   case CPP:
     if(minValue >= 0) {
       return findUintType(maxValue);
@@ -40,12 +44,13 @@ IntegerType findIntType(int minValue, int maxValue, Language language) {
       return TYPE_INT;
     }
   }
-  throwInvalidArgumentException(__TFUNCTION__, _T("language=%d, minValue=%d, maxValue=%d"), language, minValue, maxValue);
+  throwInvalidArgumentException(__TFUNCTION__, _T("language=%d, minValue=%d, maxValue=%d"), options.m_language, minValue, maxValue);
   return TYPE_INT;
 }
 
-const TCHAR *getTypeName(IntegerType type, Language language /* = CPP */) { // static
-  switch(language) {
+const TCHAR *getTypeName(IntegerType type) { // static
+  const Options &options = Options::getInstance();
+  switch(options.m_language) {
   case CPP:
     switch(type) {
     case TYPE_CHAR  : return _T("char"          );
@@ -64,7 +69,7 @@ const TCHAR *getTypeName(IntegerType type, Language language /* = CPP */) { // s
     }
     break;
   }
-  throwInvalidArgumentException(__TFUNCTION__, _T("language=%d, type=%d"), language, type);
+  throwInvalidArgumentException(__TFUNCTION__, _T("language=%d, type=%d"), options.m_language, type);
   return EMPTYSTRING;
 }
 

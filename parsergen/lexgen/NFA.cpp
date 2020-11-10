@@ -26,16 +26,16 @@ void NFAstate::print(MarginFile &f) {
     }
     f.printf(_T(" on "));
     switch(m_edge) {
-      case EDGE_CHCLASS :
-        f.setLeftMargin(30);
-        printCharClass(f, *m_charClass);
-        break;
-      case EDGE_EPSILON :
-        f.printf(_T("EPSILON "));
-        break;
-      default           :
-        printChar(f, m_edge);
-        break;
+    case EDGE_CHCLASS :
+      f.setLeftMargin(30);
+      printCharClass(f, *m_charClass);
+      break;
+    case EDGE_EPSILON :
+      f.printf(_T("EPSILON "));
+      break;
+    default           :
+      printChar(f, m_edge);
+      break;
     }
   }
 
