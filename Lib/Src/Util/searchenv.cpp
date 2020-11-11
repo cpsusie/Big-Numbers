@@ -9,19 +9,19 @@ TCHAR *searchenv(TCHAR *dst, const TCHAR *fileName, const TCHAR *envName) {
   } else {
     TCHAR *env = _tgetenv(envName);
     if(env == nullptr) {
-      return nullptr; // not found
+      return _tcscpy(dst, EMPTYSTRING); // not found
     }
     for(Tokenizer tok(env, _T(";")); tok.hasNext();) {
-      String s = FileNameSplitter::getChildName(tok.next(),fileName);
+      const String s = FileNameSplitter::getChildName(tok.next(),fileName);
       if(_taccess(s.cstr(),0) == 0) {
         return _tcscpy(dst,s.cstr());
       }
     }
-    return EMPTYSTRING; // not found
+    return _tcscpy(dst, EMPTYSTRING); // not found
   }
 }
 
 String searchenv(const String &fileName, const String &envName) {
   TCHAR tmp[256];
-  return searchenv(tmp,fileName.cstr(), envName.cstr());
+  return searchenv(tmp, fileName.cstr(), envName.cstr());
 }
