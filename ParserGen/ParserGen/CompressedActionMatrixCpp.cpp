@@ -33,9 +33,11 @@ void CompressedActionMatrix::generateCompressedForm() {
   m_currentActionListSize = 0;
   m_currentLASetArraySize = 0;
   m_currentSplitNodeCount = 0;
-  ByteCount totalByteCount;
 
   for(UINT state = 0; state < getStateCount(); state++) {
+    if(state == 136) {
+      int fisk = 1;
+    }
     const StateActionInfo *stateInfo = m_stateInfoArray[state];
     Macro                  macro     = doStateActionInfo(*stateInfo);
     addMacro(macro.setIndex(state).setName(format(_T("_ac%04u"), state)));
@@ -44,10 +46,10 @@ void CompressedActionMatrix::generateCompressedForm() {
 
 Macro CompressedActionMatrix::doStateActionInfo(const StateActionInfo &stateInfo) {
   switch(stateInfo.getCompressionMethod()) {
-  case ParserTables::CompCodeTermList : return doUncompressedState(stateInfo);
-  case ParserTables::CompCodeSplitNode: return doSplitNodeState(   stateInfo);
-  case ParserTables::CompCodeOneItem  : return doOneItemState(     stateInfo);
-  case ParserTables::CompCodeTermSet  : return doTermSetState(     stateInfo);
+  case ParserTables::CompCodeTermList : return doTermListState( stateInfo);
+  case ParserTables::CompCodeSplitNode: return doSplitNodeState(stateInfo);
+  case ParserTables::CompCodeOneItem  : return doOneItemState(  stateInfo);
+  case ParserTables::CompCodeTermSet  : return doTermSetState(  stateInfo);
   default                         :
     throwException(_T("%s:Unknown compressionMethod for state %u"), __TFUNCTION__, stateInfo.getState());
     break;
@@ -67,12 +69,12 @@ void CompressedActionMatrix::addMacro(const Macro &m) {
   m_macroMap.put(m.getValue(), index);
 }
 
-Macro CompressedActionMatrix::doUncompressedState(const StateActionInfo &stateInfo) {
-  const UINT        state   = stateInfo.getState();
-  const ActionArray aa      = stateInfo.getActionArray();
-  const SymbolSet   laSet   = aa.getLookaheadSet(getTerminalCount());
-  IndexMapValue    *imvp    = m_termListMap.get(laSet);
-  UINT              termListIndex, laCount;
+Macro CompressedActionMatrix::doTermListState(const StateActionInfo &stateInfo) {
+  const UINT         state    = stateInfo.getState();
+  const ActionArray &termList = stateInfo.getTermList();
+  const SymbolSet    laSet    = termList.getLookaheadSet(getTerminalCount());
+  IndexMapValue     *imvp     = m_termListMap.get(laSet);
+  UINT               termListIndex, laCount;
 
   if(imvp != nullptr) {
     termListIndex = imvp->m_arrayIndex;
@@ -86,8 +88,8 @@ Macro CompressedActionMatrix::doUncompressedState(const StateActionInfo &stateIn
     m_currentTermListSize += (UINT)laSet.size() + 1;
   }
 
-  const RawActionArray raa = aa.getRawActionArray();
-  imvp = m_raaMap.get(raa);
+  const RawActionArray actionList = termList.getRawActionArray();
+  imvp = m_raaMap.get(actionList);
   UINT                 actionListIndex, raCount;
   if(imvp != nullptr) {
     actionListIndex = imvp->m_arrayIndex;
@@ -97,8 +99,8 @@ Macro CompressedActionMatrix::doUncompressedState(const StateActionInfo &stateIn
     actionListIndex = m_currentActionListSize;
     raCount         = m_raaMap.getCount();
     IndexMapValue nv(getStateCount(), state, actionListIndex);
-    m_raaMap.put(raa, nv);
-    m_currentActionListSize += (UINT)raa.size();
+    m_raaMap.put(actionList, nv);
+    m_currentActionListSize += (UINT)actionList.size();
   }
   const String comment      = format(_T("termList %3u, actionList %3u"), laCount, raCount);
   const String macroValue   = encodeMacroValue(ParserTables::CompCodeTermList, actionListIndex, termListIndex);
@@ -141,28 +143,23 @@ Macro CompressedActionMatrix::doSplitNodeState(const StateActionInfo &stateInfo)
 }
 
 Macro CompressedActionMatrix::doOneItemState(const StateActionInfo &stateInfo) {
-  const UINT         state = stateInfo.getState();
-  const ActionArray  paa   = stateInfo.getActionArray();
+  const UINT          state   = stateInfo.getState();
+  const ParserAction  pa      = stateInfo.getOneItemAction();
 
-  assert(paa.size() == 1);
-
-  const ParserAction &pa = paa[0];
   const int           action  = pa.m_action;                    // positive or negative
   const UINT          token   = pa.m_token;
   const String        comment = (action <= 0)
-                              ? format(_T("Reduce by %u on %s"), -action, getSymbolName(pa.m_token))
-                              : format(_T("Shift  to %u on %s"),  action, getSymbolName(pa.m_token));
+                              ? format(_T("Reduce by %3u on %s"), -action, getSymbolName(pa.m_token))
+                              : format(_T("Shift  to %3u on %s"),  action, getSymbolName(pa.m_token));
   const String        macroValue = encodeMacroValue(ParserTables::CompCodeOneItem, action, token);
   return Macro(getStateCount(), state, macroValue, comment);
 }
 
 Macro CompressedActionMatrix::doTermSetState(const StateActionInfo &stateInfo) {
-  const UINT                   state = stateInfo.getState();
-  const SameReduceActionArray &raa   = stateInfo.getReduceActionArray();
+  const UINT              state = stateInfo.getState();
+  const TermSetReduction &tsr   = stateInfo.getTermSetReduction();
 
-  assert((raa.size() == 1) && stateInfo.getShiftActionArray().isEmpty());
-
-  const SymbolSet &laSet = raa[0].getTerminalSet();
+  const SymbolSet &laSet = tsr.getTermSet();
   IndexMapValue   *vp    = m_laSetMap.get(laSet);
   UINT             byteIndex, termSetCount;
   if(vp != nullptr) {
@@ -176,7 +173,7 @@ Macro CompressedActionMatrix::doTermSetState(const StateActionInfo &stateInfo) {
     m_laSetMap.put(laSet, nv);
     m_currentLASetArraySize += m_laSetSizeInBytes;
   }
-  const int           prod         = raa[0].getProduction();
+  const int           prod         = tsr.getProduction();
   const int           action       = -prod;
   const String        comment      = format(_T("Reduce by %u on tokens in termSet[%u]"), prod, termSetCount);
   const String        macroValue   = encodeMacroValue(ParserTables::CompCodeTermSet, action, byteIndex);

@@ -184,14 +184,17 @@ class ActionArray : public CompactArray<ParserAction> {
 public:
   ActionArray() {
   }
-  ActionArray(size_t capacity) : CompactArray(capacity) {
+  ActionArray(UINT capacity) : CompactArray(capacity) {
   }
   inline ActionArray &sortByToken() {
     sort(parserActionCompareToken);
     return *this;
   }
-  SymbolSet      getLookaheadSet(UINT                terminalCount) const;
-  RawActionArray getRawActionArray()                                const;
+  SymbolSet      getLookaheadSet(UINT terminalCount) const;
+  RawActionArray getRawActionArray()                 const;
+  inline UINT    getLegalTokenCount()                const {
+    return(UINT)size();
+  }
   String         toString(const SymbolNameContainer &symbolNames, bool actions) const; // actions=true, this is an actionArray, false => successorArray
 };
 

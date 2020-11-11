@@ -3,14 +3,14 @@
 #include "GrammarTables.h"
 #include "CompressEncoding.h"
 
-class SameReduceActionInfo {
+class TermSetReduction {
 private:
   const UINT                 m_prod;
   UINT                       m_termSetSize; // == m_termSet.size()
-  SymbolSet                  m_termSet;     // set of terminals which should give reduce by procuction m_prod
+  SymbolSet                  m_termSet;     // set of terminals which should give reduce by production m_prod
   const SymbolNameContainer &m_symbolNames;
 public:
-  SameReduceActionInfo(UINT terminalCount, UINT prod, UINT term0, const SymbolNameContainer &symbolNames)
+  TermSetReduction(UINT terminalCount, UINT prod, UINT term0, const SymbolNameContainer &symbolNames)
     : m_prod(       prod         )
     , m_symbolNames(symbolNames  )
     , m_termSetSize(0            )
@@ -21,14 +21,14 @@ public:
   inline UINT getProduction() const {
     return m_prod;
   }
-  inline const SymbolSet &getTerminalSet() const {
+  inline const SymbolSet &getTermSet() const {
     return m_termSet;
   }
   inline void addTerminal(UINT term) {
     m_termSet.add(term);
     m_termSetSize++;
   }
-  inline UINT getSetSize() const {
+  inline UINT getTermSetSize() const {
     return m_termSetSize;
   }
   operator ActionArray() const;
@@ -37,17 +37,29 @@ public:
   }
 };
 
-inline int setSizeReverseCmp(const SameReduceActionInfo &i1, const SameReduceActionInfo &i2) {
-  return (int)i2.getSetSize() - (int)i1.getSetSize();
+inline int setSizeReverseCmp(const TermSetReduction &i1, const TermSetReduction &i2) {
+  return (int)i2.getTermSetSize() - (int)i1.getTermSetSize();
 }
 
-class SameReduceActionArray : public Array<SameReduceActionInfo> {
+class TermSetReductionArray : public Array<TermSetReduction> {
 public:
+  TermSetReductionArray() {
+  }
+  TermSetReductionArray(size_t capacity) : Array<TermSetReduction>(capacity) {
+  }
   // sort by setSize, decreasing, ie. largest set first
   inline void sortBySetSize() {
     if(size() > 1) {
       sort(setSizeReverseCmp);
     }
+  }
+  // Return sum(((*this)[i].getTermSetSize()...i=0..size-1)
+  UINT getLegalTokenCount() const {
+    UINT sum = 0;
+    for(auto it = getIterator(); it.hasNext();) {
+      sum += it.next().getTermSetSize();
+    }
+    return sum;
   }
   String toString() const {
     String result;
@@ -60,38 +72,54 @@ public:
 
 class StateActionInfo {
 private:
+  const StateActionInfo     *m_parent;
   const UINT                 m_state, m_terminalCount, m_legalTokenCount;
+  BYTE                       m_recurseLevel;
   const SymbolNameContainer &m_symbolNames;
-  // List of different reduceActions;
-  SameReduceActionArray      m_sameReductionArray;
-  ActionArray                m_shiftActionArray;
   CompressionMethod          m_compressMethod;
-  const StateActionInfo     *m_child[2]; // only used for m_compressMethod = SPLITNODECOMPRESSION
+  ActionArray               *m_termListActionArray;      // use this for m_compressMethod = {ParserTables::CompCodeTermList, ParserTables::CompCodeOneItem}
+  TermSetReduction          *m_termSetReduction; //      == null, unless m_compressMethod == ParserTables::CompCodeTermSet
+  const StateActionInfo     *m_child[2];         // both == null, unless m_compressMethod == ParserTables::CompCodeSplitNode
+  // merge all actions from the 2 arrays together in 1 sorted ActionArray (compressMethod = CompCodeTermList
   StateActionInfo(           const StateActionInfo &src); // not implemented
   StateActionInfo &operator=(const StateActionInfo &src); // not implemented
-  CompressionMethod findCompressionMethod();
-  inline void initChildren() {
-    m_child[0] = m_child[1] = nullptr;
-  }
-  StateActionInfo(const StateActionInfo &parent, const SameReduceActionInfo &sameReduceAction);
-  StateActionInfo(const StateActionInfo &parent, const ActionArray          &shiftActionArray);
+  StateActionInfo(  const StateActionInfo *parent, const TermSetReduction     &termSetReduction   );
+  StateActionInfo(  const StateActionInfo *parent, const ActionArray          &termListActionArray);
+  StateActionInfo(  const StateActionInfo *parent, const ActionArray          &shiftActionArray, const TermSetReductionArray &termSetReductionArray);
+  void initPointers(const StateActionInfo *parent);
+  CompressionMethod  setTermListCompression(       const ActionArray          &termListActionArray);
+  CompressionMethod  setTermSetReduceCompression(  const TermSetReduction     &termSetReduction   );
+  CompressionMethod  findCompressionMethod(        const ActionArray          &shiftActionArray, const TermSetReductionArray &termSetReductionArray);
+  static ActionArray mergeActionArrays(            const ActionArray          &shiftActionArray, const TermSetReductionArray &termSetReductionArray);
 public:
-  StateActionInfo(UINT terminalCount, UINT state, const ActionArray &actionArray, const SymbolNameContainer &symbolNames);
+  StateActionInfo(UINT terminalCount, UINT state,  const ActionArray          &actionArray     , const SymbolNameContainer   &symbolNames);
   ~StateActionInfo();
-  inline UINT getState() const {
+  inline UINT                        getState()             const {
     return m_state;
   }
-  ActionArray getActionArray() const;
-  inline const SameReduceActionArray &getReduceActionArray() const {
-    return m_sameReductionArray;
+  inline UINT                        getLegalTokenCount()   const {
+    return m_legalTokenCount;
   }
-  inline const ActionArray &getShiftActionArray() const {
-    return m_shiftActionArray;
-  }
-  inline CompressionMethod getCompressionMethod() const {
+  inline CompressionMethod           getCompressionMethod() const {
     return m_compressMethod;
   }
-  const StateActionInfo &getChild(BYTE index) const {
+  // Call only if getCompressionMethod() == CompCodeTermList
+  inline const ActionArray          &getTermList()          const {
+    assert(getCompressionMethod() == ParserTables::CompCodeTermList);
+    return *m_termListActionArray;
+  }
+  // Call only if getCompressionMethod() == CompCodeOneItem
+  inline ParserAction                getOneItemAction()     const {
+    assert(getCompressionMethod() == ParserTables::CompCodeOneItem);
+    return (*m_termListActionArray)[0];
+  }
+  // Call only if getCompressionMethod() == ParserTables::CompCodeTermSet
+  inline const TermSetReduction     &getTermSetReduction()  const {
+    assert(getCompressionMethod() == ParserTables::CompCodeTermSet);
+    return *m_termSetReduction;
+  }
+  // Call only if getCompressionMethod() == ParserTables::CompCodeSplitNode
+  const StateActionInfo             &getChild(BYTE index)   const {
     assert(getCompressionMethod() == ParserTables::CompCodeSplitNode);
     assert(index < 2);
     return *m_child[index];

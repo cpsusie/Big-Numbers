@@ -198,7 +198,7 @@ private:
   const Macro *findMacroByValue( const String &macroValue) const;
   void   addMacro(               const Macro &m);
   Macro  doStateActionInfo(      const StateActionInfo &stateInfo);
-  Macro  doUncompressedState(    const StateActionInfo &stateInfo);
+  Macro  doTermListState(        const StateActionInfo &stateInfo);
   Macro  doSplitNodeState(       const StateActionInfo &stateInfo);
   Macro  doOneItemState(         const StateActionInfo &stateInfo);
   Macro  doTermSetState(         const StateActionInfo &stateInfo);
