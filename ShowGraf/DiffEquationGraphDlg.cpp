@@ -583,7 +583,7 @@ void CDiffEquationGraphDlg::OnBnClickedEquation(UINT id) {
 
 void CDiffEquationGraphDlg::adjustErrorPositions(const String &s, int sel, int delta) {
   const SourcePosition sp(m_currentText, sel-delta);
-  for(Iterator<size_t> it = m_currentAdjustSet.getIterator(); it.hasNext();) {
+  for(auto it = m_currentAdjustSet.getIterator(); it.hasNext();) {
     ErrorPosition        &ep  = m_errorPosArray[it.next()];
     const SourcePosition &esp = ep.getSourcePosition();
     if(esp >= sp) {
@@ -595,7 +595,7 @@ void CDiffEquationGraphDlg::adjustErrorPositions(const String &s, int sel, int d
 void CDiffEquationGraphDlg::traceCurrentAdjustSet() {
 #if defined(_DEBUG)
   String str;
-  for(Iterator<size_t> it = m_currentAdjustSet.getIterator(); it.hasNext();) {
+  for(auto it = m_currentAdjustSet.getIterator(); it.hasNext();) {
     const ErrorPosition &ep = m_errorPosArray[it.next()];
     str += ep.getSourcePosition().toString();
   }

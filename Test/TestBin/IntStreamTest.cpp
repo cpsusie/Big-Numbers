@@ -34,7 +34,7 @@ template<class Int64, class Int128> void testIntIO(CompactArray<Int64> &a) {
 #define MAXI_LOOPVALUE  (MAXIVALUE >>2 )
 #define MAXUI_LOOPVALUE (MAXUIVALUE>>4 )
     int formatCounter = 0;
-    for(Iterator<StreamParameters> it = StreamParameters::getIntParamIterator(30,ios::skipws, ITERATOR_INTFORMATMASK|ios::skipws, 0); it.hasNext();) {
+    for(auto it = StreamParameters::getIntParamIterator(30,ios::skipws, ITERATOR_INTFORMATMASK|ios::skipws, 0); it.hasNext();) {
       const StreamParameters &param = it.next();
       const int    radix = StreamParameters::radix(param.flags());
       const String prmStr = param.toString();

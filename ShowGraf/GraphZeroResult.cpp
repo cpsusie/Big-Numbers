@@ -19,7 +19,7 @@ String GraphZeroesResult::toString(const TCHAR *name) const {
 
 MoveablePointArray GraphZeroesResultArray::getMoveablePointArray() const {
   MoveablePointArray result;
-  for(ConstIterator<GraphZeroesResult> it = getIterator(); it.hasNext();) {
+  for(auto it = getIterator(); it.hasNext();) {
     result.addAll(it.next().getMoveablePointArray(), false);
   }
   return result;
@@ -33,7 +33,7 @@ String GraphZeroesResultArray::toString() const {
     return __super::toString(_T("\n"));
   }
   StringArray result(size());
-  for(ConstIterator<GraphZeroesResult> it = getIterator(); it.hasNext();) {
+  for(auto it = getIterator(); it.hasNext();) {
     const GraphZeroesResult &zr   = it.next();
     const String             name = format(_T("%s.%s")
                                           ,m_graph.getParam().getDisplayName().cstr()

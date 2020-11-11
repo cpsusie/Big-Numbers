@@ -500,7 +500,7 @@ void CMandelbrotDlg::OnLButtonDown(UINT nFlags, CPoint point) {
 #if defined(SAVE_CALCULATORINFO)
 void CMandelbrotDlg::paintPointSet(const PointSet &ps, COLORREF color) {
   CClientDC dc(m_imageWindow);
-  for(Iterator<CPoint> it = ps.getIterator(); it.hasNext();) {
+  for(auto it = ps.getIterator(); it.hasNext();) {
     dc.SetPixel(it.next(), color);
   }
 }

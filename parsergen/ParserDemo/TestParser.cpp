@@ -41,7 +41,7 @@ public:
 };
 
 static String getLegalInput(const ParserTables &tables, UINT state) {
-  UINT      *symbols = NULL;
+  UINT      *symbols = nullptr;
   const UINT n       = tables.getLegalInputCount(state);
   try {
     symbols = new UINT[n]; TRACE_NEW(symbols);

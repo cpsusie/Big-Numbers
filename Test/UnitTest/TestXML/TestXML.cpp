@@ -122,7 +122,7 @@ namespace TestXML {
       setValue(doc, collNode  , _T("i32set"   ), i32set );
 
       IntTreeMap<int> i32map;
-      for(Iterator<int> it = i32array.getIterator(); it.hasNext();) {
+      for(auto it = i32array.getIterator(); it.hasNext();) {
         i32map.put(it.next(), randInt());
       }
       setValue(doc, collNode  , _T("i32map"   ), i32map );

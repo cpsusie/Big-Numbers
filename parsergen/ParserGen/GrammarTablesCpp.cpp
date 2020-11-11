@@ -351,7 +351,7 @@ ByteCount GrammarTables::printSuccessorMatrixCpp(MarginFile &output) const {
 
   if(defines.size() > 0) {
     defines.sort(stringCmp);
-    for(ConstIterator<String> it = defines.getIterator(); it.hasNext();) {
+    for(auto it = defines.getIterator(); it.hasNext();) {
       output.printf(_T("#define %s\n"), it.next().cstr());
     }
     output.printf(_T("\n"));

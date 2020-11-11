@@ -117,7 +117,7 @@ TestStatistic::~TestStatistic() {
 /*
   FILE *dump = MKFOPEN(("c:\\temp\\BigRealErrors\\" + m_name + "Errors.txt").cstr(),"w");
   Set<Entry<int,int> > s = m_count.entrySet();
-  for(Iterator<Entry<int,int> > it = s.getIterator(); it.hasNext();) {
+  for(auto it = s.getIterator(); it.hasNext();) {
     Entry<int,int> &e = it.next();
     fprintf(dump,"%d %.8le\n", e.getKey(), (double)e.getValue()/m_totalUpdateCount);
   }

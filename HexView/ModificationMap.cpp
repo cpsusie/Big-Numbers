@@ -31,7 +31,7 @@ void ModificationMap::applyModifications(unsigned __int64 offset, ByteArray &con
   const __int64 lastOffset = offset + content.size()-1;
   const AddrRange dataRange(offset, lastOffset);
   if(modifiedRange.overlap(dataRange)) {
-    for(Iterator<Entry<__int64, BytePair> > it = getIterator(); it.hasNext();) {
+    for(auto it = getIterator(); it.hasNext();) {
       const Entry<__int64, BytePair> &e = it.next();
       const __int64 &key = e.getKey();
       if(key >= (__int64)offset) {

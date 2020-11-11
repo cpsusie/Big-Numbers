@@ -962,7 +962,7 @@ const String &Options::getEnginePathByPlayer(Player player) { // static
 void Options::loadEngineRegister() { // static
   s_engineRegister.clear();
   RegistryKey key = getEngineSubKey(getKey());
-  for(Iterator<String> it = key.getSubKeyIterator(); it.hasNext();) {
+  for(auto it = key.getSubKeyIterator(); it.hasNext();) {
     const String keyName = it.next();
     RegistryKey engineKey = key.openKey(keyName);
     EngineDescription desc;
@@ -1009,7 +1009,7 @@ int EngineRegister::getIndexByName(const String &name) const {
 void Options::saveEngineOptionValues(Player player, const EngineOptionValueArray &valueArray) { // static
   RegistryKey key = getEngineOptionsSubKey(player, valueArray.getEngineName());
   key.deleteValues();
-  for(ConstIterator<EngineOptionValue> it = valueArray.getIterator(); it.hasNext();) {
+  for(auto it = valueArray.getIterator(); it.hasNext();) {
     const EngineOptionValue &option = it.next();
     if(option.isStringType()) {
       key.setValue(option.getName(), option.getStringValue());
@@ -1022,7 +1022,7 @@ void Options::saveEngineOptionValues(Player player, const EngineOptionValueArray
 EngineOptionValueArray Options::getEngineOptionValues(Player player, const String &engineName) { // static
   EngineOptionValueArray result(engineName);
   RegistryKey key = getEngineOptionsSubKey(player, engineName);
-  for(Iterator<RegistryValue> it = key.getValueIterator(); it.hasNext();) {
+  for(auto it = key.getValueIterator(); it.hasNext();) {
     RegistryValue value = it.next();
     if(value.type() == REG_SZ) {
       result.setValue(value.name(), (String)value);

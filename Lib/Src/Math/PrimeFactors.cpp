@@ -38,7 +38,7 @@ void Primes::extendPrimeSet(UINT newCapacity) {
 
 void Primes::removeNonPrimes(size_t start) {
   const size_t upper = m_primeSet.getCapacity();
-  for(Iterator<size_t> it = m_primeSet.getIterator(); it.hasNext();) {
+  for(auto it = m_primeSet.getIterator(); it.hasNext();) {
     const size_t p = it.next();
     const size_t q = max(start / p,1) + 1;
     for(size_t j = q*p; j < upper; j += p) {
@@ -63,7 +63,7 @@ PrimeFactorArray::PrimeFactorArray(INT64 n, UINT limit) : m_positive(n >= 0) {
   }
   const UINT upperLimit = limit ? limit : ((UINT)sqrt(Double80(n)) + 1);
   Primes &primes = Primes::getInstance().wait();
-  for(Iterator<size_t> it = primes.getIterator(upperLimit); it.hasNext();) {
+  for(auto it = primes.getIterator(upperLimit); it.hasNext();) {
     const size_t p = it.next();
     if(n % p == 0) {
       PrimeFactor pf(p);

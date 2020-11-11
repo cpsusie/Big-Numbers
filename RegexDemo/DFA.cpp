@@ -54,7 +54,7 @@ void DFA::makeTransitions() {
 
 #if defined(UNICODE)
     CharacterSet outgoingCharacters;
-    for(Iterator<size_t> it = current.m_NFAset.getIterator(); it.hasNext();) {
+    for(auto it = current.m_NFAset.getIterator(); it.hasNext();) {
       NFAState *nfaState = m_NFA[it.next()];
       switch(nfaState->getEdge()) {
       case EDGE_EPSILON:
@@ -70,7 +70,7 @@ void DFA::makeTransitions() {
       }
     }
 
-    for(Iterator<size_t> it = outgoingCharacters.getIterator(); it.hasNext();) {
+    for(auto it = outgoingCharacters.getIterator(); it.hasNext();) {
       int c = (int)it.next();
 #else
 
@@ -128,7 +128,7 @@ void DFA::epsClosure(BitSet &NFAset, AcceptType &accept) const {
 
   CompactStack<int> stateStack; // stack of NFA-states remaining to be tested
 
-  for(Iterator<size_t> it = NFAset.getIterator(); it.hasNext(); ) {                // 1
+  for(auto it = NFAset.getIterator(); it.hasNext(); ) {                // 1
     stateStack.push((int)it.next());
   }
 
@@ -163,7 +163,7 @@ void DFA::epsClosure(BitSet &NFAset, AcceptType &accept) const {
 BitSet *DFA::transition(BitSet &dst, BitSet &NFAset, int c) const {
   BitSet *result = nullptr;
 
-  for(Iterator<size_t> it = NFAset.getIterator(); it.hasNext();) {
+  for(auto it = NFAset.getIterator(); it.hasNext();) {
     int i = (int)it.next();
     const NFAState *p = m_NFA[i]->getSuccessor(c);
     if(p) {
@@ -192,7 +192,7 @@ void DFA::minimize() {
       }
 
       BitSet newSet(m_states.size());
-      Iterator<size_t> it = current.getIterator();
+      auto it = current.getIterator();
       int first = (int)it.next();                            // State number of first element of current group
       while(it.hasNext()) {
         const int next = (int)it.next();                     // State number of next  element of current group
@@ -269,7 +269,7 @@ void DFA::fixupTransitions() {
   DBG_addToDFALog(_T("Constructing minimized DFA\n"));
 
   for(UINT g = 0; g < m_groups.size(); g++) {
-    Iterator<size_t> it = m_groups[g].getIterator();
+    auto it = m_groups[g].getIterator();
     UINT state = (UINT)it.next();       // there is at least one state in each group
     newStates.add(DFAState(g, getNFASetForGroup(g)));
     DFAState &newState = newStates.last();
@@ -287,7 +287,7 @@ void DFA::fixupTransitions() {
 BitSet DFA::getNFASetForGroup(UINT g) const {
 #if defined(_DEBUG)
   BitSet result(m_NFA.size());
-  for(ConstIterator<size_t> it = m_groups[g].getIterator(); it.hasNext();) {
+  for(auto it = m_groups[g].getIterator(); it.hasNext();) {
     result += m_states[it.next()].m_NFAset;
   }
   return result;
@@ -362,7 +362,7 @@ static int countNewLines(const String &s) {
 BitSet DFA::getPatternIndexSet(UINT stateIndex, int maxPatternCharIndex) const {
   BitSet result(maxPatternCharIndex+1);
   const DFAState &state = m_states[stateIndex];
-  for(ConstIterator<size_t> it = state.m_NFAset.getIterator(); it.hasNext();) {
+  for(auto it = state.m_NFAset.getIterator(); it.hasNext();) {
     const NFAState *nfaState = m_NFA[it.next()];
     if((nfaState->getEdge() != EDGE_EPSILON) && nfaState->m_patternCharIndex >= 0) {
       result.add(nfaState->m_patternCharIndex);

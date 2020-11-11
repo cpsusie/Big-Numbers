@@ -25,10 +25,10 @@ namespace TestStringPool {
       StringPool sp;
 
       CompactSizetArray offsets;
-      for (int i = 0; i < 10000; i++) {
+      for(int i = 0; i < 10000; i++) {
         offsets.add(sp.addString(generateTestString(i).cstr()));
       }
-      for (size_t i = 0; i < offsets.size(); i++) {
+      for(size_t i = 0; i < offsets.size(); i++) {
         const TCHAR *str = sp.getString(offsets[i]);
         verify(generateTestString(i) == str);
       }
@@ -37,13 +37,13 @@ namespace TestStringPool {
       verify(sp.getIndexCapacity() == 0);
       verify(sp.getTextCapacity() >= (unsigned int)offsets.last());
 
-      for (size_t i = 0; i < offsets.size(); i++) {
+      for(size_t i = 0; i < offsets.size(); i++) {
         const TCHAR *str = sp.getString(offsets[i]);
         verify(generateTestString(i) == str);
       }
 
       CompactSizetArray offsets1;
-      for (int i = 0; i < 10000; i++) {
+      for(int i = 0; i < 10000; i++) {
         offsets1.add(sp.addString(generateTestString(i).cstr()));
       }
       verify(offsets1 == offsets);
@@ -70,12 +70,12 @@ namespace TestStringPool {
       unlink(fileName);
 
       CompactArray<const TCHAR*> str1Array, str2Array;
-      for (Iterator<const TCHAR*> it = loaded.getIterator(); it.hasNext();) {
+      for(auto it = loaded.getIterator(); it.hasNext();) {
         const TCHAR *s = it.next();
         str1Array.add(s);
       }
 
-      for (size_t i = 0; i < offsets.size(); i++) {
+      for(size_t i = 0; i < offsets.size(); i++) {
         str2Array.add(loaded.getString(offsets[i]));
       }
       str1Array.sort(strCompare);

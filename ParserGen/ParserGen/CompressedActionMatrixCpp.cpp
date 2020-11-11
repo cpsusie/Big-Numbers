@@ -57,7 +57,7 @@ Macro CompressedActionMatrix::doStateActionInfo(const StateActionInfo &stateInfo
 
 const Macro *CompressedActionMatrix::findMacroByValue(const String &macroValue) const {
   const UINT *indexp = m_macroMap.get(macroValue);
-  return indexp ? &m_macroArray[*indexp] : NULL;
+  return indexp ? &m_macroArray[*indexp] : nullptr;
 }
 
 void CompressedActionMatrix::addMacro(const Macro &m) {
@@ -242,7 +242,7 @@ ByteCount CompressedActionMatrix::printTermAndActionList(MarginFile &output) con
       output.setLeftMargin(2);
       output.printf(_T("%c%3u"), delim, n); delim = ',';
       output.setLeftMargin(6);
-      for(ConstIterator<size_t> it1 = e.m_key.getIterator(); it1.hasNext(); counter++) {
+      for(auto it1 = e.m_key.getIterator(); it1.hasNext(); counter++) {
         output.printf(_T(",%4zu"), it1.next());
         if((counter % 20 == 19) && (counter != n - 1)) {
           newLine(output, comment, 108);
@@ -264,7 +264,7 @@ ByteCount CompressedActionMatrix::printTermAndActionList(MarginFile &output) con
       String                                 comment = format(_T("%3u %s"), e.m_commentIndex, e.getComment().cstr());
       const UINT                             n       = (UINT)e.m_key.size();
       UINT                                   counter = 0;
-      for(ConstIterator<short> it1 = e.m_key.getIterator(); it1.hasNext(); counter++, delim = ',') {
+      for(auto it1 = e.m_key.getIterator(); it1.hasNext(); counter++, delim = ',') {
         output.printf(_T("%c%4d"), delim, it1.next());
         if((counter % 20 == 19) && (counter != n - 1)) {
           newLine(output, comment, 108);

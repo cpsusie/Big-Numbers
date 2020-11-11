@@ -152,12 +152,12 @@ typedef CompactHashSet<QuadEdgeKey>      QuadEdgeSet;
 void SubDivision::getAllQuadEdges(CompactArray<QuadEdge*> &a) {
   const EdgeSet set(m_startingEdge);
   QuadEdgeSet   qset;
-  for(ConstIterator<EdgeKey> it = set.getIterator(); it.hasNext();) {
+  for(auto it = set.getIterator(); it.hasNext();) {
     const Edge *e = it.next();
     qset.add(e->getQuadEdge());
   }
   a.clear();
-  for(Iterator<QuadEdgeKey> it = qset.getIterator(); it.hasNext();) {
+  for(auto it = qset.getIterator(); it.hasNext();) {
     const QuadEdge *qe = it.next();
     a.add((QuadEdge*)qe);
   }
@@ -240,7 +240,7 @@ Point2d *SubDivision::newPoint(const Point2d &p) {
 
 void SubDivision::paint(HDC hdc) const {
   const EdgeSet set(m_startingEdge);
-  for(ConstIterator<EdgeKey> it = set.getIterator(); it.hasNext();) {
+  for(auto it = set.getIterator(); it.hasNext();) {
     const Edge *e = it.next();
     const Point2d &p1 = e->Org2d(), &p2 = e->Dest2d();
     POINT old;

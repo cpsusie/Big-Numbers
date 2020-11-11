@@ -24,7 +24,7 @@ D3SceneObjectVisual *D3Scene::getPickedVisual(const D3Camera &camera, const D3Ra
   D3PickedInfo         closestInfo, tmpInfo, *pinfo = info ? &tmpInfo : nullptr;
 
   getDevice().setCurrentCamera(&camera);
-  for(Iterator<D3SceneObjectVisual*> it = getVisualIterator(mask); it.hasNext();) {
+  for(auto it = getVisualIterator(mask); it.hasNext();) {
     D3SceneObjectVisual *obj = it.next();
     if(!obj->isVisible()) {
       continue;

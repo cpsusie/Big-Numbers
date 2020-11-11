@@ -53,7 +53,7 @@ void printCharClass(MarginFile &f, BitSet &set) {
   size_t charsPrinted = f.getLeftMargin();
   unsigned int first = 1, last = 0;
   const TCHAR *delim = nullptr;
-  for(Iterator<size_t> it = set.getIterator(); it.hasNext();) {
+  for(auto it = set.getIterator(); it.hasNext();) {
     const UINT ch = (UINT)it.next();
     if(first > last) {
       first = last = ch;
@@ -71,7 +71,7 @@ void printCharClass(MarginFile &f, BitSet &set) {
 /*
 void printCharClass(MarginFile &f, BitSet &set) {
   size_t charsPrinted = f.getLeftMargin();
-  for(Iterator<size_t> it = set.getIterator(); it.hasNext();) {
+  for(auto it = set.getIterator(); it.hasNext();) {
     int i = (int)it.next();
     String tmp = binToAscii(i);
     if(charsPrinted + tmp.length() > RMARGIN) {
@@ -86,7 +86,7 @@ void printCharClass(MarginFile &f, BitSet &set) {
 void printSet(MarginFile &f, BitSet &set) {
   f.printf(_T("["));
   size_t charsPrinted = f.getLeftMargin();
-  for(Iterator<size_t> it = set.getIterator(); it.hasNext();) {
+  for(auto it = set.getIterator(); it.hasNext();) {
     int i = (int)it.next();
     String tmp = format(_T("%d "), i);
     if(charsPrinted + tmp.length() > RMARGIN) {

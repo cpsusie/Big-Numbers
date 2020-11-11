@@ -76,7 +76,7 @@ void TemplateWriter::closeOutput() {
 
 TemplateWriter::~TemplateWriter() {
   closeOutput();
-  Iterator<KeywordTrigger*> it = m_keywords.values().getIterator();
+  auto it = m_keywords.values().getIterator();
   while(it.hasNext()) {
     KeywordTrigger *kwt = it.next();
     SAFEDELETE(kwt);

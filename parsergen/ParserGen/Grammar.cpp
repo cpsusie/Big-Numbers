@@ -665,7 +665,7 @@ void Grammar::checkStateIsConsistent(const LR1State &state, StateResult &result)
         }
       }
       SymbolSet itemTokens(itemi.m_la - tokensReducedByOtherItems);
-      for(Iterator<size_t> it = itemTokens.getIterator(); it.hasNext(); ) {
+      for(auto it = itemTokens.getIterator(); it.hasNext(); ) {
         const UINT t = (UINT)it.next();
         if(!symbolsDone.contains(t)) {
           result.m_actions.add(ParserAction(t, -(int)(itemi.m_prod)));

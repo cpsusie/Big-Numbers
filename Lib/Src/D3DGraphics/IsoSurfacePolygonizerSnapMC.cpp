@@ -186,7 +186,7 @@ void IsoSurfacePolygonizer::polygonize(const Point3D &start
     testFace(cube.m_key.i   , cube.m_key.j   , cube.m_key.k+1 , cube, TFACE, LTN, LTF, RTN, RTF);
   }
 
-  for(Iterator<Entry< Point3DKey, HashedCubeCorner> > it = m_cornerMap.getIterator(); it.hasNext();) {
+  for(auto it = m_cornerMap.getIterator(); it.hasNext();) {
     HashedCubeCorner &c = it.next().getValue();
     if(c.hasSnapVertex()) {
       c.setLabel(V_ZERO);
@@ -676,7 +676,7 @@ static int cubeCornerCmp(const HashedCubeCorner * const &c1, const HashedCubeCor
 void PolygonizerBase::dumpCornerMap() const {
   debugLog(_T("CornerMap\n"));
   CompactArray<const HashedCubeCorner*> tmpArray(m_cornerMap.size());
-  for(Iterator<CornerMapEntry> it = m_cornerMap.getIterator(); it.hasNext();) {
+  for(auto it = m_cornerMap.getIterator(); it.hasNext();) {
     const CornerMapEntry &e = it.next();
     tmpArray.add(&e.getValue());
   }
@@ -707,7 +707,7 @@ static int sortedCubeEdgeCmp(const SortedCubeEdge &e1, const SortedCubeEdge &e2)
 void PolygonizerBase::dumpEdgeMap() const {
   debugLog(_T("EdgeMap\n"));
   Array<SortedCubeEdge> tmpArray(m_edgeMap.size());
-  for(Iterator<EdgeMapEntry> it = m_edgeMap.getIterator(); it.hasNext();) {
+  for(auto it = m_edgeMap.getIterator(); it.hasNext();) {
     tmpArray.add(it.next());
   }
   tmpArray.sort(sortedCubeEdgeCmp);

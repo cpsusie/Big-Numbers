@@ -59,7 +59,7 @@ public:
   }
   UINT getElementCount(bool addArraySize) const {
     UINT elemCount = 0;
-    for(ConstIterator<IndexArrayEntry<Key> > it = getIterator(); it.hasNext();) {
+    for(auto it = getIterator(); it.hasNext();) {
       const IndexArrayEntry<Key> &e = it.next();
       elemCount += (UINT)e.m_key.size();
     }
@@ -80,7 +80,7 @@ public:
   }
   IndexArray<Key> getEntryArray() const {
     IndexArray<Key> a(size());
-    for(ConstIterator<Entry<Key, IndexMapValue> > it = getIterator(); it.hasNext();) {
+    for(auto it = getIterator(); it.hasNext();) {
       a.add(it.next());
     }
     return a.sortByIndex();

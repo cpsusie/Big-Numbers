@@ -19,7 +19,7 @@ namespace TestCompactHashSet {
       testSet.add(rnd.nextInt(maxKey));
     }
 
-    for(Iterator<KeyType> it = testSet.getIterator(); it.hasNext(); ) {
+    for(auto it = testSet.getIterator(); it.hasNext(); ) {
       list.add(it.next());
     }
 
@@ -28,7 +28,7 @@ namespace TestCompactHashSet {
     while(testSet.size() > 10) {
       int i = 0;
       INFO(_T("TestSet.size():%6d"), testSet.size());
-      for(Iterator<KeyType> it1 = testSet.getIterator(); it1.hasNext();) {
+      for(auto it1 = testSet.getIterator(); it1.hasNext();) {
         KeyType &setKey = it1.next();
         KeyType &listKey = list[i];
         verify(setKey == listKey);
@@ -107,7 +107,7 @@ namespace TestCompactHashSet {
     bigset.addAll(set);
     count = 0;
     INFO(_T("Testing set.iterator1"));
-    for(Iterator<KeyType> it1 = set.getIterator(); it1.hasNext();) {
+    for(auto it1 = set.getIterator(); it1.hasNext();) {
       const KeyType &k = it1.next();
       count++;
       verify(bigset.contains(k));
@@ -116,13 +116,13 @@ namespace TestCompactHashSet {
     verify(count == set.size());
 
     INFO(_T("Testing set.iterator2"));
-    for(Iterator<KeyType> it2 = bigset.getIterator(); it2.hasNext();) {
+    for(auto it2 = bigset.getIterator(); it2.hasNext();) {
       const KeyType &k = it2.next();
       verify(set.contains(k));
     }
 
     INFO(_T("Testing set.iterator3"));
-    for(Iterator<KeyType> it3 = set.getIterator(); it3.hasNext();) {
+    for(auto it3 = set.getIterator(); it3.hasNext();) {
       const KeyType &k = it3.next();
       verify(!bigset.add(k));
     }

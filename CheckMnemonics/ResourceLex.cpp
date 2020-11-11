@@ -694,7 +694,7 @@ void ResourceLex::findBestHashMapSize() {
   }
 
   if(currentMax > 1) {
-    for(Iterator<Entry<int, MapInfo> > it = cl.entrySet().getIterator(); it.hasNext();) {
+    for(auto it = cl.entrySet().getIterator(); it.hasNext();) {
       Entry<int, MapInfo > &e = it.next();
       const int capacity = e.getKey();
       const MapInfo &v = e.getValue();

@@ -130,7 +130,7 @@ namespace TestCollection {
   PointerSet::~PointerSet() {
     if(size() != 0) {
       OUTPUT(_T("Heap not empty. Dangling pointers:"));
-      for(Iterator<void*> it = getIterator(); it.hasNext();) {
+      for(auto it = getIterator(); it.hasNext();) {
         void *p = it.next();
         OUTPUT(_T("%p "), p);
       }
@@ -139,7 +139,6 @@ namespace TestCollection {
   }
 
   static PointerSet pointerSet;
-
 
   Key::Key(int v) {
     /*
@@ -172,7 +171,7 @@ namespace TestCollection {
     return p;
   }
 
-  Packer &operator >> (Packer &p, Key &k) {
+  Packer &operator>>(Packer &p, Key &k) {
     p >> k.x;
     return p;
   }
@@ -239,7 +238,7 @@ namespace TestCollection {
     if(set.hasOrder()) {
       list.sort(set.getComparator());
       int i = 0;
-      for(Iterator<Key> it = set.getIterator(); it.hasNext();i++) {
+      for(auto it = set.getIterator(); it.hasNext();i++) {
         Key &k = it.next();
         verify(k == list[i]);
       }
@@ -265,14 +264,14 @@ namespace TestCollection {
       testSet.add(rnd.nextInt(100000000));
     }
 
-    for(Iterator<Key> it = testSet.getIterator(); it.hasNext(); ) {
+    for(auto it = testSet.getIterator(); it.hasNext(); ) {
       list.add(it.next());
     }
 
     while(testSet.size() > 10) {
       int i = 0;
       INFO(_T("TestSet.size():%6d"), testSet.size());
-      for(Iterator<Key> it1 = testSet.getIterator(); it1.hasNext();) {
+      for(auto it1 = testSet.getIterator(); it1.hasNext();) {
         Key &setKey = it1.next();
         Key &listKey = list[i];
         verify(setKey == listKey);
@@ -310,7 +309,7 @@ namespace TestCollection {
     counters.insert(0,0.0,SOURCE_SIZE);
     for(size_t e = 0; e < SAMPLE_COUNT; e++) {
       Collection<Key> sample = S.getRandomSample(SAMPLE_SIZE, rnd); // sample = SAMPLE_SIZE elements in range [0..SOURCE_SIZE-1]
-      for(Iterator<Key> it = sample.getIterator(); it.hasNext(); ) {
+      for(auto it = sample.getIterator(); it.hasNext(); ) {
         counters[it.next().getValue()]++;
       }
     }
@@ -386,7 +385,7 @@ namespace TestCollection {
     if(set.hasOrder()) {
       INFO(_T("Testing order"));
       int counter = 0;
-      Iterator<Key> it = set.getIterator();
+      auto it = set.getIterator();
       Comparator<Key> &comparator = set.getComparator();
       const Key firstKey = set.getMin();
       const Key lastKey = set.getMax();
@@ -434,7 +433,7 @@ namespace TestCollection {
     bigset.addAll(set);
     count = 0;
     INFO(_T("Testing set.iterator1"));
-    for(Iterator<Key> it1 = set.getIterator(); it1.hasNext();) {
+    for(auto it1 = set.getIterator(); it1.hasNext();) {
       const Key &k = it1.next();
       count++;
       verify(bigset.contains(k));
@@ -442,13 +441,13 @@ namespace TestCollection {
     verify(count == set.size());
 
     INFO(_T("Testing set.iterator2"));
-    for(Iterator<Key> it2 = bigset.getIterator(); it2.hasNext();) {
+    for(auto it2 = bigset.getIterator(); it2.hasNext();) {
       const Key &k = it2.next();
       verify(set.contains(k));
     }
 
     INFO(_T("Testing set.iterator3"));
-    for(Iterator<Key> it3 = set.getIterator(); it3.hasNext();) {
+    for(auto it3 = set.getIterator(); it3.hasNext();) {
       const Key &k = it3.next();
       verify(!bigset.add(k));
     }
@@ -565,7 +564,7 @@ namespace TestCollection {
     if(map.hasOrder()) {
       list.sort(KeyElementCompare);
       int i = 0;
-      for(Iterator<Entry<Key, Element> > it = map.getIterator(); it.hasNext();i++) {
+      for(auto it = map.getIterator(); it.hasNext();i++) {
         Entry<Key, Element> &e = it.next();
         verify(e.getKey() == list[i].m_key && e.getValue() == list[i].m_elem);
       }
@@ -627,7 +626,7 @@ namespace TestCollection {
     }
 
     INFO(_T("Testing entrySet.Iterator"));
-    for(Iterator<Entry<Key, Element> > entryIterator = map.getIterator(); entryIterator.hasNext();) {
+    for(auto entryIterator = map.getIterator(); entryIterator.hasNext();) {
       Entry<Key, Element> &entry = entryIterator.next();
       String dd = format(_T("(%s,%s)\n"), entry.getKey().toString().cstr(), entry.getValue().toString().cstr());
     }
@@ -636,7 +635,7 @@ namespace TestCollection {
       INFO(_T("Testing map order"));
       testMapStream(map);
       int counter = 0;
-      Iterator<Entry<Key, Element> > it = map.getIterator();
+      auto it = map.getIterator();
       Comparator<Key> &comparator = map.getComparator();
       const Key firstKey1 = map.keySet().getMin();
       const Key lastKey1 = map.keySet().getMax();
@@ -657,7 +656,7 @@ namespace TestCollection {
       }
       verify(comparator.compare(lastKey1, *last) == 0);
       verify(comparator.compare(lastKey2, *last) == 0);
-      Iterator<Entry<Key, Element> > it1 = it;
+      auto it1 = it;
       verify(counter == list.size());
     } else {
       try {
@@ -696,7 +695,7 @@ namespace TestCollection {
     count = 0;
 
     INFO(_T("Testing map.iterator1"));
-    Iterator<Entry<Key, Element> > it1 = map.getIterator();
+    auto it1 = map.getIterator();
     while(it1.hasNext()) {
       const Key &k = it1.next().getKey();
       count++;
@@ -704,11 +703,11 @@ namespace TestCollection {
     }
     verify(count == map.size());
 
-    Iterator<Entry<Key, Element> > itcopy = it1;
+    auto itcopy = it1;
     verify(!itcopy.hasNext());
 
     INFO(_T("Testing map.iterator2"));
-    for(Iterator<Entry<Key, Element> > it2 = bigmap.getIterator(); it2.hasNext();) {
+    for(auto it2 = bigmap.getIterator(); it2.hasNext();) {
       const Key &k = it2.next().getKey();
       verify(map.get(k) != nullptr);
     }
@@ -786,7 +785,7 @@ namespace TestCollection {
     verify(mapValues.contains(-1));
     verify(mapValues.contains(-2));
     verify(!mapValues.contains(-3));
-    for(Iterator<Element> eit = mapValues.getIterator(); eit.hasNext();) {
+    for(auto eit = mapValues.getIterator(); eit.hasNext();) {
       Element &e = eit.next();
       //    OUTPUT(_T("%s\n"),eit.next().toString().cstr());
       eit.remove();

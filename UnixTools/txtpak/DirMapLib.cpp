@@ -105,7 +105,7 @@ void DirMapLib::unpack(const TCHAR **argv, bool setTimestamp, bool setMode, bool
   const String &libName    = getLibName();
   const size_t  totalCount = m_verbose ? getUnpackCount() : 0;
   size_t        count      = 0;
-  for(Iterator<Entry<String, FileInfo > > it = m_guidMap->entrySet().getIterator(); it.hasNext();) {
+  for(auto it = m_guidMap->entrySet().getIterator(); it.hasNext();) {
     try {
       const Entry<String, FileInfo > &e = it.next();
       const String                   &packedName = e.getKey();
@@ -134,7 +134,7 @@ bool DirMapLib::checkIntegrity(const Array<FileInfo> &list) {
   bool          ok           = true;
   intptr_t      missingCount = 0;
   const String &libName      = getLibName();
-  for(Iterator<Entry<String, FileInfo> > it = m_guidMap->entrySet().getIterator(); it.hasNext();) {
+  for(auto it = m_guidMap->entrySet().getIterator(); it.hasNext();) {
     const Entry<String, FileInfo> &entry      = it.next();
     const String                  &packedName = entry.getKey();
     const FileInfo                &info       = entry.getValue();
@@ -171,7 +171,7 @@ void DirMapLib::removeLib(const String &libName) { // static
 size_t DirMapLib::getInfoList(Array<FileInfo> *list) const {
   if(list) list->clear();
   size_t count = 0;
-  for(Iterator<FileInfo> it = m_guidMap->values().getIterator(); it.hasNext();) {
+  for(auto it = m_guidMap->values().getIterator(); it.hasNext();) {
     const FileInfo &info = it.next();
     if(matchArgvPattern(info.m_name)) {
       count++;

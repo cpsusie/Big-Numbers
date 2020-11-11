@@ -1865,7 +1865,7 @@ public:
 void EndGameKeyDefinition::listLongestUnusedSequence(BitSet &s, bool orderByLength, intptr_t sequenceMinSize) const {
   UnusedPTQueue ptq(orderByLength ? COMPARE_BY_LENGTH : COMPARE_BY_INDEX);
   intptr_t last = -1;
-  for(Iterator<size_t> it = s.getIterator(); it.hasNext();) {
+  for(auto it = s.getIterator(); it.hasNext();) {
     const intptr_t i = it.next();
     if(i - last > sequenceMinSize) {
       ptq.add(UnusedSequence(last+1, i-1));

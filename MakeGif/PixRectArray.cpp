@@ -83,7 +83,7 @@ PixRectArray &PixRectArray::setAllToSize(const CSize &newSize) {
   if(resizingSet.isEmpty()) {
     return *this;
   }
-  for(Iterator<size_t> it = resizingSet.getIterator(); it.hasNext();) {
+  for(auto it = resizingSet.getIterator(); it.hasNext();) {
     const size_t i = it.next();
     const GifPixRect *pr = (*this)[i];
     GifPixRect *copy = pr->clone(newSize);

@@ -18,7 +18,7 @@ ByteArray symbolSetToByteArray(const SymbolSet &set) {
   ByteArray    result(byteCount);
   result.addZeroes(byteCount);
   BYTE *b = (BYTE*)result.getData();
-  for(ConstIterator<size_t> it = set.getIterator(); it.hasNext();) {
+  for(auto it = set.getIterator(); it.hasNext();) {
     const UINT v = (UINT)it.next();
     b[v >> 3] |= (1 << (v & 7));
   }

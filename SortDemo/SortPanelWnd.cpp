@@ -194,7 +194,7 @@ void SortPanelWnd::updateMarks(CDC &dc, size_t index1, size_t index2) {
 void SortPanelWnd::updateScreen(CDC &dc, bool showTime) {
   printCompareCount(dc, showTime);
   m_dataArray.getModified(m_modifiedSet, m_savedArray);
-  for(Iterator<size_t> it = m_modifiedSet.getIterator(); it.hasNext();) {
+  for(auto it = m_modifiedSet.getIterator(); it.hasNext();) {
     drawElement(dc, it.next());
   }
   saveArray();

@@ -448,7 +448,7 @@ void KeyPredicates::init() {
 void KeyPredicate::getKeyPredicateExpression(int length, const IndexDefinition &indexDef, PredicateList &predicateList, BitSet &set) {
   for(int f = 0; f < length; f++) {
     int indexCol = indexDef.getColumn(f).m_col;
-    for(Iterator<size_t> it = set.getIterator(); it.hasNext(); ) {
+    for(auto it = set.getIterator(); it.hasNext(); ) {
       size_t i = it.next();
       Predicate &pred = predicateList[i];
 //      pred.dump();
@@ -1578,7 +1578,7 @@ void SelectStmt::reduceByKeyPredicates() {
 
 #if defined(TRACECOMP)
   i = 0;
-  for(Iterator<SyntaxNodeP> it = hash.keySet().getIterator(); it.hasNext();) {
+  for(auto it = hash.keySet().getIterator(); it.hasNext();) {
     _tprintf(_T("pred[%zd]:%s"),i++, it.next()->toString().cstr());
     _tprintf(_T("\n"));
   }

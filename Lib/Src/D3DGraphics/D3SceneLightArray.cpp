@@ -65,7 +65,7 @@ void D3Scene::removeLight(UINT lightIndex) {
 void D3Scene::removeAllLights() {
   BitSet allLights = getLightsDefined();
   const bool notifyEnable = setNotifyEnable(false);
-  for(Iterator<size_t> it = allLights.getIterator(); it.hasNext();) {
+  for(auto it = allLights.getIterator(); it.hasNext();) {
     removeLight((UINT)it.next());
   }
   setNotifyEnable(notifyEnable);
@@ -134,7 +134,7 @@ D3Light D3Scene::getLight(UINT lightIndex) const {
 LightArray D3Scene::getAllLights() const {
   BitSet lightSet = getLightsDefined();
   LightArray result(lightSet.size());
-  for(Iterator<size_t> it = lightSet.getIterator(); it.hasNext();) {
+  for(auto it = lightSet.getIterator(); it.hasNext();) {
     const UINT lightIndex = (UINT)it.next();
     result.add(getLight(lightIndex));
   }

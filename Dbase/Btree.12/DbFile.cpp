@@ -250,7 +250,7 @@ void FileSlotTable::releaseFileSlot(FileSlot *fileSlot) {
 ULONG FileSlotTable::nextTransCount() {
   const ULONG result = s_transCount++;
   if(s_transCount < result) { // wrapped around. reset all counters
-    for(Iterator<String> it = keySet().getIterator(); it.hasNext();) {
+    for(auto it = keySet().getIterator(); it.hasNext();) {
       FileSlot *fileSlot = get(it.next());
       fileSlot->m_lastTrans = 0;
     }
@@ -305,7 +305,7 @@ void FileSlotTable::dump() {
 
   int line = 1;
   Console::printf(40,line++,_T("slotTable.size:%2d"),size());
-  for(Iterator<Entry<String,FileSlot> > it = getIterator(); it.hasNext();line++) {
+  for(auto it = getIterator(); it.hasNext();line++) {
     FileSlot &slot = it.next().getValue();
     Console::printf(40,line,_T("%-20s lastTrans:%d  "),slot.m_fileName.cstr(),slot.m_lastTrans);
   }

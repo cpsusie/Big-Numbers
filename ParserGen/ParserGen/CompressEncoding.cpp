@@ -10,7 +10,7 @@ void checkMax15Bits(const TCHAR *method, int line, int v, const TCHAR *varName) 
 #if defined(_DEBUG)
 void checkCodeBits(const TCHAR *method, UINT v, const TCHAR *varName) {
   if(((v >> 15) & 3) != 0) { // Same code as ParserTables::getActMethodCode
-    MessageBox(NULL, format(_T("%s:Encoded variable %s has value %08x, with non-zero value in encoding bits")
+    MessageBox(nullptr, format(_T("%s:Encoded variable %s has value %08x, with non-zero value in encoding bits")
               ,method, varName, v).cstr()
               ,_T("Error")
               ,MB_ICONSTOP

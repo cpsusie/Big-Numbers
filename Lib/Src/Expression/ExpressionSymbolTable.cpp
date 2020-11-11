@@ -292,7 +292,7 @@ ExpressionVariableArray ExpressionSymbolTable::getAllVariables() const {
 }
 
 void ExpressionSymbolTable::unmarkAllReferencedNodes() {
-  for(Iterator<ExpressionVariable> it = getVariablesIterator(); it.hasNext();) {
+  for(auto it = getVariablesIterator(); it.hasNext();) {
     it.next().unMark();
   }
 }
@@ -424,7 +424,7 @@ void ExpressionSymbolTable::buildValueRefCountTable() {
   m_valueRefCountTable.clear();
   m_valueRefCountTable.setCapacity(n);
   m_valueRefCountTable.insert(0,(int)0,n);
-  for(Iterator<Entry<CompactIntKeyType, int> > it = m_valueRefCountHashMap.getIterator(); it.hasNext();) {
+  for(auto it = m_valueRefCountHashMap.getIterator(); it.hasNext();) {
     const Entry<CompactIntKeyType, int> &e = it.next();
     m_valueRefCountTable[e.getKey()] = e.getValue();
   }
@@ -466,7 +466,7 @@ String NameTable::toString() const {
   String result = _T("{");
   const TCHAR *del = nullptr;
 
-  for(ConstIterator<Entry<CompactStrIKeyType, UINT> > it = getIterator(); it.hasNext();) {
+  for(auto it = getIterator(); it.hasNext();) {
     const Entry<CompactStrIKeyType, UINT> &e    = it.next();
     const TCHAR                           *name = e.getKey();
     if(del) result += del; else del = _T(", ");

@@ -575,7 +575,7 @@ static int cubeCornerCmp(const HashedCubeCorner * const &c1, const HashedCubeCor
 void IsoSurfacePolygonizer::dumpCornerMap() const {
   debugLog(_T("CornerMap\n"));
   CompactArray<const HashedCubeCorner*> tmpArray(m_cornerMap.size());
-  for(Iterator<CornerMapEntry> it = m_cornerMap.getIterator(); it.hasNext();) {
+  for(auto it = m_cornerMap.getIterator(); it.hasNext();) {
     const CornerMapEntry &e = it.next();
     tmpArray.add(&e.getValue());
   }
@@ -607,7 +607,7 @@ static int sortedCubeEdgeCmp(const SortedCubeEdge &e1, const SortedCubeEdge &e2)
 void IsoSurfacePolygonizer::dumpEdgeMap() const {
   debugLog(_T("EdgeMap\n"));
   Array<SortedCubeEdge> tmpArray(m_edgeMap.size());
-  for(ConstIterator<EdgeMapEntry> it = m_edgeMap.getIterator(); it.hasNext();) {
+  for(auto it = m_edgeMap.getIterator(); it.hasNext();) {
     tmpArray.add(it.next());
   }
   tmpArray.sort(sortedCubeEdgeCmp);

@@ -119,7 +119,7 @@ void PointerMap::handlePointerCommand(Keyword kw, Tokenizer &tok, int lineCount,
 void PointerMap::logErrors() {
   if(isEmpty()) return;
   _tprintf(_T("Heap objects not deleted (memory leaks)\n"));
-  for(Iterator<Entry<UINT64, PointerObject> > it = entrySet().getIterator(); it.hasNext();) {
+  for(auto it = entrySet().getIterator(); it.hasNext();) {
     const Entry<UINT64, PointerObject> &e = it.next();
     const UINT64         addr = e.getKey();
     const PointerObject &obj  = e.getValue();
@@ -328,7 +328,7 @@ void RefObjectMap::handleREFCNTCommand(Tokenizer &tok, int lineCount, const Stri
 void RefObjectMap::logErrors() {
   if(isEmpty()) return;
   _tprintf(_T("RefCounted objects not deleted (memory leaks)\n"));
-  for(Iterator<Entry<UINT64, RefObject> > it = entrySet().getIterator(); it.hasNext();) {
+  for(auto it = entrySet().getIterator(); it.hasNext();) {
     const Entry<UINT64, RefObject> &e = it.next();
     const UINT64     addr = e.getKey();
     const RefObject &obj  = e.getValue();

@@ -421,7 +421,7 @@ String Simplex::toString() const {
   if(!m_staticIntegerVariableSet->isEmpty()) {
     result += _T("Integer variables:");
     TCHAR *delimiter = nullptr;
-    for(Iterator<size_t> it = m_staticIntegerVariableSet->getIterator(); it.hasNext();) {
+    for(auto it = m_staticIntegerVariableSet->getIterator(); it.hasNext();) {
       if(delimiter == nullptr) {
         delimiter = _T(",");
       } else {

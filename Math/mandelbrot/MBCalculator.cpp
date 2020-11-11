@@ -126,7 +126,7 @@ void MBCalculator::addInfoToPool() {
 CellCountAccessor *MBCalculator::fillInnerArea(PointSet &innerSet, CellCountAccessor *cca, UINT maxCount) {
   PUSHPHASE("FILLINNERAREA")
 
-  for(Iterator<CPoint> it = innerSet.getIterator(); it.hasNext();) {
+  for(auto it = innerSet.getIterator(); it.hasNext();) {
     const CPoint start = it.next();
     if(!cca->isEmptyCell(start)) {
       continue;

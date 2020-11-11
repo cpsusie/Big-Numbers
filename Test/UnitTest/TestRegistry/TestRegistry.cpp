@@ -64,7 +64,7 @@ namespace TestRegistry {
     try {
       RegistryKey key = InitRegistry::getTestKey();
       clear();
-      for(Iterator<RegistryValue> it = key.getValueIterator(); it.hasNext();) {
+      for(auto it = key.getValueIterator(); it.hasNext();) {
         add(it.next());
       }
     } catch (Exception e) {
@@ -86,7 +86,7 @@ namespace TestRegistry {
 
   void RegValueArray::listValues() const {
     RegistryKey key = InitRegistry::getTestKey();
-    for(Iterator<RegistryValue> it = key.getValueIterator(); it.hasNext();) {
+    for(auto it = key.getValueIterator(); it.hasNext();) {
       const RegistryValue &value = it.next();
       INFO(_T("type:%-10s name=%-20s. value=<%s>"), value.typeName().cstr(), value.name().cstr(), value.toString().cstr());
     }
@@ -94,7 +94,7 @@ namespace TestRegistry {
 
   void RegValueArray::removeValues() {
     RegistryKey key = InitRegistry::getTestKey();
-    for(Iterator<RegistryValue> it = key.getValueIterator(); it.hasNext();) {
+    for(auto it = key.getValueIterator(); it.hasNext();) {
       const RegistryValue value = it.next();
       INFO(_T("removing value %-20s"), value.name().cstr());
       it.remove();
@@ -106,7 +106,7 @@ namespace TestRegistry {
   void traverseRegistryKey(RegistryKey &key, int level = 0) {
     OUTPUT(_T("%*.*sKey:%s"), level, level, EMPTYSTRING, key.name().cstr());
     bool headerDone = false;
-    for(Iterator<RegistryValue> itv = key.getValueIterator(); itv.hasNext();) {
+    for(auto itv = key.getValueIterator(); itv.hasNext();) {
       if(!headerDone) {
         OUTPUT(_T("  %*.*s%-20s %-12.12s %s"), level, level, EMPTYSTRING, _T("Name"), _T("Type"), _T("Data"));
         headerDone = true;
@@ -114,7 +114,7 @@ namespace TestRegistry {
       const RegistryValue &value = itv.next();
       OUTPUT(_T("  %*.*s%-20.20s %-12.12s %-70.70s"), level, level, EMPTYSTRING, value.name().cstr(), value.typeName().cstr(), value.toString().cstr());
     }
-    for(Iterator<String> it = key.getSubKeyIterator(); it.hasNext();) {
+    for(auto it = key.getSubKeyIterator(); it.hasNext();) {
       String child = it.next();
       try {
         traverseRegistryKey(key.openKey(child), level + 2);
@@ -213,7 +213,7 @@ namespace TestRegistry {
       }
 
       BitSet usedIndexSet(30);
-      for(Iterator<String> it = key.getSubKeyIterator(); it.hasNext();) {
+      for(auto it = key.getSubKeyIterator(); it.hasNext();) {
         const String name = it.next();
         if((name.length() == 6) && (substr(name,0,4) == "item")) {
           const int index = _wtoi(name.cstr() + 4);
@@ -249,7 +249,7 @@ namespace TestRegistry {
 
 //      traverseRegistryKey(InitRegistry::getRoot());
 
-      for(Iterator<String> it = key.getSubKeyIterator(); it.hasNext();) {
+      for(auto it = key.getSubKeyIterator(); it.hasNext();) {
         const String name = it.next();
         if((name.length() == 6) && (substr(name, 0, 4) == "item")) {
           it.remove();

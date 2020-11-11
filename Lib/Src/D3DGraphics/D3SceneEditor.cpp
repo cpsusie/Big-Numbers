@@ -1144,7 +1144,7 @@ void D3SceneEditor::OnContextMenuBackground(CPoint point) {
     setMenuItemText(menu, ID_SELECT_LIGHT0 + l.getIndex(), lightMenuText(l));
   }
   definedLights.invert().remove(21,definedLights.getCapacity()-1);
-  for(Iterator<size_t> it = definedLights.getIterator(); it.hasNext();) {
+  for(auto it = definedLights.getIterator(); it.hasNext();) {
     removeMenuItem(menu, (int)it.next() + ID_SELECT_LIGHT0);
   }
   if(getCurrentVisual() == nullptr) {

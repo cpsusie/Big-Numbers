@@ -1041,14 +1041,14 @@ SNode SNode::reduceRationalPower(const Rational &base, const Rational &exponent)
     Rational niceRootFactor = 1;
     __int64 bnR = 1, bdR = 1;
     if((::abs(bn) == 1 || !bnRootFactors.isEmpty()) && (bd == 1 || !bdRootFactors.isEmpty())) {
-      for(Iterator<size_t> it1 = bnRootFactors.getIterator(); it1.hasNext();) {
+      for(auto it1 = bnRootFactors.getIterator(); it1.hasNext();) {
         PrimeFactor &pf = bnPrimeFactors[it1.next()];
         do {
           bnR *= pf.m_prime;
           pf.m_multiplicity -= (UINT)ed;
         } while(pf.m_multiplicity >= (UINT)ed);
       }
-      for(Iterator<size_t> it2 = bdRootFactors.getIterator(); it2.hasNext();) {
+      for(auto it2 = bdRootFactors.getIterator(); it2.hasNext();) {
         PrimeFactor &pf = bdPrimeFactors[it2.next()];
         do {
           bdR *= pf.m_prime;

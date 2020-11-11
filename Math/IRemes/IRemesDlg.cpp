@@ -607,7 +607,7 @@ void CIRemesDlg::OnFileShowMaxErrors() {
   const ExtremaMap &map = m_remes->getExtremaMap();
   const String tmpFileName = _T("c:\\temp\\RemesErrors.txt");
   FILE *f = MKFOPEN(tmpFileName, _T("w"));
-  for(Iterator<ExtremaMapEntry> it = map.getIerator(); it.hasNext();) {
+  for(auto it = map.getIerator(); it.hasNext();) {
     ExtremaMapEntry &e = it.next();
     const ExtremaKey           &key = e.getKey();
     const Array<ExtremaVector> &v   = e.getValue();

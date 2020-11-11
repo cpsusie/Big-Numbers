@@ -11,25 +11,25 @@ namespace TestTinyBitSet {
   template<class BS> BS &genRandomSet(BS &dst, int size) {
     const UINT capacity = dst.getCapacity();
     dst.clear();
-    if (size == -1) {
-      for (size_t i = capacity / 2; i--;) {
+    if(size == -1) {
+      for(size_t i = capacity / 2; i--;) {
         dst.add(randInt(capacity));
       }
-    } else if ((size_t)size >= capacity) {
+    } else if((size_t)size >= capacity) {
       dst.invert();
-    } else if ((size_t)size > capacity / 2) {
+    } else if((size_t)size > capacity / 2) {
       dst.invert();
-      for (int t = capacity - size; t > 0;) {
+      for(int t = capacity - size; t > 0;) {
         const int e = randInt(capacity);
-        if (dst.contains(e)) {
+        if(dst.contains(e)) {
           dst.remove(e);
           t--;
         }
       }
     } else {
-      for (int t = size; t > 0;) {
+      for(int t = size; t > 0;) {
         const int e = randInt(capacity);
-        if (!dst.contains(e)) {
+        if(!dst.contains(e)) {
           dst.add(e);
           t--;
         }
@@ -94,7 +94,7 @@ namespace TestTinyBitSet {
       e.invert();
       e *= a;
       verify(e.size() == 4);
-      Iterator<UINT> it = a.getIterator();
+      auto it = a.getIterator();
       verify(it.next() == 1);
       verify(it.next() == 3);
       verify(it.next() == capacity-2);
@@ -122,20 +122,20 @@ namespace TestTinyBitSet {
 #define ANTALITERATIONER 20
       int s;
       try {
-        for (s = 0; s < ANTALITERATIONER; s++) {
+        for(s = 0; s < ANTALITERATIONER; s++) {
           BS a(genRandomSet<BS>());
           BS copy(a);
           UINT cap = a.getCapacity();
           copy.clear();
           UINT count = 0;
-          for (Iterator<UINT> it = a.getIterator(); it.hasNext();) {
-            if (!copy.isEmpty()) {
+          for(auto it = a.getIterator(); it.hasNext();) {
+            if(!copy.isEmpty()) {
               verify(copy.contains(copy.select()));
             } else {
               try {
                 UINT x = copy.select();
                 Assert::Fail(_T("TinyBitSet.select should throw exception when called on empty set"));
-              } catch (Exception e) {
+              } catch(Exception e) {
                 //ok
               }
             }
@@ -146,23 +146,23 @@ namespace TestTinyBitSet {
           verify(copy == a);
           copy.clear();
           count = 0;
-          for (Iterator<UINT> it = a.getReverseIterator(); it.hasNext();) {
+          for(auto it = a.getReverseIterator(); it.hasNext();) {
             copy.add(it.next());
             count++;
           }
           verify(count == copy.size());
           verify(copy == a);
-          for (UINT start = 0; start < cap+2; start++) {
-            for (UINT end = 0; end < cap; end++) {
+          for(UINT start = 0; start < cap+2; start++) {
+            for(UINT end = 0; end < cap; end++) {
               BS am(a), tmp;
               am.remove(start, end);
-              for(Iterator<UINT> it = a.getIterator(start, end); it.hasNext();) {
+              for(auto it = a.getIterator(start, end); it.hasNext();) {
                 tmp.add(it.next());
               }
               verify(a - am == tmp);
 
               tmp.clear();
-              for(Iterator<UINT> it = a.getReverseIterator(end, start); it.hasNext();) {
+              for(auto it = a.getReverseIterator(end, start); it.hasNext();) {
                 tmp.add(it.next());
               }
               verify(a - am == tmp);

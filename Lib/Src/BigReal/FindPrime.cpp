@@ -62,7 +62,7 @@ Sieve::Sieve(const BigInt &base) : m_base(base) {
   m_remainder = new UINT[n]; TRACE_NEW(m_remainder);
   memset(m_remainder,0,sizeof(m_remainder[0])*n);
   BigInt bp(pool), r(pool);
-  for(Iterator<size_t> it = s_smallPrimeSet.getIterator(); it.hasNext(); ) {
+  for(auto it = s_smallPrimeSet.getIterator(); it.hasNext(); ) {
     const UINT p = it.next();
     bp = p;
     m_remainder[p] = (UINT)(m_base % bp);
@@ -71,7 +71,7 @@ Sieve::Sieve(const BigInt &base) : m_base(base) {
 
 bool Sieve::hasSmallFactor(const BigInt &n, int &factor) const {
   const int diff = (int)(n - m_base);
-  for(Iterator<size_t> it = s_smallPrimeSet.getIterator(); it.hasNext(); ) {
+  for(auto it = s_smallPrimeSet.getIterator(); it.hasNext(); ) {
     int p = (int)it.next();
     int r;
     if(diff > 0) {

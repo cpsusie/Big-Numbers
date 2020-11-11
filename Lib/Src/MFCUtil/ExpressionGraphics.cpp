@@ -44,7 +44,7 @@ public:
 };
 
 FontCache::~FontCache() {
-  for(Iterator<Entry<FontSizeKey, CFont*> > it = getIterator(); it.hasNext();) {
+  for(auto it = getIterator(); it.hasNext();) {
     CFont *font = it.next().getValue();
     font->DeleteObject();
     SAFEDELETE(font);

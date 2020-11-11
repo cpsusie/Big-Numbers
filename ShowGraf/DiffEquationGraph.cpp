@@ -69,7 +69,7 @@ void DiffEquationGraph::calculate() {
     throwException(_T("%s:No visible graphs selected"), __TFUNCTION__);
   }
   CompactIntArray vectorGraphMap;
-  for(Iterator<UINT> it = eqSet.getIterator(); it.hasNext();) {
+  for(auto it = eqSet.getIterator(); it.hasNext();) {
     const UINT                     index = it.next();
     const EquationAttributes      &attr  = param.getEquationAttribute(  index);
     const DiffEquationDescription &desc  = param.getEquationDescription(index);

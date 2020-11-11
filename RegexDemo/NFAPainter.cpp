@@ -95,7 +95,7 @@ void NFAPainter::calculateAllPositions() {
 
 
   CompactArray<NFAState*> leftMostStates;
-  for(Iterator<size_t> it = leftStateSet.getIterator(); it.hasNext();) {
+  for(auto it = leftStateSet.getIterator(); it.hasNext();) {
     leftMostStates.add(allStates[it.next()]);
   }
 
@@ -501,7 +501,7 @@ void NFAPainter::animateOldToNew(HDC hdc) {
   if(anyMissing) {
     BitSet removedPointSet = usedPointSet.invert();
     FallingNFAStateArray fallArray;
-    for(Iterator<size_t> it = removedPointSet.getIterator(); it.hasNext();) {
+    for(auto it = removedPointSet.getIterator(); it.hasNext();) {
       const int id = (int)it.next();
       fallArray.add(FallingNFAState(s_oldNFAPoints[id], id));
     }

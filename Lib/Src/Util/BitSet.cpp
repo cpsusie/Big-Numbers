@@ -427,7 +427,7 @@ void BitSet::getRangeTable(CompactInt64Array &rangeTable, BYTE shift) const {
   const UINT         stepSize     = 1 << shift;
   size_t             currentLimit = stepSize;
   size_t             counter      = 0;
-  for(ConstIterator<size_t> it = getIterator(); it.hasNext();) {
+  for(auto it = getIterator(); it.hasNext();) {
     const size_t e = it.next();
     if(++counter >= currentLimit) {
 

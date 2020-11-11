@@ -327,7 +327,7 @@ public:
 };
 
 AllVOIDPtrOperands &AllVOIDPtrOperands::operator=(const AllMemoryOperands &src) {
-  for(ConstIterator<const InstructionOperand*> it = src.getIterator(); it.hasNext();) {
+  for(auto it = src.getIterator(); it.hasNext();) {
     const MemoryOperand &op = (MemoryOperand&)*it.next();
     if(op.getSize() == REGSIZE_BYTE) {
       add(new VOIDPtr(op));
@@ -627,7 +627,7 @@ void TestMachineCode::testOpcode(const OpcodeLea &opcode) {
 }
 
 void TestMachineCode::testOpcode1Arg(const OpcodeBase &opcode) {
-  for(Iterator<const InstructionOperand*> opIt = m_allOperands.getIterator(); opIt.hasNext();) {
+  for(auto opIt = m_allOperands.getIterator(); opIt.hasNext();) {
     const InstructionOperand &op = *opIt.next();
     if(opcode.isValidOperand(op)) {
       emit(opcode,op);
@@ -639,7 +639,7 @@ void TestMachineCode::testOpcode2Arg(const OpcodeBase &opcode, bool selectVOIDPt
   Iterator<const InstructionOperand*> opIt2 = selectVOIDPtr?m_allVOIDPtrOperands.getIterator() : m_allOperands.getIterator();
   while(opIt2.hasNext()) {
     const InstructionOperand &op2 = *opIt2.next();
-    for(Iterator<const InstructionOperand*> opIt1 = m_allOperands.getIterator(); opIt1.hasNext();) {
+    for(auto opIt1 = m_allOperands.getIterator(); opIt1.hasNext();) {
       const InstructionOperand &op1 = *opIt1.next();
       if(opcode.isValidOperandCombination(op1,op2)) {
         emit(opcode,op1,op2);
@@ -649,12 +649,12 @@ void TestMachineCode::testOpcode2Arg(const OpcodeBase &opcode, bool selectVOIDPt
 }
 
 void TestMachineCode::testOpcode3Arg(const OpcodeBase &opcode) {
-  for(Iterator<const InstructionOperand*> opIt3 = m_allOperands.getIterator(); opIt3.hasNext();) {
+  for(auto opIt3 = m_allOperands.getIterator(); opIt3.hasNext();) {
     const InstructionOperand &op3 = *opIt3.next();
     if(!opcode.isValidOperandType(op3,3)) continue;
-    for(Iterator<const InstructionOperand*> opIt2 = m_allOperands.getIterator(); opIt2.hasNext();) {
+    for(auto opIt2 = m_allOperands.getIterator(); opIt2.hasNext();) {
       const InstructionOperand &op2 = *opIt2.next();
-      for(Iterator<const InstructionOperand*> opIt1 = m_allOperands.getIterator(); opIt1.hasNext();) {
+      for(auto opIt1 = m_allOperands.getIterator(); opIt1.hasNext();) {
         const InstructionOperand &op1 = *opIt1.next();
         if(opcode.isValidOperandCombination(op1,op2,op3)) {
           emit(opcode,op1,op2,op3);
@@ -666,7 +666,7 @@ void TestMachineCode::testOpcode3Arg(const OpcodeBase &opcode) {
 
 void TestMachineCode::testOpcode(const StringPrefix &prefix) {
   newMnemonic(prefix.getMnemonic());
-  for(Iterator<const StringInstruction*> it = m_allStringInstructions.getIterator(); it.hasNext();) {
+  for(auto it = m_allStringInstructions.getIterator(); it.hasNext();) {
     const StringInstruction &ins = *it.next();
     emit(prefix(ins));
   }

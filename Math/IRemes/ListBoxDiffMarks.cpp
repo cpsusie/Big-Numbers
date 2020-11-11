@@ -161,7 +161,7 @@ void CListBoxDiffMarks::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) {
   if(m_diffMarksEnabled && (csp->m_bckDiff != csp->m_bckEqual)) {
     BitSet &diffSet = m_diffSetArray[index];
     if (!diffSet.isEmpty()) {
-      Iterator<size_t> it = diffSet.getIterator();
+      auto it = diffSet.getIterator();
       size_t beginIndex = it.next();
       size_t endIndex   = beginIndex;
       while(it.hasNext()) {

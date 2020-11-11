@@ -213,7 +213,7 @@ Array<Options> Options::getExisting() { // static
   Array<Options> result;
   RegistryKey root = getOptionsRootKey();
 
-  for(Iterator<String> it = root.getSubKeyIterator(); it.hasNext(); ) {
+  for(auto it = root.getSubKeyIterator(); it.hasNext(); ) {
     const int index = _ttoi(it.next().cstr());
     Options tmp;
     tmp.load(index);
@@ -226,7 +226,7 @@ Array<Options> Options::getExisting() { // static
 int Options::getNextIndex() { // static
   RegistryKey root = getOptionsRootKey();
   int maxExisting = -1;
-  for(Iterator<String> it = root.getSubKeyIterator(); it.hasNext(); ) {
+  for(auto it = root.getSubKeyIterator(); it.hasNext(); ) {
     const int index = _ttoi(it.next().cstr());
     if(index > maxExisting) {
       maxExisting = index;

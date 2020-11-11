@@ -20,7 +20,7 @@ D3SceneObjectVisual::D3SceneObjectVisual(D3SceneObjectVisual *parent, const Stri
 }
 
 D3SceneObjectVisual::~D3SceneObjectVisual() {
-  for(Iterator<D3SceneObjectVisual*> it = m_children.getIterator(); it.hasNext();) {
+  for(auto it = m_children.getIterator(); it.hasNext();) {
     D3SceneObjectVisual *child = it.next();
     SAFEDELETE(child);
   }
@@ -171,7 +171,7 @@ void D3SceneObjectVisual::setNormalsVisible(bool visible) {
 }
 
 void D3SceneObjectVisual::draw() {
-  for(Iterator<D3SceneObjectVisual*> it = m_children.getIterator(); it.hasNext();) {
+  for(auto it = m_children.getIterator(); it.hasNext();) {
     D3SceneObjectVisual *child = it.next();
     if(child->isVisible()) {
       child->draw();

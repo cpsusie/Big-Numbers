@@ -81,7 +81,7 @@ void ParserTree::deleteUnmarked() {
 }
 
 void RationalConstantMap::removeUnmarked() {
-  for(Iterator<Entry<Rational, ExpressionNodeNumber*> > it = getIterator(); it.hasNext();) {
+  for(auto it = getIterator(); it.hasNext();) {
     Entry<Rational, ExpressionNodeNumber*> &e = it.next();
     if(!e.getValue()->isMarked()) {
       it.remove();

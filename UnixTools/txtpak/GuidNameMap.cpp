@@ -28,7 +28,7 @@ void GuidNameMap::load(const String &fileName) {
 void GuidNameMap::save(const String &fileName) {
   FILE *f = FOPEN(fileName, _T("w"));
   try {
-    for(Iterator<Entry<String, FileInfo> > it = getIterator(); it.hasNext();) {
+    for(auto it = getIterator(); it.hasNext();) {
       const Entry<String, FileInfo> &e = it.next();
       const String                  &packedName = e.getKey();
       const FileInfo                &info = e.getValue();

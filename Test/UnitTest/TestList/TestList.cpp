@@ -57,7 +57,7 @@ namespace TestList {
 
 
       verify(list.size() == array.size());
-      for(Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
+      for(auto it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
         verify(it.next() == it1.next());
       }
 
@@ -73,12 +73,12 @@ namespace TestList {
       array.remove(6);
       verify(list.size() == array.size());
 
-      for(Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
+      for(auto it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
         verify(it.next() == it1.next());
       }
 
       int i = 0;
-      for(Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext(); it.next(), it1.next()) {
+      for(auto it = list.getIterator(), it1 = array.getIterator(); it.hasNext(); it.next(), it1.next()) {
         if (++i == 5) {
           it.remove();
           it1.remove();
@@ -87,7 +87,7 @@ namespace TestList {
       }
 
       verify(list.size() == array.size());
-      for(Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
+      for(auto it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
         verify(it.next() == it1.next());
       }
 
@@ -97,7 +97,7 @@ namespace TestList {
       list.removeFirst();
 
       verify(list.size() == array.size());
-      for(Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
+      for(auto it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
         verify(it.next() == it1.next());
       }
 
@@ -105,7 +105,7 @@ namespace TestList {
       list.removeLast();
 
       verify(list.size() == array.size());
-      for(Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
+      for(auto it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
         verify(it.next() == it1.next());
       }
 
@@ -113,7 +113,7 @@ namespace TestList {
 
       verify(list1 == list);
 
-      for(Iterator<ListElement> it = list.getIterator(); it.hasNext();) {
+      for(auto it = list.getIterator(); it.hasNext();) {
         verify(list1.contains(it.next()));
       }
 

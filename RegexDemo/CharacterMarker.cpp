@@ -102,7 +102,7 @@ void CharacterMarker::setMarks(const BitSet &s) {
 
 void CharacterMarker::paintAllMarkPositions(bool mark) {
   CClientDC dc(m_dlg);
-  for(Iterator<size_t> it = m_markSet.getIterator(); it.hasNext();) {
+  for(auto it = m_markSet.getIterator(); it.hasNext();) {
     paintMarkPosition(dc, it.next(), mark);
   }
 }

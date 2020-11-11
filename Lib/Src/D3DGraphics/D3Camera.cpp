@@ -89,13 +89,13 @@ D3Camera &D3Camera::setLightControlsVisible(const BitSet &set) {
     const bool notifyEnable = setNotifyEnable(false);
     BitSet missing = newSet - oldSet;
     if(!missing.isEmpty()) {
-      for(Iterator<size_t> it = missing.getIterator(); it.hasNext();) {
+      for(auto it = missing.getIterator(); it.hasNext();) {
         setLightControlVisible((UINT)it.next(), true);
       }
     }
     BitSet hideSet = oldSet - newSet;
     if(!hideSet.isEmpty()) {
-      for(Iterator<size_t> it = hideSet.getIterator(); it.hasNext();) {
+      for(auto it = hideSet.getIterator(); it.hasNext();) {
         setLightControlVisible((UINT)it.next(), false);
       }
     }

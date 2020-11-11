@@ -71,7 +71,7 @@ ProfilePolygon2D::ProfilePolygon2D() {
 Point2DArray ProfilePolygon2D::getAllPoints() const {
   Point2DArray result;
   result.add(m_start);
-  for(ConstIterator<ProfileCurve2D> it = m_curveArray.getIterator(); it.hasNext();) {
+  for(auto it = m_curveArray.getIterator(); it.hasNext();) {
     result.addAll(it.next().getAllPoints());
   }
   return result;
@@ -80,7 +80,7 @@ Point2DArray ProfilePolygon2D::getAllPoints() const {
 Point2DRefArray ProfilePolygon2D::getAllPointsRef() {
   Point2DRefArray result;
   result.add(&m_start);
-  for(Iterator<ProfileCurve2D> it = m_curveArray.getIterator(); it.hasNext();) {
+  for(auto it = m_curveArray.getIterator(); it.hasNext();) {
     result.addAll(it.next().getAllPointsRef());
   }
   return result;
@@ -175,7 +175,7 @@ String ProfilePolygon2D::toString() const {
 
 Point2DArray Profile2D::getAllPoints() const {
   Point2DArray result;
-  for(ConstIterator<ProfilePolygon2D> it = m_polygonArray.getIterator(); it.hasNext();) {
+  for(auto it = m_polygonArray.getIterator(); it.hasNext();) {
     result.addAll(it.next().getAllPoints());
   }
   return result;

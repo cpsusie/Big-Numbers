@@ -224,7 +224,7 @@ void LcsBitSet::findLcs(ElementPairArray &result) {
     BitSetWithPlus SS = S.operator+(S & M[m_Y[j]]) | (S & Mm[m_Y[j]]);
     BitSetWithPlus K = (S ^ SS) & S;
 
-    for(Iterator<size_t> it = K.getReverseIterator(); it.hasNext(); ) {
+    for(auto it = K.getReverseIterator(); it.hasNext(); ) {
       const UINT i = (UINT)it.next();
       const UINT k = findK(i);
       m_tresh[k] = i;

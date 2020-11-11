@@ -31,7 +31,7 @@ String DFAState::toString(bool showNFASet) const {
 
   DFATransitionMap map;;
   getTransitionMap(map);
-  for(Iterator<Entry<int, CharacterSet> > it = map.getIterator(); it.hasNext();) {
+  for(auto it = map.getIterator(); it.hasNext();) {
     const Entry<int, CharacterSet> &e = it.next();
     result += format(_T("\n   goto %2d on %s"), e.getKey(), charBitSetToString(e.getValue(), NFAState::getFormater()).cstr());
   }

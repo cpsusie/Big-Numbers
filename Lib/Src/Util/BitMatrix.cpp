@@ -30,7 +30,7 @@ BitMatrix &BitMatrix::setDimension(const MatrixDimension &dim) {
     for(size_t r = 0; r < copyR; r++) {
       const size_t firstIndexInRow = r*oldDim.columnCount;
       const size_t lastIndexInRow  = firstIndexInRow + copyC;
-      for(ConstIterator<size_t> it = old.getIterator(firstIndexInRow); it.hasNext();) {
+      for(auto it = old.getIterator(firstIndexInRow); it.hasNext();) {
         const size_t index = it.next();
         if(index >= lastIndexInRow) break;
         set(r, index - firstIndexInRow, 1);
@@ -59,7 +59,7 @@ void BitMatrix::checkValidColumn(const TCHAR *method, size_t c) const {
 BitSet &BitMatrix::getRow(size_t r, BitSet &s) const {
   checkValidRow(__TFUNCTION__, r);
   s.clear().setCapacity(getColumnCount());
-  for(ConstIterator<MatrixIndex> it = getRowIterator(r); it.hasNext();) {
+  for(auto it = getRowIterator(r); it.hasNext();) {
     s.add(it.next().c);
   }
   return s;
@@ -68,7 +68,7 @@ BitSet &BitMatrix::getRow(size_t r, BitSet &s) const {
 BitSet &BitMatrix::getColumn(size_t c, BitSet &s) const {
   checkValidColumn(__TFUNCTION__, c);
   s.clear().setCapacity(getRowCount());
-  for(ConstIterator<MatrixIndex> it = getColumnIterator(c); it.hasNext();) {
+  for(auto it = getColumnIterator(c); it.hasNext();) {
     s.add(it.next().r);
   }
   return s;

@@ -172,7 +172,7 @@ void ResourceFile::analyzeDialog(const DialogDefinition &dialog) const {
     const BitSet      menuAltLetters    = getAltLetterSet(menuStrings, format(_T("Menu %s"), menu->getId().cstr()));
           BitSet intersection = menuAltLetters & controlAltLetters;
     if(!intersection.isEmpty()) {
-      for(Iterator<size_t> it = intersection.getIterator(); it.hasNext();) {
+      for(auto it = intersection.getIterator(); it.hasNext();) {
         TCHAR ch = (TCHAR)it.next();
         const String menuText    = findFirstStringUsingAltLetter(menuStrings   , ch);
         const String controlText = findFirstStringUsingAltLetter(controlStrings, ch);

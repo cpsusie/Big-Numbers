@@ -535,7 +535,7 @@ namespace TestCompactArray {
       verify(a.remove(55));
 
       index = 0;
-      for(Iterator<int> it = a.getIterator(); it.hasNext() && index < 10; index++)
+      for(auto it = a.getIterator(); it.hasNext() && index < 10; index++)
       verify(a.contains(it.next()));
       */
 

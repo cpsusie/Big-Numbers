@@ -78,7 +78,7 @@ MeshBuilder &MeshBuilder::reduceVertexArray() {
         if(uniquecount < 3) {
           degeneratedFaces.add(f);
         } else if(uniquecount < vcount) {
-          for(Iterator<UINT> it = duplicates.getIterator(); it.hasNext();) {
+          for(auto it = duplicates.getIterator(); it.hasNext();) {
             va.remove(it.next());
           }
         }

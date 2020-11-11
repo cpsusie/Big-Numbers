@@ -789,7 +789,7 @@ void CParserDemoDlg::setBreakText(int controlId, const StringArray &textArray) {
 
 void CParserDemoDlg::setBreakProdText() {
   StringArray textArray;
-  for(Iterator<size_t> it = m_breakProductions->getIterator(); it.hasNext();) {
+  for(auto it = m_breakProductions->getIterator(); it.hasNext();) {
     textArray.add(format(_T("%d"), (int)it.next()));
   }
   setBreakText(IDC_BREAKPRODTEXT, textArray);
@@ -797,7 +797,7 @@ void CParserDemoDlg::setBreakProdText() {
 
 void CParserDemoDlg::setBreakStateText() {
   StringArray textArray;
-  for(Iterator<size_t> it = m_breakStates->getIterator(); it.hasNext();) {
+  for(auto it = m_breakStates->getIterator(); it.hasNext();) {
     textArray.add(format(_T("%d"), (int)it.next()));
   }
   setBreakText(IDC_BREAKSTATETEXT, textArray);
@@ -805,7 +805,7 @@ void CParserDemoDlg::setBreakStateText() {
 
 void CParserDemoDlg::setBreakSymbolText() {
   StringArray textArray;
-  for(Iterator<size_t> it = m_breakSymbols->getIterator(); it.hasNext();) {
+  for(auto it = m_breakSymbols->getIterator(); it.hasNext();) {
     textArray.add(m_parser.getSymbolName((int)it.next()));
   }
   setBreakText(IDC_BREAKSYMBOLTEXT, textArray);

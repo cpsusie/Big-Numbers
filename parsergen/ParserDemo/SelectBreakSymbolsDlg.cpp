@@ -27,13 +27,13 @@ BOOL CSelectBreakSymbolsDlg::OnInitDialog() {
     m_symbolMap.put(m_tables.getSymbolName(s), SymbolPos(s, m_symbolSet.contains(s)));
   }
   s = 0;
-  for(Iterator<Entry<String, SymbolPos> > it = m_symbolMap.getIterator(); it.hasNext();) {
+  for(auto it = m_symbolMap.getIterator(); it.hasNext();) {
     Entry<String, SymbolPos> &entry = it.next();
     entry.getValue().m_symbolSetIndex = s++;
     lb->InsertString(-1, entry.getKey().cstr());
   }
 
-  for(Iterator<Entry<String, SymbolPos> > it = m_symbolMap.getIterator(); it.hasNext();) {
+  for(auto it = m_symbolMap.getIterator(); it.hasNext();) {
     SymbolPos &symbolPos = it.next().getValue();
     if(symbolPos.m_selected) {
       lb->SetSel(symbolPos.m_symbolSetIndex);
@@ -50,7 +50,7 @@ void CSelectBreakSymbolsDlg::OnOK() {
   int *items = new int[count];
   listbox->GetSelItems(count, items);
   IntHashMap<int> symbolMap;
-  for(Iterator<Entry<String, SymbolPos> > it = m_symbolMap.getIterator(); it.hasNext();) {
+  for(auto it = m_symbolMap.getIterator(); it.hasNext();) {
     SymbolPos &pos = it.next().getValue();
     symbolMap.put(pos.m_symbolSetIndex, pos.m_symbolNo);
   }

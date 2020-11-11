@@ -81,7 +81,7 @@ StringArray FileFormat::getExistingNames() { // static
   StringArray result;
   RegistryKey root = getRootKey();
 
-  for(Iterator<String> it = root.getSubKeyIterator(); it.hasNext(); ) {
+  for(auto it = root.getSubKeyIterator(); it.hasNext(); ) {
     result.add(it.next());
   }
   return result;
@@ -95,7 +95,7 @@ Array<FileFormat> FileFormat::getExisting() { // static
   Array<FileFormat> result;
   RegistryKey root = getRootKey();
 
-  for(Iterator<String> it = root.getSubKeyIterator(); it.hasNext(); ) {
+  for(auto it = root.getSubKeyIterator(); it.hasNext(); ) {
     FileFormat tmp;
     tmp.load(it.next());
     result.add(tmp);
