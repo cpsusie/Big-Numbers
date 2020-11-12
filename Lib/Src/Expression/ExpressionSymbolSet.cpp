@@ -21,7 +21,7 @@ void NodeTypeSet::init(ExpressionNodeType t1, va_list argptr) {
 
 class NodeTypeSetStringifier : public AbstractStringifier<UINT> {
 public:
-  String toString(const UINT &e) {
+  String toString(const UINT &e) override {
     const ExpressionNodeType type = (ExpressionNodeType)e;
     return ExpressionNode::getNodeTypeName(type);
   }
@@ -56,14 +56,14 @@ void ExpressionSymbolSet::init(ExpressionInputSymbol s1, va_list argptr) {
 
 class SymbolStringifier : public AbstractStringifier<ExpressionInputSymbol> {
 public:
-  String toString(const ExpressionInputSymbol &e) {
+  String toString(const ExpressionInputSymbol &e) override {
     return ExpressionNode::getSymbolName(e);
   }
 };
 
 class SymbolSetStringifier : public AbstractStringifier<size_t> {
 public:
-  String toString(const size_t &e) {
+  String toString(const size_t &e) override {
     const ExpressionInputSymbol symbol = (ExpressionInputSymbol)e;
     return ExpressionNode::getSymbolName(symbol);
   }

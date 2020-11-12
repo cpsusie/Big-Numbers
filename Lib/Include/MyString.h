@@ -399,27 +399,27 @@ public:
 
 class IntStringifier : public AbstractStringifier<INT> {
 public:
-  String toString(const INT &e);
+  String toString(const INT &e) override;
 };
 
 class UIntStringifier : public AbstractStringifier<UINT> {
 public:
-  String toString(const UINT &e);
+  String toString(const UINT &e) override;
 };
 
 class Int64Stringifier : public AbstractStringifier<INT64> {
 public:
-  String toString(const INT64 &e);
+  String toString(const INT64 &e) override;
 };
 
 class UInt64Stringifier : public AbstractStringifier<UINT64> {
 public:
-  String toString(const UINT64 &e);
+  String toString(const UINT64 &e) override;
 };
 
 class SizeTStringifier : public AbstractStringifier<size_t> {
 public:
-  String toString(const size_t &e);
+  String toString(const size_t &e) override;
 };
 
 class CharacterFormater : public AbstractStringifier<size_t> {

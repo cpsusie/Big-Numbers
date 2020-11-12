@@ -2,14 +2,14 @@
 
 class StdAsciiFormater : public CharacterFormater {
 public:
-  String toString(const size_t &ch) {
+  String toString(const size_t &ch) override {
     return format(_istprint((_TUCHAR)ch) ? _T("%c") : _T("\\x%02x"), (_TUCHAR)ch);
   };
 };
 
 class ExtendedAsciiFormater : public CharacterFormater {
 public:
-  String toString(const size_t &ch) {
+  String toString(const size_t &ch) override {
     return format((ch < 256) ? _T("%c") : _T("\\x%04x"), (_TUCHAR)ch);
   };
 };
@@ -19,7 +19,7 @@ private:
   const UINT m_maxPrintable;
   const bool m_useHex;
 public:
-  String toString(const size_t &ch);
+  String toString(const size_t &ch) override;
   EscapedAsciiFormater(UINT maxPrintable, bool useHex) : m_maxPrintable(maxPrintable), m_useHex(useHex) {
   }
 };

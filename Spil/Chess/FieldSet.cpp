@@ -15,7 +15,7 @@ FieldSet::FieldSet(int f,...) {
 
 class FieldStringifier : public AbstractStringifier<UINT> {
 public:
-  String toString(const UINT &position) {
+  String toString(const UINT &position) override {
     return getFieldName(position);
   }
 };

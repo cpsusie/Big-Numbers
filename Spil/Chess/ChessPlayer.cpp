@@ -665,7 +665,7 @@ AbstractMoveFinder *ChessPlayer::newMoveFinderNormalPlay(const RequestParamFindM
 
 class StateStringifier : public AbstractStringifier<UINT> {
 public:
-  String toString(const UINT &state) {
+  String toString(const UINT &state) override {
     return ChessPlayer::getStateName((ChessPlayerState)state);
   }
 };

@@ -884,7 +884,7 @@ String SimplexArray::toString() const {
 
 class CubeCornerStringifier : public AbstractStringifier<UINT> {
 public:
-  String toString(const UINT &e) {
+  String toString(const UINT &e) override {
     return cubeCornerToString((CubeCorner)e);
   }
 };

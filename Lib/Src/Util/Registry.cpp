@@ -342,7 +342,7 @@ String RegistryKey::getClass() {
 
 class ValueTypeStringifier : public AbstractStringifier<UINT> {
 public:
-  String toString(const UINT &type) {
+  String toString(const UINT &type) override {
     return RegistryValueInfo::typeName(type);
   }
 };

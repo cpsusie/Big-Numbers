@@ -18,6 +18,20 @@ public:
 };
 
 template<typename T> class ConstIterator {
+private:
+  template<typename S> static void flushRange(String &str, const S &first, const S &last, AbstractStringifier<S> &sf, const TCHAR * &delim, const TCHAR *delimiter) {
+    if(delim) {
+      str += delim;
+    } else {
+      delim = delimiter;
+    }
+    if(last == first) {
+      str += sf.toString(first);
+    } else  {
+      str += format(_T("%s-%s"), sf.toString(first).cstr(), sf.toString(last).cstr());
+    }
+  }
+
 protected:
   AbstractIterator *m_it;
 public:
@@ -56,74 +70,56 @@ public:
   }
 
   String toString(AbstractStringifier<T> &sf, const TCHAR *delimiter = _T(",")) const {
-    String result = "(";
+    String result;
+    result += '(';
     if(hasNext()) {
-      ConstIterator<T> t = *this;
-      result += sf.toString(t.next());
-      while(t.hasNext()) {
+      ConstIterator<T> it = *this;
+      result += sf.toString(it.next());
+      while(it.hasNext()) {
         result += delimiter;
-        result += sf.toString(t.next());
+        result += sf.toString(it.next());
       }
     }
-    result += ")";
+    result += ')';
     return result;
   }
+
   String toString(const TCHAR *delimiter = _T(",")) const {
     std::wostringstream result;
-    result << "(";
+    result << '(';
     if(hasNext()) {
-      ConstIterator<T> t = *this;
-      result << t.next();
-      while(t.hasNext()) {
-        result << delimiter << t.next();
+      ConstIterator<T> it = *this;
+      result << it.next();
+      while(it.hasNext()) {
+        result << delimiter << it.next();
       }
     }
-    result << ")";
+    result << ')';
     return result.str().c_str();
   }
 
   // T must be enumerable (e1 + 1 == e2 must be defined for T e1,e2)
   String rangesToString(AbstractStringifier<T> &sf, const TCHAR *delimiter = _T(",")) const {
-
-#if defined(_FLUSHRANGE)
-#undef _FLUSHRANGE
-#endif
-
-#define _FLUSHRANGE()                                                                     \
-    { if(delim) result += delim; else delim = delimiter;                                  \
-      if(first == last) {                                                                 \
-        result += sf.toString(first);                                                     \
-      } else {                                                                            \
-        const TCHAR *formatStr = (first + 1 == last) ? _T("%s%s") : _T("%s-%s");          \
-        result += format(formatStr, sf.toString(first).cstr(), sf.toString(last).cstr()); \
-      }                                                                                   \
-    }
-
-    String           result    = _T("[");
-    const TCHAR     *delim     = nullptr;
-    bool             firstTime = true;
-    ConstIterator<T> t         = *this;
-    T                first, last;
-
-    while(t.hasNext()) {
-      const T &e = t.next();
-      if(firstTime) {
-        first = last = e;
-        firstTime = false;
-      } else if(e == last+1) {
-        last = e;
-      } else {
-        _FLUSHRANGE();
-        first = last = e;
+    String result;
+    result += '[';
+    if(hasNext()) {
+      ConstIterator<T> it    = *this;
+      const TCHAR     *delim = nullptr;
+      T                first = it.next(), last = first;
+      while(it.hasNext()) {
+        const T &e = it.next();
+        if(e == last+1) {
+          last = e;
+        } else {
+          flushRange(result,first,last,sf, delim, delimiter);
+          first = last = e;
+        }
       }
+      flushRange(result,first,last,sf, delim, delimiter);
     }
-    if(!firstTime) {
-      _FLUSHRANGE();
-    }
-    result += _T("]");
+    result += ']';
     return result;
   }
-#undef _FLUSHRANGE
 };
 
 template<typename T> class Iterator: public ConstIterator<T> {
