@@ -56,11 +56,12 @@ public:
   Grammar      &getGrammar()                        { return m_grammar;                 }
   void          setHandler(ParserHandler *handler)  { m_handler = handler;              }
   void          setNewInput(const TCHAR *String);
-  inline bool   accept()              const         { return m_ok;                      }
-  inline UINT   getCycleCount()       const         { return m_cycleCount;              }
-  const String &getLegalInput()       const         { return m_legalLookahead[state()]; }
-  String        getActionString()     const;
-  String        getActionMatrixDump() const;
+  inline bool   accept()                 const      { return m_ok;                      }
+  inline UINT   getCycleCount()          const      { return m_cycleCount;              }
+  const String &getLegalInput()          const      { return m_legalLookahead[state()]; }
+  String        getActionString()        const;
+  String        getActionMatrixDump()    const;
+  String        getSuccessorMatrixDump() const;
   const String &getStateItems(UINT state);
   inline SyntaxNodep getRoot()                      { return m_root;                    }
   void addSyntaxNode(SyntaxNodep p)                 { m_nodeList.add(p);                }

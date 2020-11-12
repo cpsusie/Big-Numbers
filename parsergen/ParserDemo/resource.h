@@ -68,7 +68,8 @@
 #define IDC_LISTSYMBOLS                 1110
 #define IDC_EDITLINENUMBER              1120
 #define ID_FILE_DUMPACTIONMATRIX        32771
-#define ID_FILE_EXIT                    32772
+#define ID_FILE_DUMPSUCCESORMATRIX      32772
+#define ID_FILE_EXIT                    32773
 #define ID_EDIT_NEXTERROR               32780
 #define ID_EDIT_PREVERROR               32781
 #define ID_EDIT_FINDNEXT                32783
@@ -125,7 +126,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        124
-#define _APS_NEXT_COMMAND_VALUE         33901
+#define _APS_NEXT_COMMAND_VALUE         33902
 #define _APS_NEXT_CONTROL_VALUE         1085
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

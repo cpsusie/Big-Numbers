@@ -67,8 +67,9 @@ BEGIN_MESSAGE_MAP(CParserDemoDlg, CDialog)
   ON_COMMAND(      IDOK                              , OnOk                            )
   ON_COMMAND(      ID_FILE_OPEN                      , OnFileOpen                      )
   ON_COMMAND(      ID_FILE_DUMPACTIONMATRIX          , OnFileDumpActionMatrix          )
+  ON_COMMAND(      ID_FILE_DUMPSUCCESORMATRIX        , OnFileDumpSuccesorMatrix        )
   ON_COMMAND(      ID_FILE_EXIT                      , OnFileExit                      )
-  ON_COMMAND(      ID_EDIT_SELECTPRODTOBREAKON, OnEditSelectProductionsToBreakOn)
+  ON_COMMAND(      ID_EDIT_SELECTPRODTOBREAKON       , OnEditSelectProductionsToBreakOn)
   ON_COMMAND(      ID_EDIT_SELECTSTATESTOBREAKON     , OnEditSelectStatesToBreakOn     )
   ON_COMMAND(      ID_EDIT_FIND                      , OnEditFind                      )
   ON_COMMAND(      ID_EDIT_FINDNEXT                  , OnEditFindNext                  )
@@ -436,12 +437,33 @@ void CParserDemoDlg::OnFileOpen() {
 }
 
 void CParserDemoDlg::OnFileDumpActionMatrix() {
-  String dump             = m_parser.getActionMatrixDump();
+  const String dump       = m_parser.getActionMatrixDump();
   String objname          = _T("ActionTestResult");
   String filter           = format(_T("txt-files (*.txt)%c*.*%cAll files (*.*)%c*.*%c%c"),0,0,0,0,0);
-  String defaultExtension = _T("*.txt");
+  String defaultExtension = _T("txt");
   CFileDialog dlg(FALSE, defaultExtension.cstr(), objname.cstr());
   dlg.m_ofn.lpstrTitle  = _T("Dump Action Matrix Test result");
+  dlg.m_ofn.lpstrFilter = filter.cstr();
+
+  if((dlg.DoModal() != IDOK) || (_tcslen(dlg.m_ofn.lpstrFile) == 0)) {
+    return;
+  }
+  try {
+    FILE *f = MKFOPEN(dlg.m_ofn.lpstrFile, _T("w"));
+    fputws(dump.cstr(), f);
+    fclose(f);
+  } catch(Exception e) {
+    showException(e);
+  }
+}
+
+void CParserDemoDlg::OnFileDumpSuccesorMatrix() {
+  const String dump       = m_parser.getSuccessorMatrixDump();
+  String objname          = _T("SuccessorTestResult");
+  String filter           = format(_T("txt-files (*.txt)%c*.*%cAll files (*.*)%c*.*%c%c"),0,0,0,0,0);
+  String defaultExtension = _T("txt");
+  CFileDialog dlg(FALSE, defaultExtension.cstr(), objname.cstr());
+  dlg.m_ofn.lpstrTitle  = _T("Dump Successor Matrix Test result");
   dlg.m_ofn.lpstrFilter = filter.cstr();
 
   if((dlg.DoModal() != IDOK) || (_tcslen(dlg.m_ofn.lpstrFile) == 0)) {

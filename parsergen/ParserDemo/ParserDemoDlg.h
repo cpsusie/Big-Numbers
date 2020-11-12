@@ -72,6 +72,7 @@ protected:
   afx_msg HCURSOR OnQueryDragIcon();
   afx_msg void OnFileOpen();
   afx_msg void OnFileDumpActionMatrix();
+  afx_msg void OnFileDumpSuccesorMatrix();
   afx_msg void OnFileExit();
   afx_msg void OnOk();
   afx_msg void OnSize(UINT nType, int cx, int cy);

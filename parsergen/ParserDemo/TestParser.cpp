@@ -240,3 +240,120 @@ String TestParser::getActionMatrixDump() const {
   }
   return result;
 }
+
+class StateSucc {
+public:
+  UINT m_state, m_succ;
+  inline StateSucc() : m_state(0), m_succ(0) {
+  }
+  inline StateSucc(UINT state, UINT succ) : m_state(state), m_succ(succ) {
+  }
+};
+
+static int stateSuccCmpBySucc(const StateSucc &s1, const StateSucc &s2) {
+  return (int)s1.m_succ - (int)s2.m_succ;
+}
+
+class StateSuccArray : public CompactArray<StateSucc> {
+private:
+  const UINT m_stateCount;
+public:
+  inline StateSuccArray(UINT stateCount) : m_stateCount(stateCount) {
+  }
+  inline void sortBySucc() {
+    sort(stateSuccCmpBySucc);
+  }
+  String toString() const;
+};
+
+String StateSuccArray::toString() const {
+  String result;
+  if(!isEmpty()) {
+    UINT flushCount = 0;
+    BitSet states(m_stateCount);
+    int lastSucc = -1;
+    TCHAR delim = ':';
+    for(auto it = getIterator(); it.hasNext();) {
+      const StateSucc &ss = it.next();
+      if(ss.m_succ != lastSucc) {
+        if(!states.isEmpty()) {
+          result += format(_T("%csucc=%4u on %s"), delim, lastSucc, states.toString().cstr());
+          flushCount++;
+          delim = ',';
+          states.clear();
+        }
+        lastSucc = ss.m_succ;
+      }
+      states.add(ss.m_state);
+    }
+    if(!states.isEmpty()) {
+      if(flushCount == 0) {
+        result += format(_T("%csucc=%4u from %4u states"), delim, lastSucc, states.size());
+      } else {
+        result += format(_T("%csucc=%4u on %s"), delim, lastSucc, states.toString().cstr());
+      }
+    }
+  }
+  return result;
+}
+
+String TestParser::getSuccessorMatrixDump() const {
+  const ParserTables &tables      = getParserTables();
+  const UINT          stateCount  = tables.getStateCount();
+  const UINT          termCount   = tables.getTerminalCount();
+  const UINT          symbolCount = tables.getSymbolCount();
+  const UINT          NTCount     = symbolCount - termCount;
+  String              result;
+
+  Array<StateSuccArray> transposeMatrix(NTCount);
+  for(UINT ntIndex = 0; ntIndex < NTCount; ntIndex++) {
+    transposeMatrix.add(StateSuccArray(stateCount));
+  }
+  result = _T("     | ");
+  for(UINT nt = termCount; nt < symbolCount; nt++) {
+    result += format(_T("%4u "), nt);
+  }
+
+  result += '\n';
+  result += spaceString(result.length(), _T('_'));
+  result += '\n';
+
+  UINT NTArray[1000];
+  for(UINT s = 0; s < stateCount; s++) {
+    const UINT n = tables.getLegalNTCount(s);
+    tables.getLegalNTerms(s, NTArray);
+    CompactUIntArray stateArray(symbolCount);
+    stateArray.insert(0, (UINT)_ParserError, symbolCount);
+    for(UINT i = 0; i < n; i++) {
+      const UINT nt   = NTArray[i];
+      const UINT succ = tables.getSuccessor(s, nt);
+      stateArray[nt]  = succ;
+      transposeMatrix[nt - termCount].add(StateSucc(s, succ));
+    }
+    String line;
+    line = format(_T("%4u | "), s);
+    for(UINT nt = termCount; nt < symbolCount; nt++) {
+      const int succ = stateArray[nt];
+      if(succ == _ParserError) {
+        line += _T("   E ");
+      } else {
+        line += format(_T("%4u "), succ);
+      }
+    }
+    result += line;
+    result += '\n';
+  }
+
+  result += _T("\n\n\n");
+
+  for(auto it = transposeMatrix.getIterator(); it.hasNext();) {
+    it.next().sortBySucc();
+  }
+
+  UINT nt = termCount;
+  for(auto it = transposeMatrix.getIterator(); it.hasNext(); nt++) {
+    const String line = format(_T("NT:%4u:%s\n"), nt, it.next().toString().cstr());
+    result += line;
+  }
+  return result;
+}

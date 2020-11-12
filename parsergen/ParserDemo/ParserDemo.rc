@@ -86,7 +86,8 @@ BEGIN
     BEGIN
         MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
         MENUITEM SEPARATOR
-        MENUITEM "&Dump action matrix...",      ID_FILE_DUMPACTIONMATRIX
+        MENUITEM "Dump &action matrix...",      ID_FILE_DUMPACTIONMATRIX
+        MENUITEM "Dump &succesor matrix...",    ID_FILE_DUMPSUCCESORMATRIX
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_FILE_EXIT
     END

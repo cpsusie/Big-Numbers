@@ -30,12 +30,16 @@ public:
   virtual void         getRightSide(        UINT prod, UINT *dst     ) const = 0;
   virtual UINT         getTerminalCount()                              const = 0;
   virtual UINT         getSymbolCount()                                const = 0;
+  inline  UINT         getNTCount()                                    const {
+    return getSymbolCount() - getTerminalCount();
+  }
   virtual UINT         getProductionCount()                            const = 0;
   virtual UINT         getStateCount()                                 const = 0;
   virtual UINT         getLegalInputCount(  UINT state               ) const = 0;
   virtual void         getLegalInputs(      UINT state, UINT *symbols) const = 0;
+  virtual UINT         getLegalNTCount(     UINT state               ) const = 0;
+  virtual void         getLegalNTerms(      UINT state, UINT *symbols) const = 0;
   virtual UINT         getTableByteCount(   Platform platform        ) const = 0;
-
   virtual ~ParserTables() {
   }
 
@@ -110,16 +114,59 @@ private:
 
 // ----------------------------- successor functions ---------------------------------------
   static inline UINT getSuccessorOneItem(UINT code, UINT nt) {
-    assert((nt - terminalCount) == (code & 0xffff));
+    assert((nt - terminalCount) == (code & 0x7fff));
     return code >> 17;
   }
   inline const NTIndexType *getNTindexList(UINT code) const {
-    return m_NTindexListTable + (code & 0xffff);
+    return m_NTindexListTable + (code & 0x7fff);
   }
-  inline UINT geSuccessorNtIndexList(UINT code, UINT nt) const {
+  inline UINT getSuccessorNtIndexList(UINT code, UINT nt) const {
     const int index = findElement(getNTindexList(code), nt - terminalCount);
     assert(index >= 0);
     return m_stateListTable[(code >> 17) + index];
+  }
+
+  inline UINT getSuccesorFromCode(UINT code, UINT nt) const {
+    switch(getCompressionCode(code)) {
+    case CompCodeTermList : return getSuccessorNtIndexList(code, nt);
+    case CompCodeOneItem  : return getSuccessorOneItem(    code, nt);
+    default               : throwException(_T("%s:Invalid compressionCode:%#08x"), __TFUNCTION__, code);
+    }
+    return 0;
+  }
+
+  inline UINT getLegalNTCountIndexList(UINT code) const {
+    const NTIndexType *indexList = getNTindexList(code);
+    return indexList[0];
+  }
+  inline UINT getLegalNTCountFromCode(UINT code) const {
+    switch(getCompressionCode(code)) {
+    case CompCodeTermList : return getLegalNTCountIndexList(code);
+    case CompCodeOneItem  : return 1;
+    default               : return 0;
+    }
+  }
+
+  inline UINT getLegalNTermsIndexList(UINT code, UINT *symbols) const {
+    const NTIndexType *NTindexList = getNTindexList(code);
+    const UINT         n           = *(NTindexList++);
+    for(const NTIndexType *endp = NTindexList+n; NTindexList < endp;) {
+      *(symbols++) = *(NTindexList++) + terminalCount;
+    }
+    return n;
+  }
+
+  inline UINT getLegalNTermsOneItem(  UINT code, UINT *symbols) const {
+    *symbols = (code & 0x7fff) + terminalCount;
+    return 1;
+  }
+
+  inline UINT getLegalNTermsFromCode(UINT code, UINT *symbols) const {
+    switch(getCompressionCode(code)) {
+    case CompCodeTermList : return getLegalNTermsIndexList(code, symbols);
+    case CompCodeOneItem  : return getLegalNTermsOneItem(  code, symbols);
+    default               : return 0;
+    }
   }
 
 // ----------------------------------- action functions ---------------------------------
@@ -259,48 +306,50 @@ public:
   //   action <  0 : Reduce by production p = -action;
   //   action == 0 : Accept, ie. reduce by production 0
   //   _ParserError: Unexpected term
-  int getAction(UINT state, UINT term)           const override {
+  int getAction(UINT state, UINT term)               const override {
     assert(state < stateCount);
     return getActionFromCode(m_actionCode[state], term);
   }
 
   // nt is nonterminal
-  UINT getSuccessor(UINT state, UINT nt)         const override {
+  UINT getSuccessor(      UINT state, UINT nt)       const override {
     assert(state < stateCount);
-    const UINT code = m_successorCode[state];
-    switch(getCompressionCode(code)) {
-    case CompCodeTermList : return geSuccessorNtIndexList(code, nt);
-    case CompCodeOneItem  : return getSuccessorOneItem(   code, nt);
-    default               : throwException(_T("%s:Invalid compressionCode for state %u"), __TFUNCTION__, state);
-    }
-    return 0;
+    return getSuccesorFromCode(m_successorCode[state], nt);
   }
 
-  UINT getLegalInputCount(UINT state)            const override {
+  UINT getLegalInputCount(UINT state               ) const override {
     assert(state < stateCount);
     return getLegalInputCountFromCode(m_actionCode[state]);
   }
-  void getLegalInputs(UINT state, UINT *symbols) const override {
+  void getLegalInputs(    UINT state, UINT *symbols) const override {
     assert(state < stateCount);
     getLegalInputsFromCode(m_actionCode[state], symbols);
   }
+  UINT getLegalNTCount(   UINT state               ) const override {
+    assert(state < stateCount);
+    return getLegalNTCountFromCode(m_successorCode[state]);
+  }
+  void getLegalNTerms(    UINT state, UINT *symbols) const override {
+    assert(state < stateCount);
+    getLegalNTermsFromCode(m_successorCode[state], symbols);
+  }
 
-  UINT getProductionLength(  UINT prod  )        const override {
+  UINT getProductionLength(UINT prod               ) const override {
     assert(prod < productionCount);
     return m_productionLength[prod];
   }
-  UINT getLeftSymbol(        UINT prod  )        const override {
+  UINT getLeftSymbol(      UINT prod               ) const override {
     assert(prod < productionCount);
     return terminalCount + m_leftSideTable[prod];
   }
-  const TCHAR *getSymbolName(UINT symbol)        const override {
+  const TCHAR *getSymbolName(UINT symbol)            const override {
     assert(symbol < symbolCount);
     if(m_symbolNameTable.size() == 0) {
       buildSymbolNameTable();
     }
     return m_symbolNameTable[symbol].cstr();
   }
-  void getRightSide(UINT prod, UINT *dst)        const override {
+  void getRightSide(UINT prod, UINT *dst)            const override {
     assert(prod < productionCount);
     UINT l = getProductionLength(prod);
     if(l == 0) {
