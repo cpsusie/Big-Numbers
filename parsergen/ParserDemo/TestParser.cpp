@@ -277,7 +277,7 @@ String StateSuccArray::toString() const {
       const StateSucc &ss = it.next();
       if(ss.m_succ != lastSucc) {
         if(!states.isEmpty()) {
-          result += format(_T("%csucc=%4u on %s"), delim, lastSucc, states.toString().cstr());
+          result += format(_T("%csucc=%4u on %s"), delim, lastSucc, states.getIterator().rangesToString(SizeTStringifier()).cstr());
           flushCount++;
           delim = ',';
           states.clear();
@@ -288,9 +288,9 @@ String StateSuccArray::toString() const {
     }
     if(!states.isEmpty()) {
       if(flushCount == 0) {
-        result += format(_T("%csucc=%4u from %4u states"), delim, lastSucc, states.size());
+        result += format(_T("%csucc=%4u from %4zu states"), delim, lastSucc, states.size());
       } else {
-        result += format(_T("%csucc=%4u on %s"), delim, lastSucc, states.toString().cstr());
+        result += format(_T("%csucc=%4u on %s"), delim, lastSucc, states.getIterator().rangesToString(SizeTStringifier()).cstr());
       }
     }
   }
@@ -350,9 +350,9 @@ String TestParser::getSuccessorMatrixDump() const {
     it.next().sortBySucc();
   }
 
-  UINT nt = termCount;
-  for(auto it = transposeMatrix.getIterator(); it.hasNext(); nt++) {
-    const String line = format(_T("NT:%4u:%s\n"), nt, it.next().toString().cstr());
+  UINT NT = termCount, NTindex = 0;
+  for(auto it = transposeMatrix.getIterator(); it.hasNext(); NT++, NTindex++) {
+    const String line = format(_T("NTIndex:%4u:%s\n"), NTindex, it.next().toString().cstr());
     result += line;
   }
   return result;
