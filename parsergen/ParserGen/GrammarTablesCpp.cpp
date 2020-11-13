@@ -79,7 +79,7 @@ _T("/***************************************************************************
 
 static const TCHAR *comment2 =
 _T("/************************************************************************************\\\n"
-   "* The 3 arrays NTindexListTable, stateListTable and successorCode holds a            *\n"
+   "* The 3 arrays successorCode, NTindexListTable and stateListTable holds a            *\n"
    "* compressed succesor-matrix, used by LRParser to find newstate = successor(S,A)     *\n"
    "* as last part of a reduction with production P, A -> alfa.                          *\n"
    "* A reduction by production P goes as follows:                                       *\n"
@@ -100,11 +100,11 @@ _T("/***************************************************************************
    "* Bit index: 01234567890123456789012345678901                                        *\n"
    "* Code       iiiiiiiiiiiiiiiCCsssssssssssssss                                        *\n"
    "*                                                                                    *\n"
-   "* i          : Bit[ 0-15]: unsigned short                                            *\n"
+   "* i          : Bit[ 0-14]: unsigned short                                            *\n"
    "* s          : Bit[17-31]: unsigned short                                            *\n"
    "* CC         : Bit[15-16]: Indicates how to interpret i and s.                       *\n"
    "*                                                                                    *\n"
-   "* CC has the same meaning as for actionCode, but only use CC={0,2}                   *\n"
+   "* CC has the same meaning as for actionCode, but only CC={0,2} are used.             *\n"
    "* CC == 0: Uncompressed Format.                                                      *\n"
    "*       i: Index into array NTindexListTable, pointing at the first element of       *\n"
    "*          NTIndexList                                                               *\n"

@@ -1038,7 +1038,7 @@ static const unsigned char termSetTable[1722] = {
 }; // Size of table:1.724(x86)/1.728(x64) bytes.
 
 /************************************************************************************\
-* The 3 arrays NTindexListTable, stateListTable and successorCode holds a            *
+* The 3 arrays successorCode, NTindexListTable and stateListTable holds a            *
 * compressed succesor-matrix, used by LRParser to find newstate = successor(S,A)     *
 * as last part of a reduction with production P, A -> alfa.                          *
 * A reduction by production P goes as follows:                                       *
@@ -1059,11 +1059,11 @@ static const unsigned char termSetTable[1722] = {
 * Bit index: 01234567890123456789012345678901                                        *
 * Code       iiiiiiiiiiiiiiiCCsssssssssssssss                                        *
 *                                                                                    *
-* i          : Bit[ 0-15]: unsigned short                                            *
+* i          : Bit[ 0-14]: unsigned short                                            *
 * s          : Bit[17-31]: unsigned short                                            *
 * CC         : Bit[15-16]: Indicates how to interpret i and s.                       *
 *                                                                                    *
-* CC has the same meaning as for actionCode, but only use CC={0,2}                   *
+* CC has the same meaning as for actionCode, but only CC={0,2} are used.             *
 * CC == 0: Uncompressed Format.                                                      *
 *       i: Index into array NTindexListTable, pointing at the first element of       *
 *          NTIndexList                                                               *
