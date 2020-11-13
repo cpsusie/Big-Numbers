@@ -3,8 +3,6 @@
 #include <stdarg.h>
 #include <LRparser.h>
 
-// try this one: select max(sdf* + from my,df where sdf * 2 =;
-
 LRparser::LRparser(const ParserTables &tables, Scanner *scanner, UINT stackSize) : m_tables(tables), m_scanner(scanner) {
   m_parserStack   = nullptr;
   parserStackCreate(stackSize);

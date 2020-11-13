@@ -109,205 +109,205 @@
   } Java5InputSymbol;
 
   typedef enum {
-     Goal                                  = 105
-    ,CompilationUnit                       = 106
-    ,PackageDeclaration                    = 107
-    ,ImportDeclaration                     = 108
-    ,TypeDeclaration                       = 109
-    ,Literal                               = 110
-    ,Type                                  = 111
-    ,PrimitiveType                         = 112
-    ,ReferenceType                         = 113
-    ,ClassOrInterfaceType                  = 114
-    ,Dim                                   = 115
-    ,Name                                  = 116
-    ,ClassOrInterfaceName                  = 117
-    ,TypeArguments                         = 118
-    ,ClassOrInterfaceTypeList              = 119
-    ,Identifier                            = 120
-    ,Modifier                              = 121
-    ,SingleTypeImportDeclaration           = 122
-    ,TypeImportOnDemandDeclaration         = 123
-    ,SingleStaticImportDeclaration         = 124
-    ,StaticImportOnDemandDeclaration       = 125
-    ,ClassDeclaration                      = 126
-    ,EnumDeclaration                       = 127
-    ,InterfaceDeclaration                  = 128
-    ,AnnotationTypeDeclaration             = 129
-    ,Annotation                            = 130
-    ,TypeParameters                        = 131
-    ,ExtendsClass                          = 132
-    ,ImplementsInterfaces                  = 133
-    ,ClassBody                             = 134
-    ,ClassBodyDeclaration                  = 135
-    ,ClassMemberDeclaration                = 136
-    ,StaticInitializer                     = 137
-    ,ConstructorDeclaration                = 138
-    ,Block                                 = 139
-    ,FieldDeclaration                      = 140
-    ,MethodDeclaration                     = 141
-    ,VariableDeclarators                   = 142
-    ,MethodName                            = 143
-    ,FormalParameters                      = 144
-    ,ThrowsException                       = 145
-    ,MethodBody                            = 146
-    ,ConstructorBody                       = 147
-    ,BlockStatement                        = 148
-    ,VariableDeclarator                    = 149
-    ,VariableDeclaratorId                  = 150
-    ,VariableInitializer                   = 151
-    ,Expression                            = 152
-    ,ArrayInitializer                      = 153
-    ,FormalParameterList                   = 154
-    ,FormalParameter                       = 155
-    ,EllipsisOperator                      = 156
-    ,ExplicitContructorInvocation          = 157
-    ,Arguments                             = 158
-    ,Primary                               = 159
-    ,ExtendsInterfaces                     = 160
-    ,InterfaceBody                         = 161
-    ,InterfaceMemberDeclaration            = 162
-    ,ConstantDeclaration                   = 163
-    ,AbstractMethodDeclaration             = 164
-    ,EnumBody                              = 165
-    ,EnumConstantList                      = 166
-    ,EnumBodyDeclarations                  = 167
-    ,EnumConstant                          = 168
-    ,AnnotationTypeBody                    = 169
-    ,AnnotationTypeElementDeclaration      = 170
-    ,DefaultValue                          = 171
-    ,ElementValue                          = 172
-    ,ArgumentList                          = 173
-    ,VariableInitializerList               = 174
-    ,LocalVariableDeclarationStatement     = 175
-    ,Statement                             = 176
-    ,LocalVariableDeclaration              = 177
-    ,StatementWithoutTrailingSubstatement  = 178
-    ,LabeledStatement                      = 179
-    ,IfThenStatement                       = 180
-    ,IfThenElseStatement                   = 181
-    ,WhileStatement                        = 182
-    ,ForStatement                          = 183
-    ,EnhancedForStatement                  = 184
-    ,StatementNoShortIf                    = 185
-    ,LabeledStatementNoShortIf             = 186
-    ,IfThenElseStatementNoShortIf          = 187
-    ,WhileStatementNoShortIf               = 188
-    ,ForStatementNoShortIf                 = 189
-    ,EnhancedForStatementNoShortIf         = 190
-    ,EmptyStatement                        = 191
-    ,ExpressionStatement                   = 192
-    ,SwitchStatement                       = 193
-    ,DoStatement                           = 194
-    ,BreakStatement                        = 195
-    ,ContinueStatement                     = 196
-    ,ReturnStatement                       = 197
-    ,SynchronizedStatement                 = 198
-    ,ThrowStatement                        = 199
-    ,TryStatement                          = 200
-    ,AssertStatementShort                  = 201
-    ,AssertStatementLong                   = 202
-    ,StatementExpression                   = 203
-    ,Assignment                            = 204
-    ,PreIncrementExpression                = 205
-    ,PreDecrementExpression                = 206
-    ,PostIncrementExpression               = 207
-    ,PostDecrementExpression               = 208
-    ,MethodInvocation                      = 209
-    ,NewClassExpression                    = 210
-    ,Condition                             = 211
-    ,SwitchBlock                           = 212
-    ,SwitchBlockStatementGroup             = 213
-    ,SwitchLabel                           = 214
-    ,ConstantExpression                    = 215
-    ,ForInit                               = 216
-    ,ForUpdate                             = 217
-    ,StatementExpressionList               = 218
-    ,CatchClause                           = 219
-    ,FinallyClause                         = 220
-    ,PrimaryNoNewArray                     = 221
-    ,NewArrayExpression                    = 222
-    ,ExpressionNN                          = 223
-    ,FieldAccess                           = 224
-    ,ArrayAccess                           = 225
-    ,DimExpression                         = 226
-    ,AssignmentExpression                  = 227
-    ,AssignmentExpressionNN                = 228
-    ,ConditionalExpression                 = 229
-    ,ConditionalExpressionNN               = 230
-    ,PostfixExpression                     = 231
-    ,AssignmentOperator                    = 232
-    ,ShortOrExpression                     = 233
-    ,ShortOrExpressionNN                   = 234
-    ,ShortAndExpression                    = 235
-    ,ShortAndExpressionNN                  = 236
-    ,OrExpression                          = 237
-    ,OrExpressionNN                        = 238
-    ,XorExpression                         = 239
-    ,XorExpressionNN                       = 240
-    ,AndExpression                         = 241
-    ,AndExpressionNN                       = 242
-    ,EqualityExpression                    = 243
-    ,EqualityExpressionNN                  = 244
-    ,InstanceOfExpression                  = 245
-    ,InstanceOfExpressionNN                = 246
-    ,RelationalExpression                  = 247
-    ,RelationalExpressionNN                = 248
-    ,ShiftExpression                       = 249
-    ,ShiftExpressionNN                     = 250
-    ,AdditiveExpression                    = 251
-    ,AdditiveExpressionNN                  = 252
-    ,MultiplicativeExpression              = 253
-    ,MultiplicativeExpressionNN            = 254
-    ,UnaryExpression                       = 255
-    ,UnaryExpressionNN                     = 256
-    ,UnaryExpressionNotPlusMinus           = 257
-    ,UnaryExpressionNotPlusMinusNN         = 258
-    ,CastExpression                        = 259
-    ,PostfixExpressionNN                   = 260
-    ,TypeArgumentListGT                    = 261
-    ,TypeArgumentGT                        = 262
-    ,TypeArgumentList                      = 263
-    ,ReferenceTypeGT                       = 264
-    ,WildcardGT                            = 265
-    ,TypeArgumentListSSHR                  = 266
-    ,TypeArgumentSSHR                      = 267
-    ,ReferenceTypeSSHR                     = 268
-    ,WildcardSSHR                          = 269
-    ,TypeArgumentListUSHR                  = 270
-    ,TypeArgumentUSHR                      = 271
-    ,ReferenceTypeUSHR                     = 272
-    ,WildcardUSHR                          = 273
-    ,TypeArgument                          = 274
-    ,Wildcard                              = 275
-    ,TypeParameterListGT                   = 276
-    ,TypeParameterGT                       = 277
-    ,TypeParameterList                     = 278
-    ,TypeBoundGT                           = 279
-    ,AdditionalBoundSequenceGT             = 280
-    ,AdditionalBoundGT                     = 281
-    ,TypeParameter                         = 282
-    ,TypeBound                             = 283
-    ,AdditionalBoundSequence               = 284
-    ,AdditionalBound                       = 285
-    ,NormalAnnotation                      = 286
-    ,MarkerAnnotation                      = 287
-    ,SingleElementAnnotation               = 288
-    ,ElementValuePairList                  = 289
-    ,ElementValuePair                      = 290
-    ,ElementValueList                      = 291
-    ,ElementValueArrayInitializer          = 292
-    ,ImportDeclaration_plus                = 293
-    ,TypeDeclaration_plus                  = 294
-    ,Dim_plus                              = 295
-    ,Modifier_plus                         = 296
-    ,ClassBodyDeclaration_plus             = 297
-    ,BlockStatement_plus                   = 298
-    ,InterfaceMemberDeclaration_plus       = 299
-    ,Annotation_plus                       = 300
-    ,AnnotationTypeElementDeclaration_plus = 301
-    ,SwitchBlockStatementGroup_plus        = 302
-    ,SwitchLabel_plus                      = 303
-    ,CatchClause_plus                      = 304
-    ,DimExpression_plus                    = 305
+     Goal                                  = 105   /* NTindex =   0 */
+    ,CompilationUnit                       = 106   /* NTindex =   1 */
+    ,PackageDeclaration                    = 107   /* NTindex =   2 */
+    ,ImportDeclaration                     = 108   /* NTindex =   3 */
+    ,TypeDeclaration                       = 109   /* NTindex =   4 */
+    ,Literal                               = 110   /* NTindex =   5 */
+    ,Type                                  = 111   /* NTindex =   6 */
+    ,PrimitiveType                         = 112   /* NTindex =   7 */
+    ,ReferenceType                         = 113   /* NTindex =   8 */
+    ,ClassOrInterfaceType                  = 114   /* NTindex =   9 */
+    ,Dim                                   = 115   /* NTindex =  10 */
+    ,Name                                  = 116   /* NTindex =  11 */
+    ,ClassOrInterfaceName                  = 117   /* NTindex =  12 */
+    ,TypeArguments                         = 118   /* NTindex =  13 */
+    ,ClassOrInterfaceTypeList              = 119   /* NTindex =  14 */
+    ,Identifier                            = 120   /* NTindex =  15 */
+    ,Modifier                              = 121   /* NTindex =  16 */
+    ,SingleTypeImportDeclaration           = 122   /* NTindex =  17 */
+    ,TypeImportOnDemandDeclaration         = 123   /* NTindex =  18 */
+    ,SingleStaticImportDeclaration         = 124   /* NTindex =  19 */
+    ,StaticImportOnDemandDeclaration       = 125   /* NTindex =  20 */
+    ,ClassDeclaration                      = 126   /* NTindex =  21 */
+    ,EnumDeclaration                       = 127   /* NTindex =  22 */
+    ,InterfaceDeclaration                  = 128   /* NTindex =  23 */
+    ,AnnotationTypeDeclaration             = 129   /* NTindex =  24 */
+    ,Annotation                            = 130   /* NTindex =  25 */
+    ,TypeParameters                        = 131   /* NTindex =  26 */
+    ,ExtendsClass                          = 132   /* NTindex =  27 */
+    ,ImplementsInterfaces                  = 133   /* NTindex =  28 */
+    ,ClassBody                             = 134   /* NTindex =  29 */
+    ,ClassBodyDeclaration                  = 135   /* NTindex =  30 */
+    ,ClassMemberDeclaration                = 136   /* NTindex =  31 */
+    ,StaticInitializer                     = 137   /* NTindex =  32 */
+    ,ConstructorDeclaration                = 138   /* NTindex =  33 */
+    ,Block                                 = 139   /* NTindex =  34 */
+    ,FieldDeclaration                      = 140   /* NTindex =  35 */
+    ,MethodDeclaration                     = 141   /* NTindex =  36 */
+    ,VariableDeclarators                   = 142   /* NTindex =  37 */
+    ,MethodName                            = 143   /* NTindex =  38 */
+    ,FormalParameters                      = 144   /* NTindex =  39 */
+    ,ThrowsException                       = 145   /* NTindex =  40 */
+    ,MethodBody                            = 146   /* NTindex =  41 */
+    ,ConstructorBody                       = 147   /* NTindex =  42 */
+    ,BlockStatement                        = 148   /* NTindex =  43 */
+    ,VariableDeclarator                    = 149   /* NTindex =  44 */
+    ,VariableDeclaratorId                  = 150   /* NTindex =  45 */
+    ,VariableInitializer                   = 151   /* NTindex =  46 */
+    ,Expression                            = 152   /* NTindex =  47 */
+    ,ArrayInitializer                      = 153   /* NTindex =  48 */
+    ,FormalParameterList                   = 154   /* NTindex =  49 */
+    ,FormalParameter                       = 155   /* NTindex =  50 */
+    ,EllipsisOperator                      = 156   /* NTindex =  51 */
+    ,ExplicitContructorInvocation          = 157   /* NTindex =  52 */
+    ,Arguments                             = 158   /* NTindex =  53 */
+    ,Primary                               = 159   /* NTindex =  54 */
+    ,ExtendsInterfaces                     = 160   /* NTindex =  55 */
+    ,InterfaceBody                         = 161   /* NTindex =  56 */
+    ,InterfaceMemberDeclaration            = 162   /* NTindex =  57 */
+    ,ConstantDeclaration                   = 163   /* NTindex =  58 */
+    ,AbstractMethodDeclaration             = 164   /* NTindex =  59 */
+    ,EnumBody                              = 165   /* NTindex =  60 */
+    ,EnumConstantList                      = 166   /* NTindex =  61 */
+    ,EnumBodyDeclarations                  = 167   /* NTindex =  62 */
+    ,EnumConstant                          = 168   /* NTindex =  63 */
+    ,AnnotationTypeBody                    = 169   /* NTindex =  64 */
+    ,AnnotationTypeElementDeclaration      = 170   /* NTindex =  65 */
+    ,DefaultValue                          = 171   /* NTindex =  66 */
+    ,ElementValue                          = 172   /* NTindex =  67 */
+    ,ArgumentList                          = 173   /* NTindex =  68 */
+    ,VariableInitializerList               = 174   /* NTindex =  69 */
+    ,LocalVariableDeclarationStatement     = 175   /* NTindex =  70 */
+    ,Statement                             = 176   /* NTindex =  71 */
+    ,LocalVariableDeclaration              = 177   /* NTindex =  72 */
+    ,StatementWithoutTrailingSubstatement  = 178   /* NTindex =  73 */
+    ,LabeledStatement                      = 179   /* NTindex =  74 */
+    ,IfThenStatement                       = 180   /* NTindex =  75 */
+    ,IfThenElseStatement                   = 181   /* NTindex =  76 */
+    ,WhileStatement                        = 182   /* NTindex =  77 */
+    ,ForStatement                          = 183   /* NTindex =  78 */
+    ,EnhancedForStatement                  = 184   /* NTindex =  79 */
+    ,StatementNoShortIf                    = 185   /* NTindex =  80 */
+    ,LabeledStatementNoShortIf             = 186   /* NTindex =  81 */
+    ,IfThenElseStatementNoShortIf          = 187   /* NTindex =  82 */
+    ,WhileStatementNoShortIf               = 188   /* NTindex =  83 */
+    ,ForStatementNoShortIf                 = 189   /* NTindex =  84 */
+    ,EnhancedForStatementNoShortIf         = 190   /* NTindex =  85 */
+    ,EmptyStatement                        = 191   /* NTindex =  86 */
+    ,ExpressionStatement                   = 192   /* NTindex =  87 */
+    ,SwitchStatement                       = 193   /* NTindex =  88 */
+    ,DoStatement                           = 194   /* NTindex =  89 */
+    ,BreakStatement                        = 195   /* NTindex =  90 */
+    ,ContinueStatement                     = 196   /* NTindex =  91 */
+    ,ReturnStatement                       = 197   /* NTindex =  92 */
+    ,SynchronizedStatement                 = 198   /* NTindex =  93 */
+    ,ThrowStatement                        = 199   /* NTindex =  94 */
+    ,TryStatement                          = 200   /* NTindex =  95 */
+    ,AssertStatementShort                  = 201   /* NTindex =  96 */
+    ,AssertStatementLong                   = 202   /* NTindex =  97 */
+    ,StatementExpression                   = 203   /* NTindex =  98 */
+    ,Assignment                            = 204   /* NTindex =  99 */
+    ,PreIncrementExpression                = 205   /* NTindex = 100 */
+    ,PreDecrementExpression                = 206   /* NTindex = 101 */
+    ,PostIncrementExpression               = 207   /* NTindex = 102 */
+    ,PostDecrementExpression               = 208   /* NTindex = 103 */
+    ,MethodInvocation                      = 209   /* NTindex = 104 */
+    ,NewClassExpression                    = 210   /* NTindex = 105 */
+    ,Condition                             = 211   /* NTindex = 106 */
+    ,SwitchBlock                           = 212   /* NTindex = 107 */
+    ,SwitchBlockStatementGroup             = 213   /* NTindex = 108 */
+    ,SwitchLabel                           = 214   /* NTindex = 109 */
+    ,ConstantExpression                    = 215   /* NTindex = 110 */
+    ,ForInit                               = 216   /* NTindex = 111 */
+    ,ForUpdate                             = 217   /* NTindex = 112 */
+    ,StatementExpressionList               = 218   /* NTindex = 113 */
+    ,CatchClause                           = 219   /* NTindex = 114 */
+    ,FinallyClause                         = 220   /* NTindex = 115 */
+    ,PrimaryNoNewArray                     = 221   /* NTindex = 116 */
+    ,NewArrayExpression                    = 222   /* NTindex = 117 */
+    ,ExpressionNN                          = 223   /* NTindex = 118 */
+    ,FieldAccess                           = 224   /* NTindex = 119 */
+    ,ArrayAccess                           = 225   /* NTindex = 120 */
+    ,DimExpression                         = 226   /* NTindex = 121 */
+    ,AssignmentExpression                  = 227   /* NTindex = 122 */
+    ,AssignmentExpressionNN                = 228   /* NTindex = 123 */
+    ,ConditionalExpression                 = 229   /* NTindex = 124 */
+    ,ConditionalExpressionNN               = 230   /* NTindex = 125 */
+    ,PostfixExpression                     = 231   /* NTindex = 126 */
+    ,AssignmentOperator                    = 232   /* NTindex = 127 */
+    ,ShortOrExpression                     = 233   /* NTindex = 128 */
+    ,ShortOrExpressionNN                   = 234   /* NTindex = 129 */
+    ,ShortAndExpression                    = 235   /* NTindex = 130 */
+    ,ShortAndExpressionNN                  = 236   /* NTindex = 131 */
+    ,OrExpression                          = 237   /* NTindex = 132 */
+    ,OrExpressionNN                        = 238   /* NTindex = 133 */
+    ,XorExpression                         = 239   /* NTindex = 134 */
+    ,XorExpressionNN                       = 240   /* NTindex = 135 */
+    ,AndExpression                         = 241   /* NTindex = 136 */
+    ,AndExpressionNN                       = 242   /* NTindex = 137 */
+    ,EqualityExpression                    = 243   /* NTindex = 138 */
+    ,EqualityExpressionNN                  = 244   /* NTindex = 139 */
+    ,InstanceOfExpression                  = 245   /* NTindex = 140 */
+    ,InstanceOfExpressionNN                = 246   /* NTindex = 141 */
+    ,RelationalExpression                  = 247   /* NTindex = 142 */
+    ,RelationalExpressionNN                = 248   /* NTindex = 143 */
+    ,ShiftExpression                       = 249   /* NTindex = 144 */
+    ,ShiftExpressionNN                     = 250   /* NTindex = 145 */
+    ,AdditiveExpression                    = 251   /* NTindex = 146 */
+    ,AdditiveExpressionNN                  = 252   /* NTindex = 147 */
+    ,MultiplicativeExpression              = 253   /* NTindex = 148 */
+    ,MultiplicativeExpressionNN            = 254   /* NTindex = 149 */
+    ,UnaryExpression                       = 255   /* NTindex = 150 */
+    ,UnaryExpressionNN                     = 256   /* NTindex = 151 */
+    ,UnaryExpressionNotPlusMinus           = 257   /* NTindex = 152 */
+    ,UnaryExpressionNotPlusMinusNN         = 258   /* NTindex = 153 */
+    ,CastExpression                        = 259   /* NTindex = 154 */
+    ,PostfixExpressionNN                   = 260   /* NTindex = 155 */
+    ,TypeArgumentListGT                    = 261   /* NTindex = 156 */
+    ,TypeArgumentGT                        = 262   /* NTindex = 157 */
+    ,TypeArgumentList                      = 263   /* NTindex = 158 */
+    ,ReferenceTypeGT                       = 264   /* NTindex = 159 */
+    ,WildcardGT                            = 265   /* NTindex = 160 */
+    ,TypeArgumentListSSHR                  = 266   /* NTindex = 161 */
+    ,TypeArgumentSSHR                      = 267   /* NTindex = 162 */
+    ,ReferenceTypeSSHR                     = 268   /* NTindex = 163 */
+    ,WildcardSSHR                          = 269   /* NTindex = 164 */
+    ,TypeArgumentListUSHR                  = 270   /* NTindex = 165 */
+    ,TypeArgumentUSHR                      = 271   /* NTindex = 166 */
+    ,ReferenceTypeUSHR                     = 272   /* NTindex = 167 */
+    ,WildcardUSHR                          = 273   /* NTindex = 168 */
+    ,TypeArgument                          = 274   /* NTindex = 169 */
+    ,Wildcard                              = 275   /* NTindex = 170 */
+    ,TypeParameterListGT                   = 276   /* NTindex = 171 */
+    ,TypeParameterGT                       = 277   /* NTindex = 172 */
+    ,TypeParameterList                     = 278   /* NTindex = 173 */
+    ,TypeBoundGT                           = 279   /* NTindex = 174 */
+    ,AdditionalBoundSequenceGT             = 280   /* NTindex = 175 */
+    ,AdditionalBoundGT                     = 281   /* NTindex = 176 */
+    ,TypeParameter                         = 282   /* NTindex = 177 */
+    ,TypeBound                             = 283   /* NTindex = 178 */
+    ,AdditionalBoundSequence               = 284   /* NTindex = 179 */
+    ,AdditionalBound                       = 285   /* NTindex = 180 */
+    ,NormalAnnotation                      = 286   /* NTindex = 181 */
+    ,MarkerAnnotation                      = 287   /* NTindex = 182 */
+    ,SingleElementAnnotation               = 288   /* NTindex = 183 */
+    ,ElementValuePairList                  = 289   /* NTindex = 184 */
+    ,ElementValuePair                      = 290   /* NTindex = 185 */
+    ,ElementValueList                      = 291   /* NTindex = 186 */
+    ,ElementValueArrayInitializer          = 292   /* NTindex = 187 */
+    ,ImportDeclaration_plus                = 293   /* NTindex = 188 */
+    ,TypeDeclaration_plus                  = 294   /* NTindex = 189 */
+    ,Dim_plus                              = 295   /* NTindex = 190 */
+    ,Modifier_plus                         = 296   /* NTindex = 191 */
+    ,ClassBodyDeclaration_plus             = 297   /* NTindex = 192 */
+    ,BlockStatement_plus                   = 298   /* NTindex = 193 */
+    ,InterfaceMemberDeclaration_plus       = 299   /* NTindex = 194 */
+    ,Annotation_plus                       = 300   /* NTindex = 195 */
+    ,AnnotationTypeElementDeclaration_plus = 301   /* NTindex = 196 */
+    ,SwitchBlockStatementGroup_plus        = 302   /* NTindex = 197 */
+    ,SwitchLabel_plus                      = 303   /* NTindex = 198 */
+    ,CatchClause_plus                      = 304   /* NTindex = 199 */
+    ,DimExpression_plus                    = 305   /* NTindex = 200 */
   } Java5NonTerminal;

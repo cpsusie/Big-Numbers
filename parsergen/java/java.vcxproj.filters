@@ -23,34 +23,34 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Java5Action.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Java5Lex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Java5Tables.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="javacomp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Java5Action.cpp">
+      <Filter>Source Files\Grammar</Filter>
+    </ClCompile>
+    <ClCompile Include="Java5Lex.cpp">
+      <Filter>Source Files\Grammar</Filter>
+    </ClCompile>
+    <ClCompile Include="Java5Tables.cpp">
+      <Filter>Source Files\Grammar</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Java5Lex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Java5Parser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Java5Symbol.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="StdAfx.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Java5Lex.h">
+      <Filter>Source Files\Grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="Java5Parser.h">
+      <Filter>Source Files\Grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="Java5Symbol.h">
+      <Filter>Source Files\Grammar</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

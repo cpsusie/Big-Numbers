@@ -65,9 +65,6 @@
     <ClInclude Include="ExpressionLex.h">
       <Filter>Source Files\Expression Grammar</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\ExpressionSymbol.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MachineCode.h">
       <Filter>Source Files\MachineCode</Filter>
     </ClInclude>
@@ -102,6 +99,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionParser.h">
+      <Filter>Source Files\Expression Grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionSymbol.h">
       <Filter>Source Files\Expression Grammar</Filter>
     </ClInclude>
   </ItemGroup>

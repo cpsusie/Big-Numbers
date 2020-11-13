@@ -26,8 +26,9 @@ void SymbolsWriter::writeCppSymbols(TemplateWriter &writer) const {
   } else {
     if(options.m_generateNonTerminals) {
       TCHAR delimiter = ' ';
-      for(UINT s = grammar.getTerminalCount(); s < grammar.getSymbolCount(); s++, delimiter = ',') {
-        text += format(_T("%c%-*s = %3u\n"), delimiter, maxNameLength, grammar.getSymbol(s).m_name.cstr(), s);
+      UINT  NTindex   = 0;
+      for(UINT s = grammar.getTerminalCount(); s < grammar.getSymbolCount(); s++, delimiter = ',', NTindex++) {
+        text += format(_T("%c%-*s = %3u   /* NTindex = %3u */\n"), delimiter, maxNameLength, grammar.getSymbol(s).m_name.cstr(), s, NTindex);
       }
     }
   }

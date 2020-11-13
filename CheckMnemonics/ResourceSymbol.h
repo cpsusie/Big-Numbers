@@ -332,122 +332,122 @@
   } ResourceInputSymbol;
 
   typedef enum {
-     start                        = 328
-    ,resourceFile                 = 329
-    ,resourceDefinitionList       = 330
-    ,resourceDefinition           = 331
-    ,bitmapDefinition             = 332
-    ,iconDefinition               = 333
-    ,customTypeDefinition         = 334
-    ,dialogDefinition             = 335
-    ,extendedDialogDefinition     = 336
-    ,guideLinesDefinition         = 337
-    ,toolbarDefnition             = 338
-    ,menuDefinition               = 339
-    ,dialogInitDefinition         = 340
-    ,acceleratorsDefinition       = 341
-    ,rcdataDefinition             = 342
-    ,stringTableDefinition        = 343
-    ,textIncludeDirective         = 344
-    ,languageDirective            = 345
-    ,versionDefinition            = 346
-    ,typelibDefinition            = 347
-    ,afxDialogLayout              = 348
-    ,resourceId                   = 349
-    ,resourceAttributeList        = 350
-    ,string                       = 351
-    ,identifier                   = 352
-    ,rectangleSpec                = 353
-    ,dialogSpecList               = 354
-    ,opt_dialogControlSpecList    = 355
-    ,extendedDialogSpecList       = 356
-    ,dialogSpec                   = 357
-    ,dialogStyleExpr              = 358
-    ,fontSpec                     = 359
-    ,extendedDialogSpec           = 360
-    ,extendedDialogStyleExpr      = 361
-    ,extendedFontSpec             = 362
-    ,extendedDialogStyle          = 363
-    ,ws_ex_style                  = 364
-    ,number                       = 365
-    ,dialogStyle                  = 366
-    ,ds_style                     = 367
-    ,ws_style                     = 368
-    ,dialogControlSpecList        = 369
-    ,dialogControlSpec            = 370
-    ,pushButtonSpec               = 371
-    ,lrcTextSpec                  = 372
-    ,editSpec                     = 373
-    ,comboBoxSpec                 = 374
-    ,listBoxSpec                  = 375
-    ,iconSpec                     = 376
-    ,scrollBarSpec                = 377
-    ,controlSpec                  = 378
-    ,buttonType                   = 379
-    ,controlAttributeList         = 380
-    ,lrcText                      = 381
-    ,identifierOrString           = 382
-    ,controlId                    = 383
-    ,controlAttribute             = 384
-    ,ctrlAttribute                = 385
-    ,controlStyleExpr             = 386
-    ,extendedWindowStyleExpr      = 387
-    ,ctrl_style                   = 388
-    ,add_ctrl_style               = 389
-    ,ss_style                     = 390
-    ,es_style                     = 391
-    ,bs_style                     = 392
-    ,cbs_style                    = 393
-    ,sbs_style                    = 394
-    ,lbs_style                    = 395
-    ,tbs_style                    = 396
-    ,tvs_style                    = 397
-    ,lvs_style                    = 398
-    ,uds_style                    = 399
-    ,pbs_style                    = 400
-    ,mcs_style                    = 401
-    ,resourceAttribute            = 402
-    ,designInfoList               = 403
-    ,designInfo                   = 404
-    ,designSpecList               = 405
-    ,designSpec                   = 406
-    ,marginSpec                   = 407
-    ,sizeSpec                     = 408
-    ,buttonSpecList               = 409
-    ,buttonSpec                   = 410
-    ,menuType                     = 411
-    ,menuBody                     = 412
-    ,menuSpecList                 = 413
-    ,menuSpec                     = 414
-    ,popupMenu                    = 415
-    ,menuItem                     = 416
-    ,menuItemModifierList         = 417
-    ,identifierOrNumber           = 418
-    ,menuItemModifier             = 419
-    ,menuItemFlagExpr             = 420
-    ,menuItemFlag                 = 421
-    ,constantElementList          = 422
-    ,constantElement              = 423
-    ,constant                     = 424
-    ,acceleratorList              = 425
-    ,accelerator                  = 426
-    ,opt_acceleratorSpecList      = 427
-    ,acceleratorSpecList          = 428
-    ,acceleratorModifier          = 429
-    ,numberList                   = 430
-    ,stringSpecList               = 431
-    ,stringSpec                   = 432
-    ,stringList                   = 433
-    ,versionSpecList              = 434
-    ,blockList                    = 435
-    ,versionSpec                  = 436
-    ,exprList                     = 437
-    ,expr                         = 438
-    ,block                        = 439
-    ,blockBody                    = 440
-    ,valueList                    = 441
-    ,value                        = 442
-    ,fileName                     = 443
-    ,layoutInfo                   = 444
-    ,name                         = 445
+     start                        = 328   /* NTindex =   0 */
+    ,resourceFile                 = 329   /* NTindex =   1 */
+    ,resourceDefinitionList       = 330   /* NTindex =   2 */
+    ,resourceDefinition           = 331   /* NTindex =   3 */
+    ,bitmapDefinition             = 332   /* NTindex =   4 */
+    ,iconDefinition               = 333   /* NTindex =   5 */
+    ,customTypeDefinition         = 334   /* NTindex =   6 */
+    ,dialogDefinition             = 335   /* NTindex =   7 */
+    ,extendedDialogDefinition     = 336   /* NTindex =   8 */
+    ,guideLinesDefinition         = 337   /* NTindex =   9 */
+    ,toolbarDefnition             = 338   /* NTindex =  10 */
+    ,menuDefinition               = 339   /* NTindex =  11 */
+    ,dialogInitDefinition         = 340   /* NTindex =  12 */
+    ,acceleratorsDefinition       = 341   /* NTindex =  13 */
+    ,rcdataDefinition             = 342   /* NTindex =  14 */
+    ,stringTableDefinition        = 343   /* NTindex =  15 */
+    ,textIncludeDirective         = 344   /* NTindex =  16 */
+    ,languageDirective            = 345   /* NTindex =  17 */
+    ,versionDefinition            = 346   /* NTindex =  18 */
+    ,typelibDefinition            = 347   /* NTindex =  19 */
+    ,afxDialogLayout              = 348   /* NTindex =  20 */
+    ,resourceId                   = 349   /* NTindex =  21 */
+    ,resourceAttributeList        = 350   /* NTindex =  22 */
+    ,string                       = 351   /* NTindex =  23 */
+    ,identifier                   = 352   /* NTindex =  24 */
+    ,rectangleSpec                = 353   /* NTindex =  25 */
+    ,dialogSpecList               = 354   /* NTindex =  26 */
+    ,opt_dialogControlSpecList    = 355   /* NTindex =  27 */
+    ,extendedDialogSpecList       = 356   /* NTindex =  28 */
+    ,dialogSpec                   = 357   /* NTindex =  29 */
+    ,dialogStyleExpr              = 358   /* NTindex =  30 */
+    ,fontSpec                     = 359   /* NTindex =  31 */
+    ,extendedDialogSpec           = 360   /* NTindex =  32 */
+    ,extendedDialogStyleExpr      = 361   /* NTindex =  33 */
+    ,extendedFontSpec             = 362   /* NTindex =  34 */
+    ,extendedDialogStyle          = 363   /* NTindex =  35 */
+    ,ws_ex_style                  = 364   /* NTindex =  36 */
+    ,number                       = 365   /* NTindex =  37 */
+    ,dialogStyle                  = 366   /* NTindex =  38 */
+    ,ds_style                     = 367   /* NTindex =  39 */
+    ,ws_style                     = 368   /* NTindex =  40 */
+    ,dialogControlSpecList        = 369   /* NTindex =  41 */
+    ,dialogControlSpec            = 370   /* NTindex =  42 */
+    ,pushButtonSpec               = 371   /* NTindex =  43 */
+    ,lrcTextSpec                  = 372   /* NTindex =  44 */
+    ,editSpec                     = 373   /* NTindex =  45 */
+    ,comboBoxSpec                 = 374   /* NTindex =  46 */
+    ,listBoxSpec                  = 375   /* NTindex =  47 */
+    ,iconSpec                     = 376   /* NTindex =  48 */
+    ,scrollBarSpec                = 377   /* NTindex =  49 */
+    ,controlSpec                  = 378   /* NTindex =  50 */
+    ,buttonType                   = 379   /* NTindex =  51 */
+    ,controlAttributeList         = 380   /* NTindex =  52 */
+    ,lrcText                      = 381   /* NTindex =  53 */
+    ,identifierOrString           = 382   /* NTindex =  54 */
+    ,controlId                    = 383   /* NTindex =  55 */
+    ,controlAttribute             = 384   /* NTindex =  56 */
+    ,ctrlAttribute                = 385   /* NTindex =  57 */
+    ,controlStyleExpr             = 386   /* NTindex =  58 */
+    ,extendedWindowStyleExpr      = 387   /* NTindex =  59 */
+    ,ctrl_style                   = 388   /* NTindex =  60 */
+    ,add_ctrl_style               = 389   /* NTindex =  61 */
+    ,ss_style                     = 390   /* NTindex =  62 */
+    ,es_style                     = 391   /* NTindex =  63 */
+    ,bs_style                     = 392   /* NTindex =  64 */
+    ,cbs_style                    = 393   /* NTindex =  65 */
+    ,sbs_style                    = 394   /* NTindex =  66 */
+    ,lbs_style                    = 395   /* NTindex =  67 */
+    ,tbs_style                    = 396   /* NTindex =  68 */
+    ,tvs_style                    = 397   /* NTindex =  69 */
+    ,lvs_style                    = 398   /* NTindex =  70 */
+    ,uds_style                    = 399   /* NTindex =  71 */
+    ,pbs_style                    = 400   /* NTindex =  72 */
+    ,mcs_style                    = 401   /* NTindex =  73 */
+    ,resourceAttribute            = 402   /* NTindex =  74 */
+    ,designInfoList               = 403   /* NTindex =  75 */
+    ,designInfo                   = 404   /* NTindex =  76 */
+    ,designSpecList               = 405   /* NTindex =  77 */
+    ,designSpec                   = 406   /* NTindex =  78 */
+    ,marginSpec                   = 407   /* NTindex =  79 */
+    ,sizeSpec                     = 408   /* NTindex =  80 */
+    ,buttonSpecList               = 409   /* NTindex =  81 */
+    ,buttonSpec                   = 410   /* NTindex =  82 */
+    ,menuType                     = 411   /* NTindex =  83 */
+    ,menuBody                     = 412   /* NTindex =  84 */
+    ,menuSpecList                 = 413   /* NTindex =  85 */
+    ,menuSpec                     = 414   /* NTindex =  86 */
+    ,popupMenu                    = 415   /* NTindex =  87 */
+    ,menuItem                     = 416   /* NTindex =  88 */
+    ,menuItemModifierList         = 417   /* NTindex =  89 */
+    ,identifierOrNumber           = 418   /* NTindex =  90 */
+    ,menuItemModifier             = 419   /* NTindex =  91 */
+    ,menuItemFlagExpr             = 420   /* NTindex =  92 */
+    ,menuItemFlag                 = 421   /* NTindex =  93 */
+    ,constantElementList          = 422   /* NTindex =  94 */
+    ,constantElement              = 423   /* NTindex =  95 */
+    ,constant                     = 424   /* NTindex =  96 */
+    ,acceleratorList              = 425   /* NTindex =  97 */
+    ,accelerator                  = 426   /* NTindex =  98 */
+    ,opt_acceleratorSpecList      = 427   /* NTindex =  99 */
+    ,acceleratorSpecList          = 428   /* NTindex = 100 */
+    ,acceleratorModifier          = 429   /* NTindex = 101 */
+    ,numberList                   = 430   /* NTindex = 102 */
+    ,stringSpecList               = 431   /* NTindex = 103 */
+    ,stringSpec                   = 432   /* NTindex = 104 */
+    ,stringList                   = 433   /* NTindex = 105 */
+    ,versionSpecList              = 434   /* NTindex = 106 */
+    ,blockList                    = 435   /* NTindex = 107 */
+    ,versionSpec                  = 436   /* NTindex = 108 */
+    ,exprList                     = 437   /* NTindex = 109 */
+    ,expr                         = 438   /* NTindex = 110 */
+    ,block                        = 439   /* NTindex = 111 */
+    ,blockBody                    = 440   /* NTindex = 112 */
+    ,valueList                    = 441   /* NTindex = 113 */
+    ,value                        = 442   /* NTindex = 114 */
+    ,fileName                     = 443   /* NTindex = 115 */
+    ,layoutInfo                   = 444   /* NTindex = 116 */
+    ,name                         = 445   /* NTindex = 117 */
   } ResourceNonTerminal;
