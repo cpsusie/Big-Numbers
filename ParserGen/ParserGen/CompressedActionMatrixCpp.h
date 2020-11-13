@@ -22,10 +22,7 @@ public:
   void addState(UINT state) {
     m_stateSet.add(state);
   }
-  String getComment() const {
-    const size_t n = m_stateSet.size();
-    return format(_T("Used by state%c %s"), (n == 1) ? ' ' : 's', m_stateSet.toString().cstr());
-  }
+  String getComment() const;
 };
 
 template<typename Key> class IndexArrayEntry : public IndexMapValue {

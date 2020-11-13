@@ -37,6 +37,8 @@ void         outputBeginArrayDefinition(MarginFile &output, const TCHAR *tableNa
 ByteCount    outputEndArrayDefinition(  MarginFile &output,                         IntegerType elementType, UINT size, bool addNewLine=false);
 void         newLine(MarginFile &output, String &comment = String(_T("")), int minColumn=0);
 
+static constexpr UINT commentWidth = 54;
+
 class ActionsWriter : public KeywordHandler {
 private:
   const GrammarCode &m_coder;

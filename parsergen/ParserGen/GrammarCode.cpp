@@ -47,7 +47,7 @@ void newLine(MarginFile &output, String &comment, int minColumn) { // static
         output.printf(_T("%*s"), fillerSize, EMPTYSTRING);
       }
     }
-    output.printf(_T(" /* %s */\n"), comment.cstr());
+    output.printf(_T(" /* %-*s*/\n"), commentWidth, comment.cstr());
     comment = EMPTYSTRING;
   } else {
     output.printf(_T("\n"));
