@@ -4,433 +4,469 @@
 #include "CppParser.h"
 
 #line 36 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
-/**********************************************************************************\
-* The 4 arrays actionCode, termListTable, actionListTable and termSetTable         *
-* holds a compressed action-matrix, used by LRParser to find                       *
-* action = getAction(S,T), where S is current state, T is next terminal on input   *
-*                                                                                  *
-* The interpretation of action is:                                                 *
-*   action <  0 - Reduce by production p, p == -action.                            *
-*   action == 0 - Accept. Reduce by production 0.                                  *
-*   action >  0 - Shift to newstate (=action),                                     *
-*                 ie. push(newstate), set current state=newstate                   *
-*                 and advance input 1 symbol.                                      *
-*   action == _ParserError - Unexpected input. Do some recovery, to try to         *
-*                 synchronize input and stack, in order to continue parse.         *
-*                 (See LRParser::recover() in LRParser.cpp)                        *
-*                                                                                  *
-* For each state S, a #define is generated and used as element S in array          *
-* actionCode. Each define looks as:                                                *
-*                                                                                  *
-* #define _acDDDD Code                                                             *
-*                                                                                  *
-* where DDDD is the statenumber S and Code is an unsigned int with the following   *
-* format:                                                                          *
-*                   0         1         2         3                                *
-* Bit index:        01234567890123456789012345678901                               *
-* Code     :        tttttttttttttttIFaaaaaaaaaaaaaaa                               *
-*                                                                                  *
-* t          : Bit[ 0-14]: unsigned short                                          *
-* a          : Bit[17-31]: signed short                                            *
-* F          : Bit 16    : Indicates how to interpret t and a.                     *
-* I          : Bit 15    : In case F==1, indicates how to interpret t.             *
-*                                                                                  *
-* F == 0: Uncompressed Format.                                                     *
-*      t: Index into array termListTable, pointing at the first element of         *
-*         termList (see below).                                                    *
-*      a: Index into array actionListTable, pointing at the first element of       *
-*         actionList (see below).                                                  *
-* F == 1: Compressed Format, used if there is only 1 possible action, a.           *
-*         I==0: There is only 1 legal terminal in the state.                       *
-*            t: Legal terminal.                                                    *
-*            a: Action.                                                            *
-*                                                                                  *
-*         I==1: All actions in the state are reduce by the same production P = -a. *
-*            t: Index into termSetTable, pointing at the first element of termSet  *
-*               (see below).                                                       *
-*            a: Action.                                                            *
-*                                                                                  *
-* F == 0: Use arrays termListTable and actionListTable to find action.             *
-*      n                 : termListTable[t] = number of elements in termList.      *
-*      termList[0..n-1]  : termListTable[t+1..t+n]                                 *
-*                          Ordered list of legal terminals                         *
-*      actionList[0..n-1]: actionListTable[a..a+n-1] (same length as termList).    *
-*                                                                                  *
-*      To get action, find index k in termList, so termList[k] == T                *
-*      and set action = actionList[k]. If T is not found, set action = _ParseError.*
-*      Note that both termList and actionList may be shared by several states.     *
-*                                                                                  *
-* F == 1 and I==1: Use array termSetTable which is a list of termSet, bitsets,     *
-*                  each with terminalCount bits, 1-bits for legal terminals, and   *
-*                  0-bits for illegal terminals.                                   *
-*                                                                                  *
-*      b                 : Number of bytes in each termSet = (terminalCount-1)/8+1 *
-*      termSet[0..b-1]   : termSetTable[t..t+b-1]                                  *
-*                                                                                  *
-*      As for uncompressed states, the same check for existence is done.           *
-*      If terminal T is not present in termSet, set action = _ParseError.          *
-*      Note that each termSet may be shared by several states.                     *
-\**********************************************************************************/
+/************************************************************************************\
+* The 4 arrays actionCode, termListTable, actionListTable and termSetTable           *
+* holds a compressed action-matrix, used by LRParser to find                         *
+* action = getAction(S,T), where S is current state, T is next terminal on input     *
+*                                                                                    *
+* The interpretation of action is:                                                   *
+*   action <  0 - Reduce by production p, p == -action.                              *
+*   action == 0 - Accept. Reduce by production 0.                                    *
+*   action >  0 - Shift to newstate (=action),                                       *
+*                 ie. push(newstate), set current state=newstate                     *
+*                 and advance input 1 symbol.                                        *
+*   action == _ParserError - Unexpected input. Do some recovery, to try to           *
+*                 synchronize input and stack, in order to continue parse.           *
+*                 (See LRParser::recover() in LRParser.cpp)                          *
+*                                                                                    *
+* For each state S, a #define is generated and used as element S in array            *
+* actionCode. Each define looks as:                                                  *
+*                                                                                    *
+* #define _acDDDD Code                                                               *
+*                                                                                    *
+* where DDDD is the statenumber S and Code is an unsigned int with the following     *
+* format:                                                                            *
+*            0         1         2         3                                         *
+* Bit index: 01234567890123456789012345678901                                        *
+* Code     : tttttttttttttttCCaaaaaaaaaaaaaaa                                        *
+*                                                                                    *
+* t        : Bit[ 0-14] : unsigned short                                             *
+* a        : Bit[17-31] : signed short                                               *
+* CC       : Bit[15-16] : Indicates how to interpret t and a:                        *
+*                                                                                    *
+* CC == 0: CompCodeTermList (uncompressed)                                           *
+*       t: Index into array termListTable, pointing at the first element of          *
+*          termList                                                                  *
+*       a: Index into array actionListTable, pointing at the first element of        *
+*          actionList                                                                *
+*                                                                                    *
+*       n                  : termListTable[t] = number of elements in termList.      *
+*       termList[0..n-1]   : termListTable[t+1..t+n]                                 *
+*                            Ordered list of legal terminals                         *
+*       actionList[0..n-1] : actionListTable[a..a+n-1] (same length as termList).    *
+*                                                                                    *
+*       To get action, find index k in termList, so termList[k] == T,k=[0..n-1]      *
+*       and set action = actionList[k].                                              *
+*       If T is not found, set action = _ParseError.                                 *
+*       Note that both termList and actionList may be shared by several states.      *
+*                                                                                    *
+* CC == 1: CompCodeSplitNode                                                         *
+*       t and a are both indices to 2 child entries in actionCode, which can be      *
+*       another _acNNNN or an extra node, _snNNNN, whichever is needed (values are   *
+*       reused as much as possible, ie. if _snNNNN equals some _acNNNN then no       *
+*       _snNNNN is added, but parent entry will point to _acNNNN instead.            *
+*       Recursive tree search, with max-recursion level specified in                 *
+*       parsegen +c options                                                          *
+*                                                                                    *
+* CC == 2: CompCodeOneItem (Only 1 legal terminal in the state)                      *
+*       t: Legal terminal.                                                           *
+*       a: Action.                                                                   *
+*                                                                                    *
+* CC == 3: CompCodeTermSet (always reduce by same reduce production P = -a)          *
+*       t: Index into termSetTable, pointing at the first element of termSet         *
+*       a: Action.                                                                   *
+*                                                                                    *
+*       termSetTable is a list of termSet, bitsets, each with terminalCount bits     *
+*       1-bits for legal terminals, 0-bits for illegal terminals.                    *
+*                                                                                    *
+*       b                  : Number of bytes in each termSet=(terminalCount-1)/8+1   *
+*       termSet[0..b-1]    : termSetTable[t..t+b-1]                                  *
+*                                                                                    *
+*       As for uncompressed states, the same check for existence is done.            *
+*       If terminal T is not present in termSet, set action = _ParseError.           *
+*       Note that each termSet may be shared by several states.                      *
+\************************************************************************************/
 
-#define _ac0000 0xffff8000 /* Reduce by 1 on tokens in termSet[0]     */
-#define _ac0001 0x00000000 /* termList   0, actionList   0            */
-#define _ac0002 0xfffd8000 /* Reduce by 2 on tokens in termSet[0]     */
-#define _ac0003 0x0014000b /* termList   1, actionList   1            */
-#define _ac0004 0x025a812e /* Split(_sn0000,_sn0001)                  */
-#define _ac0005 0xfff18014 /* Reduce by 8 on tokens in termSet[2]     */
-#define _ac0006 0x001c0010 /* termList   2, actionList   2            */
-#define _ac0007 0xffed801e /* Reduce by 10 on tokens in termSet[3]    */
-#define _ac0008 0xffe9801e /* Reduce by 12 on tokens in termSet[3]    */
-#define _ac0009 0xffe58028 /* Reduce by 14 on tokens in termSet[4]    */
-#define _ac0010 0xffe38028 /* Reduce by 15 on tokens in termSet[4]    */
-#define _ac0011 0xffe18028 /* Reduce by 16 on tokens in termSet[4]    */
-#define _ac0012 0x002c0019 /* termList   3, actionList   3            */
-#define _ac0013 0x00300019 /* termList   3, actionList   4            */
-#define _ac0014 0xff6d8032 /* Reduce by 74 on tokens in termSet[5]    */
-#define _ac0015 0x0034001c /* termList   4, actionList   5            */
-#define _ac0016 0xfff98000 /* Reduce by 4 on tokens in termSet[0]     */
-#define _ac0017 0x0038001f /* termList   5, actionList   6            */
-#define _ac0018 0xffdf803c /* Reduce by 17 on tokens in termSet[6]    */
-#define _ac0019 0x00420025 /* termList   6, actionList   7            */
-#define _ac0020 0x025e8130 /* Split(_sn0002,_sn0003)                  */
-#define _ac0021 0x004c002b /* termList   7, actionList   8            */
-#define _ac0022 0x004c002b /* termList   7, actionList   8            */
-#define _ac0023 0xfeb98050 /* Reduce by 164 on tokens in termSet[8]   */
-#define _ac0024 0xfff38014 /* Reduce by 7 on tokens in termSet[2]     */
-#define _ac0025 0xffeb801e /* Reduce by 11 on tokens in termSet[3]    */
-#define _ac0026 0xffe7801e /* Reduce by 13 on tokens in termSet[3]    */
-#define _ac0027 0x005d0026 /* Shift  to 46 on LC                      */
-#define _ac0028 0x02628132 /* Split(_sn0004,_sn0005)                  */
-#define _ac0029 0xff8d805a /* Reduce by 58 on tokens in termSet[9]    */
-#define _ac0030 0x02668134 /* Split(_sn0006,_sn0007)                  */
-#define _ac0031 0x002f0048 /* Shift  to 23 on NAME                    */
-#define _ac0032 0xfffb8000 /* Reduce by 3 on tokens in termSet[0]     */
-#define _ac0033 0x004c002b /* termList   7, actionList   8            */
-#define _ac0034 0xfff78000 /* Reduce by 5 on tokens in termSet[0]     */
-#define _ac0035 0x0052002f /* termList   8, actionList   9            */
-#define _ac0036 0x00990041 /* Shift  to 76 on RPAR                    */
-#define _ac0037 0xff618064 /* Reduce by 80 on tokens in termSet[10]   */
-#define _ac0038 0x006a003c /* termList   9, actionList  10            */
-#define _ac0039 0x00820049 /* termList  10, actionList  11            */
-#define _ac0040 0x008e002f /* termList   8, actionList  12            */
-#define _ac0041 0x00a60050 /* termList  11, actionList  13            */
-#define _ac0042 0x026a8136 /* Split(_sn0008,_sn0009)                  */
-#define _ac0043 0x00b8005b /* termList  13, actionList  15            */
-#define _ac0044 0x00c40062 /* termList  14, actionList  16            */
-#define _ac0045 0x00ca0062 /* termList  14, actionList  17            */
-#define _ac0046 0xff8b8078 /* Reduce by 59 on tokens in termSet[12]   */
-#define _ac0047 0xff758028 /* Reduce by 70 on tokens in termSet[4]    */
-#define _ac0048 0x002f0048 /* Shift  to 23 on NAME                    */
-#define _ac0049 0x00d00066 /* termList  15, actionList  18            */
-#define _ac0050 0xff6b8082 /* Reduce by 75 on tokens in termSet[13]   */
-#define _ac0051 0x00d40069 /* termList  16, actionList  19            */
-#define _ac0052 0xffdd803c /* Reduce by 18 on tokens in termSet[6]    */
-#define _ac0053 0x00da006d /* termList  17, actionList  20            */
-#define _ac0054 0xffc5808c /* Reduce by 30 on tokens in termSet[14]   */
-#define _ac0055 0x00cd003f /* Shift  to 102 on RB                     */
-#define _ac0056 0x00e20072 /* termList  18, actionList  21            */
-#define _ac0057 0xff218096 /* Reduce by 112 on tokens in termSet[15]  */
-#define _ac0058 0xff1f8096 /* Reduce by 113 on tokens in termSet[15]  */
-#define _ac0059 0xff1d8096 /* Reduce by 114 on tokens in termSet[15]  */
-#define _ac0060 0x026e8138 /* Split(_sn0010,_sn0011)                  */
-#define _ac0061 0x00d70040 /* Shift  to 107 on LPAR                   */
-#define _ac0062 0x01000082 /* termList  19, actionList  22            */
-#define _ac0063 0x01000082 /* termList  19, actionList  22            */
-#define _ac0064 0x0272813a /* Split(_sn0012,_sn0013)                  */
-#define _ac0065 0x01000082 /* termList  19, actionList  22            */
-#define _ac0066 0x01000082 /* termList  19, actionList  22            */
-#define _ac0067 0x01000082 /* termList  19, actionList  22            */
-#define _ac0068 0xfec780aa /* Reduce by 157 on tokens in termSet[17]  */
-#define _ac0069 0x0276813c /* Split(_sn0014,_sn0015)                  */
-#define _ac0070 0xfeef80be /* Reduce by 137 on tokens in termSet[19]  */
-#define _ac0071 0x027a813e /* Split(_sn0016,_sn0017)                  */
-#define _ac0072 0xfee980c8 /* Reduce by 140 on tokens in termSet[20]  */
-#define _ac0073 0x027e8140 /* Split(_sn0018,_sn0019)                  */
-#define _ac0074 0x02828142 /* Split(_sn0020,_sn0021)                  */
-#define _ac0075 0xfebd80dc /* Reduce by 162 on tokens in termSet[22]  */
-#define _ac0076 0xffbf808c /* Reduce by 33 on tokens in termSet[14]   */
-#define _ac0077 0x013800a2 /* termList  23, actionList  26            */
-#define _ac0078 0xffd9803c /* Reduce by 20 on tokens in termSet[6]    */
-#define _ac0079 0xfec580e6 /* Reduce by 158 on tokens in termSet[23]  */
-#define _ac0080 0x006a003c /* termList   9, actionList  10            */
-#define _ac0081 0xffd380f0 /* Reduce by 23 on tokens in termSet[24]   */
-#define _ac0082 0x017600c2 /* termList  24, actionList  27            */
-#define _ac0083 0xffb380fa /* Reduce by 39 on tokens in termSet[25]   */
-#define _ac0084 0x017a00c5 /* termList  25, actionList  28            */
-#define _ac0085 0xffad80fa /* Reduce by 42 on tokens in termSet[25]   */
-#define _ac0086 0xffab80fa /* Reduce by 43 on tokens in termSet[25]   */
-#define _ac0087 0xffa98104 /* Reduce by 44 on tokens in termSet[26]   */
-#define _ac0088 0x018c00cf /* termList  26, actionList  29            */
-#define _ac0089 0xffcf80f0 /* Reduce by 25 on tokens in termSet[24]   */
-#define _ac0090 0x0151003f /* Shift  to 168 on RB                     */
-#define _ac0091 0xffbd808c /* Reduce by 34 on tokens in termSet[14]   */
-#define _ac0092 0x019600c2 /* termList  24, actionList  30            */
-#define _ac0093 0x019a00c2 /* termList  24, actionList  31            */
-#define _ac0094 0xffb780fa /* Reduce by 37 on tokens in termSet[25]   */
-#define _ac0095 0xffc980f0 /* Reduce by 28 on tokens in termSet[24]   */
-#define _ac0096 0xffc1808c /* Reduce by 32 on tokens in termSet[14]   */
-#define _ac0097 0x019e00d5 /* termList  27, actionList  32            */
-#define _ac0098 0x01a80066 /* termList  15, actionList  33            */
-#define _ac0099 0xff738028 /* Reduce by 71 on tokens in termSet[4]    */
-#define _ac0100 0x002f0048 /* Shift  to 23 on NAME                    */
-#define _ac0101 0x01000082 /* termList  19, actionList  22            */
-#define _ac0102 0xffc3808c /* Reduce by 31 on tokens in termSet[14]   */
-#define _ac0103 0x01ac00c2 /* termList  24, actionList  34            */
-#define _ac0104 0x01650041 /* Shift  to 178 on RPAR                   */
-#define _ac0105 0x01b000db /* termList  28, actionList  35            */
-#define _ac0106 0xfebb80dc /* Reduce by 163 on tokens in termSet[22]  */
-#define _ac0107 0x00e20072 /* termList  18, actionList  21            */
-#define _ac0108 0x0286813a /* Split(_sn0022,_sn0013)                  */
-#define _ac0109 0x0288813a /* Split(_sn0023,_sn0013)                  */
-#define _ac0110 0xff0d8096 /* Reduce by 122 on tokens in termSet[15]  */
-#define _ac0111 0x01000082 /* termList  19, actionList  22            */
-#define _ac0112 0x016f0048 /* Shift  to 183 on NAME                   */
-#define _ac0113 0x01be00e3 /* termList  29, actionList  36            */
-#define _ac0114 0x028a813a /* Split(_sn0024,_sn0013)                  */
-#define _ac0115 0x028c813a /* Split(_sn0025,_sn0013)                  */
-#define _ac0116 0x028e813a /* Split(_sn0026,_sn0013)                  */
-#define _ac0117 0x01000082 /* termList  19, actionList  22            */
-#define _ac0118 0x01000082 /* termList  19, actionList  22            */
-#define _ac0119 0x01000082 /* termList  19, actionList  22            */
-#define _ac0120 0x01000082 /* termList  19, actionList  22            */
-#define _ac0121 0x01000082 /* termList  19, actionList  22            */
-#define _ac0122 0x01000082 /* termList  19, actionList  22            */
-#define _ac0123 0x01000082 /* termList  19, actionList  22            */
-#define _ac0124 0x01000082 /* termList  19, actionList  22            */
-#define _ac0125 0x01000082 /* termList  19, actionList  22            */
-#define _ac0126 0x01000082 /* termList  19, actionList  22            */
-#define _ac0127 0x01000082 /* termList  19, actionList  22            */
-#define _ac0128 0x01000082 /* termList  19, actionList  22            */
-#define _ac0129 0x01000082 /* termList  19, actionList  22            */
-#define _ac0130 0x01000082 /* termList  19, actionList  22            */
-#define _ac0131 0x01000082 /* termList  19, actionList  22            */
-#define _ac0132 0x01000082 /* termList  19, actionList  22            */
-#define _ac0133 0xff63810e /* Reduce by 79 on tokens in termSet[27]   */
-#define _ac0134 0xff5f8064 /* Reduce by 81 on tokens in termSet[10]   */
-#define _ac0135 0xff5d8064 /* Reduce by 82 on tokens in termSet[10]   */
-#define _ac0136 0x01d600f0 /* termList  30, actionList  37            */
-#define _ac0137 0xff5b8118 /* Reduce by 83 on tokens in termSet[28]   */
-#define _ac0138 0xff598118 /* Reduce by 84 on tokens in termSet[28]   */
-#define _ac0139 0x01e8001c /* termList   4, actionList  38            */
-#define _ac0140 0x01ec00fa /* termList  31, actionList  39            */
-#define _ac0141 0x01ab0048 /* Shift  to 213 on NAME                   */
-#define _ac0142 0x01ad002e /* Shift  to 214 on COLON                  */
-#define _ac0143 0x01af0040 /* Shift  to 215 on LPAR                   */
-#define _ac0144 0x01b10040 /* Shift  to 216 on LPAR                   */
-#define _ac0145 0x02040107 /* termList  32, actionList  40            */
-#define _ac0146 0x01b50040 /* Shift  to 218 on LPAR                   */
-#define _ac0147 0x01b70028 /* Shift  to 219 on SEMI                   */
-#define _ac0148 0x01b90028 /* Shift  to 220 on SEMI                   */
-#define _ac0149 0x01bb0040 /* Shift  to 221 on LPAR                   */
-#define _ac0150 0x01000082 /* termList  19, actionList  22            */
-#define _ac0151 0x01bf002e /* Shift  to 223 on COLON                  */
-#define _ac0152 0x01000082 /* termList  19, actionList  22            */
-#define _ac0153 0x004b0026 /* Shift  to 37 on LC                      */
-#define _ac0154 0x02908149 /* Split(_sn0027,_sn0028)                  */
-#define _ac0155 0x02380066 /* termList  15, actionList  41            */
-#define _ac0156 0xfec18082 /* Reduce by 160 on tokens in termSet[13]  */
-#define _ac0157 0xffd180f0 /* Reduce by 24 on tokens in termSet[24]   */
-#define _ac0158 0x023c0122 /* termList  33, actionList  42            */
-#define _ac0159 0x02460128 /* termList  34, actionList  43            */
-#define _ac0160 0xffa78104 /* Reduce by 45 on tokens in termSet[26]   */
-#define _ac0161 0x024e012d /* termList  35, actionList  44            */
-#define _ac0162 0xffd5812c /* Reduce by 22 on tokens in termSet[30]   */
-#define _ac0163 0x02540131 /* termList  36, actionList  45            */
-#define _ac0164 0x02600138 /* termList  37, actionList  46            */
-#define _ac0165 0x026a012d /* termList  35, actionList  47            */
-#define _ac0166 0x0270013e /* termList  38, actionList  48            */
-#define _ac0167 0x018c00cf /* termList  26, actionList  29            */
-#define _ac0168 0xffcd80f0 /* Reduce by 26 on tokens in termSet[24]   */
-#define _ac0169 0xffbb808c /* Reduce by 35 on tokens in termSet[14]   */
-#define _ac0170 0x002f0048 /* Shift  to 23 on NAME                    */
-#define _ac0171 0xffb9808c /* Reduce by 36 on tokens in termSet[14]   */
-#define _ac0172 0xff958028 /* Reduce by 54 on tokens in termSet[4]    */
-#define _ac0173 0xff898078 /* Reduce by 60 on tokens in termSet[12]   */
-#define _ac0174 0xff6f8028 /* Reduce by 73 on tokens in termSet[4]    */
-#define _ac0175 0xff698082 /* Reduce by 76 on tokens in termSet[13]   */
-#define _ac0176 0xff658082 /* Reduce by 78 on tokens in termSet[13]   */
-#define _ac0177 0xff238096 /* Reduce by 111 on tokens in termSet[15]  */
-#define _ac0178 0x01000082 /* termList  19, actionList  22            */
-#define _ac0179 0x0294814b /* Split(_sn0029,_sn0030)                  */
-#define _ac0180 0x027c00c2 /* termList  24, actionList  50            */
-#define _ac0181 0x01d90041 /* Shift  to 236 on RPAR                   */
-#define _ac0182 0x02800146 /* termList  40, actionList  51            */
-#define _ac0183 0xff038096 /* Reduce by 127 on tokens in termSet[15]  */
-#define _ac0184 0x01dd0041 /* Shift  to 238 on RPAR                   */
-#define _ac0185 0xfeff8096 /* Reduce by 129 on tokens in termSet[15]  */
-#define _ac0186 0x02840149 /* termList  41, actionList  52            */
-#define _ac0187 0x0298813c /* Split(_sn0031,_sn0015)                  */
-#define _ac0188 0x028e014f /* termList  42, actionList  53            */
-#define _ac0189 0x029a813c /* Split(_sn0032,_sn0015)                  */
-#define _ac0190 0x029c813c /* Split(_sn0033,_sn0015)                  */
-#define _ac0191 0xfeeb80c8 /* Reduce by 139 on tokens in termSet[20]  */
-#define _ac0192 0x029e8142 /* Split(_sn0034,_sn0021)                  */
-#define _ac0193 0x02a08151 /* Split(_sn0035,_sn0036)                  */
-#define _ac0194 0x02a48153 /* Split(_sn0037,_sn0038)                  */
-#define _ac0195 0xfedd80a0 /* Reduce by 146 on tokens in termSet[16]  */
-#define _ac0196 0xfedb80a0 /* Reduce by 147 on tokens in termSet[16]  */
-#define _ac0197 0x02a88155 /* Split(_sn0039,_sn0040)                  */
-#define _ac0198 0x02ac8157 /* Split(_sn0041,_sn0042)                  */
-#define _ac0199 0x02b08159 /* Split(_sn0043,_sn0044)                  */
-#define _ac0200 0x02b4815b /* Split(_sn0045,_sn0046)                  */
-#define _ac0201 0x02b8815d /* Split(_sn0047,_sn0048)                  */
-#define _ac0202 0x02bc815d /* Split(_sn0049,_sn0048)                  */
-#define _ac0203 0x02e8001c /* termList   4, actionList  61            */
-#define _ac0204 0xff858064 /* Reduce by 62 on tokens in termSet[10]   */
-#define _ac0205 0x02ec0184 /* termList  50, actionList  62            */
-#define _ac0206 0x02f8006d /* termList  17, actionList  63            */
-#define _ac0207 0xff83803c /* Reduce by 63 on tokens in termSet[6]    */
-#define _ac0208 0x01000082 /* termList  19, actionList  22            */
-#define _ac0209 0xff578118 /* Reduce by 85 on tokens in termSet[28]   */
-#define _ac0210 0xff558118 /* Reduce by 86 on tokens in termSet[28]   */
-#define _ac0211 0x0300001c /* termList   4, actionList  64            */
-#define _ac0212 0x01ef0028 /* Shift  to 247 on SEMI                   */
-#define _ac0213 0xff290028 /* Reduce by 108 on SEMI                   */
-#define _ac0214 0x02040107 /* termList  32, actionList  40            */
-#define _ac0215 0x030400e3 /* termList  29, actionList  65            */
-#define _ac0216 0x030400e3 /* termList  29, actionList  65            */
-#define _ac0217 0x01f90020 /* Shift  to 252 on WHILE                  */
-#define _ac0218 0x031c00fa /* termList  31, actionList  66            */
-#define _ac0219 0xff438118 /* Reduce by 95 on tokens in termSet[28]   */
-#define _ac0220 0xff418118 /* Reduce by 96 on tokens in termSet[28]   */
-#define _ac0221 0x01000082 /* termList  19, actionList  22            */
-#define _ac0222 0x0201002e /* Shift  to 256 on COLON                  */
-#define _ac0223 0xff3b8118 /* Reduce by 99 on tokens in termSet[28]   */
-#define _ac0224 0x0334001c /* termList   4, actionList  67            */
-#define _ac0225 0x02090024 /* Shift  to 260 on CATCH Used by states (225,258) */
-#define _ac0226 0xfec380e6 /* Reduce by 159 on tokens in termSet[23]  */
-#define _ac0227 0x006a003c /* termList   9, actionList  10            */
-#define _ac0228 0xffb180fa /* Reduce by 40 on tokens in termSet[25]   */
-#define _ac0229 0x0338002f /* termList   8, actionList  68            */
-#define _ac0230 0x0350012d /* termList  35, actionList  69            */
-#define _ac0231 0x0356018b /* termList  51, actionList  70            */
-#define _ac0232 0xffb580fa /* Reduce by 38 on tokens in termSet[25]   */
-#define _ac0233 0x02be813a /* Split(_sn0050,_sn0013)                  */
-#define _ac0234 0xff198096 /* Reduce by 116 on tokens in termSet[15]  */
-#define _ac0235 0xff178096 /* Reduce by 117 on tokens in termSet[15]  */
-#define _ac0236 0xff158096 /* Reduce by 118 on tokens in termSet[15]  */
-#define _ac0237 0xff058096 /* Reduce by 126 on tokens in termSet[15]  */
-#define _ac0238 0xff018096 /* Reduce by 128 on tokens in termSet[15]  */
-#define _ac0239 0x01000082 /* termList  19, actionList  22            */
-#define _ac0240 0x01000082 /* termList  19, actionList  22            */
-#define _ac0241 0xff878064 /* Reduce by 61 on tokens in termSet[10]   */
-#define _ac0242 0x035a018e /* termList  52, actionList  71            */
-#define _ac0243 0x006a003c /* termList   9, actionList  10            */
-#define _ac0244 0x01000082 /* termList  19, actionList  22            */
-#define _ac0245 0xff77803c /* Reduce by 69 on tokens in termSet[6]    */
-#define _ac0246 0xff538118 /* Reduce by 87 on tokens in termSet[28]   */
-#define _ac0247 0xff518118 /* Reduce by 88 on tokens in termSet[28]   */
-#define _ac0248 0xff4f8118 /* Reduce by 89 on tokens in termSet[28]   */
-#define _ac0249 0x021d0041 /* Shift  to 270 on RPAR                   */
-#define _ac0250 0x03620193 /* termList  53, actionList  72            */
-#define _ac0251 0x021f0041 /* Shift  to 271 on RPAR                   */
-#define _ac0252 0x02210040 /* Shift  to 272 on LPAR                   */
-#define _ac0253 0x02230028 /* Shift  to 273 on SEMI                   */
-#define _ac0254 0x03680193 /* termList  53, actionList  73            */
-#define _ac0255 0x036e00c2 /* termList  24, actionList  74            */
-#define _ac0256 0xff3d8118 /* Reduce by 98 on tokens in termSet[28]   */
-#define _ac0257 0xff398118 /* Reduce by 100 on tokens in termSet[28]  */
-#define _ac0258 0x02c080e1 /* Split(_sn0051,_ac0225)                  */
-#define _ac0259 0xff358186 /* Reduce by 102 on tokens in termSet[39]  */
-#define _ac0260 0x02290040 /* Shift  to 276 on LPAR                   */
-#define _ac0261 0xfebf8082 /* Reduce by 161 on tokens in termSet[13]  */
-#define _ac0262 0xff9b8190 /* Reduce by 51 on tokens in termSet[40]   */
-#define _ac0263 0x022b003f /* Shift  to 277 on RB                     */
-#define _ac0264 0x03720128 /* termList  34, actionList  75            */
-#define _ac0265 0xfefb0041 /* Reduce by 131 on RPAR                   */
-#define _ac0266 0x02c28162 /* Split(_sn0052,_sn0053)                  */
-#define _ac0267 0xff81803c /* Reduce by 64 on tokens in termSet[6]    */
-#define _ac0268 0xff7b803c /* Reduce by 67 on tokens in termSet[6]    */
-#define _ac0269 0xff79803c /* Reduce by 68 on tokens in termSet[6]    */
-#define _ac0270 0x02040107 /* termList  32, actionList  40            */
-#define _ac0271 0x02040107 /* termList  32, actionList  40            */
-#define _ac0272 0x030400e3 /* termList  29, actionList  65            */
-#define _ac0273 0x037a00fa /* termList  31, actionList  76            */
-#define _ac0274 0x004b0026 /* Shift  to 37 on LC                      */
-#define _ac0275 0xff338186 /* Reduce by 103 on tokens in termSet[39]  */
-#define _ac0276 0x03920197 /* termList  54, actionList  77            */
-#define _ac0277 0xff998190 /* Reduce by 52 on tokens in termSet[40]   */
-#define _ac0278 0x023f0041 /* Shift  to 287 on RPAR                   */
-#define _ac0279 0x02c68164 /* Split(_sn0054,_sn0055)                  */
-#define _ac0280 0xff498118 /* Reduce by 92 on tokens in termSet[28]   */
-#define _ac0281 0x02430041 /* Shift  to 289 on RPAR                   */
-#define _ac0282 0x02450028 /* Shift  to 290 on SEMI                   */
-#define _ac0283 0xff3f8118 /* Reduce by 97 on tokens in termSet[28]   */
-#define _ac0284 0x02470041 /* Shift  to 291 on RPAR                   */
-#define _ac0285 0x039a019c /* termList  55, actionList  78            */
-#define _ac0286 0xff2f0041 /* Reduce by 105 on RPAR                   */
-#define _ac0287 0xff9f8190 /* Reduce by 49 on tokens in termSet[40]   */
-#define _ac0288 0x02040107 /* termList  32, actionList  40            */
-#define _ac0289 0x02510028 /* Shift  to 296 on SEMI                   */
-#define _ac0290 0x03a800e3 /* termList  29, actionList  79            */
-#define _ac0291 0x004b0026 /* Shift  to 37 on LC                      */
-#define _ac0292 0x03c00062 /* termList  14, actionList  80            */
-#define _ac0293 0x03c6002b /* termList   7, actionList  81            */
-#define _ac0294 0x03c6002b /* termList   7, actionList  81            */
-#define _ac0295 0xff4b8118 /* Reduce by 91 on tokens in termSet[28]   */
-#define _ac0296 0xff478118 /* Reduce by 93 on tokens in termSet[28]   */
-#define _ac0297 0x02570041 /* Shift  to 299 on RPAR                   */
-#define _ac0298 0xff318186 /* Reduce by 104 on tokens in termSet[39]  */
-#define _ac0299 0x02040107 /* termList  32, actionList  40            */
-#define _ac0300 0xff458118 /* Reduce by 94 on tokens in termSet[28]   */
-#define _sn0000 0xffe7800a /* Reduce by 13 on tokens in termSet[1] Used by state (4) */
-#define _sn0001 0x00310046 /* Shift  to 24 on TTYPE Used by state (4) */
-#define _sn0002 0xffd58046 /* Reduce by 22 on tokens in termSet[7] Used by state (20) */
-#define _sn0003 0x00530040 /* Shift  to 41 on LPAR Used by state (20) */
-#define _sn0004 0xff938028 /* Reduce by 55 on tokens in termSet[4] Used by state (28) */
-#define _sn0005 0xff8f0026 /* Reduce by 57 on LC Used by state (28)   */
-#define _sn0006 0xff718028 /* Reduce by 72 on tokens in termSet[4] Used by state (30) */
-#define _sn0007 0x00610026 /* Shift  to 48 on LC Used by state (30)   */
-#define _sn0008 0xffcb806e /* Reduce by 27 on tokens in termSet[11] Used by state (42) */
-#define _sn0009 0x00b40058 /* termList  12, actionList  14 Used by state (42) */
-#define _sn0010 0xff1b8096 /* Reduce by 115 on tokens in termSet[15] Used by state (60) */
-#define _sn0011 0x00d50001 /* Shift  to 106 on STRING Used by state (60) */
-#define _sn0012 0xfecd80a0 /* Reduce by 154 on tokens in termSet[16] Used by state (64) */
-#define _sn0013 0x0116008e /* termList  20, actionList  23 Used by states (64,108,109,114,115,116,233) */
-#define _sn0014 0xfef780b4 /* Reduce by 133 on tokens in termSet[18] Used by state (69) */
-#define _sn0015 0x011e0093 /* termList  21, actionList  24 Used by states (69,187,189,190) */
-#define _sn0016 0xfeed80be /* Reduce by 138 on tokens in termSet[19] Used by state (71) */
-#define _sn0017 0x00f3002f /* Shift  to 121 on OROR Used by state (71) */
-#define _sn0018 0xfee780c8 /* Reduce by 141 on tokens in termSet[20] Used by state (73) */
-#define _sn0019 0x00f50030 /* Shift  to 122 on ANDAND Used by state (73) */
-#define _sn0020 0xfee380d2 /* Reduce by 143 on tokens in termSet[21] Used by state (74) */
-#define _sn0021 0x01240097 /* termList  22, actionList  25 Used by states (74,192) */
-#define _sn0022 0xff1180a0 /* Reduce by 120 on tokens in termSet[16] Used by state (108) */
-#define _sn0023 0xff0f80a0 /* Reduce by 121 on tokens in termSet[16] Used by state (109) */
-#define _sn0024 0xff0b80a0 /* Reduce by 123 on tokens in termSet[16] Used by state (114) */
-#define _sn0025 0xff0980a0 /* Reduce by 124 on tokens in termSet[16] Used by state (115) */
-#define _sn0026 0xff0780a0 /* Reduce by 125 on tokens in termSet[16] Used by state (116) */
-#define _sn0027 0xff1d8122 /* Reduce by 114 on tokens in termSet[29] Used by state (154) */
-#define _sn0028 0xff29002e /* Reduce by 108 on COLON Used by state (154) */
-#define _sn0029 0xff1b8136 /* Reduce by 115 on tokens in termSet[31] Used by state (179) */
-#define _sn0030 0x02780143 /* termList  39, actionList  49 Used by state (179) */
-#define _sn0031 0xfef980b4 /* Reduce by 132 on tokens in termSet[18] Used by state (187) */
-#define _sn0032 0xfef380b4 /* Reduce by 135 on tokens in termSet[18] Used by state (189) */
-#define _sn0033 0xfef180b4 /* Reduce by 136 on tokens in termSet[18] Used by state (190) */
-#define _sn0034 0xfee580d2 /* Reduce by 142 on tokens in termSet[21] Used by state (192) */
-#define _sn0035 0xfee18140 /* Reduce by 144 on tokens in termSet[32] Used by state (193) */
-#define _sn0036 0x02960154 /* termList  43, actionList  54 Used by state (193) */
-#define _sn0037 0xfedf814a /* Reduce by 145 on tokens in termSet[33] Used by state (194) */
-#define _sn0038 0x02a0015a /* termList  44, actionList  55 Used by state (194) */
-#define _sn0039 0xfed98154 /* Reduce by 148 on tokens in termSet[34] Used by state (197) */
-#define _sn0040 0x02ac0161 /* termList  45, actionList  56 Used by state (197) */
-#define _sn0041 0xfed7815e /* Reduce by 149 on tokens in termSet[35] Used by state (198) */
-#define _sn0042 0x02b40166 /* termList  46, actionList  57 Used by state (198) */
-#define _sn0043 0xfed58168 /* Reduce by 150 on tokens in termSet[36] Used by state (199) */
-#define _sn0044 0x02c2016e /* termList  47, actionList  58 Used by state (199) */
-#define _sn0045 0xfed38172 /* Reduce by 151 on tokens in termSet[37] Used by state (200) */
-#define _sn0046 0x02d20177 /* termList  48, actionList  59 Used by state (200) */
-#define _sn0047 0xfed1817c /* Reduce by 152 on tokens in termSet[38] Used by state (201) */
-#define _sn0048 0x02e40181 /* termList  49, actionList  60 Used by states (201,202) */
-#define _sn0049 0xfecf817c /* Reduce by 153 on tokens in termSet[38] Used by state (202) */
-#define _sn0050 0xff1380a0 /* Reduce by 119 on tokens in termSet[16] Used by state (233) */
-#define _sn0051 0xff378118 /* Reduce by 101 on tokens in termSet[28] Used by state (258) */
-#define _sn0052 0xfef5819a /* Reduce by 134 on tokens in termSet[41] Used by state (266) */
-#define _sn0053 0x00ed002d /* Shift  to 118 on QUEST Used by state (266) */
-#define _sn0054 0xff4d8064 /* Reduce by 90 on tokens in termSet[10] Used by state (279) */
-#define _sn0055 0x02410049 /* Shift  to 288 on ELSE Used by state (279) */
+#define _ac0000 0xffff8000 /* Reduce by   1 on tokens in termSet[0]                 */
+#define _ac0001 0x025a812e /* Split(_sn0000,_sn0001)                                */
+#define _ac0002 0xfffd8000 /* Reduce by   2 on tokens in termSet[0]                 */
+#define _ac0003 0x000c0007 /* termList    1, actionList    1                        */
+#define _ac0004 0x025e8130 /* Split(_sn0002,_sn0003)                                */
+#define _ac0005 0xfff1800a /* Reduce by   8 on tokens in termSet[1]                 */
+#define _ac0006 0x02628132 /* Split(_sn0004,_sn0005)                                */
+#define _ac0007 0xffed801e /* Reduce by  10 on tokens in termSet[3]                 */
+#define _ac0008 0xffe9801e /* Reduce by  12 on tokens in termSet[3]                 */
+#define _ac0009 0xffe58028 /* Reduce by  14 on tokens in termSet[4]                 */
+#define _ac0010 0xffe38028 /* Reduce by  15 on tokens in termSet[4]                 */
+#define _ac0011 0xffe18028 /* Reduce by  16 on tokens in termSet[4]                 */
+#define _ac0012 0x001c0011 /* termList    3, actionList    3                        */
+#define _ac0013 0x00200011 /* termList    3, actionList    4                        */
+#define _ac0014 0xff6d8032 /* Reduce by  74 on tokens in termSet[5]                 */
+#define _ac0015 0x00240014 /* termList    4, actionList    5                        */
+#define _ac0016 0xfff98000 /* Reduce by   4 on tokens in termSet[0]                 */
+#define _ac0017 0x02668134 /* Split(_sn0006,_sn0007)                                */
+#define _ac0018 0xffdf803c /* Reduce by  17 on tokens in termSet[6]                 */
+#define _ac0019 0x026a8136 /* Split(_sn0008,_sn0009)                                */
+#define _ac0020 0x026e8138 /* Split(_sn0010,_sn0011)                                */
+#define _ac0021 0x0034001f /* termList    7, actionList    8                        */
+#define _ac0022 0x0034001f /* termList    7, actionList    8                        */
+#define _ac0023 0xfeb98050 /* Reduce by 164 on tokens in termSet[8]                 */
+#define _ac0024 0xfff3800a /* Reduce by   7 on tokens in termSet[1]                 */
+#define _ac0025 0xffeb801e /* Reduce by  11 on tokens in termSet[3]                 */
+#define _ac0026 0xffe7801e /* Reduce by  13 on tokens in termSet[3]                 */
+#define _ac0027 0x005d0026 /* Shift  to  46 on LC                                   */
+#define _ac0028 0x0272813a /* Split(_sn0012,_sn0013)                                */
+#define _ac0029 0xff8d805a /* Reduce by  58 on tokens in termSet[9]                 */
+#define _ac0030 0x0276813c /* Split(_sn0014,_sn0015)                                */
+#define _ac0031 0x002f0048 /* Shift  to  23 on NAME                                 */
+#define _ac0032 0xfffb8000 /* Reduce by   3 on tokens in termSet[0]                 */
+#define _ac0033 0x0034001f /* termList    7, actionList    8                        */
+#define _ac0034 0xfff78000 /* Reduce by   5 on tokens in termSet[0]                 */
+#define _ac0035 0x003a0023 /* termList    8, actionList    9                        */
+#define _ac0036 0x00990041 /* Shift  to  76 on RPAR                                 */
+#define _ac0037 0xff618064 /* Reduce by  80 on tokens in termSet[10]                */
+#define _ac0038 0x00520030 /* termList    9, actionList   10                        */
+#define _ac0039 0x006a003d /* termList   10, actionList   11                        */
+#define _ac0040 0x00760023 /* termList    8, actionList   12                        */
+#define _ac0041 0x008e0044 /* termList   11, actionList   13                        */
+#define _ac0042 0x027a813e /* Split(_sn0016,_sn0017)                                */
+#define _ac0043 0x027e8140 /* Split(_sn0018,_sn0019)                                */
+#define _ac0044 0x00a4004f /* termList   13, actionList   16                        */
+#define _ac0045 0x00aa004f /* termList   13, actionList   17                        */
+#define _ac0046 0xff8b8082 /* Reduce by  59 on tokens in termSet[13]                */
+#define _ac0047 0xff758028 /* Reduce by  70 on tokens in termSet[4]                 */
+#define _ac0048 0x002f0048 /* Shift  to  23 on NAME                                 */
+#define _ac0049 0x00b00053 /* termList   14, actionList   18                        */
+#define _ac0050 0xff6b808c /* Reduce by  75 on tokens in termSet[14]                */
+#define _ac0051 0x02828142 /* Split(_sn0020,_sn0021)                                */
+#define _ac0052 0xffdd803c /* Reduce by  18 on tokens in termSet[6]                 */
+#define _ac0053 0x02668140 /* Split(_sn0006,_sn0019)                                */
+#define _ac0054 0xffc58096 /* Reduce by  30 on tokens in termSet[15]                */
+#define _ac0055 0x00cd003f /* Shift  to 102 on RB                                   */
+#define _ac0056 0x00b40056 /* termList   15, actionList   19                        */
+#define _ac0057 0xff2180a0 /* Reduce by 112 on tokens in termSet[16]                */
+#define _ac0058 0xff1f80a0 /* Reduce by 113 on tokens in termSet[16]                */
+#define _ac0059 0xff1d80a0 /* Reduce by 114 on tokens in termSet[16]                */
+#define _ac0060 0x02868144 /* Split(_sn0022,_sn0023)                                */
+#define _ac0061 0x00d70040 /* Shift  to 107 on LPAR                                 */
+#define _ac0062 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0063 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0064 0x028a8146 /* Split(_sn0024,_sn0025)                                */
+#define _ac0065 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0066 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0067 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0068 0xfec780b4 /* Reduce by 157 on tokens in termSet[18]                */
+#define _ac0069 0x028e8148 /* Split(_sn0026,_sn0027)                                */
+#define _ac0070 0xfeef80c8 /* Reduce by 137 on tokens in termSet[20]                */
+#define _ac0071 0x0292814a /* Split(_sn0028,_sn0029)                                */
+#define _ac0072 0xfee980d2 /* Reduce by 140 on tokens in termSet[21]                */
+#define _ac0073 0x0296814c /* Split(_sn0030,_sn0031)                                */
+#define _ac0074 0x029a814e /* Split(_sn0032,_sn0033)                                */
+#define _ac0075 0xfebd80e6 /* Reduce by 162 on tokens in termSet[23]                */
+#define _ac0076 0xffbf8096 /* Reduce by  33 on tokens in termSet[15]                */
+#define _ac0077 0x010a0086 /* termList   20, actionList   24                        */
+#define _ac0078 0xffd9803c /* Reduce by  20 on tokens in termSet[6]                 */
+#define _ac0079 0xfec580f0 /* Reduce by 158 on tokens in termSet[24]                */
+#define _ac0080 0x00520030 /* termList    9, actionList   10                        */
+#define _ac0081 0xffd380fa /* Reduce by  23 on tokens in termSet[25]                */
+#define _ac0082 0x014800a6 /* termList   21, actionList   25                        */
+#define _ac0083 0xffb38104 /* Reduce by  39 on tokens in termSet[26]                */
+#define _ac0084 0x029e8150 /* Split(_sn0034,_sn0035)                                */
+#define _ac0085 0xffad8104 /* Reduce by  42 on tokens in termSet[26]                */
+#define _ac0086 0xffab8104 /* Reduce by  43 on tokens in termSet[26]                */
+#define _ac0087 0xffa98118 /* Reduce by  44 on tokens in termSet[28]                */
+#define _ac0088 0x029e8151 /* Split(_sn0034,_sn0036)                                */
+#define _ac0089 0xffcf80fa /* Reduce by  25 on tokens in termSet[25]                */
+#define _ac0090 0x0151003f /* Shift  to 168 on RB                                   */
+#define _ac0091 0xffbd8096 /* Reduce by  34 on tokens in termSet[15]                */
+#define _ac0092 0x015c00a6 /* termList   21, actionList   28                        */
+#define _ac0093 0x016000a6 /* termList   21, actionList   29                        */
+#define _ac0094 0xffb78104 /* Reduce by  37 on tokens in termSet[26]                */
+#define _ac0095 0xffc980fa /* Reduce by  28 on tokens in termSet[25]                */
+#define _ac0096 0xffc18096 /* Reduce by  32 on tokens in termSet[15]                */
+#define _ac0097 0x016400b3 /* termList   24, actionList   30                        */
+#define _ac0098 0x016e0053 /* termList   14, actionList   31                        */
+#define _ac0099 0xff738028 /* Reduce by  71 on tokens in termSet[4]                 */
+#define _ac0100 0x002f0048 /* Shift  to  23 on NAME                                 */
+#define _ac0101 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0102 0xffc38096 /* Reduce by  31 on tokens in termSet[15]                */
+#define _ac0103 0x017200a6 /* termList   21, actionList   32                        */
+#define _ac0104 0x01650041 /* Shift  to 178 on RPAR                                 */
+#define _ac0105 0x02a48153 /* Split(_sn0037,_sn0038)                                */
+#define _ac0106 0xfebb80e6 /* Reduce by 163 on tokens in termSet[23]                */
+#define _ac0107 0x00b40056 /* termList   15, actionList   19                        */
+#define _ac0108 0x02a88146 /* Split(_sn0039,_sn0025)                                */
+#define _ac0109 0x02aa8146 /* Split(_sn0040,_sn0025)                                */
+#define _ac0110 0xff0d80a0 /* Reduce by 122 on tokens in termSet[16]                */
+#define _ac0111 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0112 0x016f0048 /* Shift  to 183 on NAME                                 */
+#define _ac0113 0x018000bf /* termList   26, actionList   34                        */
+#define _ac0114 0x02ac8146 /* Split(_sn0041,_sn0025)                                */
+#define _ac0115 0x02ae8146 /* Split(_sn0042,_sn0025)                                */
+#define _ac0116 0x02b08146 /* Split(_sn0043,_sn0025)                                */
+#define _ac0117 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0118 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0119 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0120 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0121 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0122 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0123 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0124 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0125 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0126 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0127 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0128 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0129 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0130 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0131 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0132 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0133 0xff63812c /* Reduce by  79 on tokens in termSet[30]                */
+#define _ac0134 0xff5f8064 /* Reduce by  81 on tokens in termSet[10]                */
+#define _ac0135 0xff5d8064 /* Reduce by  82 on tokens in termSet[10]                */
+#define _ac0136 0x019800cc /* termList   27, actionList   35                        */
+#define _ac0137 0xff5b8136 /* Reduce by  83 on tokens in termSet[31]                */
+#define _ac0138 0xff598136 /* Reduce by  84 on tokens in termSet[31]                */
+#define _ac0139 0x01aa0014 /* termList    4, actionList   36                        */
+#define _ac0140 0x01ae00d6 /* termList   28, actionList   37                        */
+#define _ac0141 0x01ab0048 /* Shift  to 213 on NAME                                 */
+#define _ac0142 0x01ad002e /* Shift  to 214 on COLON                                */
+#define _ac0143 0x01af0040 /* Shift  to 215 on LPAR                                 */
+#define _ac0144 0x01b10040 /* Shift  to 216 on LPAR                                 */
+#define _ac0145 0x01c600e3 /* termList   29, actionList   38                        */
+#define _ac0146 0x01b50040 /* Shift  to 218 on LPAR                                 */
+#define _ac0147 0x01b70028 /* Shift  to 219 on SEMI                                 */
+#define _ac0148 0x01b90028 /* Shift  to 220 on SEMI                                 */
+#define _ac0149 0x01bb0040 /* Shift  to 221 on LPAR                                 */
+#define _ac0150 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0151 0x01bf002e /* Shift  to 223 on COLON                                */
+#define _ac0152 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0153 0x004b0026 /* Shift  to  37 on LC                                   */
+#define _ac0154 0x02b2815a /* Split(_sn0044,_sn0045)                                */
+#define _ac0155 0x01fa0053 /* termList   14, actionList   39                        */
+#define _ac0156 0xfec1808c /* Reduce by 160 on tokens in termSet[14]                */
+#define _ac0157 0xffd180fa /* Reduce by  24 on tokens in termSet[25]                */
+#define _ac0158 0x01fe00fe /* termList   30, actionList   40                        */
+#define _ac0159 0x02b6813e /* Split(_sn0046,_sn0017)                                */
+#define _ac0160 0xffa78118 /* Reduce by  45 on tokens in termSet[28]                */
+#define _ac0161 0x02b8815d /* Split(_sn0047,_sn0048)                                */
+#define _ac0162 0xffd5814a /* Reduce by  22 on tokens in termSet[33]                */
+#define _ac0163 0x029e815e /* Split(_sn0034,_sn0049)                                */
+#define _ac0164 0x02a4815e /* Split(_sn0037,_sn0049)                                */
+#define _ac0165 0x02be815d /* Split(_sn0050,_sn0048)                                */
+#define _ac0166 0x02a48151 /* Split(_sn0037,_sn0036)                                */
+#define _ac0167 0x029e8151 /* Split(_sn0034,_sn0036)                                */
+#define _ac0168 0xffcd80fa /* Reduce by  26 on tokens in termSet[25]                */
+#define _ac0169 0xffbb8096 /* Reduce by  35 on tokens in termSet[15]                */
+#define _ac0170 0x002f0048 /* Shift  to  23 on NAME                                 */
+#define _ac0171 0xffb98096 /* Reduce by  36 on tokens in termSet[15]                */
+#define _ac0172 0xff958028 /* Reduce by  54 on tokens in termSet[4]                 */
+#define _ac0173 0xff898082 /* Reduce by  60 on tokens in termSet[13]                */
+#define _ac0174 0xff6f8028 /* Reduce by  73 on tokens in termSet[4]                 */
+#define _ac0175 0xff69808c /* Reduce by  76 on tokens in termSet[14]                */
+#define _ac0176 0xff65808c /* Reduce by  78 on tokens in termSet[14]                */
+#define _ac0177 0xff2380a0 /* Reduce by 111 on tokens in termSet[16]                */
+#define _ac0178 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0179 0x02c08161 /* Split(_sn0051,_sn0052)                                */
+#define _ac0180 0x021200a6 /* termList   21, actionList   43                        */
+#define _ac0181 0x01d90041 /* Shift  to 236 on RPAR                                 */
+#define _ac0182 0x02160107 /* termList   32, actionList   44                        */
+#define _ac0183 0xff0380a0 /* Reduce by 127 on tokens in termSet[16]                */
+#define _ac0184 0x01dd0041 /* Shift  to 238 on RPAR                                 */
+#define _ac0185 0xfeff80a0 /* Reduce by 129 on tokens in termSet[16]                */
+#define _ac0186 0x021a010a /* termList   33, actionList   45                        */
+#define _ac0187 0x02c48148 /* Split(_sn0053,_sn0027)                                */
+#define _ac0188 0x02240110 /* termList   34, actionList   46                        */
+#define _ac0189 0x02c68148 /* Split(_sn0054,_sn0027)                                */
+#define _ac0190 0x02c88148 /* Split(_sn0055,_sn0027)                                */
+#define _ac0191 0xfeeb80d2 /* Reduce by 139 on tokens in termSet[21]                */
+#define _ac0192 0x02ca814e /* Split(_sn0056,_sn0033)                                */
+#define _ac0193 0x02cc8167 /* Split(_sn0057,_sn0058)                                */
+#define _ac0194 0x02d08169 /* Split(_sn0059,_sn0060)                                */
+#define _ac0195 0xfedd80aa /* Reduce by 146 on tokens in termSet[17]                */
+#define _ac0196 0xfedb80aa /* Reduce by 147 on tokens in termSet[17]                */
+#define _ac0197 0x02d4816b /* Split(_sn0061,_sn0062)                                */
+#define _ac0198 0x02d8816d /* Split(_sn0063,_sn0064)                                */
+#define _ac0199 0x02dc816f /* Split(_sn0065,_sn0066)                                */
+#define _ac0200 0x02e08171 /* Split(_sn0067,_sn0068)                                */
+#define _ac0201 0x02e48173 /* Split(_sn0069,_sn0070)                                */
+#define _ac0202 0x02e88173 /* Split(_sn0071,_sn0070)                                */
+#define _ac0203 0x027e0014 /* termList    4, actionList   54                        */
+#define _ac0204 0xff858064 /* Reduce by  62 on tokens in termSet[10]                */
+#define _ac0205 0x02ea8176 /* Split(_sn0072,_sn0073)                                */
+#define _ac0206 0x02ee8140 /* Split(_sn0074,_sn0019)                                */
+#define _ac0207 0xff83803c /* Reduce by  63 on tokens in termSet[6]                 */
+#define _ac0208 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0209 0xff578136 /* Reduce by  85 on tokens in termSet[31]                */
+#define _ac0210 0xff558136 /* Reduce by  86 on tokens in termSet[31]                */
+#define _ac0211 0x028a0014 /* termList    4, actionList   56                        */
+#define _ac0212 0x01ef0028 /* Shift  to 247 on SEMI                                 */
+#define _ac0213 0xff290028 /* Reduce by 108 on SEMI                                 */
+#define _ac0214 0x01c600e3 /* termList   29, actionList   38                        */
+#define _ac0215 0x028e00bf /* termList   26, actionList   57                        */
+#define _ac0216 0x028e00bf /* termList   26, actionList   57                        */
+#define _ac0217 0x01f90020 /* Shift  to 252 on WHILE                                */
+#define _ac0218 0x02a600d6 /* termList   28, actionList   58                        */
+#define _ac0219 0xff438136 /* Reduce by  95 on tokens in termSet[31]                */
+#define _ac0220 0xff418136 /* Reduce by  96 on tokens in termSet[31]                */
+#define _ac0221 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0222 0x0201002e /* Shift  to 256 on COLON                                */
+#define _ac0223 0xff3b8136 /* Reduce by  99 on tokens in termSet[31]                */
+#define _ac0224 0x02be0014 /* termList    4, actionList   59                        */
+#define _ac0225 0x02090024 /* Shift  to 260 on CATCH Used by states [225,258]       */
+#define _ac0226 0xfec380f0 /* Reduce by 159 on tokens in termSet[24]                */
+#define _ac0227 0x00520030 /* termList    9, actionList   10                        */
+#define _ac0228 0xffb18104 /* Reduce by  40 on tokens in termSet[26]                */
+#define _ac0229 0x02c20023 /* termList    8, actionList   60                        */
+#define _ac0230 0x02f0815d /* Split(_sn0075,_sn0048)                                */
+#define _ac0231 0x02da014a /* termList   43, actionList   61                        */
+#define _ac0232 0xffb58104 /* Reduce by  38 on tokens in termSet[26]                */
+#define _ac0233 0x02f28146 /* Split(_sn0076,_sn0025)                                */
+#define _ac0234 0xff1980a0 /* Reduce by 116 on tokens in termSet[16]                */
+#define _ac0235 0xff1780a0 /* Reduce by 117 on tokens in termSet[16]                */
+#define _ac0236 0xff1580a0 /* Reduce by 118 on tokens in termSet[16]                */
+#define _ac0237 0xff0580a0 /* Reduce by 126 on tokens in termSet[16]                */
+#define _ac0238 0xff0180a0 /* Reduce by 128 on tokens in termSet[16]                */
+#define _ac0239 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0240 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0241 0xff878064 /* Reduce by  61 on tokens in termSet[10]                */
+#define _ac0242 0x02de014d /* termList   44, actionList   62                        */
+#define _ac0243 0x00520030 /* termList    9, actionList   10                        */
+#define _ac0244 0x00d20066 /* termList   16, actionList   20                        */
+#define _ac0245 0xff77803c /* Reduce by  69 on tokens in termSet[6]                 */
+#define _ac0246 0xff538136 /* Reduce by  87 on tokens in termSet[31]                */
+#define _ac0247 0xff518136 /* Reduce by  88 on tokens in termSet[31]                */
+#define _ac0248 0xff4f8136 /* Reduce by  89 on tokens in termSet[31]                */
+#define _ac0249 0x021d0041 /* Shift  to 270 on RPAR                                 */
+#define _ac0250 0x02f4817b /* Split(_sn0077,_sn0078)                                */
+#define _ac0251 0x021f0041 /* Shift  to 271 on RPAR                                 */
+#define _ac0252 0x02210040 /* Shift  to 272 on LPAR                                 */
+#define _ac0253 0x02230028 /* Shift  to 273 on SEMI                                 */
+#define _ac0254 0x02f8817b /* Split(_sn0079,_sn0078)                                */
+#define _ac0255 0x02e600a6 /* termList   21, actionList   63                        */
+#define _ac0256 0xff3d8136 /* Reduce by  98 on tokens in termSet[31]                */
+#define _ac0257 0xff398136 /* Reduce by 100 on tokens in termSet[31]                */
+#define _ac0258 0x02fa80e1 /* Split(_sn0080,_ac0225)                                */
+#define _ac0259 0xff3581ae /* Reduce by 102 on tokens in termSet[43]                */
+#define _ac0260 0x02290040 /* Shift  to 276 on LPAR                                 */
+#define _ac0261 0xfebf808c /* Reduce by 161 on tokens in termSet[14]                */
+#define _ac0262 0xff9b810e /* Reduce by  51 on tokens in termSet[27]                */
+#define _ac0263 0x022b003f /* Shift  to 277 on RB                                   */
+#define _ac0264 0x02fc817f /* Split(_sn0081,_sn0082)                                */
+#define _ac0265 0xfefb0041 /* Reduce by 131 on RPAR                                 */
+#define _ac0266 0x03008181 /* Split(_sn0083,_sn0084)                                */
+#define _ac0267 0xff81803c /* Reduce by  64 on tokens in termSet[6]                 */
+#define _ac0268 0xff7b803c /* Reduce by  67 on tokens in termSet[6]                 */
+#define _ac0269 0xff79803c /* Reduce by  68 on tokens in termSet[6]                 */
+#define _ac0270 0x01c600e3 /* termList   29, actionList   38                        */
+#define _ac0271 0x01c600e3 /* termList   29, actionList   38                        */
+#define _ac0272 0x028e00bf /* termList   26, actionList   57                        */
+#define _ac0273 0x02ea00d6 /* termList   28, actionList   64                        */
+#define _ac0274 0x004b0026 /* Shift  to  37 on LC                                   */
+#define _ac0275 0xff3381ae /* Reduce by 103 on tokens in termSet[43]                */
+#define _ac0276 0x03020152 /* termList   45, actionList   65                        */
+#define _ac0277 0xff99810e /* Reduce by  52 on tokens in termSet[27]                */
+#define _ac0278 0x023f0041 /* Shift  to 287 on RPAR                                 */
+#define _ac0279 0x03048183 /* Split(_sn0085,_sn0086)                                */
+#define _ac0280 0xff498136 /* Reduce by  92 on tokens in termSet[31]                */
+#define _ac0281 0x02430041 /* Shift  to 289 on RPAR                                 */
+#define _ac0282 0x02450028 /* Shift  to 290 on SEMI                                 */
+#define _ac0283 0xff3f8136 /* Reduce by  97 on tokens in termSet[31]                */
+#define _ac0284 0x02470041 /* Shift  to 291 on RPAR                                 */
+#define _ac0285 0x030a0157 /* termList   46, actionList   66                        */
+#define _ac0286 0xff2f0041 /* Reduce by 105 on RPAR                                 */
+#define _ac0287 0xff9f810e /* Reduce by  49 on tokens in termSet[27]                */
+#define _ac0288 0x01c600e3 /* termList   29, actionList   38                        */
+#define _ac0289 0x02510028 /* Shift  to 296 on SEMI                                 */
+#define _ac0290 0x031800bf /* termList   26, actionList   67                        */
+#define _ac0291 0x004b0026 /* Shift  to  37 on LC                                   */
+#define _ac0292 0x0330004f /* termList   13, actionList   68                        */
+#define _ac0293 0x0336001f /* termList    7, actionList   69                        */
+#define _ac0294 0x0336001f /* termList    7, actionList   69                        */
+#define _ac0295 0xff4b8136 /* Reduce by  91 on tokens in termSet[31]                */
+#define _ac0296 0xff478136 /* Reduce by  93 on tokens in termSet[31]                */
+#define _ac0297 0x02570041 /* Shift  to 299 on RPAR                                 */
+#define _ac0298 0xff3181ae /* Reduce by 104 on tokens in termSet[43]                */
+#define _ac0299 0x01c600e3 /* termList   29, actionList   38                        */
+#define _ac0300 0xff458136 /* Reduce by  94 on tokens in termSet[31]                */
+#define _sn0000 0xfff5800a /* Reduce by   6 on tokens in termSet[1] Used by state  [1]*/
+#define _sn0001 0x00000000 /* termList    0, actionList    0 Used by state  [1]     */
+#define _sn0002 0xffe78014 /* Reduce by  13 on tokens in termSet[2] Used by state  [4]*/
+#define _sn0003 0x00310046 /* Shift  to  24 on TTYPE Used by state  [4]             */
+#define _sn0004 0xffef800a /* Reduce by   9 on tokens in termSet[1] Used by state  [6]*/
+#define _sn0005 0x0014000c /* termList    2, actionList    2 Used by state  [6]     */
+#define _sn0006 0xffd7803c /* Reduce by  21 on tokens in termSet[6] Used by states [17,53]*/
+#define _sn0007 0x00280017 /* termList    5, actionList    6 Used by state  [17]    */
+#define _sn0008 0xffdb803c /* Reduce by  19 on tokens in termSet[6] Used by state  [19]*/
+#define _sn0009 0x002e001b /* termList    6, actionList    7 Used by state  [19]    */
+#define _sn0010 0xffd58046 /* Reduce by  22 on tokens in termSet[7] Used by state  [20]*/
+#define _sn0011 0x00530040 /* Shift  to  41 on LPAR Used by state  [20]             */
+#define _sn0012 0xff938028 /* Reduce by  55 on tokens in termSet[4] Used by state  [28]*/
+#define _sn0013 0xff8f0026 /* Reduce by  57 on LC Used by state  [28]               */
+#define _sn0014 0xff718028 /* Reduce by  72 on tokens in termSet[4] Used by state  [30]*/
+#define _sn0015 0x00610026 /* Shift  to  48 on LC Used by state  [30]               */
+#define _sn0016 0xffcb806e /* Reduce by  27 on tokens in termSet[11] Used by state  [42]*/
+#define _sn0017 0x009c004c /* termList   12, actionList   14 Used by states [42,159]*/
+#define _sn0018 0xffc78078 /* Reduce by  29 on tokens in termSet[12] Used by state  [43]*/
+#define _sn0019 0x00a0004c /* termList   12, actionList   15 Used by states [43,53,206]*/
+#define _sn0020 0xff67808c /* Reduce by  77 on tokens in termSet[14] Used by state  [51]*/
+#define _sn0021 0x00cb002b /* Shift  to 101 on EQUAL Used by state  [51]            */
+#define _sn0022 0xff1b80a0 /* Reduce by 115 on tokens in termSet[16] Used by state  [60]*/
+#define _sn0023 0x00d50001 /* Shift  to 106 on STRING Used by state  [60]           */
+#define _sn0024 0xfecd80aa /* Reduce by 154 on tokens in termSet[17] Used by state  [64]*/
+#define _sn0025 0x00e80072 /* termList   17, actionList   21 Used by states [64,108-109,114-116,233]*/
+#define _sn0026 0xfef780be /* Reduce by 133 on tokens in termSet[19] Used by state  [69]*/
+#define _sn0027 0x00f00077 /* termList   18, actionList   22 Used by states [69,187,189-190]*/
+#define _sn0028 0xfeed80c8 /* Reduce by 138 on tokens in termSet[20] Used by state  [71]*/
+#define _sn0029 0x00f3002f /* Shift  to 121 on OROR Used by state  [71]             */
+#define _sn0030 0xfee780d2 /* Reduce by 141 on tokens in termSet[21] Used by state  [73]*/
+#define _sn0031 0x00f50030 /* Shift  to 122 on ANDAND Used by state  [73]           */
+#define _sn0032 0xfee380dc /* Reduce by 143 on tokens in termSet[22] Used by state  [74]*/
+#define _sn0033 0x00f6007b /* termList   19, actionList   23 Used by states [74,192]*/
+#define _sn0034 0xffa1810e /* Reduce by  48 on tokens in termSet[27] Used by states [84,88,163,167]*/
+#define _sn0035 0x014c00a9 /* termList   22, actionList   26 Used by state  [84]    */
+#define _sn0036 0x015800b0 /* termList   23, actionList   27 Used by states [88,166-167]*/
+#define _sn0037 0xffa18122 /* Reduce by  48 on tokens in termSet[29] Used by states [105,164,166]*/
+#define _sn0038 0x017600b9 /* termList   25, actionList   33 Used by state  [105]   */
+#define _sn0039 0xff1180aa /* Reduce by 120 on tokens in termSet[17] Used by state  [108]*/
+#define _sn0040 0xff0f80aa /* Reduce by 121 on tokens in termSet[17] Used by state  [109]*/
+#define _sn0041 0xff0b80aa /* Reduce by 123 on tokens in termSet[17] Used by state  [114]*/
+#define _sn0042 0xff0980aa /* Reduce by 124 on tokens in termSet[17] Used by state  [115]*/
+#define _sn0043 0xff0780aa /* Reduce by 125 on tokens in termSet[17] Used by state  [116]*/
+#define _sn0044 0xff1d8140 /* Reduce by 114 on tokens in termSet[32] Used by state  [154]*/
+#define _sn0045 0xff29002e /* Reduce by 108 on COLON Used by state  [154]           */
+#define _sn0046 0xffaf8104 /* Reduce by  41 on tokens in termSet[26] Used by state  [159]*/
+#define _sn0047 0xffa58104 /* Reduce by  46 on tokens in termSet[26] Used by state  [161]*/
+#define _sn0048 0x01cb003e /* Shift  to 229 on LB Used by states [161,165,230]      */
+#define _sn0049 0x0208001f /* termList    7, actionList   41 Used by states [163-164]*/
+#define _sn0050 0xffa38104 /* Reduce by  47 on tokens in termSet[26] Used by state  [165]*/
+#define _sn0051 0xff1b8154 /* Reduce by 115 on tokens in termSet[34] Used by state  [179]*/
+#define _sn0052 0x020e0104 /* termList   31, actionList   42 Used by state  [179]   */
+#define _sn0053 0xfef980be /* Reduce by 132 on tokens in termSet[19] Used by state  [187]*/
+#define _sn0054 0xfef380be /* Reduce by 135 on tokens in termSet[19] Used by state  [189]*/
+#define _sn0055 0xfef180be /* Reduce by 136 on tokens in termSet[19] Used by state  [190]*/
+#define _sn0056 0xfee580dc /* Reduce by 142 on tokens in termSet[22] Used by state  [192]*/
+#define _sn0057 0xfee1815e /* Reduce by 144 on tokens in termSet[35] Used by state  [193]*/
+#define _sn0058 0x022c0115 /* termList   35, actionList   47 Used by state  [193]   */
+#define _sn0059 0xfedf8168 /* Reduce by 145 on tokens in termSet[36] Used by state  [194]*/
+#define _sn0060 0x0236011b /* termList   36, actionList   48 Used by state  [194]   */
+#define _sn0061 0xfed98172 /* Reduce by 148 on tokens in termSet[37] Used by state  [197]*/
+#define _sn0062 0x02420122 /* termList   37, actionList   49 Used by state  [197]   */
+#define _sn0063 0xfed7817c /* Reduce by 149 on tokens in termSet[38] Used by state  [198]*/
+#define _sn0064 0x024a0127 /* termList   38, actionList   50 Used by state  [198]   */
+#define _sn0065 0xfed58186 /* Reduce by 150 on tokens in termSet[39] Used by state  [199]*/
+#define _sn0066 0x0258012f /* termList   39, actionList   51 Used by state  [199]   */
+#define _sn0067 0xfed38190 /* Reduce by 151 on tokens in termSet[40] Used by state  [200]*/
+#define _sn0068 0x02680138 /* termList   40, actionList   52 Used by state  [200]   */
+#define _sn0069 0xfed1819a /* Reduce by 152 on tokens in termSet[41] Used by state  [201]*/
+#define _sn0070 0x027a0142 /* termList   41, actionList   53 Used by states [201-202]*/
+#define _sn0071 0xfecf819a /* Reduce by 153 on tokens in termSet[41] Used by state  [202]*/
+#define _sn0072 0xff7d803c /* Reduce by  66 on tokens in termSet[6] Used by state  [205]*/
+#define _sn0073 0x02820145 /* termList   42, actionList   55 Used by state  [205]   */
+#define _sn0074 0xff7f803c /* Reduce by  65 on tokens in termSet[6] Used by state  [206]*/
+#define _sn0075 0xff9d8104 /* Reduce by  50 on tokens in termSet[26] Used by state  [230]*/
+#define _sn0076 0xff1380aa /* Reduce by 119 on tokens in termSet[17] Used by state  [233]*/
+#define _sn0077 0xff2581a4 /* Reduce by 110 on tokens in termSet[42] Used by state  [250]*/
+#define _sn0078 0x00eb002a /* Shift  to 117 on COMMA Used by states [250,254]       */
+#define _sn0079 0xfec981a4 /* Reduce by 156 on tokens in termSet[42] Used by state  [254]*/
+#define _sn0080 0xff378136 /* Reduce by 101 on tokens in termSet[31] Used by state  [258]*/
+#define _sn0081 0xff97810e /* Reduce by  53 on tokens in termSet[27] Used by state  [264]*/
+#define _sn0082 0x022d0040 /* Shift  to 278 on LPAR Used by state  [264]            */
+#define _sn0083 0xfef581b8 /* Reduce by 134 on tokens in termSet[44] Used by state  [266]*/
+#define _sn0084 0x00ed002d /* Shift  to 118 on QUEST Used by state  [266]           */
+#define _sn0085 0xff4d8064 /* Reduce by  90 on tokens in termSet[10] Used by state  [279]*/
+#define _sn0086 0x02410049 /* Shift  to 288 on ELSE Used by state  [279]            */
 
-static const unsigned int actionCode[357] = {
+static const unsigned int actionCode[388] = {
    _ac0000,_ac0001,_ac0002,_ac0003,_ac0004,_ac0005,_ac0006,_ac0007,_ac0008,_ac0009
   ,_ac0010,_ac0011,_ac0012,_ac0013,_ac0014,_ac0015,_ac0016,_ac0017,_ac0018,_ac0019
   ,_ac0020,_ac0021,_ac0022,_ac0023,_ac0024,_ac0025,_ac0026,_ac0027,_ac0028,_ac0029
@@ -466,344 +502,330 @@ static const unsigned int actionCode[357] = {
   ,_sn0019,_sn0020,_sn0021,_sn0022,_sn0023,_sn0024,_sn0025,_sn0026,_sn0027,_sn0028
   ,_sn0029,_sn0030,_sn0031,_sn0032,_sn0033,_sn0034,_sn0035,_sn0036,_sn0037,_sn0038
   ,_sn0039,_sn0040,_sn0041,_sn0042,_sn0043,_sn0044,_sn0045,_sn0046,_sn0047,_sn0048
-  ,_sn0049,_sn0050,_sn0051,_sn0052,_sn0053,_sn0054,_sn0055
-}; // Size of table:1.428(x86)/1.432(x64) bytes.
+  ,_sn0049,_sn0050,_sn0051,_sn0052,_sn0053,_sn0054,_sn0055,_sn0056,_sn0057,_sn0058
+  ,_sn0059,_sn0060,_sn0061,_sn0062,_sn0063,_sn0064,_sn0065,_sn0066,_sn0067,_sn0068
+  ,_sn0069,_sn0070,_sn0071,_sn0072,_sn0073,_sn0074,_sn0075,_sn0076,_sn0077,_sn0078
+  ,_sn0079,_sn0080,_sn0081,_sn0082,_sn0083,_sn0084,_sn0085,_sn0086
+}; // Size of table:1.552(x86)/1.552(x64) bytes.
 
-static const unsigned char termListTable[420] = {
-    10,   0,   4,   5,   6,  40,  57,  64,  70,  71,  72                                                     /*    0 Used by state  (1) */
-  ,  4,  40,  57,  64,  72                                                                                   /*    1 Used by state  (3) */
-  ,  8,   4,   5,   6,  40,  57,  64,  71,  72                                                               /*    2 Used by state  (6) */
-  ,  2,  38,  72                                                                                             /*    3 Used by states (12,13) */
-  ,  2,  40,  42                                                                                             /*    4 Used by states (15,139,203,211,224) */
-  ,  5,  38,  40,  42,  62,  64                                                                              /*    5 Used by state  (17) */
-  ,  5,  40,  42,  43,  62,  64                                                                              /*    6 Used by state  (19) */
-  ,  3,  57,  64,  72                                                                                        /*    7 Used by states (21,22,33,293,294) */
-  , 12,   1,   2,   3,  51,  56,  57,  59,  60,  61,  63,  64,  72                                           /*    8 Used by states (35,40,229) */
-  , 12,   1,   2,   3,  38,  51,  56,  57,  59,  60,  61,  64,  72                                           /*    9 Used by states (38,80,227,243) */
-  ,  6,   4,   5,   6,  41,  65,  70                                                                         /*   10 Used by state  (39) */
-  ,  7,   4,   5,   6,  41,  65,  70,  72                                                                    /*   11 Used by state  (41) */
-  ,  2,  62,  64                                                                                             /*   12 Used by state  (42) */
-  ,  6,  38,  40,  42,  62,  64,  65                                                                         /*   13 Used by state  (43) */
-  ,  3,  62,  64,  65                                                                                        /*   14 Used by states (44,45,292) */
-  ,  2,  39,  42                                                                                             /*   15 Used by states (49,98,155) */
-  ,  3,  39,  42,  43                                                                                        /*   16 Used by state  (51) */
-  ,  4,  40,  42,  62,  64                                                                                   /*   17 Used by states (53,206) */
-  , 15,   1,   2,   3,   4,   5,   6,  51,  56,  57,  59,  60,  61,  64,  70,  72                            /*   18 Used by states (56,107) */
-  , 11,   1,   2,   3,  51,  56,  57,  59,  60,  61,  64,  72                                                /*   19 Used by states (62,63,65,66,67,101,111,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,150,152,178,208,221,239,240,244) */
-  ,  4,  61,  62,  64,  66                                                                                   /*   20 Used by states (64,108,109,114,115,116,233) */
-  ,  3,  43,  44,  45                                                                                        /*   21 Used by states (69,187,189,190) */
-  , 10,  49,  50,  51,  52,  53,  54,  55,  56,  57,  58                                                     /*   22 Used by states (74,192) */
-  , 31,   1,   2,   3,   4,   5,   6,  24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  37,  38   /*   23 Used by state  (77) */
+static const unsigned char termListTable[351] = {
+     6,   0,   4,   5,   6,  70,  71                                                                         /*    0 Used by state  [1]                               */
+  ,  4,  40,  57,  64,  72                                                                                   /*    1 Used by state  [3]                               */
+  ,  4,   4,   5,   6,  71                                                                                   /*    2 Used by state  [6]                               */
+  ,  2,  38,  72                                                                                             /*    3 Used by states [12-13]                           */
+  ,  2,  40,  42                                                                                             /*    4 Used by states [15,139,203,211,224]              */
+  ,  3,  38,  62,  64                                                                                        /*    5 Used by state  [17]                              */
+  ,  3,  43,  62,  64                                                                                        /*    6 Used by state  [19]                              */
+  ,  3,  57,  64,  72                                                                                        /*    7 Used by states [21-22,33,163-164,293-294]        */
+  , 12,   1,   2,   3,  51,  56,  57,  59,  60,  61,  63,  64,  72                                           /*    8 Used by states [35,40,229]                       */
+  , 12,   1,   2,   3,  38,  51,  56,  57,  59,  60,  61,  64,  72                                           /*    9 Used by states [38,80,227,243]                   */
+  ,  6,   4,   5,   6,  41,  65,  70                                                                         /*   10 Used by state  [39]                              */
+  ,  7,   4,   5,   6,  41,  65,  70,  72                                                                    /*   11 Used by state  [41]                              */
+  ,  2,  62,  64                                                                                             /*   12 Used by states [42-43,53,159,206]                */
+  ,  3,  62,  64,  65                                                                                        /*   13 Used by states [44-45,292]                       */
+  ,  2,  39,  42                                                                                             /*   14 Used by states [49,98,155]                       */
+  , 15,   1,   2,   3,   4,   5,   6,  51,  56,  57,  59,  60,  61,  64,  70,  72                            /*   15 Used by states [56,107]                          */
+  , 11,   1,   2,   3,  51,  56,  57,  59,  60,  61,  64,  72                                                /*   16 Used by states [62-63,65-67,101,111,117-132,150,152,178,208,221,239-240,244]*/
+  ,  4,  61,  62,  64,  66                                                                                   /*   17 Used by states [64,108-109,114-116,233]          */
+  ,  3,  43,  44,  45                                                                                        /*   18 Used by states [69,187,189-190]                  */
+  , 10,  49,  50,  51,  52,  53,  54,  55,  56,  57,  58                                                     /*   19 Used by states [74,192]                          */
+  , 31,   1,   2,   3,   4,   5,   6,  24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  37,  38   /*   20 Used by state  [77]                              */
       ,  39,  40,  51,  56,  57,  59,  60,  61,  64,  71,  72
-  ,  2,  42,  65                                                                                             /*   24 Used by states (82,92,93,103,180,255) */
-  ,  9,   4,   5,   6,  42,  57,  62,  64,  65,  72                                                          /*   25 Used by state  (84) */
-  ,  5,  42,  57,  62,  64,  65                                                                              /*   26 Used by states (88,167) */
-  ,  5,   4,   5,   6,  39,  71                                                                              /*   27 Used by state  (97) */
-  ,  7,   4,   5,   6,  57,  62,  64,  65                                                                    /*   28 Used by state  (105) */
-  , 12,   1,   2,   3,  51,  56,  57,  59,  60,  61,  64,  65,  72                                           /*   29 Used by states (113,215,216,272,290) */
-  ,  9,   4,   5,   6,  40,  46,  57,  64,  71,  72                                                          /*   30 Used by state  (136) */
-  , 12,   1,   2,   3,  40,  51,  56,  57,  59,  60,  61,  64,  72                                           /*   31 Used by states (140,218,273) */
-  , 26,   1,   2,   3,  24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  37,  38,  40,  51,  56   /*   32 Used by states (145,214,270,271,288,299) */
+  ,  2,  42,  65                                                                                             /*   21 Used by states [82,92-93,103,180,255]            */
+  ,  6,   4,   5,   6,  57,  64,  72                                                                         /*   22 Used by state  [84]                              */
+  ,  2,  57,  64                                                                                             /*   23 Used by states [88,166-167]                      */
+  ,  5,   4,   5,   6,  39,  71                                                                              /*   24 Used by state  [97]                              */
+  ,  5,   4,   5,   6,  57,  64                                                                              /*   25 Used by state  [105]                             */
+  , 12,   1,   2,   3,  51,  56,  57,  59,  60,  61,  64,  65,  72                                           /*   26 Used by states [113,215-216,272,290]             */
+  ,  9,   4,   5,   6,  40,  46,  57,  64,  71,  72                                                          /*   27 Used by state  [136]                             */
+  , 12,   1,   2,   3,  40,  51,  56,  57,  59,  60,  61,  64,  72                                           /*   28 Used by states [140,218,273]                     */
+  , 26,   1,   2,   3,  24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  37,  38,  40,  51,  56   /*   29 Used by states [145,214,270-271,288,299]         */
       ,  57,  59,  60,  61,  64,  72
-  ,  5,   4,   5,   6,  41,  70                                                                              /*   33 Used by state  (158) */
-  ,  4,  42,  62,  64,  65                                                                                   /*   34 Used by states (159,264) */
-  ,  3,  42,  62,  65                                                                                        /*   35 Used by states (161,165,230) */
-  ,  6,  42,  57,  62,  64,  65,  72                                                                         /*   36 Used by state  (163) */
-  ,  5,  57,  62,  64,  65,  72                                                                              /*   37 Used by state  (164) */
-  ,  4,  57,  62,  64,  65                                                                                   /*   38 Used by state  (166) */
-  ,  2,   1,  65                                                                                             /*   39 Used by state  (179) */
-  ,  2,  42,  63                                                                                             /*   40 Used by state  (182) */
-  ,  5,  42,  43,  44,  45,  65                                                                              /*   41 Used by state  (186) */
-  ,  4,  43,  44,  45,  46                                                                                   /*   42 Used by state  (188) */
-  ,  5,  54,  55,  56,  57,  58                                                                              /*   43 Used by state  (193) */
-  ,  6,  53,  54,  55,  56,  57,  58                                                                         /*   44 Used by state  (194) */
-  ,  4,  55,  56,  57,  58                                                                                   /*   45 Used by state  (197) */
-  ,  7,  52,  53,  54,  55,  56,  57,  58                                                                    /*   46 Used by state  (198) */
-  ,  8,  51,  52,  53,  54,  55,  56,  57,  58                                                               /*   47 Used by state  (199) */
-  ,  9,  50,  51,  52,  53,  54,  55,  56,  57,  58                                                          /*   48 Used by state  (200) */
-  ,  2,  57,  58                                                                                             /*   49 Used by states (201,202) */
-  ,  6,  40,  42,  43,  46,  62,  64                                                                         /*   50 Used by state  (205) */
-  ,  2,  62,  65                                                                                             /*   51 Used by state  (231) */
-  ,  4,  46,  57,  64,  72                                                                                   /*   52 Used by state  (242) */
-  ,  3,  40,  42,  65                                                                                        /*   53 Used by states (250,254) */
-  ,  4,   4,   5,   6,  41                                                                                   /*   54 Used by state  (276) */
-  ,  7,   4,   5,   6,  57,  64,  65,  72                                                                    /*   55 Used by state  (285) */
-}; // Size of table:420(x86)/424(x64) bytes.
+  ,  5,   4,   5,   6,  41,  70                                                                              /*   30 Used by state  [158]                             */
+  ,  2,   1,  65                                                                                             /*   31 Used by state  [179]                             */
+  ,  2,  42,  63                                                                                             /*   32 Used by state  [182]                             */
+  ,  5,  42,  43,  44,  45,  65                                                                              /*   33 Used by state  [186]                             */
+  ,  4,  43,  44,  45,  46                                                                                   /*   34 Used by state  [188]                             */
+  ,  5,  54,  55,  56,  57,  58                                                                              /*   35 Used by state  [193]                             */
+  ,  6,  53,  54,  55,  56,  57,  58                                                                         /*   36 Used by state  [194]                             */
+  ,  4,  55,  56,  57,  58                                                                                   /*   37 Used by state  [197]                             */
+  ,  7,  52,  53,  54,  55,  56,  57,  58                                                                    /*   38 Used by state  [198]                             */
+  ,  8,  51,  52,  53,  54,  55,  56,  57,  58                                                               /*   39 Used by state  [199]                             */
+  ,  9,  50,  51,  52,  53,  54,  55,  56,  57,  58                                                          /*   40 Used by state  [200]                             */
+  ,  2,  57,  58                                                                                             /*   41 Used by states [201-202]                         */
+  ,  4,  43,  46,  62,  64                                                                                   /*   42 Used by state  [205]                             */
+  ,  2,  62,  65                                                                                             /*   43 Used by state  [231]                             */
+  ,  4,  46,  57,  64,  72                                                                                   /*   44 Used by state  [242]                             */
+  ,  4,   4,   5,   6,  41                                                                                   /*   45 Used by state  [276]                             */
+  ,  7,   4,   5,   6,  57,  64,  65,  72                                                                    /*   46 Used by state  [285]                             */
+}; // Size of table:352(x86)/352(x64) bytes.
 
-static const short actionListTable[486] = {
-      0,   9,  12,  14,  -6,  -6,  -6,   5,   4,  -6                                                         /*   0 Used by state  (1) */
-  ,  16,  21,  22,  23                                                                                       /*   1 Used by state  (3) */
-  ,   9,  12,  14,  -9,  -9,  -9,  26,  -9                                                                   /*   2 Used by state  (6) */
-  , -56,  29                                                                                                 /*   3 Used by state  (12) */
-  ,  31,  23                                                                                                 /*   4 Used by state  (13) */
-  ,  32,  33                                                                                                 /*   5 Used by state  (15) */
-  ,  37, -21, -21,  35,  36                                                                                  /*   6 Used by state  (17) */
-  , -19, -19,  38,  40,  39                                                                                  /*   7 Used by state  (19) */
-  ,  21,  22,  23                                                                                            /*   8 Used by states (21,22,33) */
-  ,  75,  58,  57,  66,  62,  67,  61,  63,  65,  54,  56,  59                                               /*   9 Used by state  (35) */
-  ,  75,  58,  57,  80,  66,  62,  67,  61,  63,  65,  56,  59                                               /*  10 Used by states (38,80,227,243) */
-  ,   9,  12,  14,  86,  81,  88                                                                             /*  11 Used by state  (39) */
-  ,  75,  58,  57,  66,  62,  67,  61,  63,  65,  89,  56,  59                                               /*  12 Used by state  (40) */
-  ,   9,  12,  14,  86,  91,  88,  23                                                                        /*  13 Used by state  (41) */
-  ,  40,  39                                                                                                 /*  14 Used by state  (42) */
-  , -29, -29, -29,  35,  36, -29                                                                             /*  15 Used by state  (43) */
-  ,  40,  39,  95                                                                                            /*  16 Used by state  (44) */
-  ,  35,  36,  96                                                                                            /*  17 Used by state  (45) */
-  ,  99, 100                                                                                                 /*  18 Used by state  (49) */
-  , -77, -77, 101                                                                                            /*  19 Used by state  (51) */
-  , -21, -21,  35,  36                                                                                       /*  20 Used by state  (53) */
-  ,  75,  58,  57,   9,  12,  14,  66,  62,  67,  61,  63,  65,  56,  88,  59                                /*  21 Used by states (56,107) */
-  ,  75,  58,  57,  66,  62,  67,  61,  63,  65,  56,  59                                                    /*  22 Used by states (62,63,65,66,67,101,111,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,150,152,178,208,221,239,240,244) */
-  , 110, 111, 113, 112                                                                                       /*  23 Used by states (64,108,109,114,115,116,233) */
-  , 120, 119, 118                                                                                            /*  24 Used by states (69,187,189,190) */
-  , 130, 129, 128, 124, 123, 127, 131, 132, 125, 126                                                         /*  25 Used by states (74,192) */
-  ,  75,  58,  57,   9,  12,  14, 140, 141, 143, 149, 150, 151, 147, 148, 144, 145, 146, 153, 152,  37       /*  26 Used by state  (77) */
+static const short actionListTable[414] = {
+      0,   9,  12,  14,   5,   4                                                                             /*   0 Used by state  [1]                                */
+  ,  16,  21,  22,  23                                                                                       /*   1 Used by state  [3]                                */
+  ,   9,  12,  14,  26                                                                                       /*   2 Used by state  [6]                                */
+  , -56,  29                                                                                                 /*   3 Used by state  [12]                               */
+  ,  31,  23                                                                                                 /*   4 Used by state  [13]                               */
+  ,  32,  33                                                                                                 /*   5 Used by state  [15]                               */
+  ,  37,  35,  36                                                                                            /*   6 Used by state  [17]                               */
+  ,  38,  40,  39                                                                                            /*   7 Used by state  [19]                               */
+  ,  21,  22,  23                                                                                            /*   8 Used by states [21-22,33]                         */
+  ,  75,  58,  57,  66,  62,  67,  61,  63,  65,  54,  56,  59                                               /*   9 Used by state  [35]                               */
+  ,  75,  58,  57,  80,  66,  62,  67,  61,  63,  65,  56,  59                                               /*  10 Used by states [38,80,227,243]                    */
+  ,   9,  12,  14,  86,  81,  88                                                                             /*  11 Used by state  [39]                               */
+  ,  75,  58,  57,  66,  62,  67,  61,  63,  65,  89,  56,  59                                               /*  12 Used by state  [40]                               */
+  ,   9,  12,  14,  86,  91,  88,  23                                                                        /*  13 Used by state  [41]                               */
+  ,  40,  39                                                                                                 /*  14 Used by states [42,159]                           */
+  ,  35,  36                                                                                                 /*  15 Used by states [43,53,206]                        */
+  ,  40,  39,  95                                                                                            /*  16 Used by state  [44]                               */
+  ,  35,  36,  96                                                                                            /*  17 Used by state  [45]                               */
+  ,  99, 100                                                                                                 /*  18 Used by state  [49]                               */
+  ,  75,  58,  57,   9,  12,  14,  66,  62,  67,  61,  63,  65,  56,  88,  59                                /*  19 Used by states [56,107]                           */
+  ,  75,  58,  57,  66,  62,  67,  61,  63,  65,  56,  59                                                    /*  20 Used by states [62-63,65-67,101,111,117-132,150,152,178,208,221,239-240,244]*/
+  , 110, 111, 113, 112                                                                                       /*  21 Used by states [64,108-109,114-116,233]           */
+  , 120, 119, 118                                                                                            /*  22 Used by states [69,187,189-190]                   */
+  , 130, 129, 128, 124, 123, 127, 131, 132, 125, 126                                                         /*  23 Used by states [74,192]                           */
+  ,  75,  58,  57,   9,  12,  14, 140, 141, 143, 149, 150, 151, 147, 148, 144, 145, 146, 153, 152,  37       /*  24 Used by state  [77]                               */
   , 133, 137,  66,  62,  67,  61,  63,  65,  56,  26, 154
-  , 158, 157                                                                                                 /*  27 Used by state  (82) */
-  ,   9,  12,  14, -48, 163, -48, 164, -48,  23                                                              /*  28 Used by state  (84) */
-  , -48, 167, -48, 166, -48                                                                                  /*  29 Used by states (88,167) */
-  , 170, 169                                                                                                 /*  30 Used by state  (92) */
-  , 158, 171                                                                                                 /*  31 Used by state  (93) */
-  ,   9,  12,  14, 172,  26                                                                                  /*  32 Used by state  (97) */
-  , 174, 100                                                                                                 /*  33 Used by state  (98) */
-  , 117, 177                                                                                                 /*  34 Used by state  (103) */
-  ,   9,  12,  14, 167, -48, 166, -48                                                                        /*  35 Used by state  (105) */
-  ,  75,  58,  57,  66,  62,  67,  61,  63,  65,  56, 185,  59                                               /*  36 Used by state  (113) */
-  ,   9,  12,  14, 204, 208,  21,  22,  26,  23                                                              /*  37 Used by state  (136) */
-  , 209, 117                                                                                                 /*  38 Used by state  (139) */
-  ,  75,  58,  57, 210,  66,  62,  67,  61,  63,  65,  56,  59                                               /*  39 Used by state  (140) */
-  ,  75,  58,  57, 140, 141, 143, 149, 150, 151, 147, 148, 144, 145, 146, 153, 152,  37, 137,  66,  62       /*  40 Used by states (145,214,270,271,288,299) */
+  , 158, 157                                                                                                 /*  25 Used by state  [82]                               */
+  ,   9,  12,  14, 163, 164,  23                                                                             /*  26 Used by state  [84]                               */
+  , 167, 166                                                                                                 /*  27 Used by states [88,166-167]                       */
+  , 170, 169                                                                                                 /*  28 Used by state  [92]                               */
+  , 158, 171                                                                                                 /*  29 Used by state  [93]                               */
+  ,   9,  12,  14, 172,  26                                                                                  /*  30 Used by state  [97]                               */
+  , 174, 100                                                                                                 /*  31 Used by state  [98]                               */
+  , 117, 177                                                                                                 /*  32 Used by state  [103]                              */
+  ,   9,  12,  14, 167, 166                                                                                  /*  33 Used by state  [105]                              */
+  ,  75,  58,  57,  66,  62,  67,  61,  63,  65,  56, 185,  59                                               /*  34 Used by state  [113]                              */
+  ,   9,  12,  14, 204, 208,  21,  22,  26,  23                                                              /*  35 Used by state  [136]                              */
+  , 209, 117                                                                                                 /*  36 Used by state  [139]                              */
+  ,  75,  58,  57, 210,  66,  62,  67,  61,  63,  65,  56,  59                                               /*  37 Used by state  [140]                              */
+  ,  75,  58,  57, 140, 141, 143, 149, 150, 151, 147, 148, 144, 145, 146, 153, 152,  37, 137,  66,  62       /*  38 Used by states [145,214,270-271,288,299]          */
   ,  67,  61,  63,  65,  56, 154
-  , 226, 227                                                                                                 /*  41 Used by state  (155) */
-  ,   9,  12,  14,  86,  88                                                                                  /*  42 Used by state  (158) */
-  , -41,  40,  39, -41                                                                                       /*  43 Used by state  (159) */
-  , -46, 229, -46                                                                                            /*  44 Used by state  (161) */
-  , -48, 163, -48, 164, -48,  23                                                                             /*  45 Used by state  (163) */
-  , 163, -48, 164, -48,  23                                                                                  /*  46 Used by state  (164) */
-  , -47, 229, -47                                                                                            /*  47 Used by state  (165) */
-  , 167, -48, 166, -48                                                                                       /*  48 Used by state  (166) */
-  , 106, 234                                                                                                 /*  49 Used by state  (179) */
-  , 117, 235                                                                                                 /*  50 Used by state  (180) */
-  , 117, 237                                                                                                 /*  51 Used by state  (182) */
-  , 239, 120, 119, 118,-130                                                                                  /*  52 Used by state  (186) */
-  , 120, 119, 118, 240                                                                                       /*  53 Used by state  (188) */
-  , 127, 131, 132, 125, 126                                                                                  /*  54 Used by state  (193) */
-  , 123, 127, 131, 132, 125, 126                                                                             /*  55 Used by state  (194) */
-  , 131, 132, 125, 126                                                                                       /*  56 Used by state  (197) */
-  , 124, 123, 127, 131, 132, 125, 126                                                                        /*  57 Used by state  (198) */
-  , 128, 124, 123, 127, 131, 132, 125, 126                                                                   /*  58 Used by state  (199) */
-  , 129, 128, 124, 123, 127, 131, 132, 125, 126                                                              /*  59 Used by state  (200) */
-  , 125, 126                                                                                                 /*  60 Used by states (201,202) */
-  , 241, 242                                                                                                 /*  61 Used by state  (203) */
-  , -66, -66, 243, 244,  40,  39                                                                             /*  62 Used by state  (205) */
-  , -65, -65,  35,  36                                                                                       /*  63 Used by state  (206) */
-  , 246, 117                                                                                                 /*  64 Used by state  (211) */
-  ,  75,  58,  57,  66,  62,  67,  61,  63,  65,  56,-109,  59                                               /*  65 Used by states (215,216,272) */
-  ,  75,  58,  57,-155,  66,  62,  67,  61,  63,  65,  56,  59                                               /*  66 Used by state  (218) */
-  , 257, 117                                                                                                 /*  67 Used by state  (224) */
-  ,  75,  58,  57,  66,  62,  67,  61,  63,  65, 262,  56,  59                                               /*  68 Used by state  (229) */
-  , -50, 229, -50                                                                                            /*  69 Used by state  (230) */
-  , 229, 264                                                                                                 /*  70 Used by state  (231) */
-  , 208,  21,  22,  23                                                                                       /*  71 Used by state  (242) */
-  ,-110, 117,-110                                                                                            /*  72 Used by state  (250) */
-  ,-156, 117,-156                                                                                            /*  73 Used by state  (254) */
-  , 117, 274                                                                                                 /*  74 Used by state  (255) */
-  , -53, -53, 278, -53                                                                                       /*  75 Used by state  (264) */
-  ,  75,  58,  57,-109,  66,  62,  67,  61,  63,  65,  56,  59                                               /*  76 Used by state  (273) */
-  ,   9,  12,  14, 286                                                                                       /*  77 Used by state  (276) */
-  ,   9,  12,  14, 293, 294,-107,  23                                                                        /*  78 Used by state  (285) */
-  ,  75,  58,  57,  66,  62,  67,  61,  63,  65,  56,-155,  59                                               /*  79 Used by state  (290) */
-  ,  40,  39,-106                                                                                            /*  80 Used by state  (292) */
-  , 293, 294,  23                                                                                            /*  81 Used by states (293,294) */
-}; // Size of table:972(x86)/976(x64) bytes.
+  , 226, 227                                                                                                 /*  39 Used by state  [155]                              */
+  ,   9,  12,  14,  86,  88                                                                                  /*  40 Used by state  [158]                              */
+  , 163, 164,  23                                                                                            /*  41 Used by states [163-164]                          */
+  , 106, 234                                                                                                 /*  42 Used by state  [179]                              */
+  , 117, 235                                                                                                 /*  43 Used by state  [180]                              */
+  , 117, 237                                                                                                 /*  44 Used by state  [182]                              */
+  , 239, 120, 119, 118,-130                                                                                  /*  45 Used by state  [186]                              */
+  , 120, 119, 118, 240                                                                                       /*  46 Used by state  [188]                              */
+  , 127, 131, 132, 125, 126                                                                                  /*  47 Used by state  [193]                              */
+  , 123, 127, 131, 132, 125, 126                                                                             /*  48 Used by state  [194]                              */
+  , 131, 132, 125, 126                                                                                       /*  49 Used by state  [197]                              */
+  , 124, 123, 127, 131, 132, 125, 126                                                                        /*  50 Used by state  [198]                              */
+  , 128, 124, 123, 127, 131, 132, 125, 126                                                                   /*  51 Used by state  [199]                              */
+  , 129, 128, 124, 123, 127, 131, 132, 125, 126                                                              /*  52 Used by state  [200]                              */
+  , 125, 126                                                                                                 /*  53 Used by states [201-202]                          */
+  , 241, 242                                                                                                 /*  54 Used by state  [203]                              */
+  , 243, 244,  40,  39                                                                                       /*  55 Used by state  [205]                              */
+  , 246, 117                                                                                                 /*  56 Used by state  [211]                              */
+  ,  75,  58,  57,  66,  62,  67,  61,  63,  65,  56,-109,  59                                               /*  57 Used by states [215-216,272]                      */
+  ,  75,  58,  57,-155,  66,  62,  67,  61,  63,  65,  56,  59                                               /*  58 Used by state  [218]                              */
+  , 257, 117                                                                                                 /*  59 Used by state  [224]                              */
+  ,  75,  58,  57,  66,  62,  67,  61,  63,  65, 262,  56,  59                                               /*  60 Used by state  [229]                              */
+  , 229, 264                                                                                                 /*  61 Used by state  [231]                              */
+  , 208,  21,  22,  23                                                                                       /*  62 Used by state  [242]                              */
+  , 117, 274                                                                                                 /*  63 Used by state  [255]                              */
+  ,  75,  58,  57,-109,  66,  62,  67,  61,  63,  65,  56,  59                                               /*  64 Used by state  [273]                              */
+  ,   9,  12,  14, 286                                                                                       /*  65 Used by state  [276]                              */
+  ,   9,  12,  14, 293, 294,-107,  23                                                                        /*  66 Used by state  [285]                              */
+  ,  75,  58,  57,  66,  62,  67,  61,  63,  65,  56,-155,  59                                               /*  67 Used by state  [290]                              */
+  ,  40,  39,-106                                                                                            /*  68 Used by state  [292]                              */
+  , 293, 294,  23                                                                                            /*  69 Used by states [293-294]                          */
+}; // Size of table:828(x86)/832(x64) bytes.
 
-static const unsigned char termSetTable[420] = {
-   0x71,0x00,0x00,0x00,0x00,0x01,0x00,0x02,0xc1,0x01 /*   0  10 tokens Used by states (0,2,16,32,34) */
-  ,0x70,0x00,0x00,0x00,0x00,0x01,0x00,0x02,0x81,0x01 /*   1   8 tokens Used by state  (4) */
-  ,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x02,0x01,0x01 /*   2   4 tokens Used by states (5,24) */
-  ,0x70,0x00,0x00,0x00,0x00,0x41,0x00,0x02,0x81,0x01 /*   3   9 tokens Used by states (7,8,25,26) */
-  ,0x70,0x00,0x00,0x00,0x00,0x45,0x00,0x42,0x83,0x01 /*   4  12 tokens Used by states (9,10,11,28,30,47,99,172,174) */
-  ,0x00,0x00,0x00,0x00,0x40,0x00,0x00,0x00,0x00,0x01 /*   5   2 tokens Used by state  (14) */
-  ,0x00,0x00,0x00,0x00,0x00,0x05,0x00,0x00,0x00,0x00 /*   6   2 tokens Used by states (18,52,78,207,245,267,268,269) */
-  ,0x00,0x00,0x00,0x00,0x00,0x4d,0x00,0x40,0x02,0x00 /*   7   6 tokens Used by state  (20) */
-  ,0x70,0x00,0x00,0x00,0xc0,0x4d,0x00,0x42,0x83,0x01 /*   8  15 tokens Used by state  (23) */
-  ,0x70,0x00,0x00,0x00,0x40,0x45,0x00,0x42,0x83,0x01 /*   9  13 tokens Used by state  (29) */
-  ,0x7e,0x00,0x00,0xff,0xef,0x01,0x08,0x3b,0x81,0x01 /*  10  31 tokens Used by states (37,134,135,204,241,279) */
-  ,0x00,0x00,0x00,0x00,0x00,0x4d,0x00,0x00,0x02,0x00 /*  11   5 tokens Used by state  (42) */
-  ,0x70,0x00,0x00,0x00,0x80,0x00,0x00,0x00,0x80,0x00 /*  12   5 tokens Used by states (46,173) */
-  ,0x00,0x00,0x00,0x00,0x80,0x04,0x00,0x00,0x00,0x00 /*  13   2 tokens Used by states (50,156,175,176,261) */
-  ,0x00,0x00,0x00,0x00,0x40,0x05,0x00,0x40,0x03,0x00 /*  14   6 tokens Used by states (54,76,91,96,102,169,171) */
-  ,0x00,0x00,0x00,0x00,0x80,0xfd,0xff,0xe7,0x07,0x00 /*  15  25 tokens Used by states (57,58,59,60,110,177,183,185,234,235,236,237,238) */
-  ,0x00,0x00,0x00,0x00,0x80,0xfd,0xff,0x87,0x02,0x00 /*  16  21 tokens Used by states (64,108,109,114,115,116,195,196,233) */
-  ,0x00,0x00,0x00,0x00,0x80,0x45,0x00,0x80,0x00,0x00 /*  17   5 tokens Used by state  (68) */
-  ,0x00,0x00,0x00,0x00,0x80,0x45,0x00,0x80,0x02,0x00 /*  18   6 tokens Used by states (69,187,189,190) */
-  ,0x00,0x00,0x00,0x00,0x80,0x7d,0x00,0x80,0x02,0x00 /*  19   9 tokens Used by states (70,71) */
-  ,0x00,0x00,0x00,0x00,0x80,0xfd,0x00,0x80,0x02,0x00 /*  20  10 tokens Used by states (72,73,191) */
-  ,0x00,0x00,0x00,0x00,0x80,0xfd,0x01,0x80,0x02,0x00 /*  21  11 tokens Used by states (74,192) */
-  ,0x02,0x00,0x00,0x00,0x80,0xfd,0xff,0xe7,0x07,0x00 /*  22  26 tokens Used by states (75,106) */
-  ,0x00,0x00,0x00,0x00,0x80,0x05,0x00,0x00,0x00,0x00 /*  23   3 tokens Used by states (79,226) */
-  ,0x00,0x00,0x00,0x00,0x00,0x4d,0x00,0x40,0x03,0x00 /*  24   7 tokens Used by states (81,89,95,157,168) */
-  ,0x00,0x00,0x00,0x00,0x00,0x04,0x00,0x00,0x02,0x00 /*  25   2 tokens Used by states (83,85,86,94,228,232) */
-  ,0x70,0x00,0x00,0x00,0x00,0x04,0x00,0x42,0x03,0x01 /*  26   9 tokens Used by states (87,160) */
-  ,0x7f,0x00,0x00,0xff,0xff,0x01,0x08,0x3b,0xc1,0x03 /*  27  35 tokens Used by state  (133) */
-  ,0x7e,0x00,0x00,0xff,0xef,0x01,0x08,0x3b,0x81,0x03 /*  28  32 tokens Used by states (137,138,209,210,219,220,223,246,247,248,256,257,258,280,283,295,296,300) */
-  ,0x00,0x00,0x00,0x00,0x00,0xbd,0xff,0x67,0x05,0x00 /*  29  21 tokens Used by state  (154) */
-  ,0x00,0x00,0x00,0x00,0x00,0x04,0x00,0x40,0x03,0x00 /*  30   4 tokens Used by state  (162) */
-  ,0x00,0x00,0x00,0x00,0x00,0xbc,0xff,0x67,0x05,0x00 /*  31  20 tokens Used by state  (179) */
-  ,0x00,0x00,0x00,0x00,0x80,0xfd,0x3f,0x80,0x02,0x00 /*  32  16 tokens Used by state  (193) */
-  ,0x00,0x00,0x00,0x00,0x80,0xfd,0x1f,0x80,0x02,0x00 /*  33  15 tokens Used by state  (194) */
-  ,0x00,0x00,0x00,0x00,0x80,0xfd,0x7f,0x80,0x02,0x00 /*  34  17 tokens Used by state  (197) */
-  ,0x00,0x00,0x00,0x00,0x80,0xfd,0x0f,0x80,0x02,0x00 /*  35  14 tokens Used by state  (198) */
-  ,0x00,0x00,0x00,0x00,0x80,0xfd,0x07,0x80,0x02,0x00 /*  36  13 tokens Used by state  (199) */
-  ,0x00,0x00,0x00,0x00,0x80,0xfd,0x03,0x80,0x02,0x00 /*  37  12 tokens Used by state  (200) */
-  ,0x00,0x00,0x00,0x00,0x80,0xfd,0xff,0x81,0x02,0x00 /*  38  19 tokens Used by states (201,202) */
-  ,0x7e,0x00,0x00,0xff,0xff,0x01,0x08,0x3b,0x81,0x03 /*  39  33 tokens Used by states (259,275,298) */
-  ,0x00,0x00,0x00,0x00,0x00,0x04,0x00,0x40,0x02,0x00 /*  40   3 tokens Used by states (262,277,287) */
-  ,0x00,0x00,0x00,0x00,0x80,0x5d,0x00,0x80,0x02,0x00 /*  41   8 tokens Used by state  (266) */
-}; // Size of table:420(x86)/424(x64) bytes.
+static const unsigned char termSetTable[450] = {
+   0x71,0x00,0x00,0x00,0x00,0x01,0x00,0x02,0xc1,0x01 /*   0  10 tokens Used by states [0,2,16,32,34]          */
+  ,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x02,0x01,0x01 /*   1   4 tokens Used by states [1,5-6,24]              */
+  ,0x70,0x00,0x00,0x00,0x00,0x01,0x00,0x02,0x81,0x01 /*   2   8 tokens Used by state  [4]                     */
+  ,0x70,0x00,0x00,0x00,0x00,0x41,0x00,0x02,0x81,0x01 /*   3   9 tokens Used by states [7-8,25-26]             */
+  ,0x70,0x00,0x00,0x00,0x00,0x45,0x00,0x42,0x83,0x01 /*   4  12 tokens Used by states [9-11,28,30,47,99,172,174]*/
+  ,0x00,0x00,0x00,0x00,0x40,0x00,0x00,0x00,0x00,0x01 /*   5   2 tokens Used by state  [14]                    */
+  ,0x00,0x00,0x00,0x00,0x00,0x05,0x00,0x00,0x00,0x00 /*   6   2 tokens Used by states [17-19,52-53,78,205-207,245,267-269]*/
+  ,0x00,0x00,0x00,0x00,0x00,0x4d,0x00,0x40,0x02,0x00 /*   7   6 tokens Used by state  [20]                    */
+  ,0x70,0x00,0x00,0x00,0xc0,0x4d,0x00,0x42,0x83,0x01 /*   8  15 tokens Used by state  [23]                    */
+  ,0x70,0x00,0x00,0x00,0x40,0x45,0x00,0x42,0x83,0x01 /*   9  13 tokens Used by state  [29]                    */
+  ,0x7e,0x00,0x00,0xff,0xef,0x01,0x08,0x3b,0x81,0x01 /*  10  31 tokens Used by states [37,134-135,204,241,279]*/
+  ,0x00,0x00,0x00,0x00,0x00,0x4d,0x00,0x00,0x02,0x00 /*  11   5 tokens Used by state  [42]                    */
+  ,0x00,0x00,0x00,0x00,0x40,0x05,0x00,0x00,0x02,0x00 /*  12   4 tokens Used by state  [43]                    */
+  ,0x70,0x00,0x00,0x00,0x80,0x00,0x00,0x00,0x80,0x00 /*  13   5 tokens Used by states [46,173]                */
+  ,0x00,0x00,0x00,0x00,0x80,0x04,0x00,0x00,0x00,0x00 /*  14   2 tokens Used by states [50-51,156,175-176,261] */
+  ,0x00,0x00,0x00,0x00,0x40,0x05,0x00,0x40,0x03,0x00 /*  15   6 tokens Used by states [54,76,91,96,102,169,171]*/
+  ,0x00,0x00,0x00,0x00,0x80,0xfd,0xff,0xe7,0x07,0x00 /*  16  25 tokens Used by states [57-60,110,177,183,185,234-238]*/
+  ,0x00,0x00,0x00,0x00,0x80,0xfd,0xff,0x87,0x02,0x00 /*  17  21 tokens Used by states [64,108-109,114-116,195-196,233]*/
+  ,0x00,0x00,0x00,0x00,0x80,0x45,0x00,0x80,0x00,0x00 /*  18   5 tokens Used by state  [68]                    */
+  ,0x00,0x00,0x00,0x00,0x80,0x45,0x00,0x80,0x02,0x00 /*  19   6 tokens Used by states [69,187,189-190]        */
+  ,0x00,0x00,0x00,0x00,0x80,0x7d,0x00,0x80,0x02,0x00 /*  20   9 tokens Used by states [70-71]                 */
+  ,0x00,0x00,0x00,0x00,0x80,0xfd,0x00,0x80,0x02,0x00 /*  21  10 tokens Used by states [72-73,191]             */
+  ,0x00,0x00,0x00,0x00,0x80,0xfd,0x01,0x80,0x02,0x00 /*  22  11 tokens Used by states [74,192]                */
+  ,0x02,0x00,0x00,0x00,0x80,0xfd,0xff,0xe7,0x07,0x00 /*  23  26 tokens Used by states [75,106]                */
+  ,0x00,0x00,0x00,0x00,0x80,0x05,0x00,0x00,0x00,0x00 /*  24   3 tokens Used by states [79,226]                */
+  ,0x00,0x00,0x00,0x00,0x00,0x4d,0x00,0x40,0x03,0x00 /*  25   7 tokens Used by states [81,89,95,157,168]      */
+  ,0x00,0x00,0x00,0x00,0x00,0x04,0x00,0x00,0x02,0x00 /*  26   2 tokens Used by states [83,85-86,94,159,161,165,228,230,232]*/
+  ,0x00,0x00,0x00,0x00,0x00,0x04,0x00,0x40,0x02,0x00 /*  27   3 tokens Used by states [84,88,163,167,262,264,277,287]*/
+  ,0x70,0x00,0x00,0x00,0x00,0x04,0x00,0x42,0x03,0x01 /*  28   9 tokens Used by states [87,160]                */
+  ,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x40,0x02,0x00 /*  29   2 tokens Used by states [105,164,166]           */
+  ,0x7f,0x00,0x00,0xff,0xff,0x01,0x08,0x3b,0xc1,0x03 /*  30  35 tokens Used by state  [133]                   */
+  ,0x7e,0x00,0x00,0xff,0xef,0x01,0x08,0x3b,0x81,0x03 /*  31  32 tokens Used by states [137-138,209-210,219-220,223,246-248,256-258,280,283,295-296,300]*/
+  ,0x00,0x00,0x00,0x00,0x00,0xbd,0xff,0x67,0x05,0x00 /*  32  21 tokens Used by state  [154]                   */
+  ,0x00,0x00,0x00,0x00,0x00,0x04,0x00,0x40,0x03,0x00 /*  33   4 tokens Used by state  [162]                   */
+  ,0x00,0x00,0x00,0x00,0x00,0xbc,0xff,0x67,0x05,0x00 /*  34  20 tokens Used by state  [179]                   */
+  ,0x00,0x00,0x00,0x00,0x80,0xfd,0x3f,0x80,0x02,0x00 /*  35  16 tokens Used by state  [193]                   */
+  ,0x00,0x00,0x00,0x00,0x80,0xfd,0x1f,0x80,0x02,0x00 /*  36  15 tokens Used by state  [194]                   */
+  ,0x00,0x00,0x00,0x00,0x80,0xfd,0x7f,0x80,0x02,0x00 /*  37  17 tokens Used by state  [197]                   */
+  ,0x00,0x00,0x00,0x00,0x80,0xfd,0x0f,0x80,0x02,0x00 /*  38  14 tokens Used by state  [198]                   */
+  ,0x00,0x00,0x00,0x00,0x80,0xfd,0x07,0x80,0x02,0x00 /*  39  13 tokens Used by state  [199]                   */
+  ,0x00,0x00,0x00,0x00,0x80,0xfd,0x03,0x80,0x02,0x00 /*  40  12 tokens Used by state  [200]                   */
+  ,0x00,0x00,0x00,0x00,0x80,0xfd,0xff,0x81,0x02,0x00 /*  41  19 tokens Used by states [201-202]               */
+  ,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x00,0x02,0x00 /*  42   2 tokens Used by states [250,254]               */
+  ,0x7e,0x00,0x00,0xff,0xff,0x01,0x08,0x3b,0x81,0x03 /*  43  33 tokens Used by states [259,275,298]           */
+  ,0x00,0x00,0x00,0x00,0x80,0x5d,0x00,0x80,0x02,0x00 /*  44   8 tokens Used by state  [266]                   */
+}; // Size of table:452(x86)/456(x64) bytes.
 
-/**********************************************************************************\
-* The 3 arrays NTindexListTable, stateListTable and successorCode holds a          *
-* compressed succesor-matrix, used by LRParser to find newstate = successor(S,A)   *
-* as last part of a reduction with production P, A -> alfa.                        *
-* A reduction by production P goes as follows:                                     *
-*   Pop L elements from stack, where L = length of alfa;                           *
-*   S = state on stacktop;                                                         *
-*   A = leftside of the reduce production P;                                       *
-*   newstate = successor(S,A);                                                     *
-*   push(newstate), and set current state = newstate.                              *
-*                                                                                  *
-* For each relevant state S, a #define is generated and used as element S in array *
-* successorCode. Each define has the format:                                       *
-*                                                                                  *
-* #define _suDDDD Code                                                             *
-*                                                                                  *
-* where DDDD is the statenumber S and Code is an unsigned int with the following   *
-* format:                                                                          *
-*                   0         1         2         3                                *
-* Bit index:        01234567890123456789012345678901                               *
-* Code              iiiiiiiiiiiiiiiiFrrrrrrrrrrrrrrr                               *
-*                                                                                  *
-* i          : Bit[ 0-15]: unsigned short                                          *
-* r          : Bit[17-31]: unsigned short                                          *
-* F          : Bit 16    : Indicates how to interpret i and r.                     *
-*                                                                                  *
-* F == 0: Uncompressed Format.                                                     *
-*      i: Index into array NTindexListTable, pointing at the first element of      *
-*         NTIndexList (see below).                                                 *
-*      r: Index into array stateListTable, pointing at the first element of        *
-*         stateList (see below).                                                   *
-* F == 1: Compressed Format, used if there is only 1 possible newstate.            *
-*      i: Index A' of nonterminal A, A' = (A - terminalCount).                     *
-*      r: New state.                                                               *
-*                                                                                  *
-* F == 0: Use arrays NTIndexListTable and stateListTable to find newstate.         *
-*      n                  : NTIndexListTable[i] = number of elements in NTIndexList*
-*      NTIndexList[0..n-1]: NTIndexListTable[i+1..i+n]                             *
-*                           Ordered list of possible nonterminal-indices.          *
-*      stateList[0..n-1]  : stateListTable[r..r+n-1], same length as NTIndexList   *
-*                                                                                  *
-*      To get newstate, find index k in NTIndexList, so NTIndexList[k] == A',      *
-*      and set newstate = stateList[k].                                            *
-*      A' = (A - terminalCount) will always exist.                                 *
-*      Note that both NTIndexList and stateList may be shared by several states.   *
-\**********************************************************************************/
+/************************************************************************************\
+* The 3 arrays NTindexListTable, stateListTable and successorCode holds a            *
+* compressed succesor-matrix, used by LRParser to find newstate = successor(S,A)     *
+* as last part of a reduction with production P, A -> alfa.                          *
+* A reduction by production P goes as follows:                                       *
+*   Pop L elements from stack, where L = length of alfa;                             *
+*   S = state on stacktop;                                                           *
+*   A = leftside of the reduce production P;                                         *
+*   newstate = successor(S,A);                                                       *
+*   push(newstate), and set current state = newstate.                                *
+*                                                                                    *
+* For each relevant state S, a #define is generated and used as element S in array   *
+* successorCode. Each define has the format:                                         *
+*                                                                                    *
+* #define _suDDDD Code                                                               *
+*                                                                                    *
+* where DDDD is the statenumber S and Code is an unsigned int with the following     *
+* format:                                                                            *
+*            0         1         2         3                                         *
+* Bit index: 01234567890123456789012345678901                                        *
+* Code       iiiiiiiiiiiiiiiCCsssssssssssssss                                        *
+*                                                                                    *
+* i          : Bit[ 0-15]: unsigned short                                            *
+* s          : Bit[17-31]: unsigned short                                            *
+* CC         : Bit[15-16]: Indicates how to interpret i and s.                       *
+*                                                                                    *
+* CC has the same meaning as for actionCode, but only use CC={0,2}                   *
+* CC == 0: Uncompressed Format.                                                      *
+*       i: Index into array NTindexListTable, pointing at the first element of       *
+*          NTIndexList                                                               *
+*       s: Index into array stateListTable, pointing at the first element of         *
+*          stateList                                                                 *
+*                                                                                    *
+*       n                  : NTIndexListTable[i] = number of elements in NTIndexList *
+*       NTIndexList[0..n-1]: NTIndexListTable[i+1..i+n]                              *
+*                            Ordered list of possible nonterminal-indices.           *
+*       stateList[0..n-1]  : stateListTable[s..s+n-1], same length as NTIndexList    *
+*                                                                                    *
+*       To get newstate, find index k in NTIndexList, so NTIndexList[k] == A',       *
+*       and set newstate = stateList[k].                                             *
+*       A' = (A - terminalCount) will always exist.                                  *
+*       Note that both NTIndexList and stateList may be shared by several states.    *
+* CC == 2: Compressed Format, used if there is only 1 possible newstate.             *
+*       i: Index A' of nonterminal A, A' = (A - terminalCount).                      *
+*       s: New state.                                                                *
+*                                                                                    *
+\************************************************************************************/
 
-#define _su0000 0x00030001 /* Goto 1 on ext_def_list                  */
-#define _su0001 0x00000000 /* NTindexList   0, stateList   0          */
-#define _su0003 0x00100009 /* NTindexList   1, stateList   1          */
-#define _su0006 0x001a000f /* NTindexList   2, stateList   2          */
-#define _su0012 0x00240015 /* NTindexList   3, stateList   3          */
-#define _su0013 0x003d000f /* Goto 30 on name                         */
-#define _su0017 0x00450006 /* Goto 34 on compound_stmt                */
-#define _su0021 0x00280018 /* NTindexList   4, stateList   4          */
-#define _su0022 0x002e0018 /* NTindexList   4, stateList   5          */
-#define _su0030 0x005f001e /* Goto 47 on opt_enum_list                */
-#define _su0031 0x0034001c /* NTindexList   5, stateList   6          */
-#define _su0033 0x003a0020 /* NTindexList   6, stateList   7          */
-#define _su0035 0x00420025 /* NTindexList   7, stateList   8          */
-#define _su0037 0x009b0021 /* Goto 77 on stmt_list                    */
-#define _su0038 0x00560030 /* NTindexList   8, stateList   9          */
-#define _su0039 0x006a003b /* NTindexList   9, stateList  10          */
-#define _su0040 0x007a0025 /* NTindexList   7, stateList  11          */
-#define _su0041 0x008e0044 /* NTindexList  10, stateList  12          */
-#define _su0046 0x00c30018 /* Goto 97 on def_list                     */
-#define _su0048 0x00a2001c /* NTindexList   5, stateList  13          */
-#define _su0056 0x00a8004f /* NTindexList  11, stateList  14          */
-#define _su0062 0x00c6005f /* NTindexList  12, stateList  15          */
-#define _su0063 0x00ca005f /* NTindexList  12, stateList  16          */
-#define _su0065 0x00ce005f /* NTindexList  12, stateList  17          */
-#define _su0066 0x00d2005f /* NTindexList  12, stateList  18          */
-#define _su0067 0x00d6005f /* NTindexList  12, stateList  19          */
-#define _su0077 0x00da0062 /* NTindexList  13, stateList  20          */
-#define _su0080 0x01000076 /* NTindexList  14, stateList  21          */
-#define _su0084 0x01160082 /* NTindexList  15, stateList  22          */
-#define _su0088 0x014b0016 /* Goto 165 on abs_decl                    */
-#define _su0097 0x0124008a /* NTindexList  16, stateList  23          */
-#define _su0100 0x01320092 /* NTindexList  17, stateList  24          */
-#define _su0101 0x01360025 /* NTindexList   7, stateList  25          */
-#define _su0105 0x014a0095 /* NTindexList  18, stateList  26          */
-#define _su0107 0x0154004f /* NTindexList  11, stateList  27          */
-#define _su0111 0x0172009b /* NTindexList  19, stateList  28          */
-#define _su0113 0x018400a5 /* NTindexList  20, stateList  29          */
-#define _su0117 0x019600af /* NTindexList  21, stateList  30          */
-#define _su0118 0x01a600af /* NTindexList  21, stateList  31          */
-#define _su0119 0x01b600af /* NTindexList  21, stateList  32          */
-#define _su0120 0x01c600af /* NTindexList  21, stateList  33          */
-#define _su0121 0x01d600b8 /* NTindexList  22, stateList  34          */
-#define _su0122 0x01e000be /* NTindexList  23, stateList  35          */
-#define _su0123 0x01e600be /* NTindexList  23, stateList  36          */
-#define _su0124 0x01ec00be /* NTindexList  23, stateList  37          */
-#define _su0125 0x01f200be /* NTindexList  23, stateList  38          */
-#define _su0126 0x01f800be /* NTindexList  23, stateList  39          */
-#define _su0127 0x01fe00be /* NTindexList  23, stateList  40          */
-#define _su0128 0x020400be /* NTindexList  23, stateList  41          */
-#define _su0129 0x020a00be /* NTindexList  23, stateList  42          */
-#define _su0130 0x021000be /* NTindexList  23, stateList  43          */
-#define _su0131 0x021600be /* NTindexList  23, stateList  44          */
-#define _su0132 0x021c00be /* NTindexList  23, stateList  45          */
-#define _su0136 0x022200c2 /* NTindexList  24, stateList  46          */
-#define _su0140 0x0236009b /* NTindexList  19, stateList  47          */
-#define _su0141 0x01a90024 /* Goto 212 on target                      */
-#define _su0145 0x024800cd /* NTindexList  25, stateList  48          */
-#define _su0150 0x02600025 /* NTindexList   7, stateList  49          */
-#define _su0152 0x0274009b /* NTindexList  19, stateList  50          */
-#define _su0153 0x01c30006 /* Goto 225 on compound_stmt               */
-#define _su0158 0x028600da /* NTindexList  26, stateList  51          */
-#define _su0163 0x029400e2 /* NTindexList  27, stateList  52          */
-#define _su0164 0x029a00e2 /* NTindexList  27, stateList  53          */
-#define _su0166 0x01cf0016 /* Goto 231 on abs_decl                    */
-#define _su0167 0x01cd0016 /* Goto 230 on abs_decl                    */
-#define _su0170 0x01d1000f /* Goto 232 on name                        */
-#define _su0178 0x02a0005f /* NTindexList  12, stateList  54          */
-#define _su0208 0x02a40025 /* NTindexList   7, stateList  55          */
-#define _su0214 0x02b800cd /* NTindexList  25, stateList  56          */
-#define _su0215 0x02d000e6 /* NTindexList  28, stateList  57          */
-#define _su0216 0x02e400e6 /* NTindexList  28, stateList  58          */
-#define _su0218 0x02f800f1 /* NTindexList  29, stateList  59          */
-#define _su0221 0x030c009b /* NTindexList  19, stateList  60          */
-#define _su0225 0x031e00fc /* NTindexList  30, stateList  61          */
-#define _su0227 0x03220030 /* NTindexList   8, stateList  62          */
-#define _su0229 0x03360025 /* NTindexList   7, stateList  63          */
-#define _su0239 0x034a00a5 /* NTindexList  20, stateList  64          */
-#define _su0240 0x035c00af /* NTindexList  21, stateList  65          */
-#define _su0242 0x036c00ff /* NTindexList  31, stateList  66          */
-#define _su0243 0x03740030 /* NTindexList   8, stateList  67          */
-#define _su0244 0x03880025 /* NTindexList   7, stateList  68          */
-#define _su0258 0x02270028 /* Goto 275 on exception_handler           */
-#define _su0270 0x039c00cd /* NTindexList  25, stateList  69          */
-#define _su0271 0x03b400cd /* NTindexList  25, stateList  70          */
-#define _su0272 0x03cc00e6 /* NTindexList  28, stateList  71          */
-#define _su0273 0x03e000e6 /* NTindexList  28, stateList  72          */
-#define _su0274 0x02370006 /* Goto 283 on compound_stmt               */
-#define _su0276 0x03f40104 /* NTindexList  32, stateList  73          */
-#define _su0285 0x0400010b /* NTindexList  33, stateList  74          */
-#define _su0288 0x040c00cd /* NTindexList  25, stateList  75          */
-#define _su0290 0x042400f1 /* NTindexList  29, stateList  76          */
-#define _su0291 0x02550006 /* Goto 298 on compound_stmt               */
-#define _su0293 0x04380112 /* NTindexList  34, stateList  77          */
-#define _su0294 0x043c0112 /* NTindexList  34, stateList  78          */
-#define _su0299 0x044000cd /* NTindexList  25, stateList  79          */
+#define _su0000 0x00030001 /* Goto 1 on ext_def_list                                */
+#define _su0001 0x00000000 /* NTindexList   0, stateList   0                        */
+#define _su0003 0x00100009 /* NTindexList   1, stateList   1                        */
+#define _su0006 0x001a000f /* NTindexList   2, stateList   2                        */
+#define _su0012 0x00240015 /* NTindexList   3, stateList   3                        */
+#define _su0013 0x003d000f /* Goto 30 on name                                       */
+#define _su0017 0x00450006 /* Goto 34 on compound_stmt                              */
+#define _su0021 0x00280018 /* NTindexList   4, stateList   4                        */
+#define _su0022 0x002e0018 /* NTindexList   4, stateList   5                        */
+#define _su0030 0x005f001e /* Goto 47 on opt_enum_list                              */
+#define _su0031 0x0034001c /* NTindexList   5, stateList   6                        */
+#define _su0033 0x003a0020 /* NTindexList   6, stateList   7                        */
+#define _su0035 0x00420025 /* NTindexList   7, stateList   8                        */
+#define _su0037 0x009b0021 /* Goto 77 on stmt_list                                  */
+#define _su0038 0x00560030 /* NTindexList   8, stateList   9                        */
+#define _su0039 0x006a003b /* NTindexList   9, stateList  10                        */
+#define _su0040 0x007a0025 /* NTindexList   7, stateList  11                        */
+#define _su0041 0x008e0044 /* NTindexList  10, stateList  12                        */
+#define _su0046 0x00c30018 /* Goto 97 on def_list                                   */
+#define _su0048 0x00a2001c /* NTindexList   5, stateList  13                        */
+#define _su0056 0x00a8004f /* NTindexList  11, stateList  14                        */
+#define _su0062 0x00c6005f /* NTindexList  12, stateList  15                        */
+#define _su0063 0x00ca005f /* NTindexList  12, stateList  16                        */
+#define _su0065 0x00ce005f /* NTindexList  12, stateList  17                        */
+#define _su0066 0x00d2005f /* NTindexList  12, stateList  18                        */
+#define _su0067 0x00d6005f /* NTindexList  12, stateList  19                        */
+#define _su0077 0x00da0062 /* NTindexList  13, stateList  20                        */
+#define _su0080 0x01000076 /* NTindexList  14, stateList  21                        */
+#define _su0084 0x01160082 /* NTindexList  15, stateList  22                        */
+#define _su0088 0x014b0016 /* Goto 165 on abs_decl                                  */
+#define _su0097 0x0124008a /* NTindexList  16, stateList  23                        */
+#define _su0100 0x01320092 /* NTindexList  17, stateList  24                        */
+#define _su0101 0x01360025 /* NTindexList   7, stateList  25                        */
+#define _su0105 0x014a0095 /* NTindexList  18, stateList  26                        */
+#define _su0107 0x0154004f /* NTindexList  11, stateList  27                        */
+#define _su0111 0x0172009b /* NTindexList  19, stateList  28                        */
+#define _su0113 0x018400a5 /* NTindexList  20, stateList  29                        */
+#define _su0117 0x019600af /* NTindexList  21, stateList  30                        */
+#define _su0118 0x01a600af /* NTindexList  21, stateList  31                        */
+#define _su0119 0x01b600af /* NTindexList  21, stateList  32                        */
+#define _su0120 0x01c600af /* NTindexList  21, stateList  33                        */
+#define _su0121 0x01d600b8 /* NTindexList  22, stateList  34                        */
+#define _su0122 0x01e000be /* NTindexList  23, stateList  35                        */
+#define _su0123 0x01e600be /* NTindexList  23, stateList  36                        */
+#define _su0124 0x01ec00be /* NTindexList  23, stateList  37                        */
+#define _su0125 0x01f200be /* NTindexList  23, stateList  38                        */
+#define _su0126 0x01f800be /* NTindexList  23, stateList  39                        */
+#define _su0127 0x01fe00be /* NTindexList  23, stateList  40                        */
+#define _su0128 0x020400be /* NTindexList  23, stateList  41                        */
+#define _su0129 0x020a00be /* NTindexList  23, stateList  42                        */
+#define _su0130 0x021000be /* NTindexList  23, stateList  43                        */
+#define _su0131 0x021600be /* NTindexList  23, stateList  44                        */
+#define _su0132 0x021c00be /* NTindexList  23, stateList  45                        */
+#define _su0136 0x022200c2 /* NTindexList  24, stateList  46                        */
+#define _su0140 0x0236009b /* NTindexList  19, stateList  47                        */
+#define _su0141 0x01a90024 /* Goto 212 on target                                    */
+#define _su0145 0x024800cd /* NTindexList  25, stateList  48                        */
+#define _su0150 0x02600025 /* NTindexList   7, stateList  49                        */
+#define _su0152 0x0274009b /* NTindexList  19, stateList  50                        */
+#define _su0153 0x01c30006 /* Goto 225 on compound_stmt                             */
+#define _su0158 0x028600da /* NTindexList  26, stateList  51                        */
+#define _su0163 0x029400e2 /* NTindexList  27, stateList  52                        */
+#define _su0164 0x029a00e2 /* NTindexList  27, stateList  53                        */
+#define _su0166 0x01cf0016 /* Goto 231 on abs_decl                                  */
+#define _su0167 0x01cd0016 /* Goto 230 on abs_decl                                  */
+#define _su0170 0x01d1000f /* Goto 232 on name                                      */
+#define _su0178 0x02a0005f /* NTindexList  12, stateList  54                        */
+#define _su0208 0x02a40025 /* NTindexList   7, stateList  55                        */
+#define _su0214 0x02b800cd /* NTindexList  25, stateList  56                        */
+#define _su0215 0x02d000e6 /* NTindexList  28, stateList  57                        */
+#define _su0216 0x02e400e6 /* NTindexList  28, stateList  58                        */
+#define _su0218 0x02f800f1 /* NTindexList  29, stateList  59                        */
+#define _su0221 0x030c009b /* NTindexList  19, stateList  60                        */
+#define _su0225 0x031e00fc /* NTindexList  30, stateList  61                        */
+#define _su0227 0x03220030 /* NTindexList   8, stateList  62                        */
+#define _su0229 0x03360025 /* NTindexList   7, stateList  63                        */
+#define _su0239 0x034a00a5 /* NTindexList  20, stateList  64                        */
+#define _su0240 0x035c00af /* NTindexList  21, stateList  65                        */
+#define _su0242 0x036c00ff /* NTindexList  31, stateList  66                        */
+#define _su0243 0x03740030 /* NTindexList   8, stateList  67                        */
+#define _su0244 0x03880025 /* NTindexList   7, stateList  68                        */
+#define _su0258 0x02270028 /* Goto 275 on exception_handler                         */
+#define _su0270 0x039c00cd /* NTindexList  25, stateList  69                        */
+#define _su0271 0x03b400cd /* NTindexList  25, stateList  70                        */
+#define _su0272 0x03cc00e6 /* NTindexList  28, stateList  71                        */
+#define _su0273 0x03e000e6 /* NTindexList  28, stateList  72                        */
+#define _su0274 0x02370006 /* Goto 283 on compound_stmt                             */
+#define _su0276 0x03f40104 /* NTindexList  32, stateList  73                        */
+#define _su0285 0x0400010b /* NTindexList  33, stateList  74                        */
+#define _su0288 0x040c00cd /* NTindexList  25, stateList  75                        */
+#define _su0290 0x042400f1 /* NTindexList  29, stateList  76                        */
+#define _su0291 0x02550006 /* Goto 298 on compound_stmt                             */
+#define _su0293 0x04380112 /* NTindexList  34, stateList  77                        */
+#define _su0294 0x043c0112 /* NTindexList  34, stateList  78                        */
+#define _su0299 0x044000cd /* NTindexList  25, stateList  79                        */
 
 #define nil (unsigned int)-1
 static const unsigned int successorCode[301] = {
@@ -841,130 +863,130 @@ static const unsigned int successorCode[301] = {
 }; // Size of table:1.204(x86)/1.208(x64) bytes.
 
 static const unsigned char NTindexListTable[277] = {
-     8,   2,   3,   7,   8,   9,  10,  11,  29                                                               /*    0 Used by state  (1) */
-  ,  5,   4,   5,  12,  13,  15                                                                              /*    1 Used by state  (3) */
-  ,  5,   8,   9,  10,  11,  29                                                                              /*    2 Used by state  (6) */
-  ,  2,  23,  25                                                                                             /*    3 Used by state  (12) */
-  ,  3,   5,  13,  15                                                                                        /*    4 Used by states (21,22) */
-  ,  3,  15,  31,  32                                                                                        /*    5 Used by states (31,48) */
-  ,  4,   5,  12,  13,  15                                                                                   /*    6 Used by state  (33) */
-  , 10,  17,  35,  42,  43,  45,  46,  47,  48,  49,  50                                                     /*    7 Used by states (35,40,101,150,208,229,244) */
-  , 10,  14,  35,  42,  43,  45,  46,  47,  48,  49,  50                                                     /*    8 Used by states (38,227,243) */
-  ,  8,   9,  10,  11,  16,  19,  20,  21,  29                                                               /*    9 Used by state  (39) */
-  , 10,   9,  10,  11,  15,  16,  18,  19,  20,  21,  29                                                     /*   10 Used by state  (41) */
-  , 15,   9,  10,  11,  20,  21,  29,  35,  42,  43,  45,  46,  47,  48,  49,  50                            /*   11 Used by states (56,107) */
-  ,  2,  42,  43                                                                                             /*   12 Used by states (62,63,65,66,67,178) */
-  , 19,   6,   7,   8,   9,  10,  11,  26,  29,  34,  35,  36,  42,  43,  45,  46,  47,  48,  49,  50        /*   13 Used by state  (77) */
-  , 11,  14,  35,  42,  43,  45,  46,  47,  48,  49,  50,  51                                                /*   14 Used by state  (80) */
-  ,  7,   9,  10,  11,  13,  15,  22,  29                                                                    /*   15 Used by state  (84) */
-  ,  7,   7,   8,   9,  10,  11,  26,  29                                                                    /*   16 Used by state  (97) */
-  ,  2,  15,  32                                                                                             /*   17 Used by state  (100) */
-  ,  5,   9,  10,  11,  22,  29                                                                              /*   18 Used by state  (105) */
-  ,  9,  35,  42,  43,  45,  46,  47,  48,  49,  50                                                          /*   19 Used by states (111,140,152,221) */
-  ,  9,  42,  43,  44,  45,  46,  47,  48,  49,  50                                                          /*   20 Used by states (113,239) */
-  ,  8,  42,  43,  45,  46,  47,  48,  49,  50                                                               /*   21 Used by states (117,118,119,120,240) */
-  ,  5,  42,  43,  48,  49,  50                                                                              /*   22 Used by state  (121) */
-  ,  3,  42,  43,  50                                                                                        /*   23 Used by states (122,123,124,125,126,127,128,129,130,131,132) */
-  , 10,   5,   8,   9,  10,  11,  13,  15,  27,  28,  29                                                     /*   24 Used by state  (136) */
-  , 12,   6,  34,  35,  36,  42,  43,  45,  46,  47,  48,  49,  50                                           /*   25 Used by states (145,214,270,271,288,299) */
-  ,  7,   9,  10,  11,  19,  20,  21,  29                                                                    /*   26 Used by state  (158) */
-  ,  3,  13,  15,  22                                                                                        /*   27 Used by states (163,164) */
-  , 10,  35,  37,  42,  43,  45,  46,  47,  48,  49,  50                                                     /*   28 Used by states (215,216,272,273) */
-  , 10,  35,  38,  42,  43,  45,  46,  47,  48,  49,  50                                                     /*   29 Used by states (218,290) */
-  ,  2,  39,  40                                                                                             /*   30 Used by state  (225) */
-  ,  4,   5,  13,  15,  28                                                                                   /*   31 Used by state  (242) */
-  ,  6,   9,  10,  11,  20,  29,  41                                                                         /*   32 Used by state  (276) */
-  ,  6,   9,  10,  11,  13,  15,  29                                                                         /*   33 Used by state  (285) */
-  ,  2,  13,  15                                                                                             /*   34 Used by states (293,294) */
+     8,   2,   3,   7,   8,   9,  10,  11,  29                                                               /*   0 Used by state  [1]                                */
+  ,  5,   4,   5,  12,  13,  15                                                                              /*   1 Used by state  [3]                                */
+  ,  5,   8,   9,  10,  11,  29                                                                              /*   2 Used by state  [6]                                */
+  ,  2,  23,  25                                                                                             /*   3 Used by state  [12]                               */
+  ,  3,   5,  13,  15                                                                                        /*   4 Used by states [21-22]                            */
+  ,  3,  15,  31,  32                                                                                        /*   5 Used by states [31,48]                            */
+  ,  4,   5,  12,  13,  15                                                                                   /*   6 Used by state  [33]                               */
+  , 10,  17,  35,  42,  43,  45,  46,  47,  48,  49,  50                                                     /*   7 Used by states [35,40,101,150,208,229,244]        */
+  , 10,  14,  35,  42,  43,  45,  46,  47,  48,  49,  50                                                     /*   8 Used by states [38,227,243]                       */
+  ,  8,   9,  10,  11,  16,  19,  20,  21,  29                                                               /*   9 Used by state  [39]                               */
+  , 10,   9,  10,  11,  15,  16,  18,  19,  20,  21,  29                                                     /*  10 Used by state  [41]                               */
+  , 15,   9,  10,  11,  20,  21,  29,  35,  42,  43,  45,  46,  47,  48,  49,  50                            /*  11 Used by states [56,107]                           */
+  ,  2,  42,  43                                                                                             /*  12 Used by states [62-63,65-67,178]                  */
+  , 19,   6,   7,   8,   9,  10,  11,  26,  29,  34,  35,  36,  42,  43,  45,  46,  47,  48,  49,  50        /*  13 Used by state  [77]                               */
+  , 11,  14,  35,  42,  43,  45,  46,  47,  48,  49,  50,  51                                                /*  14 Used by state  [80]                               */
+  ,  7,   9,  10,  11,  13,  15,  22,  29                                                                    /*  15 Used by state  [84]                               */
+  ,  7,   7,   8,   9,  10,  11,  26,  29                                                                    /*  16 Used by state  [97]                               */
+  ,  2,  15,  32                                                                                             /*  17 Used by state  [100]                              */
+  ,  5,   9,  10,  11,  22,  29                                                                              /*  18 Used by state  [105]                              */
+  ,  9,  35,  42,  43,  45,  46,  47,  48,  49,  50                                                          /*  19 Used by states [111,140,152,221]                  */
+  ,  9,  42,  43,  44,  45,  46,  47,  48,  49,  50                                                          /*  20 Used by states [113,239]                          */
+  ,  8,  42,  43,  45,  46,  47,  48,  49,  50                                                               /*  21 Used by states [117-120,240]                      */
+  ,  5,  42,  43,  48,  49,  50                                                                              /*  22 Used by state  [121]                              */
+  ,  3,  42,  43,  50                                                                                        /*  23 Used by states [122-132]                          */
+  , 10,   5,   8,   9,  10,  11,  13,  15,  27,  28,  29                                                     /*  24 Used by state  [136]                              */
+  , 12,   6,  34,  35,  36,  42,  43,  45,  46,  47,  48,  49,  50                                           /*  25 Used by states [145,214,270-271,288,299]          */
+  ,  7,   9,  10,  11,  19,  20,  21,  29                                                                    /*  26 Used by state  [158]                              */
+  ,  3,  13,  15,  22                                                                                        /*  27 Used by states [163-164]                          */
+  , 10,  35,  37,  42,  43,  45,  46,  47,  48,  49,  50                                                     /*  28 Used by states [215-216,272-273]                  */
+  , 10,  35,  38,  42,  43,  45,  46,  47,  48,  49,  50                                                     /*  29 Used by states [218,290]                          */
+  ,  2,  39,  40                                                                                             /*  30 Used by state  [225]                              */
+  ,  4,   5,  13,  15,  28                                                                                   /*  31 Used by state  [242]                              */
+  ,  6,   9,  10,  11,  20,  29,  41                                                                         /*  32 Used by state  [276]                              */
+  ,  6,   9,  10,  11,  13,  15,  29                                                                         /*  33 Used by state  [285]                              */
+  ,  2,  13,  15                                                                                             /*  34 Used by states [293-294]                          */
 }; // Size of table:280(x86)/280(x64) bytes.
 
 static const unsigned short stateListTable[556] = {
-      2,   3,   6,   7,   8,  10,  11,  13                                                                   /*   0 Used by state  (1) */
-  ,  15,  17,  18,  19,  20                                                                                  /*   1 Used by state  (3) */
-  ,  25,   8,  10,  11,  13                                                                                  /*   2 Used by state  (6) */
-  ,  27,  28                                                                                                 /*   3 Used by state  (12) */
-  ,  43,  42,  20                                                                                            /*   4 Used by state  (21) */
-  ,  45,  44,  20                                                                                            /*   5 Used by state  (22) */
-  ,  51,  49,  50                                                                                            /*   6 Used by state  (31) */
-  ,  53,  52,  19,  20                                                                                       /*   7 Used by state  (33) */
-  ,  55,  68,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*   8 Used by state  (35) */
-  ,  78,  79,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*   9 Used by state  (38) */
-  ,  87,  10,  11,  82,  83,  84,  85,  13                                                                   /*  10 Used by state  (39) */
-  ,  90,  68,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  11 Used by state  (40) */
-  ,  87,  10,  11,  94,  93,  92,  83,  84,  85,  13                                                         /*  12 Used by state  (41) */
-  ,  51,  98,  50                                                                                            /*  13 Used by state  (48) */
-  ,  87,  10,  11, 105, 104,  13, 103,  64,  60,  69,  70,  71,  72,  73,  74                                /*  14 Used by state  (56) */
-  , 108,  60                                                                                                 /*  15 Used by state  (62) */
-  , 109,  60                                                                                                 /*  16 Used by state  (63) */
-  , 114,  60                                                                                                 /*  17 Used by state  (65) */
-  , 115,  60                                                                                                 /*  18 Used by state  (66) */
-  , 116,  60                                                                                                 /*  19 Used by state  (67) */
-  , 138, 136,   7,   8,  10,  11, 135,  13, 134, 139, 142,  64,  60,  69,  70,  71,  72,  73,  74            /*  20 Used by state  (77) */
-  , 156,  79,  64,  60,  69,  70,  71,  72,  73,  74, 155                                                    /*  21 Used by state  (80) */
-  , 160,  10,  11, 159, 162, 161,  13                                                                        /*  22 Used by state  (84) */
-  , 136,   7,   8,  10,  11, 173,  13                                                                        /*  23 Used by state  (97) */
-  ,  51, 175                                                                                                 /*  24 Used by state  (100) */
-  , 176,  68,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  25 Used by state  (101) */
-  , 160,  10,  11, 161,  13                                                                                  /*  26 Used by state  (105) */
-  ,  87,  10,  11, 105, 181,  13, 180,  64, 179,  69,  70,  71,  72,  73,  74                                /*  27 Used by state  (107) */
-  , 182,  64,  60,  69,  70,  71,  72,  73,  74                                                              /*  28 Used by state  (111) */
-  ,  64,  60, 184, 186,  70,  71,  72,  73,  74                                                              /*  29 Used by state  (113) */
-  ,  64,  60, 187,  70,  71,  72,  73,  74                                                                   /*  30 Used by state  (117) */
-  ,  64,  60, 188,  70,  71,  72,  73,  74                                                                   /*  31 Used by state  (118) */
-  ,  64,  60, 189,  70,  71,  72,  73,  74                                                                   /*  32 Used by state  (119) */
-  ,  64,  60, 190,  70,  71,  72,  73,  74                                                                   /*  33 Used by state  (120) */
-  ,  64,  60, 191,  73,  74                                                                                  /*  34 Used by state  (121) */
-  ,  64,  60, 192                                                                                            /*  35 Used by state  (122) */
-  ,  64,  60, 193                                                                                            /*  36 Used by state  (123) */
-  ,  64,  60, 194                                                                                            /*  37 Used by state  (124) */
-  ,  64,  60, 195                                                                                            /*  38 Used by state  (125) */
-  ,  64,  60, 196                                                                                            /*  39 Used by state  (126) */
-  ,  64,  60, 197                                                                                            /*  40 Used by state  (127) */
-  ,  64,  60, 198                                                                                            /*  41 Used by state  (128) */
-  ,  64,  60, 199                                                                                            /*  42 Used by state  (129) */
-  ,  64,  60, 200                                                                                            /*  43 Used by state  (130) */
-  ,  64,  60, 201                                                                                            /*  44 Used by state  (131) */
-  ,  64,  60, 202                                                                                            /*  45 Used by state  (132) */
-  , 206,  25,   8,  10,  11, 205,  20, 203, 207,  13                                                         /*  46 Used by state  (136) */
-  , 211,  64,  60,  69,  70,  71,  72,  73,  74                                                              /*  47 Used by state  (140) */
-  , 138, 217, 139, 142,  64,  60,  69,  70,  71,  72,  73,  74                                               /*  48 Used by state  (145) */
-  , 222,  68,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  49 Used by state  (150) */
-  , 224,  64,  60,  69,  70,  71,  72,  73,  74                                                              /*  50 Used by state  (152) */
-  ,  87,  10,  11, 228,  84,  85,  13                                                                        /*  51 Used by state  (158) */
-  ,  42, 162, 230                                                                                            /*  52 Used by state  (163) */
-  ,  44, 162, 231                                                                                            /*  53 Used by state  (164) */
-  , 233,  60                                                                                                 /*  54 Used by state  (178) */
-  , 245,  68,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  55 Used by state  (208) */
-  , 138, 248, 139, 142,  64,  60,  69,  70,  71,  72,  73,  74                                               /*  56 Used by state  (214) */
-  , 250, 249,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  57 Used by state  (215) */
-  , 250, 251,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  58 Used by state  (216) */
-  , 254, 253,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  59 Used by state  (218) */
-  , 255,  64,  60,  69,  70,  71,  72,  73,  74                                                              /*  60 Used by state  (221) */
-  , 258, 259                                                                                                 /*  61 Used by state  (225) */
-  , 261,  79,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  62 Used by state  (227) */
-  , 263,  68,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  63 Used by state  (229) */
-  ,  64,  60, 265, 186,  70,  71,  72,  73,  74                                                              /*  64 Used by state  (239) */
-  ,  64,  60, 266,  70,  71,  72,  73,  74                                                                   /*  65 Used by state  (240) */
-  , 206, 205,  20, 267                                                                                       /*  66 Used by state  (242) */
-  , 268,  79,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  67 Used by state  (243) */
-  , 269,  68,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  68 Used by state  (244) */
-  , 138, 279, 139, 142,  64,  60,  69,  70,  71,  72,  73,  74                                               /*  69 Used by state  (270) */
-  , 138, 280, 139, 142,  64,  60,  69,  70,  71,  72,  73,  74                                               /*  70 Used by state  (271) */
-  , 250, 281,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  71 Used by state  (272) */
-  , 250, 282,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  72 Used by state  (273) */
-  ,  87,  10,  11, 285,  13, 284                                                                             /*  73 Used by state  (276) */
-  , 160,  10,  11, 292, 162,  13                                                                             /*  74 Used by state  (285) */
-  , 138, 295, 139, 142,  64,  60,  69,  70,  71,  72,  73,  74                                               /*  75 Used by state  (288) */
-  , 254, 297,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  76 Used by state  (290) */
-  ,  42, 162                                                                                                 /*  77 Used by state  (293) */
-  ,  44, 162                                                                                                 /*  78 Used by state  (294) */
-  , 138, 300, 139, 142,  64,  60,  69,  70,  71,  72,  73,  74                                               /*  79 Used by state  (299) */
+      2,   3,   6,   7,   8,  10,  11,  13                                                                   /*   0 Used by state  [1]                                */
+  ,  15,  17,  18,  19,  20                                                                                  /*   1 Used by state  [3]                                */
+  ,  25,   8,  10,  11,  13                                                                                  /*   2 Used by state  [6]                                */
+  ,  27,  28                                                                                                 /*   3 Used by state  [12]                               */
+  ,  43,  42,  20                                                                                            /*   4 Used by state  [21]                               */
+  ,  45,  44,  20                                                                                            /*   5 Used by state  [22]                               */
+  ,  51,  49,  50                                                                                            /*   6 Used by state  [31]                               */
+  ,  53,  52,  19,  20                                                                                       /*   7 Used by state  [33]                               */
+  ,  55,  68,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*   8 Used by state  [35]                               */
+  ,  78,  79,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*   9 Used by state  [38]                               */
+  ,  87,  10,  11,  82,  83,  84,  85,  13                                                                   /*  10 Used by state  [39]                               */
+  ,  90,  68,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  11 Used by state  [40]                               */
+  ,  87,  10,  11,  94,  93,  92,  83,  84,  85,  13                                                         /*  12 Used by state  [41]                               */
+  ,  51,  98,  50                                                                                            /*  13 Used by state  [48]                               */
+  ,  87,  10,  11, 105, 104,  13, 103,  64,  60,  69,  70,  71,  72,  73,  74                                /*  14 Used by state  [56]                               */
+  , 108,  60                                                                                                 /*  15 Used by state  [62]                               */
+  , 109,  60                                                                                                 /*  16 Used by state  [63]                               */
+  , 114,  60                                                                                                 /*  17 Used by state  [65]                               */
+  , 115,  60                                                                                                 /*  18 Used by state  [66]                               */
+  , 116,  60                                                                                                 /*  19 Used by state  [67]                               */
+  , 138, 136,   7,   8,  10,  11, 135,  13, 134, 139, 142,  64,  60,  69,  70,  71,  72,  73,  74            /*  20 Used by state  [77]                               */
+  , 156,  79,  64,  60,  69,  70,  71,  72,  73,  74, 155                                                    /*  21 Used by state  [80]                               */
+  , 160,  10,  11, 159, 162, 161,  13                                                                        /*  22 Used by state  [84]                               */
+  , 136,   7,   8,  10,  11, 173,  13                                                                        /*  23 Used by state  [97]                               */
+  ,  51, 175                                                                                                 /*  24 Used by state  [100]                              */
+  , 176,  68,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  25 Used by state  [101]                              */
+  , 160,  10,  11, 161,  13                                                                                  /*  26 Used by state  [105]                              */
+  ,  87,  10,  11, 105, 181,  13, 180,  64, 179,  69,  70,  71,  72,  73,  74                                /*  27 Used by state  [107]                              */
+  , 182,  64,  60,  69,  70,  71,  72,  73,  74                                                              /*  28 Used by state  [111]                              */
+  ,  64,  60, 184, 186,  70,  71,  72,  73,  74                                                              /*  29 Used by state  [113]                              */
+  ,  64,  60, 187,  70,  71,  72,  73,  74                                                                   /*  30 Used by state  [117]                              */
+  ,  64,  60, 188,  70,  71,  72,  73,  74                                                                   /*  31 Used by state  [118]                              */
+  ,  64,  60, 189,  70,  71,  72,  73,  74                                                                   /*  32 Used by state  [119]                              */
+  ,  64,  60, 190,  70,  71,  72,  73,  74                                                                   /*  33 Used by state  [120]                              */
+  ,  64,  60, 191,  73,  74                                                                                  /*  34 Used by state  [121]                              */
+  ,  64,  60, 192                                                                                            /*  35 Used by state  [122]                              */
+  ,  64,  60, 193                                                                                            /*  36 Used by state  [123]                              */
+  ,  64,  60, 194                                                                                            /*  37 Used by state  [124]                              */
+  ,  64,  60, 195                                                                                            /*  38 Used by state  [125]                              */
+  ,  64,  60, 196                                                                                            /*  39 Used by state  [126]                              */
+  ,  64,  60, 197                                                                                            /*  40 Used by state  [127]                              */
+  ,  64,  60, 198                                                                                            /*  41 Used by state  [128]                              */
+  ,  64,  60, 199                                                                                            /*  42 Used by state  [129]                              */
+  ,  64,  60, 200                                                                                            /*  43 Used by state  [130]                              */
+  ,  64,  60, 201                                                                                            /*  44 Used by state  [131]                              */
+  ,  64,  60, 202                                                                                            /*  45 Used by state  [132]                              */
+  , 206,  25,   8,  10,  11, 205,  20, 203, 207,  13                                                         /*  46 Used by state  [136]                              */
+  , 211,  64,  60,  69,  70,  71,  72,  73,  74                                                              /*  47 Used by state  [140]                              */
+  , 138, 217, 139, 142,  64,  60,  69,  70,  71,  72,  73,  74                                               /*  48 Used by state  [145]                              */
+  , 222,  68,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  49 Used by state  [150]                              */
+  , 224,  64,  60,  69,  70,  71,  72,  73,  74                                                              /*  50 Used by state  [152]                              */
+  ,  87,  10,  11, 228,  84,  85,  13                                                                        /*  51 Used by state  [158]                              */
+  ,  42, 162, 230                                                                                            /*  52 Used by state  [163]                              */
+  ,  44, 162, 231                                                                                            /*  53 Used by state  [164]                              */
+  , 233,  60                                                                                                 /*  54 Used by state  [178]                              */
+  , 245,  68,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  55 Used by state  [208]                              */
+  , 138, 248, 139, 142,  64,  60,  69,  70,  71,  72,  73,  74                                               /*  56 Used by state  [214]                              */
+  , 250, 249,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  57 Used by state  [215]                              */
+  , 250, 251,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  58 Used by state  [216]                              */
+  , 254, 253,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  59 Used by state  [218]                              */
+  , 255,  64,  60,  69,  70,  71,  72,  73,  74                                                              /*  60 Used by state  [221]                              */
+  , 258, 259                                                                                                 /*  61 Used by state  [225]                              */
+  , 261,  79,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  62 Used by state  [227]                              */
+  , 263,  68,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  63 Used by state  [229]                              */
+  ,  64,  60, 265, 186,  70,  71,  72,  73,  74                                                              /*  64 Used by state  [239]                              */
+  ,  64,  60, 266,  70,  71,  72,  73,  74                                                                   /*  65 Used by state  [240]                              */
+  , 206, 205,  20, 267                                                                                       /*  66 Used by state  [242]                              */
+  , 268,  79,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  67 Used by state  [243]                              */
+  , 269,  68,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  68 Used by state  [244]                              */
+  , 138, 279, 139, 142,  64,  60,  69,  70,  71,  72,  73,  74                                               /*  69 Used by state  [270]                              */
+  , 138, 280, 139, 142,  64,  60,  69,  70,  71,  72,  73,  74                                               /*  70 Used by state  [271]                              */
+  , 250, 281,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  71 Used by state  [272]                              */
+  , 250, 282,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  72 Used by state  [273]                              */
+  ,  87,  10,  11, 285,  13, 284                                                                             /*  73 Used by state  [276]                              */
+  , 160,  10,  11, 292, 162,  13                                                                             /*  74 Used by state  [285]                              */
+  , 138, 295, 139, 142,  64,  60,  69,  70,  71,  72,  73,  74                                               /*  75 Used by state  [288]                              */
+  , 254, 297,  64,  60,  69,  70,  71,  72,  73,  74                                                         /*  76 Used by state  [290]                              */
+  ,  42, 162                                                                                                 /*  77 Used by state  [293]                              */
+  ,  44, 162                                                                                                 /*  78 Used by state  [294]                              */
+  , 138, 300, 139, 142,  64,  60,  69,  70,  71,  72,  73,  74                                               /*  79 Used by state  [299]                              */
 }; // Size of table:1.112(x86)/1.112(x64) bytes.
 
-/**********************************************************************************\
-* The productionLength[] is indexed by production number and holds the number of   *
-* symbols on the right side of each production.                                    *
-\**********************************************************************************/
+/************************************************************************************\
+* The productionLength[] is indexed by production number and holds the number of     *
+* symbols on the right side of each production.                                      *
+\************************************************************************************/
 static const unsigned char productionLength[165] = {
   /*   0 */    1,  0,  2,  3,  2,  3,  0,  2,  1,  1
   /*  10 */ ,  1,  2,  1,  1,  1,  1,  1,  1,  3,  1
@@ -985,13 +1007,13 @@ static const unsigned char productionLength[165] = {
   /* 160 */ ,  1,  3,  1,  2,  1
 }; // Size of table:168(x86)/168(x64) bytes.
 
-/**********************************************************************************\
-* leftSideTable[] is indexed by production number.                                 *
-* leftSideTable[p] = A', A' = (A - terminalCount)                                  *
-*                        where A is the left side of production p.                 *
-* A' = 0..nonterminalCount-1.                                                      *
-* p  = 0..productionCount-1                                                        *
-\**********************************************************************************/
+/************************************************************************************\
+* leftSideTable[] is indexed by production number.                                   *
+* leftSideTable[p] = A', A' = (A - terminalCount)                                    *
+*                        where A is the left side of production p.                   *
+* A' = 0..nonterminalCount-1.                                                        *
+* p  = 0..productionCount-1                                                          *
+\************************************************************************************/
 static const unsigned char leftSideTable[165] = {
   /*   0 */    0,  1,  1,  2,  2,  2,  3,  3,  3,  3
   /*  10 */ ,  7,  7,  8,  8,  9,  9,  9,  4,  4, 12
@@ -1012,10 +1034,10 @@ static const unsigned char leftSideTable[165] = {
   /* 160 */ , 51, 51, 43, 43, 15
 }; // Size of table:168(x86)/168(x64) bytes.
 
-/**********************************************************************************\
-* rightSideTable[] holds a compressed form of the rightsides of all                *
-* productions in the grammar. Only used for debugging.                             *
-\**********************************************************************************/
+/************************************************************************************\
+* rightSideTable[] holds a compressed form of the rightsides of all                  *
+* productions in the grammar. Only used for debugging.                               *
+\************************************************************************************/
 static const unsigned char rightSideTable[376] = {
   /*   0 */   75
   /*   2 */ , 75, 76
@@ -1175,10 +1197,10 @@ static const unsigned char rightSideTable[376] = {
   /* 164 */ , 72
 }; // Size of table:376(x86)/376(x64) bytes.
 
-/**********************************************************************************\
-* symbolNames is a space separated string with the names of all symbols used in    *
-* grammar, terminals and nonTerminals. Only used for debugging.                    *
-\**********************************************************************************/
+/************************************************************************************\
+* symbolNames is a space separated string with the names of all symbols used in      *
+* grammar, terminals and nonTerminals. Only used for debugging.                      *
+\************************************************************************************/
 static const char *symbolNames = {
   "EOI"                                               /* T     0               */
   " STRING"                                           /* T     1               */
@@ -1317,9 +1339,9 @@ static const ParserTablesTemplate<74,126,165,301
                                                              ,successorCode   , NTindexListTable  , stateListTable
                                                              ,productionLength, leftSideTable
                                                              ,rightSideTable  , symbolNames
-                                                             ,7616, 7704);
+                                                             ,7560, 7640);
 
 const ParserTables *CppParser::CppTables = &CppTables_s;
 // Size of CppTables_s: 68(x86)/128(x64) bytes. Size of CppTables:4(x86)/8(x64) bytes
 
-// Total size of table data:7.616(x86)/7.704(x64) bytes.
+// Total size of table data:7.560(x86)/7.640(x64) bytes.

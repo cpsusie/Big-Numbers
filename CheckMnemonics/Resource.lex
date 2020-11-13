@@ -27,7 +27,7 @@ public:
  /* This part goes to the first part of the ResourceLex.cpp file */
 
 #include "stdafx.h"
-#include <HashMap.h>
+#include <CompactHashMap.h>
 #include <TreeMap.h>
 #include "ResourceSymbol.h"
 #include "ResourceLex.h"
@@ -108,8 +108,8 @@ white   [\x00-\x09\x0b\s]     /* White space: all control chars but \n  */
   /* This part goes to the last part of ResourceLex.cpp */
 
 typedef struct {
-  TCHAR              *m_name;
-  ResourceInputSymbol m_token;
+  const TCHAR              *m_name;
+  const ResourceInputSymbol m_token;
 } KeyWord;
 
 #define KW(w)  _T(#w), w
@@ -438,66 +438,65 @@ static const KeyWord keywordTable[] = {
  ,KW(NOT)
 };
 
-typedef StrHashMap<ResourceInputSymbol> HashMapType;
+typedef CompactStrHashMap<ResourceInputSymbol> HashMapType;
 
 class MapInfo {
 public:
-  int             m_capacity;
-  int             m_size;
-  int             m_maxChainLength;
-  CompactIntArray m_chainCount;
+  UINT             m_capacity;
+  UINT             m_size;
+  UINT             m_maxChainLength;
+  CompactUIntArray m_chainCount;
 
-  MapInfo(size_t capacity, size_t size, size_t maxChainLength, const CompactIntArray &chainCount) 
-  : m_capacity((int)capacity)
-  , m_size((int)size)
-  , m_maxChainLength((int)maxChainLength)
-  , m_chainCount(chainCount) {
+  MapInfo(size_t capacity, size_t size, size_t maxChainLength, const CompactUIntArray &chainCount) 
+  : m_capacity((UINT)capacity)
+  , m_size((UINT)size)
+  , m_maxChainLength((UINT)maxChainLength)
+  , m_chainCount(chainCount)
+  {
   }
   String toString() const;
 };
 
 String MapInfo::toString() const {
-  String result = format(_T("Capacity:%4d, Size:%4d, MaxChainLength:%2d, chaincount:"), m_capacity, m_size, m_maxChainLength);
-  for(size_t i = 0; i < m_chainCount.size(); i++) {
-    result += format(_T(" (%d,%3d)"), i, m_chainCount[i]);
+  String result = format(_T("Capacity:%4u, Size:%4u, MaxChainLength:%2u, chaincount:"), m_capacity, m_size, m_maxChainLength);
+  for(UINT i = 0; i < m_chainCount.size(); i++) {
+    result += format(_T(" (%u,%3u)"), i, m_chainCount[i]);
   }
   return result;
 }
 
 class ResourceKeyWordMap : public HashMapType {
 public:
-  ResourceKeyWordMap(size_t capacity, const KeyWord *initTable, size_t size) : HashMapType(capacity) {
-    for(size_t i = 0; i < size; i++) {
-      put(initTable[i].m_name, initTable[i].m_token);
+  ResourceKeyWordMap(size_t capacity) : HashMapType(capacity) {
+    for(KeyWord p : keywordTable) {
+      put(p.m_name, p.m_token);
     }
   }
   MapInfo getMapInfo() const {
     return MapInfo(getCapacity(), size(), getMaxChainLength(), getLength());
   }
-
 };
 
-#define DEFINE_KEYWORDTABLE(name, capacity, initTable) \
-  static ResourceKeyWordMap name(capacity, initTable, ARRAYSIZE(initTable));
+#define DEFINE_KEYWORDTABLE(name, capacity) \
+  static ResourceKeyWordMap name(capacity);
 
-DEFINE_KEYWORDTABLE(keywords    , 2156, keywordTable    )
+DEFINE_KEYWORDTABLE(keywords, 2156)
 
 static ResourceInputSymbol nameOrKeyWord(const TCHAR *lexeme) {
-  ResourceInputSymbol *p = keywords.get(lexeme);
+  const ResourceInputSymbol *p = keywords.get(lexeme);
   return p ? *p : IDENTIFIER;
 }
 
 void ResourceLex::findBestHashMapSize() {
-  IntTreeMap<MapInfo> cl;
-  int bestCapacity;
-  int currentMax = -1;
-  for(int capacity = 500; capacity < 3000; capacity++) {
-    ResourceKeyWordMap ht(capacity, keywordTable, ARRAYSIZE(keywordTable));
-    MapInfo v = ht.getMapInfo();
-    cl.put((int)ht.getCapacity(), v);
-    if((currentMax < 0) || v.m_maxChainLength < currentMax) {
+  UIntTreeMap<MapInfo> cl;
+  UINT                 bestCapacity, currentMax = -1;
+  for(UINT capacity = 500; capacity < 3000; capacity++) {
+    const ResourceKeyWordMap ht(capacity);
+    const MapInfo            v = ht.getMapInfo();
+    cl.put((UINT)ht.getCapacity(), v);
+    if(v.m_maxChainLength < currentMax) {
       bestCapacity = capacity;
-      currentMax = v.m_maxChainLength;
+      currentMax   = v.m_maxChainLength;
     }
     if(currentMax == 1) {
       break;
@@ -505,11 +504,11 @@ void ResourceLex::findBestHashMapSize() {
   }
 
   if(currentMax > 1) {
-    for(Iterator<Entry<int, MapInfo> > it = cl.entrySet().getIterator(); it.hasNext();) {
-      Entry<int, MapInfo > &e = it.next();
-      const int capacity = e.getKey();
-      const MapInfo &v = e.getValue();
-      if(v.m_maxChainLength == currentMax && v.m_chainCount[2] <= 12) {
+    for(auto it = cl.getIterator(); it.hasNext();) {
+      const Entry<UINT, MapInfo> &e        = it.next();
+      const UINT                  capacity = e.getKey();
+      const MapInfo              &v        = e.getValue();
+      if((v.m_maxChainLength == currentMax) && (v.m_chainCount[2] <= 12)) {
         _tprintf(_T("%s\n"), v.toString().cstr());
       }
     }
