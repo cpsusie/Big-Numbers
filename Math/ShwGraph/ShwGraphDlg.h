@@ -36,10 +36,10 @@ public:
   void movePoint(  intptr_t index, const CPoint &point);
   intptr_t findDataPoint(const CPoint &point);
   void adjustTransform();
-  inline RectangleTransformation &getTr() {
+  inline Rectangle2DTransformation &getTr() {
     return m_cs.getTransformation();
   }
-  inline const RectangleTransformation &getTr() const {
+  inline const Rectangle2DTransformation &getTr() const {
     return m_cs.getTransformation();
   }
   CPoint mouseToCS(const CPoint &p) const;

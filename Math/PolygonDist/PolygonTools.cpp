@@ -16,16 +16,16 @@ void drawArrow(CDC &dc, const Point2D start, const Point2D end, int length) {
   const Point2D aStart(start);
   Point2D dirUnit(end - aStart);
   dirUnit.normalize();
-  const Point2D  aEnd      =  aStart + dirUnit * length;
-  const Point2D  dirUnit1 = -dirUnit;
-  const Point2D vp1 = aEnd + dirUnit1.rotate(GRAD2RAD(+40)) * 6;
-  const Point2D vp2 = aEnd + dirUnit1.rotate(GRAD2RAD(-40)) * 6;
+  const Point2D aEnd     =  aStart + dirUnit * length;
+  const Point2D dirUnit1 = -dirUnit;
+  const Point2D vp1      = aEnd + rotate(dirUnit1,GRAD2RAD(+40)) * 6;
+  const Point2D vp2      = aEnd + rotate(dirUnit1,GRAD2RAD(-40)) * 6;
 
-  dc.MoveTo(start);
-  dc.LineTo(aEnd );
-  dc.LineTo(vp1  );
-  dc.MoveTo(aEnd );
-  dc.LineTo(vp2  );
+  dc.MoveTo((CPoint)start);
+  dc.LineTo((CPoint)aEnd );
+  dc.LineTo((CPoint)vp1  );
+  dc.MoveTo((CPoint)aEnd );
+  dc.LineTo((CPoint)vp2  );
 }
 
 void line::paint(CDC &dc, const CRect &rect, COLORREF color) const {

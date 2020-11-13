@@ -162,13 +162,13 @@ void CPolygondistDlg::OnPaint()  {
     case LINEINTERSECTIONMODE:
       { const CRect r = getClientRect(this, IDC_STATICPANEL);
         for(size_t i = 0; i < m_point4.size(); i++) {
-          paintCross(dc, m_point4[i]);
+          paintCross(dc, (CPoint)m_point4[i]);
         }
         if(m_point4.size() >= 2) {
-          line(m_point4[0], m_point4[1]).paint(dc, r, BLACK);
+          line((CPoint)m_point4[0], (CPoint)m_point4[1]).paint(dc, r, BLACK);
         }
         if(m_point4.size() == 4) {
-          line(m_point4[2], m_point4[3]).paint(dc, r, BLACK);
+          line((CPoint)m_point4[2], (CPoint)m_point4[3]).paint(dc, r, BLACK);
         }
       }
       break;
@@ -222,7 +222,7 @@ void CPolygondistDlg::OnRButtonDown(UINT nFlags, CPoint point)  {
 
 void CPolygondistDlg::OnLButtonDownLines(UINT nFlags, CPoint point) {
   if (m_point4.size() < 4) {
-    m_point4.add(point);
+    m_point4.add((Point2D)point);
     enableMenuItem(this, ID_TOOLS_FINDINTERSECTIONOFLINES, m_point4.size() == 4);
   }
 }
@@ -343,13 +343,11 @@ void CPolygondistDlg::OnToolsFindIntersectionOfLines() {
     const Line2D l2(m_point4[2], m_point4[3]);
     bool intersect;
     const Point2D p = pointOfIntersection(l1,l2, intersect);
-    if (!intersect) {
+    if(!intersect) {
       showWarning(_T("lines do not intersect"));
       return;
     }
-    CPoint cp = p;
-
-    paintCross(CClientDC(GetDlgItem(IDC_STATICPANEL)), p, RED, 5);
+    paintCross(CClientDC(GetDlgItem(IDC_STATICPANEL)), (CPoint)p, RED, 5);
   }
 }
 

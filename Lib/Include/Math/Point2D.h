@@ -18,7 +18,7 @@ public:
     : SizeTemplate<T, 2>(cx, cy)
   {
   }
-  template<typename S> Size2DTemplate<T> &operator=(const FixedDimensionVector<S, 2> &v) {
+  template<typename S> Size2DTemplate &operator=(const FixedDimensionVector<S, 2> &v) {
     __super::operator=(v);
     return *this;
   }
@@ -28,7 +28,7 @@ public:
     : SizeTemplate<T, 2>(s.cx,s.cy)
   {
   }
-  inline Size2DTemplate<T> &operator=(const CSize &s) {
+  inline Size2DTemplate &operator=(const CSize &s) {
     cx() = (T)s.cx; cy() = (T)s.cy;
     return *this;
   }
@@ -73,7 +73,14 @@ public:
     : PointTemplate<T, 2>(fixedToFloat(p.x), fixedToFloat(p.y))
   {
   }
-  template<typename S> Point2DTemplate<T> &operator=(const FixedDimensionVector<S, 2> &v) {
+  explicit Point2DTemplate(const String &str) {
+    wistringstream in(str.cstr());
+    in >> *this;
+    if(!in) {
+      throwInvalidArgumentException(__TFUNCTION__, _T("str=%s"), str.cstr());
+    }
+  }
+  template<typename S> Point2DTemplate &operator=(const FixedDimensionVector<S, 2> &v) {
     __super::operator=(v);
     return *this;
   }
@@ -83,7 +90,7 @@ public:
     : PointTemplate<T, 2>(p.x, p.y)
   {
   }
-  inline Point2DTemplate<T> &operator=(const CPoint &p) {
+  inline Point2DTemplate &operator=(const CPoint &p) {
     x() = (T)p.x; y() = (T)p.y;
     return *this;
   }
@@ -97,7 +104,7 @@ public:
     : PointTemplate<T, 2>(v.x, v.y)
   {
   }
-  inline Point2DTemplate<T> &operator=(const D3DXVECTOR2 &v) {
+  inline Point2DTemplate &operator=(const D3DXVECTOR2 &v) {
     x() = x; y() = v.y;
     return *this;
   }
@@ -123,7 +130,7 @@ public:
   template<typename S> Point2DTemplate   operator-(const FixedDimensionVector<S, 2> &v) const {
     return __super::operator-(v);
   }
-  template<typename S> Size2DTemplate<T> operator-(const Point2DTemplate<S>            &p) const {
+  template<typename S> Size2DTemplate<T> operator-(const Point2DTemplate<S>         &p) const {
     return __super::operator-(p);
   }
   // Return dot product = *this * v
@@ -135,8 +142,8 @@ public:
   }
 
   // x+=p1.x, y-=p1.y
-  template<typename S> Point2DTemplate<T> operator%(const Point2DTemplate<S>           &p) const {
-    return Point2DTemplate<T>(x()+(T)p.x(), y()-(T)p.y());
+  template<typename S> Point2DTemplate operator%(const Point2DTemplate<S>           &p) const {
+    return Point2DTemplate(x()+(T)p.x(), y()-(T)p.y());
   }
 };
 
@@ -159,20 +166,19 @@ typedef Line2DTemplate<double>   Line2D;
 typedef Line2DTemplate<Real>     RealLine2D;
 
 template<typename T> Point2DTemplate<T> pointOfIntersection(const Line2DTemplate<T> &line1, const Line2DTemplate<T> &line2, bool &intersect) {
-  const T A11 = line1.m_p1.y - line1.m_p2.y;
-  const T A12 = line1.m_p2.x - line1.m_p1.x;
-  const T A21 = line2.m_p1.y - line2.m_p2.y;
-  const T A22 = line2.m_p2.x - line2.m_p1.x;
-
-  const T d  = A11 * A22 - A12 * A21;
+  const T A11 = line1.m_p1.y() - line1.m_p2.y();
+  const T A12 = line1.m_p2.x() - line1.m_p1.x();
+  const T A21 = line2.m_p1.y() - line2.m_p2.y();
+  const T A22 = line2.m_p2.x() - line2.m_p1.x();
+  const T d   = A11 * A22 - A12 * A21;
   if(d == 0) {
     intersect = false;
     return Point2DTemplate<T>(0,0);
   }
   intersect = true;
 
-  const T B1 = line1.m_p1.x * A11 + line1.m_p1.y * A12;
-  const T B2 = line2.m_p1.x * A21 + line2.m_p1.y * A22;
+  const T B1 = line1.m_p1.x() * A11 + line1.m_p1.y() * A12;
+  const T B2 = line2.m_p1.x() * A21 + line2.m_p1.y() * A22;
 
 //  A11*x + A12*y = B1
 //  A21*x + A22*y = B2

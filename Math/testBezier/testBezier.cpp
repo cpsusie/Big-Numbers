@@ -61,7 +61,7 @@ Point2D BezierCurve::getPoint(const Point2DArray &pa, double t) const { // assum
 void BezierCurve::printCurve(const Point2DArray &pa, int steps, FILE *out) { // output n-order beziercurve, n = #controlpoins - 1
   steps--;
 
-#define OUTPUT(p)  _ftprintf(out, _T("%+.3lf %+.3lf\n"), p.x,p.y)
+#define OUTPUT(p)  _ftprintf(out, _T("%+.3lf %+.3lf\n"), p.x(),p.y())
   for(int i = 0; i <= steps; i++) {
     const Point2D p = getPoint(pa, (double)i/steps);
     OUTPUT(p);

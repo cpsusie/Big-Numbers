@@ -17,7 +17,7 @@ public:
     : SizeTemplate<T, 3>(cx, cy, cz)
   {
   }
-  template<typename S> Size3DTemplate<T> &operator=(const FixedDimensionVector<S, 3> &v) {
+  template<typename S> Size3DTemplate &operator=(const FixedDimensionVector<S, 3> &v) {
     __super::operator=(v);
     return *this;
   }
@@ -48,7 +48,7 @@ public:
     : PointTemplate<T, 3>(x, y, z)
   {
   }
-  template<typename S> Point3DTemplate<T> &operator=(const FixedDimensionVector<S, 3> &v) {
+  template<typename S> Point3DTemplate &operator=(const FixedDimensionVector<S, 3> &v) {
     __super::operator=(v);
     return *this;
   }
@@ -58,7 +58,7 @@ public:
     : PointTemplate<T, 3>(v.x, v.y, v.z)
   {
   }
-  inline Point3DTemplate<T> &operator=(const D3DXVECTOR3 &v) {
+  inline Point3DTemplate &operator=(const D3DXVECTOR3 &v) {
     x() = v.x; y() = v.y; z() = v.z;
     return *this;
   }
@@ -74,10 +74,10 @@ public:
   inline const T &y() const { return (*this)[1];  }
   inline const T &z() const { return (*this)[2];  }
 
-  template<typename S> Point3DTemplate<T> operator+(const FixedDimensionVector<S, 3> &v) const {
+  template<typename S> Point3DTemplate operator+(const FixedDimensionVector<S, 3> &v) const {
     return __super::operator+(v);
   }
-  template<typename S> Point3DTemplate<T> operator-(const FixedDimensionVector<S, 3> &v) const {
+  template<typename S> Point3DTemplate operator-(const FixedDimensionVector<S, 3> &v) const {
     return __super::operator-(v);
   }
   template<typename S> Size3DTemplate<T>  operator-(const Point3DTemplate<S>           &p) const {

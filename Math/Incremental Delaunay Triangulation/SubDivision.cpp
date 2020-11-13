@@ -60,16 +60,16 @@ void Edge::splice(Edge *e) {
 // Returns twice the area of the oriented triangle (a, b, c), i.e., the
 // area is positive if the triangle is oriented counterclockwise.
 static inline Real TriArea(const Point2d &a, const Point2d &b, const Point2d &c) {
-  return (b.x - a.x)*(c.y - a.y) - (b.y - a.y)*(c.x - a.x);
+  return (b.x() - a.x())*(c.y() - a.y()) - (b.y() - a.y())*(c.x() - a.x());
 }
 
 // Returns true, if the point d is inside the circle defined by the
 // points a, b, c. See Guibas and Stolfi (1985) p.107.
 static bool InCircle(const Point2d &a, const Point2d &b, const Point2d &c, const Point2d &d) {
-  return (a.x*a.x + a.y*a.y) * TriArea(b, c, d)
-       - (b.x*b.x + b.y*b.y) * TriArea(a, c, d)
-       + (c.x*c.x + c.y*c.y) * TriArea(a, b, d)
-       - (d.x*d.x + d.y*d.y) * TriArea(a, b, c) > 0;
+  return (a.x()*a.x() + a.y()*a.y()) * TriArea(b, c, d)
+       - (b.x()*b.x() + b.y()*b.y()) * TriArea(a, c, d)
+       + (c.x()*c.x() + c.y()*c.y()) * TriArea(a, b, d)
+       - (d.x()*d.x() + d.y()*d.y()) * TriArea(a, b, c) > 0;
 }
 
 // Returns true, if the points a, b, c are in a counterclockwise order
@@ -244,7 +244,7 @@ void SubDivision::paint(HDC hdc) const {
     const Edge *e = it.next();
     const Point2d &p1 = e->Org2d(), &p2 = e->Dest2d();
     POINT old;
-    MoveToEx(hdc, (int)p1.x,(int)p1.y, &old);
-    LineTo(  hdc, (int)p2.x,(int)p2.y);
+    MoveToEx(hdc, (int)p1.x(),(int)p1.y(), &old);
+    LineTo(  hdc, (int)p2.x(),(int)p2.y());
   }
 }

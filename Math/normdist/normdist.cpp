@@ -21,7 +21,7 @@ double norm1(double x) {
 
 int main(int argc, char **argv) {
   for(double x = -6; x < 6; x+= 0.01) {
-    printf("%lg %lg\n",x,norm(x) - norm1(x));
+    printf("%lg %lg\n",x,gaussDistribution(x) - norm1(x));
   }
   return 0;
   for(;;) {
@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
     fgets(line, sizeof(line), stdin);
     double x;
     if(sscanf(line,"%le",&x) != 1) continue;
-    printf("norm(%lg):%lg\n",x,norm(x));
+    printf("norm(%lg):%lg\n",x,gaussDistribution(x));
   }
   return 0;
 }
