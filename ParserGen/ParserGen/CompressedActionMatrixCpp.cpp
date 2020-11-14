@@ -6,8 +6,8 @@
 String generateStateSetComment(const BitSet &set) {
   const size_t n = set.size();
   return format(_T("Used by %s %s")
-               , (n == 1) ? _T("state ") : _T("states")
-               , set.getIterator().rangesToString(SizeTStringifier()).cstr());
+               ,(n == 1) ? _T("state ") : _T("states")
+               ,set.getIterator().rangesToString(SizeTStringifier()).cstr());
 }
 
 String IndexMapValue::getComment() const {
@@ -21,8 +21,8 @@ String Macro::getComment() const {
     return m_comment;
   }
   return format(_T("%s %s")
-                , m_comment.cstr()
-                , generateStateSetComment(getStateSet()).cstr()
+               ,m_comment.cstr()
+               ,generateStateSetComment(getStateSet()).cstr()
                );
 }
 
