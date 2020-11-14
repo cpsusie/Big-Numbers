@@ -1,10 +1,18 @@
 #include "stdafx.h"
 #include "Grammar.h"
 
-SymbolSet ActionArray::getLookaheadSet(UINT terminalCount) const {
-  SymbolSet result(terminalCount);
+TermSet ActionArray::getLookaheadSet(UINT terminalCount) const {
+  TermSet result(terminalCount);
   for(const ParserAction pa : *this) {
     result.add(pa.m_token);
+  }
+  return result;
+}
+
+NTindexSet ActionArray::getNTindexSet(UINT terminalCount, UINT symbolCount) const {
+  NTindexSet result(symbolCount - terminalCount);
+  for(const ParserAction &su : *this) {
+    result.add((size_t)su.m_token - terminalCount);
   }
   return result;
 }
@@ -13,6 +21,14 @@ RawActionArray ActionArray::getRawActionArray() const {
   RawActionArray result(size());
   for(const ParserAction pa : *this) {
     result.add(pa.m_action);
+  }
+  return result;
+}
+
+SuccessorArray ActionArray::getSuccessorArray() const {
+  SuccessorArray result(size());
+  for(const ParserAction &su : *this) {
+    result.add(su.m_action);
   }
   return result;
 }

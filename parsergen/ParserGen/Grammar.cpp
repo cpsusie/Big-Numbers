@@ -335,7 +335,7 @@ void Grammar::findFirst1Sets() {
         }
         else { // nonterminal
           const GrammarSymbol &nt = getSymbol(sk);
-          const SymbolSet diff(nt.m_first1 - ls.m_first1);
+          const TermSet        diff(nt.m_first1 - ls.m_first1);
           if(!diff.isEmpty()) {
             ls.m_first1 += nt.m_first1;
 //            printf(_T(")first1(%s) : ", ls.m_name.cstr()); dump(ls.m_first1); printf(_T(")\n");
@@ -363,10 +363,10 @@ void Grammar::findFirst1Sets() {
 
 // assume item = A -> alfa . B beta [la]
 // computes first1(beta la)
-SymbolSet Grammar::first1(const LR1Item &item) const {
+TermSet Grammar::first1(const LR1Item &item) const {
   const Production &prod   = getProduction(item.m_prod);
   const UINT        length = prod.getLength();
-  SymbolSet         result(getTerminalCount());
+  TermSet         result(getTerminalCount());
   for(UINT k = item.m_dot+1; k < length; k++) {
     const UINT symbol = prod.m_rightSide[k];
     if(isTerminal(symbol)) {
@@ -409,7 +409,7 @@ void Grammar::computeClosure(LR1State &state, bool allowNewItems) {
       const Production &prod = getProduction(item.m_prod);
       if(item.m_dot < prod.getLength() && isNonTerminal(prod.m_rightSide[item.m_dot])) { // item is A -> alfa . B beta [la]
         const GrammarSymbol &B = getSymbol(prod.m_rightSide[item.m_dot]);
-        const SymbolSet la(first1(item));
+        const TermSet la(first1(item));
         for(size_t p = 0; p < B.m_leftSideOf.size(); p++) {
           const LR1Item newItem(false, B.m_leftSideOf[p], 0, la); // newItem is B -> . gamma [first1(beta la)] (nonkernelitem)
           LR1Item *oldItem = state.findItemWithSameCore(newItem);
@@ -511,7 +511,7 @@ void Grammar::generateStates() {
   m_stateMap.clear();
   m_unfinishedSet.clear();
 
-  SymbolSet eoiset(getTerminalCount());
+  TermSet eoiset(getTerminalCount());
   eoiset.add(0); // EOI
   LR1Item initialItem(true, 0, 0, eoiset);
   LR1State initialState(0);
@@ -570,7 +570,7 @@ ConflictSolution Grammar::resolveShiftReduceConflict(const GrammarSymbol &termin
 }
 
 void Grammar::checkStateIsConsistent(const LR1State &state, StateResult &result) {
-  SymbolSet  symbolsDone(getSymbolCount());
+  TermSet  symbolsDone(getSymbolCount());
   const UINT itemCount = (UINT)state.m_items.size();
 
   for(UINT i = 0; i < itemCount; i++) {
@@ -635,7 +635,7 @@ void Grammar::checkStateIsConsistent(const LR1State &state, StateResult &result)
   for(UINT i = 0; i < itemCount; i++) {
     const LR1Item &itemi = state.m_items[i];
     if(isReduceItem(itemi)) {
-      SymbolSet tokensReducedByOtherItems(getTerminalCount());
+      TermSet tokensReducedByOtherItems(getTerminalCount());
       if(isAcceptItem(itemi)) {  // check if this is start -> S . [EOI]
         result.m_actions.add(ParserAction(0, 0));
         if(symbolsDone.contains(0)) {
@@ -650,7 +650,7 @@ void Grammar::checkStateIsConsistent(const LR1State &state, StateResult &result)
         }
         const LR1Item &itemj = state.m_items[j];
         if(isReduceItem(itemj)) {
-          const SymbolSet intersection(itemi.m_la & itemj.m_la);
+          const TermSet intersection(itemi.m_la & itemj.m_la);
           if(!intersection.isEmpty()) {
             if(itemj.m_prod < itemi.m_prod) {
               tokensReducedByOtherItems += intersection;
@@ -664,7 +664,7 @@ void Grammar::checkStateIsConsistent(const LR1State &state, StateResult &result)
           }
         }
       }
-      SymbolSet itemTokens(itemi.m_la - tokensReducedByOtherItems);
+      TermSet itemTokens(itemi.m_la - tokensReducedByOtherItems);
       for(auto it = itemTokens.getIterator(); it.hasNext(); ) {
         const UINT t = (UINT)it.next();
         if(!symbolsDone.contains(t)) {

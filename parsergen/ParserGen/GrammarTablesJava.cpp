@@ -105,7 +105,7 @@ void GrammarTables::printJava(MarginFile &output) const {
           "*   Go to this state----------------+                                        *\n"
           "\\****************************************************************************/\n")
          );
-  BitSet hasSuccessor(stateCount);
+  StateSet hasSuccessor(stateCount);
   for(int s = 0; s < stateCount; s++) {
     const ActionArray &succlist = m_stateSucc[s];
     const int count = (int)succlist.size();

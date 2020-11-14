@@ -33,6 +33,7 @@ public:
 };
 
 ByteArray    symbolSetToByteArray(const SymbolSet &set);
+String       getStateSetComment(  const StateSet  &set);
 void         outputBeginArrayDefinition(MarginFile &output, const TCHAR *tableName, IntegerType elementType, UINT size); // size = #elements in array
 ByteCount    outputEndArrayDefinition(  MarginFile &output,                         IntegerType elementType, UINT size, bool addNewLine=false);
 void         newLine(MarginFile &output, String &comment = String(_T("")), int minColumn=0);

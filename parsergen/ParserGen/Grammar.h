@@ -21,11 +21,10 @@ typedef enum {
  ,CONFLICT_NOT_RESOLVED
 } ConflictSolution;
 
-typedef BitSet SymbolSet;
-
-inline int symbolSetCmp(const SymbolSet &s1, const SymbolSet &s2) {
-  return bitSetCmp(s1, s2);
-}
+typedef BitSet    SymbolSet;
+typedef SymbolSet TermSet;    // capacity always #terminals
+typedef BitSet    StateSet;   // capacity always #states
+typedef BitSet    NTindexSet; // capacity always #non-terminals
 
 class SymbolNameContainer {
 public:
@@ -41,7 +40,7 @@ public:
   bool             m_reachable     : 1; // True if symbol is reachable from startsymbol
   bool             m_terminate     : 1; // True if symbol can terminate
   bool             m_deriveEpsilon : 1; // True if symbol ->* epsilon
-  SymbolSet        m_first1;            // Only for nonterminals;
+  TermSet          m_first1;            // Only for nonterminals;
   int              m_precedence;        // Only for terminals.
   SourcePosition   m_pos;               // Specified at this position in the inputfile
   CompactUIntArray m_leftSideOf;        // Only for nonterminals. List of productions, where this symbol is leftside
@@ -92,9 +91,9 @@ public:
   const bool m_kernelItem;
   const UINT m_prod;
   const UINT m_dot;
-  SymbolSet  m_la;
+  TermSet    m_la;
   int        m_succ; // Must be signed, initialized to -1. if >= 0, then index of successor-state
-  inline LR1Item(bool kernelItem, UINT prod, UINT dot, const SymbolSet &la)
+  inline LR1Item(bool kernelItem, UINT prod, UINT dot, const TermSet &la)
     : m_kernelItem(kernelItem)
     , m_prod(      prod      )
     , m_dot(       dot       )
@@ -155,7 +154,7 @@ public:
 };
 
 typedef CompactShortArray  RawActionArray;
-typedef CompactUShortArray SuccesorArray;
+typedef CompactUShortArray SuccessorArray;
 
 inline int compactShortArrayCmp(const CompactShortArray &a1, const CompactShortArray &a2) {
   const size_t n = a1.size();
@@ -168,7 +167,7 @@ inline int rawActionArrayCmp(const RawActionArray &a1, const RawActionArray &a2)
   return compactShortArrayCmp((const CompactShortArray&)a1, (const CompactShortArray&)a2);
 }
 
-inline int successorArrayCmp(const SuccesorArray &a1, const SuccesorArray &a2) {
+inline int successorArrayCmp(const SuccessorArray &a1, const SuccessorArray &a2) {
   return compactShortArrayCmp((const CompactShortArray&)a1, (const CompactShortArray&)a2);
 }
 
@@ -190,8 +189,10 @@ public:
     sort(parserActionCompareToken);
     return *this;
   }
-  SymbolSet      getLookaheadSet(UINT terminalCount) const;
+  TermSet        getLookaheadSet(UINT terminalCount) const;
+  NTindexSet     getNTindexSet(  UINT terminalCount, UINT symbolCount) const;
   RawActionArray getRawActionArray()                 const;
+  SuccessorArray getSuccessorArray()                 const;
   inline UINT    getLegalTokenCount()                const {
     return(UINT)size();
   }
@@ -234,20 +235,20 @@ private:
   UINT                         m_terminalCount, m_startSymbol;
 
 
-  UINT   addSymbol(            const GrammarSymbol &symbol);
-  bool   canTerminate(         const Production    &prod  ) const;
-  bool   deriveEpsilon(        const Production    &prod  ) const;
+  UINT    addSymbol(            const GrammarSymbol &symbol);
+  bool    canTerminate(         const Production    &prod  ) const;
+  bool    deriveEpsilon(        const Production    &prod  ) const;
   // Find all nonterminals that derive epsilon
-  void   findEpsilonSymbols();
+  void    findEpsilonSymbols();
   // Find FIRST1(A) for all nonterminals A
-  void   findFirst1Sets();
-  void   computeSuccessors(          LR1State      &state );
-  void   computeClosure(             LR1State      &state, bool allowNewItems);
-  int    findStateWithSameCore(const LR1State      &state ) const;
+  void    findFirst1Sets();
+  void    computeSuccessors(          LR1State      &state );
+  void    computeClosure(             LR1State      &state, bool allowNewItems);
+  int     findStateWithSameCore(const LR1State      &state ) const;
   // Return index of state
-  UINT   addState(             const LR1State      &state );
-  bool   mergeLookahead(             LR1State      &dst, const LR1State &src);
-  SymbolSet   first1(          const LR1Item       &item  ) const;
+  UINT    addState(             const LR1State      &state );
+  bool    mergeLookahead(             LR1State      &dst, const LR1State &src);
+  TermSet first1(          const LR1Item       &item  ) const;
 
   // Is item = "A -> alfa . a beta [la]"
   bool        isShiftItem(     const LR1Item       &item) const;

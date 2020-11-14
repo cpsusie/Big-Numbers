@@ -25,6 +25,12 @@ ByteArray symbolSetToByteArray(const SymbolSet &set) {
   return result;
 }
 
+String getStateSetComment(const StateSet &set) {
+  const size_t n = set.size();
+  return format(_T("Used by %s %s")
+               ,(n == 1) ? _T("state ") : _T("states")
+               ,set.getIterator().rangesToString(SizeTStringifier()).cstr());
+}
 
 void      outputBeginArrayDefinition(MarginFile &output, const TCHAR *tableName, IntegerType elementType, UINT size) {
   output.setLeftMargin(0);

@@ -49,25 +49,6 @@ UINT GrammarTables::getMaxInputCount() const {
   return m;
 }
 
-BitSet GrammarTables::getNTOffsetSet(UINT state) const {
-  const UINT         terminalCount = getTerminalCount();
-  BitSet             result(getSymbolCount() - terminalCount);
-  const ActionArray &ssu = m_stateSucc[state];
-  for(const ParserAction &su : ssu) {
-    result.add((UINT)su.m_token - terminalCount);
-  }
-  return result;
-}
-
-SuccesorArray GrammarTables::getSuccessorArray(UINT state) const {
-  const ActionArray &ssu = m_stateSucc[state];
-  SuccesorArray      result(ssu.size());
-  for(const ParserAction &su : ssu) {
-    result.add(su.m_action);
-  }
-  return result;
-}
-
 void GrammarTables::initCompressibleStateSet() {
   const UINT stateCount = getStateCount();
   for(UINT state = 0; state < stateCount; state++) {

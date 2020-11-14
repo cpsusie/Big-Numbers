@@ -1,6 +1,6 @@
 #pragma once
 
-class GrammarTables : public ParserTables {
+class GrammarTables : public ParserTables, public SymbolNameContainer {
 private:
   const UINT              m_terminalCount;
   const UINT              m_symbolCount;
@@ -13,9 +13,9 @@ private:
   Array<CompactIntArray>  m_rightSide;
   Array<ActionArray>      m_stateActions;
   Array<ActionArray>      m_stateSucc;
-  mutable BitSet          m_compressibleStateSet;
+  mutable StateSet        m_compressibleStateSet;
   mutable ByteCount       m_countTableBytes;
-  mutable IntegerType     m_terminalType, m_NTIndexType, m_symbolType, m_actionType, m_stateType;
+  mutable IntegerType     m_terminalType, m_NTindexType, m_symbolType, m_actionType, m_stateType;
 
   void                findTemplateTypes()                 const;
   UINT                getMaxInputCount()                  const;
@@ -28,14 +28,14 @@ private:
     return m_stateActions[state].size() == 1;
   }
 
-  void      printCpp(                      MarginFile &output) const;
-  void      printJava(                     MarginFile &output) const;
-  ByteCount printCompressedActionMatrixCpp(MarginFile &output) const; // return size in bytes
-  ByteCount printSuccessorMatrixCpp(       MarginFile &output) const; // return size in bytes
-  ByteCount printProductionLengthTableCpp( MarginFile &output) const; // return size in bytes
-  ByteCount printLeftSideTableCpp(         MarginFile &output) const; // return size in bytes
-  ByteCount printRightSideTableCpp(        MarginFile &output) const; // return size in bytes
-  ByteCount printSymbolNameTableCpp(       MarginFile &output) const; // return size in bytes
+  void      printCpp(                         MarginFile &output) const;
+  void      printJava(                        MarginFile &output) const;
+  ByteCount printCompressedActionMatrixCpp(   MarginFile &output) const; // return size in bytes
+  ByteCount printCompressedSuccessorMatrixCpp(MarginFile &output) const; // return size in bytes
+  ByteCount printProductionLengthTableCpp(    MarginFile &output) const; // return size in bytes
+  ByteCount printLeftSideTableCpp(            MarginFile &output) const; // return size in bytes
+  ByteCount printRightSideTableCpp(           MarginFile &output) const; // return size in bytes
+  ByteCount printSymbolNameTableCpp(          MarginFile &output) const; // return size in bytes
 public:
   GrammarTables(const Grammar &g, const String &tableClassName, const String &parserClassName);
   int  getAction(            UINT state, UINT input     ) const override;
@@ -56,12 +56,13 @@ public:
 
   inline IntegerType            getTerminalType()             const          { return m_terminalType;                                         }
   inline IntegerType            getActionType()               const          { return m_actionType;                                           }
-  inline SymbolSet              getLookaheadSet(  UINT state) const          { return m_stateActions[state].getLookaheadSet(m_terminalCount); }
+  inline IntegerType            getNTindexType()              const          { return m_NTindexType;                                          }
+  inline IntegerType            getStateType()                const          { return m_stateType;                                            }
+  inline TermSet                getLookaheadSet(  UINT state) const          { return m_stateActions[state].getLookaheadSet(m_terminalCount); }
   inline RawActionArray         getRawActionArray(UINT state) const          { return m_stateActions[state].getRawActionArray();              }
   inline const StringArray     &getSymbolNameArray()          const          { return m_symbolNameArray;                                      }
-  BitSet                        getNTOffsetSet(   UINT state) const;
-  SuccesorArray                 getSuccessorArray(UINT state) const;
   const Array<ActionArray>     &getStateActions()             const          { return m_stateActions;                                         }
+  const Array<ActionArray>     &getStateSuccessors()          const          { return m_stateSucc;                                            }
   ByteCount                     getTotalSizeInBytes()         const;
   void print(MarginFile &output) const;
 };

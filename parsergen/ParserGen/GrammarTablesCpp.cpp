@@ -2,6 +2,7 @@
 #include <Comparator.h>
 #include "GrammarCode.h"
 #include "CompressedActionMatrixCpp.h"
+#include "CompressedSuccessorMatrixCpp.h"
 
 static const TCHAR *comment1 =
 _T("/************************************************************************************\\\n"
@@ -161,13 +162,13 @@ void GrammarTables::printCpp(MarginFile &output) const {
   }
   findTemplateTypes();
   m_countTableBytes += printCompressedActionMatrixCpp(   output);
-  m_countTableBytes += printSuccessorMatrixCpp(          output);
+  m_countTableBytes += printCompressedSuccessorMatrixCpp(output);
   m_countTableBytes += printProductionLengthTableCpp(    output);
   m_countTableBytes += printLeftSideTableCpp(            output);
   m_countTableBytes += printRightSideTableCpp(           output);
   m_countTableBytes += printSymbolNameTableCpp(          output);
 //  printf("sizeof parserTableTemplate:%zu bytes", sizeof(ParserTablesTemplate<2,2,2,2,char,char,char,char,char>));
-  const int sizeofTableTemlatex86  = 68;  // sizeof(ParserTablesTemplate) x86
+  const int sizeofTableTemlatex86  =  68; // sizeof(ParserTablesTemplate) x86
   const int sizeofTableTemplatex64 = 128; // sizeof(ParserTablesTemplate) x64
 
   const ByteCount tableClassSize(sizeofTableTemlatex86, sizeofTableTemplatex64);
@@ -180,11 +181,12 @@ void GrammarTables::printCpp(MarginFile &output) const {
   output.printf(_T("%u,%u,%u,%u\n,%s\n,%s\n,%s\n,%s\n,%s> %s_s(")
                ,getTerminalCount(),getSymbolCount(), getProductionCount(), getStateCount()
                ,getTypeName(m_terminalType )
-               ,getTypeName(m_NTIndexType  )
+               ,getTypeName(m_NTindexType  )
                ,getTypeName(m_symbolType   )
                ,getTypeName(m_actionType   )
                ,getTypeName(m_stateType    )
-               ,m_tablesClassName.cstr()   );
+               ,m_tablesClassName.cstr()
+               );
 
   column = output.getCurrentLineLength();
   output.setLeftMargin(column - 1);
@@ -193,24 +195,30 @@ void GrammarTables::printCpp(MarginFile &output) const {
                    ",productionLength, leftSideTable\n"
                    ",rightSideTable  , symbolNames\n"
                    ",%u, %u);\n\n")
-                   ,m_countTableBytes.getByteCount(PLATFORM_X86),m_countTableBytes.getByteCount(PLATFORM_X64));
+               ,m_countTableBytes.getByteCount(PLATFORM_X86)
+               ,m_countTableBytes.getByteCount(PLATFORM_X64)
+               );
   output.setLeftMargin(0);
 
   output.printf(_T("const ParserTables *%s::%s = &%s_s;\n")
                ,m_parserClassName.cstr()
                ,m_tablesClassName.cstr()
-               ,m_tablesClassName.cstr());
+               ,m_tablesClassName.cstr()
+               );
   output.printf(_T("// Size of %s_s: %s. Size of %s:%s\n\n")
                ,m_tablesClassName.cstr(), tableClassSize.toString().cstr()
-               ,m_tablesClassName.cstr(), ByteCount::s_pointerSize.toString().cstr());
+               ,m_tablesClassName.cstr(), ByteCount::s_pointerSize.toString().cstr()
+               );
 
-  output.printf(_T("// Total size of table data:%s.\n"), m_countTableBytes.toString().cstr());
+  output.printf(_T("// Total size of table data:%s.\n")
+               ,m_countTableBytes.toString().cstr()
+               );
 }
 
 void GrammarTables::findTemplateTypes() const {
   const UINT ntCount = getSymbolCount() - getTerminalCount();
   m_terminalType     = findIntType(0,m_terminalCount  - 1);
-  m_NTIndexType      = findIntType(0,ntCount          - 1);
+  m_NTindexType      = findIntType(0,ntCount          - 1);
   m_symbolType       = findIntType(0,getSymbolCount() - 1);
   m_stateType        = findIntType(0,getStateCount()  - 1);
   m_actionType       = ((getStateCount() < 128) && (getProductionCount() < 128))
@@ -218,168 +226,15 @@ void GrammarTables::findTemplateTypes() const {
                      : TYPE_SHORT;
 }
 
-// ---------------------------------------- Compressed Action Matrix ---------------------------------------------
-
-// return size in bytes
+// Return size in bytes
 ByteCount GrammarTables::printCompressedActionMatrixCpp(MarginFile &output) const {
   output.printf(_T("%s"), comment1);
   return ActionMatrix::CompressedActionMatrix(*this).print(output);
 }
 
-// ---------------------------------------- Successor Matrix ---------------------------------------------
-
-class SuccessorArrayIndexMap : public IndexMap<SuccesorArray> {
-public:
-  SuccessorArrayIndexMap() : IndexMap<SuccesorArray>(successorArrayCmp) {
-  }
-};
-
-typedef IndexArray<SuccesorArray> SuccesorArrayIndexArray;
-
-ByteCount GrammarTables::printSuccessorMatrixCpp(MarginFile &output) const {
+ByteCount GrammarTables::printCompressedSuccessorMatrixCpp(MarginFile &output) const {
   output.printf(_T("%s"), comment2);
-  const UINT             stateCount = getStateCount();
-  StringArray            defines(stateCount);
-  BitSet                 definedStateSet(stateCount);
-  tostrstream            tmpOutput;
-  MarginFile             output1(tmpOutput);
-  SymbolSetIndexMap      ntSetMap;
-  SuccessorArrayIndexMap saMap;
-  UINT                   currentNTListSize = 0;
-  UINT                   currentSAListSize = 0;
-  ByteCount              byteCount;
-
-  for(UINT state = 0; state < stateCount; state++) {
-    const ActionArray &succList  = m_stateSucc[state];
-    const UINT         succCount = (UINT)succList.size();
-    if(succCount == 0) {
-      continue;
-    }
-    definedStateSet.add(state);
-    if(succCount == 1) {
-      const ParserAction &pa         = succList[0];
-      const UINT          NT         = pa.m_token;
-      const UINT          newState   = pa.m_action;
-      const UINT          NTIndex    = NT - m_terminalCount;
-      const String        macroValue = encodeMacroValue(ParserTables::CompCodeOneItem, newState, NTIndex);
-      const String        comment    = format(_T("Goto %u on %s"), newState, getSymbolName(NT));
-      defines.add(format(_T("_su%04u %-10s /* %-*s*/"), state, macroValue.cstr(), commentWidth, comment.cstr()));
-    } else {
-      const SymbolSet     ntSet      = getNTOffsetSet(state);
-      IndexMapValue      *imvp       = ntSetMap.get(ntSet);
-      UINT                ntIndex, ntCount;
-
-      if(imvp != nullptr) {
-        ntIndex = imvp->m_arrayIndex;
-        ntCount = imvp->m_commentIndex;
-        imvp->addState(state);
-      } else {
-        ntIndex = currentNTListSize;
-        ntCount = ntSetMap.getCount();
-        IndexMapValue nv(stateCount, state, ntIndex);
-        ntSetMap.put(ntSet, nv);
-        currentNTListSize += (UINT)ntSet.size() + 1;
-      }
-
-      const SuccesorArray  sa   = getSuccessorArray(state);
-      imvp                      = saMap.get(sa);
-      UINT                 saIndex, saCount;
-      if(imvp != nullptr) {
-        saIndex = imvp->m_arrayIndex;
-        saCount = imvp->m_commentIndex;
-        imvp->addState(state);
-      } else {
-        saIndex = currentSAListSize;
-        saCount = saMap.getCount();
-        IndexMapValue nv(stateCount, state, saIndex);
-        saMap.put(sa, nv);
-        currentSAListSize += (UINT)sa.size();
-      }
-      const String macroValue = encodeMacroValue(ParserTables::CompCodeTermList, saIndex, ntIndex);
-      const String comment    = format(_T("NTindexList %3u, stateList %3u"), ntCount, saCount);
-      defines.add(format(_T("_su%04u %-10s /* %-*s*/"), state, macroValue.cstr(), commentWidth, comment.cstr()));
-    }
-  }
-
-  if(currentNTListSize == 0) {
-    output1.printf(_T("#define NTindexListTable nullptr\n"));
-    output1.printf(_T("#define stateListTable   nullptr\n\n"));
-  } else {
-    { const SymbolSetIndexArray ntSetArray = ntSetMap.getEntryArray();
-      ntSetMap.clear();
-
-      outputBeginArrayDefinition(output1, _T("NTindexListTable"), m_NTIndexType, ntSetArray.getElementCount(true));
-      UINT  tableSize = 0;
-      TCHAR delim     = ' ';
-      for(auto it = ntSetArray.getIterator(); it.hasNext();) {
-        const IndexArrayEntry<SymbolSet> &e       = it.next();
-        String                            comment = format(_T("%3u %s"), e.m_commentIndex, e.getComment().cstr());
-        const UINT                        n       = (UINT)e.m_key.size();
-        UINT                              counter = 0;
-        output1.setLeftMargin(2);
-        output1.printf(_T("%c%3u"), delim, n); delim = ',';
-        output1.setLeftMargin(6);
-        for(auto it1 = e.m_key.getIterator(); it1.hasNext(); counter++) {
-          output1.printf(_T(",%4zu"), it1.next());
-          if((counter % 20 == 19) && (counter != n - 1)) {
-            newLine(output1, comment, 108);
-          }
-        }
-        newLine(output1, comment, 108);
-        tableSize += n + 1;
-      }
-      byteCount += outputEndArrayDefinition(output1, m_NTIndexType, tableSize);
-    }
-
-    { const SuccesorArrayIndexArray saArray  = saMap.getEntryArray();
-      saMap.clear();
-
-      outputBeginArrayDefinition(output1, _T("stateListTable"), m_stateType, saArray.getElementCount(false));
-      UINT  tableSize = 0;
-      TCHAR delim     = ' ';
-      for(auto it = saArray.getIterator(); it.hasNext();) {
-        const IndexArrayEntry<SuccesorArray> &e       = it.next();
-        String                                comment = format(_T("%3u %s"), e.m_commentIndex, e.getComment().cstr());
-        const UINT                            n       = (UINT)e.m_key.size();
-        UINT                                  counter = 0;
-        for(auto it1 = e.m_key.getIterator(); it1.hasNext(); counter++, delim=',') {
-          output1.printf(_T("%c%4u"), delim, it1.next());
-          if((counter % 20 == 19) && (counter != n - 1)) {
-            newLine(output1, comment, 108);
-          }
-        }
-        newLine(output1, comment, 108);
-        tableSize += n;
-      }
-      byteCount += outputEndArrayDefinition(output1, m_stateType, tableSize);
-    }
-  }
-
-  if(defines.size() > 0) {
-    defines.sort(stringCmp);
-    for(auto it = defines.getIterator(); it.hasNext();) {
-      output.printf(_T("#define %s\n"), it.next().cstr());
-    }
-    output.printf(_T("\n"));
-  }
-  output.printf(_T("#define nil (unsigned int)-1\n"));
-  outputBeginArrayDefinition(output, _T("successorCode"), TYPE_UINT, stateCount);
-
-  TCHAR delim     = ' ';
-  for(UINT state = 0; state < stateCount; state++, delim=',') {
-    if(!definedStateSet.contains(state)) {
-      output.printf(_T("%c%-7s"), delim, _T("nil"));
-    } else {
-      output.printf(_T("%c_su%04d"), delim, state);
-    }
-    if((state % 10 == 9) && (state != stateCount-1)) {
-      output.printf(_T("\n"));
-    }
-  }
-  byteCount += outputEndArrayDefinition(output, TYPE_UINT, stateCount, true);
-  output1.close();
-  output.puts(tmpOutput.str().c_str());
-  return byteCount;
+  return SuccessorMatrix::CompressedSuccessorMatrix(*this).print(output);
 }
 
 ByteCount GrammarTables::printProductionLengthTableCpp(MarginFile &output) const {
@@ -406,7 +261,7 @@ ByteCount GrammarTables::printLeftSideTableCpp(MarginFile &output) const {
   output.printf(_T("%s"), comment4);
 
   const UINT productionCount = getProductionCount();
-  outputBeginArrayDefinition(output, _T("leftSideTable"), m_NTIndexType, productionCount);
+  outputBeginArrayDefinition(output, _T("leftSideTable"), m_NTindexType, productionCount);
 
   TCHAR delim = ' ';
   for(UINT p = 0; p < productionCount; p++, delim = ',') {
@@ -419,7 +274,7 @@ ByteCount GrammarTables::printLeftSideTableCpp(MarginFile &output) const {
       output.printf(_T("\n"));
     }
   }
-  return outputEndArrayDefinition(output, m_NTIndexType, productionCount, true);
+  return outputEndArrayDefinition(output, m_NTindexType, productionCount, true);
 }
 
 ByteCount GrammarTables::printRightSideTableCpp(MarginFile &output) const {
