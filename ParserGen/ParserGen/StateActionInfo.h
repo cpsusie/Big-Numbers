@@ -70,31 +70,50 @@ public:
   }
 };
 
-class StateActionInfo {
+class InfoNodeCommonData {
+public:
+  const UINT                 m_state;
+  const SymbolNameContainer &m_nameContainer;
+  InfoNodeCommonData(UINT state, const SymbolNameContainer &nameContainer) : m_state(state), m_nameContainer(nameContainer) {
+  }
+};
+
+class ShiftAndReduceActions : public InfoNodeCommonData {
+public:
+  ParserActionArray          m_shiftActionArray;
+  TermSetReductionArray      m_termSetReductionArray;
+  ShiftAndReduceActions(const InfoNodeCommonData &cd, const ParserActionArray &actionArray);
+  ParserActionArray mergeAll() const;
+  inline UINT getLegalTermCount() const {
+    return m_shiftActionArray.getLegalTermCount() + m_termSetReductionArray.getLegalTermCount();
+  }
+  ShiftAndReduceActions &removeFirstTermSet() {
+    m_termSetReductionArray.removeIndex(0);
+    return *this;
+  }
+};
+
+class StateActionInfo : public InfoNodeCommonData {
 private:
   StateActionInfo(           const StateActionInfo &src); // not implemented
   StateActionInfo &operator=(const StateActionInfo &src); // not implemented
 protected:
   const StateActionInfo     *m_parent;
-  const UINT                 m_state, m_legalTermCount;
-  const SymbolNameContainer &m_nameContainer;
+  const UINT                 m_legalTermCount;
   const BYTE                 m_recurseLevel;
   const CompressionMethod    m_compressMethod;
-  StateActionInfo(const StateActionInfo *parent, UINT state, UINT legalTermCount, const SymbolNameContainer &nameContainer, CompressionMethod compressMethod)
-    : m_parent(         parent         )
-    , m_state(          state          )
+  StateActionInfo(const StateActionInfo *parent, const InfoNodeCommonData &cd, UINT legalTermCount, CompressionMethod compressMethod)
+    : InfoNodeCommonData(cd)
+    , m_parent(         parent         )
     , m_legalTermCount( legalTermCount )
-    , m_nameContainer(  nameContainer  )
     , m_recurseLevel(   parent?(parent->getRecurseLevel()+1) : 0)
     , m_compressMethod( compressMethod )
   {
   }
-  static StateActionInfo *allocateStateActionInfo(    const StateActionInfo *parent, UINT state, const SymbolNameContainer &nameContainer, const ParserActionArray &shiftActionArray, const TermSetReductionArray &termSetReductionArray);
-  static StateActionInfo *allocateTermListCompression(const StateActionInfo *parent, UINT state, const SymbolNameContainer &nameContainer, const ParserActionArray &shiftActionArray);
-  static StateActionInfo *allocateTermSetCompression( const StateActionInfo *parent, UINT state, const SymbolNameContainer &nameContainer, const TermSetReduction  &termSetReduction);
-
-  static ParserActionArray            mergeActionArrays(const ParserActionArray &shiftActionArray, const TermSetReductionArray &termSetReductionArray);
-  static void                         splitActionArray( const SymbolNameContainer &nameContainer , const ParserActionArray &actionArray, ParserActionArray &shiftActionArray, TermSetReductionArray &termSetReductionArray);
+  static StateActionInfo *allocateNode(        const StateActionInfo *parent, const ShiftAndReduceActions &sra);
+  static StateActionInfo *allocateSplitNode(   const StateActionInfo *parent, const ShiftAndReduceActions &sra);
+  static StateActionInfo *allocateTermListNode(const StateActionInfo *parent, const InfoNodeCommonData    &cd , const ParserActionArray &actionArray     );
+  static StateActionInfo *allocateTermSetNode( const StateActionInfo *parent, const InfoNodeCommonData    &cd , const TermSetReduction  &termSetReduction);
 public:
   static StateActionInfo             *allocateStateActionInfo(UINT state, const SymbolNameContainer &nameContainer, const ParserActionArray &actionArray);
   virtual                            ~StateActionInfo() {
@@ -139,12 +158,12 @@ public:
   virtual String toString() const;
 };
 
-class StateActionInfoTermList : public StateActionInfo {
+class TermListNode : public StateActionInfo {
 private:
   ParserActionArray  m_termListActionArray;
 public:
-  StateActionInfoTermList(const StateActionInfo *parent, UINT state, const SymbolNameContainer &nameContainer, const ParserActionArray &termListActionArray)
-    : StateActionInfo(parent, state, termListActionArray.getLegalTermCount(), nameContainer, ParserTables::CompCodeTermList)
+  TermListNode(const StateActionInfo *parent, const InfoNodeCommonData &cd, const ParserActionArray &termListActionArray)
+    : StateActionInfo(parent, cd, termListActionArray.getLegalTermCount(), ParserTables::CompCodeTermList)
     , m_termListActionArray(termListActionArray)
   {
   }
@@ -154,17 +173,17 @@ public:
   String toString() const override;
 };
 
-class StateActionInfoSplitNode : public StateActionInfo {
+class SplitNode : public StateActionInfo {
 private:
   const StateActionInfo *m_child[2];
 public:
-  StateActionInfoSplitNode(const StateActionInfo *parent, UINT state, UINT legalTermCount, const SymbolNameContainer &nameContainer)
-    : StateActionInfo(parent, state, legalTermCount, nameContainer, ParserTables::CompCodeSplitNode)
+  SplitNode(const StateActionInfo *parent, const InfoNodeCommonData &cd, UINT legalTermCount)
+    : StateActionInfo(parent, cd, legalTermCount, ParserTables::CompCodeSplitNode)
   {
     m_child[0] = m_child[1] = nullptr;
   }
-  ~StateActionInfoSplitNode() override;
-  StateActionInfoSplitNode &setChild(BYTE index, StateActionInfo *child);
+  ~SplitNode() override;
+  SplitNode &setChild(BYTE index, StateActionInfo *child);
   const StateActionInfo &getChild(BYTE index) const override {
     assert(index < 2);
     return *m_child[index];
@@ -172,12 +191,12 @@ public:
   String toString() const override;
 };
 
-class StateActionInfoOneItem : public StateActionInfo {
+class OneItemNode : public StateActionInfo {
 private:
   const ParserAction m_action;
 public:
-  StateActionInfoOneItem::StateActionInfoOneItem(const StateActionInfo *parent, UINT state, const SymbolNameContainer &nameContainer, ParserAction action)
-    : StateActionInfo(parent, state, 1, nameContainer, ParserTables::CompCodeOneItem)
+  OneItemNode(const StateActionInfo *parent, const InfoNodeCommonData &cd, ParserAction action)
+    : StateActionInfo(parent, cd, 1, ParserTables::CompCodeOneItem)
     , m_action(action)
   {
   }
@@ -187,12 +206,12 @@ public:
   String toString() const override;
 };
 
-class StateActionInfoTermSet : public StateActionInfo {
+class TermSetNode : public StateActionInfo {
 private:
   const TermSetReduction m_termSetReduction;
 public:
-  StateActionInfoTermSet(const StateActionInfo *parent, UINT state, const SymbolNameContainer &nameContainer, const TermSetReduction &termSetReduction)
-    : StateActionInfo(parent, state, termSetReduction.getTermSetSize(), nameContainer, ParserTables::CompCodeTermSet)
+  TermSetNode(const StateActionInfo *parent, const InfoNodeCommonData &cd, const TermSetReduction &termSetReduction)
+    : StateActionInfo(parent, cd, termSetReduction.getTermSetSize(), ParserTables::CompCodeTermSet)
     , m_termSetReduction(termSetReduction)
   {
   }
