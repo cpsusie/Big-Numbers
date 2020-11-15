@@ -8,10 +8,8 @@ StateActionInfoArray::StateActionInfoArray(const GrammarTables &tables)
   const UINT           terminalCount = tables.getTerminalCount();
   const ActionMatrix  &am            = tables.getActionMatrix();
   setCapacity(stateCount);
-
   for(UINT state = 0; state < stateCount; state++) {
-    const StateActionInfo *info = new StateActionInfo(state, am[state], tables); TRACE_NEW(info);
-    add(info);
+    add(StateActionInfo::allocateStateActionInfo(state, tables, am[state]));
   }
 }
 

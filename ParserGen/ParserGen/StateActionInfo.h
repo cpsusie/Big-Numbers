@@ -72,58 +72,132 @@ public:
 
 class StateActionInfo {
 private:
-  const StateActionInfo     *m_parent;
-  const UINT                 m_state, m_legalTermCount;
-  BYTE                       m_recurseLevel;
-  const SymbolNameContainer &m_nameContainer;
-  CompressionMethod          m_compressMethod;
-  ParserActionArray         *m_termListActionArray;      // use this for m_compressMethod = {ParserTables::CompCodeTermList, ParserTables::CompCodeOneItem}
-  TermSetReduction          *m_termSetReduction;         //      == null, unless m_compressMethod == ParserTables::CompCodeTermSet
-  const StateActionInfo     *m_child[2];                 // both == null, unless m_compressMethod == ParserTables::CompCodeSplitNode
-  // merge all actions from the 2 arrays together in 1 sorted ParserActionArray (compressMethod = CompCodeTermList
   StateActionInfo(           const StateActionInfo &src); // not implemented
   StateActionInfo &operator=(const StateActionInfo &src); // not implemented
-  StateActionInfo(  const StateActionInfo *parent, const TermSetReduction     &termSetReduction   );
-  StateActionInfo(  const StateActionInfo *parent, const ParserActionArray    &termListActionArray);
-  StateActionInfo(  const StateActionInfo *parent, const ParserActionArray    &shiftActionArray, const TermSetReductionArray &termSetReductionArray);
-  void initPointers(const StateActionInfo *parent);
-  CompressionMethod        setTermListCompression(       const ParserActionArray    &termListActionArray);
-  CompressionMethod        setTermSetReduceCompression(  const TermSetReduction     &termSetReduction   );
-  CompressionMethod        findCompressionMethod(        const ParserActionArray    &shiftActionArray, const TermSetReductionArray &termSetReductionArray);
-  static ParserActionArray mergeActionArrays(            const ParserActionArray    &shiftActionArray, const TermSetReductionArray &termSetReductionArray);
+protected:
+  const StateActionInfo     *m_parent;
+  const UINT                 m_state, m_legalTermCount;
+  const SymbolNameContainer &m_nameContainer;
+  const BYTE                 m_recurseLevel;
+  const CompressionMethod    m_compressMethod;
+  StateActionInfo(const StateActionInfo *parent, UINT state, UINT legalTermCount, const SymbolNameContainer &nameContainer, CompressionMethod compressMethod)
+    : m_parent(         parent         )
+    , m_state(          state          )
+    , m_legalTermCount( legalTermCount )
+    , m_nameContainer(  nameContainer  )
+    , m_recurseLevel(   parent?(parent->getRecurseLevel()+1) : 0)
+    , m_compressMethod( compressMethod )
+  {
+  }
+  static StateActionInfo *allocateStateActionInfo(    const StateActionInfo *parent, UINT state, const SymbolNameContainer &nameContainer, const ParserActionArray &shiftActionArray, const TermSetReductionArray &termSetReductionArray);
+  static StateActionInfo *allocateTermListCompression(const StateActionInfo *parent, UINT state, const SymbolNameContainer &nameContainer, const ParserActionArray &shiftActionArray);
+  static StateActionInfo *allocateTermSetCompression( const StateActionInfo *parent, UINT state, const SymbolNameContainer &nameContainer, const TermSetReduction  &termSetReduction);
+
+  static ParserActionArray            mergeActionArrays(const ParserActionArray &shiftActionArray, const TermSetReductionArray &termSetReductionArray);
+  static void                         splitActionArray( const SymbolNameContainer &nameContainer , const ParserActionArray &actionArray, ParserActionArray &shiftActionArray, TermSetReductionArray &termSetReductionArray);
 public:
-  StateActionInfo(UINT state,                            const ParserActionArray    &actionArray     , const SymbolNameContainer   &nameContainer);
-  ~StateActionInfo();
-  inline UINT                        getState()          const {
+  static StateActionInfo             *allocateStateActionInfo(UINT state, const SymbolNameContainer &nameContainer, const ParserActionArray &actionArray);
+  virtual                            ~StateActionInfo() {
+  }
+
+  inline UINT                         getState()             const {
     return m_state;
   }
-  inline UINT                        getLegalTermCount() const {
+  inline UINT                         getLegalTermCount()    const {
     return m_legalTermCount;
   }
-  inline CompressionMethod           getCompressionMethod() const {
+  inline BYTE                         getRecurseLevel()      const {
+    return m_recurseLevel;
+  }
+  inline CompressionMethod            getCompressionMethod() const {
     return m_compressMethod;
   }
   // Call only if getCompressionMethod() == CompCodeTermList
-  inline const ParserActionArray          &getTermList()          const {
-    assert(getCompressionMethod() == ParserTables::CompCodeTermList);
-    return *m_termListActionArray;
+  virtual const ParserActionArray    &getTermList()          const {
+    throwUnsupportedOperationException(__TFUNCTION__);
+    __assume(0);
+    return *new ParserActionArray();
   }
   // Call only if getCompressionMethod() == CompCodeOneItem
-  inline ParserAction                getOneItemAction()     const {
-    assert(getCompressionMethod() == ParserTables::CompCodeOneItem);
-    return (*m_termListActionArray)[0];
+  virtual ParserAction                getOneItemAction()     const {
+    throwUnsupportedOperationException(__TFUNCTION__);
+    __assume(0);
+    return ParserAction();
   }
   // Call only if getCompressionMethod() == ParserTables::CompCodeTermSet
-  inline const TermSetReduction     &getTermSetReduction()  const {
-    assert(getCompressionMethod() == ParserTables::CompCodeTermSet);
-    return *m_termSetReduction;
+  virtual const TermSetReduction     &getTermSetReduction()  const {
+    throwUnsupportedOperationException(__TFUNCTION__);
+    __assume(0);
+    return *new TermSetReduction(0,0,m_nameContainer);
   }
   // Call only if getCompressionMethod() == ParserTables::CompCodeSplitNode
-  const StateActionInfo             &getChild(BYTE index)   const {
-    assert(getCompressionMethod() == ParserTables::CompCodeSplitNode);
+  virtual const StateActionInfo      &getChild(BYTE index)   const {
+    throwUnsupportedOperationException(__TFUNCTION__);
+    __assume(0);
+    return *this;
+  }
+  virtual String toString() const;
+};
+
+class StateActionInfoTermList : public StateActionInfo {
+private:
+  ParserActionArray  m_termListActionArray;
+public:
+  StateActionInfoTermList(const StateActionInfo *parent, UINT state, const SymbolNameContainer &nameContainer, const ParserActionArray &termListActionArray)
+    : StateActionInfo(parent, state, termListActionArray.getLegalTermCount(), nameContainer, ParserTables::CompCodeTermList)
+    , m_termListActionArray(termListActionArray)
+  {
+  }
+  const ParserActionArray &getTermList() const override {
+    return m_termListActionArray;
+  }
+  String toString() const override;
+};
+
+class StateActionInfoSplitNode : public StateActionInfo {
+private:
+  const StateActionInfo *m_child[2];
+public:
+  StateActionInfoSplitNode(const StateActionInfo *parent, UINT state, UINT legalTermCount, const SymbolNameContainer &nameContainer)
+    : StateActionInfo(parent, state, legalTermCount, nameContainer, ParserTables::CompCodeSplitNode)
+  {
+    m_child[0] = m_child[1] = nullptr;
+  }
+  ~StateActionInfoSplitNode() override;
+  StateActionInfoSplitNode &setChild(BYTE index, StateActionInfo *child);
+  const StateActionInfo &getChild(BYTE index) const override {
     assert(index < 2);
     return *m_child[index];
   }
+  String toString() const override;
+};
 
-  String toString() const;
+class StateActionInfoOneItem : public StateActionInfo {
+private:
+  const ParserAction m_action;
+public:
+  StateActionInfoOneItem::StateActionInfoOneItem(const StateActionInfo *parent, UINT state, const SymbolNameContainer &nameContainer, ParserAction action)
+    : StateActionInfo(parent, state, 1, nameContainer, ParserTables::CompCodeOneItem)
+    , m_action(action)
+  {
+  }
+  ParserAction getOneItemAction() const override {
+    return m_action;
+  }
+  String toString() const override;
+};
+
+class StateActionInfoTermSet : public StateActionInfo {
+private:
+  const TermSetReduction m_termSetReduction;
+public:
+  StateActionInfoTermSet(const StateActionInfo *parent, UINT state, const SymbolNameContainer &nameContainer, const TermSetReduction &termSetReduction)
+    : StateActionInfo(parent, state, termSetReduction.getTermSetSize(), nameContainer, ParserTables::CompCodeTermSet)
+    , m_termSetReduction(termSetReduction)
+  {
+  }
+  const TermSetReduction &getTermSetReduction() const override {
+    return m_termSetReduction;
+  }
+  String toString() const override;
 };

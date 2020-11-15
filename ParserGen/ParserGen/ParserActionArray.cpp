@@ -17,16 +17,16 @@ ActionArray ParserActionArray::getActionArray() const {
   return result;
 }
 
-String ParserActionArray::toString(const SymbolNameContainer &symbolNames) const {
+String ParserActionArray::toString(const SymbolNameContainer &nameContainer) const {
   String result;
   for(const ParserAction pa : *this) {
-    result += format(_T("   %s\n"), pa.toString(symbolNames).cstr());
+    result += format(_T("   %s\n"), pa.toString(nameContainer).cstr());
   }
   return result;
 }
 
-String ParserAction::toString(const SymbolNameContainer &symbolNames) const {
-  const TCHAR *name = symbolNames.getSymbolName(m_term);
+String ParserAction::toString(const SymbolNameContainer &nameContainer) const {
+  const TCHAR *name = nameContainer.getSymbolName(m_term);
   if(m_action > 0) {        // shiftItem
     return format(_T("shift to %d on %s" ),  m_action, name);
   } else if(m_action < 0) { // reduceItem

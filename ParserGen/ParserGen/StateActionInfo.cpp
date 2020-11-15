@@ -11,84 +11,6 @@ TermSetReduction::operator ParserActionArray() const {
   return result;
 }
 
-StateActionInfo::StateActionInfo(UINT state, const ParserActionArray &actionArray, const SymbolNameContainer &nameContainer)
-: m_state(          state                          )
-, m_legalTermCount( actionArray.getLegalTermCount())
-, m_nameContainer(  nameContainer                  )
-{
-  initPointers(nullptr);
-
-  const Options &options = Options::getInstance();
-  if(!options.m_useTableCompression) {
-    setTermListCompression(actionArray);
-    m_compressMethod = ParserTables::CompCodeTermList;
-  } else {
-    ParserActionArray     shiftActionArray;
-    TermSetReductionArray termSetReductionArray;
-    CompactUIntHashMap<UINT, 256>  termSetReductionMap(241); // map from reduce-production -> index into termSetReductionArray
-    for(const ParserAction pa : actionArray) {
-      if(pa.m_action > 0) {
-        shiftActionArray.add(pa);
-      } else { // pa.action <= 0.....reduce (or accept)
-        const UINT  prod = -pa.m_action;
-        const UINT *indexp = termSetReductionMap.get(prod);
-        if(indexp) {
-          termSetReductionArray[*indexp].addTerminal(pa.m_term);
-        } else {
-          const UINT index = (UINT)termSetReductionArray.size();
-          termSetReductionArray.add(TermSetReduction(prod, pa.m_term, m_nameContainer));
-          termSetReductionMap.put(prod, index);
-        }
-      }
-    }
-    termSetReductionArray.sortBySetSize();
-    m_compressMethod = findCompressionMethod(shiftActionArray, termSetReductionArray);
-  }
-}
-
-StateActionInfo::StateActionInfo(const StateActionInfo *parent, const TermSetReduction &termSetReduction)
-: m_state(         parent->m_state                  )
-, m_legalTermCount(termSetReduction.getTermSetSize())
-, m_nameContainer( parent->m_nameContainer          )
-{
-  initPointers(parent);
-  m_compressMethod = setTermSetReduceCompression(termSetReduction);
-}
-
-StateActionInfo::StateActionInfo(const StateActionInfo *parent, const ParserActionArray &actionArray)
-: m_state(         parent->m_state                )
-, m_legalTermCount(actionArray.getLegalTermCount())
-, m_nameContainer( parent->m_nameContainer        )
-{
-  initPointers(parent);
-  m_compressMethod = setTermListCompression(actionArray);
-}
-
-StateActionInfo::StateActionInfo(const StateActionInfo *parent, const ParserActionArray &shiftActionArray, const TermSetReductionArray &termSetReductionArray)
-: m_state(         parent->m_state                  )
-, m_legalTermCount(shiftActionArray.getLegalTermCount() + termSetReductionArray.getLegalTermCount())
-, m_nameContainer( parent->m_nameContainer          )
-{
-  initPointers(parent);
-  m_compressMethod = findCompressionMethod(shiftActionArray, termSetReductionArray);
-}
-
-StateActionInfo::~StateActionInfo() {
-  SAFEDELETE(m_termListActionArray);
-  SAFEDELETE(m_termSetReduction   );
-  SAFEDELETE(m_child[0]           );
-  SAFEDELETE(m_child[1]           );
-}
-
-void StateActionInfo::initPointers(const StateActionInfo *parent) {
-  m_parent              = parent;
-  m_recurseLevel        = parent ? (parent->m_recurseLevel + 1) : 0;
-  m_termListActionArray = nullptr;
-  m_termSetReduction    = nullptr;
-  m_child[0]            = nullptr;
-  m_child[1]            = nullptr;
-}
-
 ParserActionArray StateActionInfo::mergeActionArrays(const ParserActionArray &shiftActionArray, const TermSetReductionArray &termSetReductionArray) { // static
   ParserActionArray result(shiftActionArray.getLegalTermCount() + termSetReductionArray.getLegalTermCount());
   result.addAll(shiftActionArray);
@@ -103,23 +25,39 @@ ParserActionArray StateActionInfo::mergeActionArrays(const ParserActionArray &sh
   return result;
 }
 
-CompressionMethod StateActionInfo::setTermListCompression(const ParserActionArray &actionArray) {
-  assert(getLegalTermCount() == actionArray.getLegalTermCount());
-  m_termListActionArray = new ParserActionArray(actionArray); TRACE_NEW(m_termListActionArray);
-  return (getLegalTermCount() == 1) ? ParserTables::CompCodeOneItem : ParserTables::CompCodeTermList;
+void StateActionInfo::splitActionArray(const SymbolNameContainer &nameContainer, const ParserActionArray &actionArray, ParserActionArray &shiftActionArray, TermSetReductionArray &termSetReductionArray) { // static
+  CompactUIntHashMap<UINT, 256>  termSetReductionMap(241); // map from reduce-production -> index into termSetReductionArray
+  for(const ParserAction pa : actionArray) {
+    if(pa.m_action > 0) {
+      shiftActionArray.add(pa);
+    } else { // pa.action <= 0.....reduce (or accept)
+      const UINT  prod = -pa.m_action;
+      const UINT *indexp = termSetReductionMap.get(prod);
+      if(indexp) {
+        termSetReductionArray[*indexp].addTerminal(pa.m_term);
+      } else {
+        const UINT index = (UINT)termSetReductionArray.size();
+        termSetReductionArray.add(TermSetReduction(prod, pa.m_term, nameContainer));
+        termSetReductionMap.put(prod, index);
+      }
+    }
+  }
+  termSetReductionArray.sortBySetSize();
 }
 
-CompressionMethod StateActionInfo::setTermSetReduceCompression(const TermSetReduction &termSetReduction) {
-  assert(getLegalTermCount() == termSetReduction.getTermSetSize());
-  if(getLegalTermCount() == 1) {
-    return setTermListCompression(termSetReduction);
+StateActionInfo *StateActionInfo::allocateStateActionInfo(UINT state, const SymbolNameContainer &nameContainer, const ParserActionArray &actionArray) {
+  const Options &options = Options::getInstance();
+  if(!options.m_useTableCompression) {
+    return new StateActionInfoTermList(nullptr, state, nameContainer, actionArray);
   } else {
-    m_termSetReduction = new TermSetReduction(termSetReduction); TRACE_NEW(m_termSetReduction);
-    return ParserTables::CompCodeTermSet;
+    ParserActionArray     shiftActionArray;
+    TermSetReductionArray termSetReductionArray;
+    splitActionArray(                 nameContainer, actionArray, shiftActionArray, termSetReductionArray);
+    return allocateStateActionInfo(nullptr, state, nameContainer, shiftActionArray, termSetReductionArray);
   }
 }
 
-CompressionMethod StateActionInfo::findCompressionMethod(const ParserActionArray &shiftActionArray, const TermSetReductionArray &termSetReductionArray) {
+StateActionInfo *StateActionInfo::allocateStateActionInfo(const StateActionInfo *parent, UINT state, const SymbolNameContainer &nameContainer, const ParserActionArray &shiftActionArray, const TermSetReductionArray &termSetReductionArray) {
   const Options &options       = Options::getInstance();
   const UINT     shiftActions  = shiftActionArray.getLegalTermCount();
   const UINT     reduceActions = (UINT)termSetReductionArray.size();
@@ -128,47 +66,87 @@ CompressionMethod StateActionInfo::findCompressionMethod(const ParserActionArray
 
   if(shiftActions + reduceActions == 1) {
     if(reduceActions == 0) {
-      return setTermListCompression(shiftActionArray);
+      return allocateTermListCompression(parent, state, nameContainer, shiftActionArray);
     } else { // reduceActions == 1
-      return setTermSetReduceCompression(termSetReductionArray[0]);
+      return allocateTermSetCompression(parent, state, nameContainer, termSetReductionArray[0]);
     }
   }
 
-  if((reduceActions == 0) || (termSetReductionArray[0].getTermSetSize() < 2) || (m_recurseLevel >= options.m_maxRecursiveCalls)) {
-    return setTermListCompression(mergeActionArrays(shiftActionArray, termSetReductionArray));
+  const BYTE recurseLevel = parent ? parent->getRecurseLevel() + 1 : 0;
+  if((reduceActions == 0) || (termSetReductionArray[0].getTermSetSize() < 2) || (recurseLevel >= options.m_maxRecursiveCalls)) {
+    return allocateTermListCompression(parent, state, nameContainer, mergeActionArrays(shiftActionArray, termSetReductionArray));
   }
 
-  // (shiftActions + reduceActions >= 2) && (reduceActions >= 1) && (m_sameReductionArray[0].getSetSize() >= 2)
-  m_child[0] = new StateActionInfo(this, termSetReductionArray[0]);
+  const UINT totalReduceItems = termSetReductionArray.getLegalTermCount();
+  StateActionInfoSplitNode *p = new StateActionInfoSplitNode(parent, state, totalReduceItems + shiftActions, nameContainer); TRACE_NEW(p);
+  // (shiftActions + reduceActions >= 2) && (reduceActions >= 1) && (m_termSetReductionArray[0].getTermSetSize() >= 2)
+  StateActionInfo *child0 = allocateTermSetCompression(p, state, nameContainer, termSetReductionArray[0]);
 
   const size_t n = termSetReductionArray.size();
   TermSetReductionArray termSetReductions(n-1); // make it = termSetReductionArray without 1st element
   for(size_t i = 1; i < n; i++) {
     termSetReductions.add(termSetReductionArray[i]);
   }
-  m_child[1] = new StateActionInfo(this, shiftActionArray, termSetReductions);
-  return ParserTables::CompCodeSplitNode;
+  StateActionInfo *child1 = allocateStateActionInfo(p, state, nameContainer, shiftActionArray, termSetReductions);
+  p->setChild(0, child0).setChild(1, child1);
+  return p;
+}
+
+StateActionInfo *StateActionInfo::allocateTermListCompression(const StateActionInfo *parent, UINT state, const SymbolNameContainer &nameContainer, const ParserActionArray &shiftActionArray) {
+  StateActionInfo *p;
+  if(shiftActionArray.size() == 1) {
+    p = new StateActionInfoOneItem( parent, state, nameContainer, shiftActionArray[0]); TRACE_NEW(p);
+  } else {
+    p = new StateActionInfoTermList(parent, state, nameContainer, shiftActionArray); TRACE_NEW(p);
+  }
+  return p;
+}
+
+StateActionInfo *StateActionInfo::allocateTermSetCompression(const StateActionInfo *parent, UINT state, const SymbolNameContainer &nameContainer, const TermSetReduction &termSetReduction) {
+  StateActionInfo *p;
+  if(termSetReduction.getTermSetSize() == 1) {
+    const ParserActionArray paa(termSetReduction);
+    p = new StateActionInfoOneItem(parent, state, nameContainer, paa[0]); TRACE_NEW(p);
+  } else {
+    p = new StateActionInfoTermSet(parent, state, nameContainer, termSetReduction); TRACE_NEW(p);
+  }
+  return p;
 }
 
 String StateActionInfo::toString() const {
-  String result;
-  result = format(_T("State %u %-20s (Legal tokens:%u)\n"), m_state, compressMethodToString(getCompressionMethod()), m_legalTermCount);
-  switch(getCompressionMethod()) {
-  case ParserTables::CompCodeTermList:
-  case ParserTables::CompCodeOneItem :
-    result += indentString(m_termListActionArray->toString(m_nameContainer),3);
-    break;
-  case ParserTables::CompCodeSplitNode:
-    { const String cstr0 = indentString(getChild(0).toString(),2);
-      const String cstr1 = indentString(getChild(1).toString(),2);
-      result += indentString(format(_T("Child 0:\n%s\nChild 1:\n%s"), cstr0.cstr(), cstr1.cstr()), 3);
-    }
-    break;
-  case ParserTables::CompCodeTermSet:
-    result += indentString(m_termSetReduction->toString(),3);
-    break;
-  default:
-    result += format(_T("Unknown compressMethod:%d"), getCompressionMethod());
-  }
-  return result;
+  return format(_T("State %u %-20s (Legal tokens:%u)\n"), m_state, compressMethodToString(getCompressionMethod()), m_legalTermCount);
+}
+
+String StateActionInfoTermList::toString() const {
+  return __super::toString()
+       + indentString(m_termListActionArray.toString(m_nameContainer),3);
+}
+
+StateActionInfoSplitNode::~StateActionInfoSplitNode() {
+  SAFEDELETE(m_child[0]);
+  SAFEDELETE(m_child[1]);
+}
+
+StateActionInfoSplitNode &StateActionInfoSplitNode::setChild(BYTE index, StateActionInfo *child) {
+  assert(index < 2);
+  assert(m_child[index] == nullptr);
+  m_child[index] = child;
+  return *this;
+}
+
+String StateActionInfoSplitNode::toString() const {
+  const String cstr0 = indentString(getChild(0).toString(),2);
+  const String cstr1 = indentString(getChild(1).toString(),2);
+  return __super::toString()
+       + indentString(format(_T("Child 0:\n%s\nChild 1:\n%s"), cstr0.cstr(), cstr1.cstr()), 3);
+}
+
+String StateActionInfoOneItem::toString() const {
+  return __super::toString()
+       + indentString(m_action.toString(m_nameContainer),3);
+}
+
+String StateActionInfoTermSet::toString() const {
+  return __super::toString()
+       + indentString(m_termSetReduction.toString(),3);
 }

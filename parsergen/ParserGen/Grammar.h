@@ -34,7 +34,7 @@ public:
   inline UINT          getNTCount()                    const {
     return getSymbolCount() - getTerminalCount();
   }
-  String symbolSetToString(const SymbolSet &set      ) const;
+  String symbolSetToString(const SymbolSet &set) const;
 };
 
 class GrammarSymbol {
@@ -155,7 +155,7 @@ public:
   inline bool operator!=(const ParserAction &a) const {
     return !(*this == a);
   }
-  String toString(const SymbolNameContainer &symbolNames) const;
+  String toString(const SymbolNameContainer &nameContainer) const;
 };
 
 typedef CompactShortArray ActionArray;
@@ -178,7 +178,7 @@ public:
   inline bool operator!=(const SuccessorState &a) const {
     return !(*this == a);
   }
-  String toString(const SymbolNameContainer &symbolNames) const;
+  String toString(const SymbolNameContainer &nameContainer) const;
 };
 
 typedef CompactUShortArray SuccessorArray;
@@ -221,7 +221,7 @@ public:
   inline UINT    getLegalTermCount()                 const {
     return(UINT)size();
   }
-  String         toString(const SymbolNameContainer &symbolNames) const;
+  String         toString(const SymbolNameContainer &nameContainer) const;
 };
 
 inline int successorStateCompareNT(const SuccessorState &s1, const SuccessorState &s2) {
@@ -238,12 +238,12 @@ public:
     sort(successorStateCompareNT);
     return *this;
   }
-  NTindexSet     getNTindexSet(  UINT terminalCount, UINT symbolCount) const;
+  NTindexSet     getNTindexSet(UINT terminalCount, UINT symbolCount) const;
   SuccessorArray getSuccessorArray()                 const;
-  inline UINT    getNewStateCount()                 const {
+  inline UINT    getNewStateCount()                  const {
     return(UINT)size();
   }
-  String         toString(const SymbolNameContainer &symbolNames) const;
+  String         toString(const SymbolNameContainer &nameContainer) const;
 };
 
 class StateResult {

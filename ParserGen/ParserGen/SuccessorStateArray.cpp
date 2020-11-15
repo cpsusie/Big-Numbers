@@ -17,15 +17,15 @@ SuccessorArray SuccessorStateArray::getSuccessorArray() const {
   return result;
 }
 
-String SuccessorStateArray::toString(const SymbolNameContainer &symbolNames) const {
+String SuccessorStateArray::toString(const SymbolNameContainer &nameContainer) const {
   String result;
   for(const SuccessorState ss : *this) {
-    result += format(_T("   %s\n"), ss.toString(symbolNames).cstr());
+    result += format(_T("   %s\n"), ss.toString(nameContainer).cstr());
   }
   return result;
 }
 
-String SuccessorState::toString(const SymbolNameContainer &symbolNames) const {
-  const TCHAR *name = symbolNames.getSymbolName(m_nt);
+String SuccessorState::toString(const SymbolNameContainer &nameContainer) const {
+  const TCHAR *name = nameContainer.getSymbolName(m_nt);
   return format(_T("goto %u on %s"), m_newState, name);
 }
