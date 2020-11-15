@@ -254,7 +254,7 @@
     <ClInclude Include="Wizard.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ActionArray.cpp" />
+    <ClCompile Include="ParserActionArray.cpp" />
     <ClCompile Include="ActionsWriter.cpp" />
     <ClCompile Include="ByteCount.cpp" />
     <ClCompile Include="CompressedSuccessorMatrixCpp.cpp" />
@@ -283,6 +283,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="StringCollector.cpp" />
+    <ClCompile Include="SuccessorStateArray.cpp" />
     <ClCompile Include="SymbolsWriter.cpp" />
     <ClCompile Include="TablesWriter.cpp" />
     <ClCompile Include="TemplateWriter.cpp" />

@@ -4,7 +4,7 @@
 #include "IndexMap.h"
 #include "MacroMap.h"
 
-namespace SuccessorMatrix {
+namespace SuccessorMatrixCompression {
 
 inline int NTindexSetCmp(const NTindexSet &s1, const NTindexSet &s2) {
   assert(s1.getCapacity() == s2.getCapacity());
@@ -30,8 +30,6 @@ typedef IndexArray<SuccessorArray> SuccessorArrayIndexArray;
 class CompressedSuccessorMatrix : public MacroMap {
 private:
   const GrammarTables          &m_tables;
-  const UINT                    m_terminalCount;
-  const UINT                    m_symbolCount;
   const UINT                    m_stateCount;
   UINT                          m_currentNTindexListSize;
   UINT                          m_currentStateListSize;
@@ -40,15 +38,12 @@ private:
   SuccessorArrayIndexMap        m_successorMap;
   StateSet                      m_definedStateSet;
 
-  inline UINT getTerminalCount() const {
-    return m_terminalCount;
-  }
   inline UINT getStateCount() const {
     return m_stateCount;
   }
-  Macro        doSuccList(             UINT state, const ActionArray  &succList);
-  Macro        doNTindexListState(     UINT state, const ActionArray  &succList);
-  Macro        doOneSuccessorState(    UINT state, const ParserAction &pa      );
+  Macro        doSuccList(             UINT state, const SuccessorStateArray &succList);
+  Macro        doNTindexListState(     UINT state, const SuccessorStateArray &succList);
+  Macro        doOneSuccessorState(    UINT state, const SuccessorState      &ss      );
   void         generateCompressedForm();
 
   ByteCount    printMacroesAndSuccessorCode(MarginFile &output) const;
@@ -59,4 +54,4 @@ public:
   ByteCount print(MarginFile &output) const;
 };
 
-}; // namespace SuccessorMatrix
+}; // namespace SuccessorMatrixCompression

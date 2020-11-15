@@ -2,18 +2,16 @@
 #include "StateActionInfoArray.h"
 
 StateActionInfoArray::StateActionInfoArray(const GrammarTables &tables)
-: m_symbolNameArray(tables.getSymbolNameArray())
+: m_tables(tables)
 {
-  const UINT                stateCount    = tables.getStateCount();
-  const UINT                terminalCount = tables.getTerminalCount();
-  const Array<ActionArray> &stateActions  = tables.getStateActions();
+  const UINT           stateCount    = tables.getStateCount();
+  const UINT           terminalCount = tables.getTerminalCount();
+  const ActionMatrix  &am            = tables.getActionMatrix();
   setCapacity(stateCount);
 
-//  redirectDebugLog();
   for(UINT state = 0; state < stateCount; state++) {
-    const StateActionInfo *info = new StateActionInfo(terminalCount, state, stateActions[state], *this); TRACE_NEW(info);
+    const StateActionInfo *info = new StateActionInfo(state, am[state], tables); TRACE_NEW(info);
     add(info);
-//    debugLog(_T("%s\n"), last()->toString().cstr());
   }
 }
 

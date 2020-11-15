@@ -678,18 +678,18 @@ void Grammar::checkStateIsConsistent(const LR1State &state, StateResult &result)
   for(UINT i = 0; i < itemCount; i++) {
     const LR1Item &itemi = state.m_items[i];
     if(!isShiftItem(itemi) && !isReduceItem(itemi)) {
-      const int nt = getShiftSymbol(itemi);
+      const UINT nt = getShiftSymbol(itemi);
       if(!symbolsDone.contains(nt)) {
         if(itemi.getSuccessor() >= 0) {
-          result.m_succs.add(ParserAction(nt, itemi.getSuccessor()));
+          result.m_succs.add(SuccessorState((USHORT)nt, (USHORT)itemi.getSuccessor()));
         }
         symbolsDone += nt;
       }
     }
   } // for
 
-  result.m_actions.sortByToken(); // sort actions by symbolnumber (lookahead symbol)
-  result.m_succs.sortByToken();   // sort result by symbolnumber  (nonTerminal)
+  result.m_actions.sortByTerm(); // sort actions by symbolnumber (terminal   )
+  result.m_succs.sortByNT();     // sort result  by symbolnumber (nonTerminal)
 }
 
 String SymbolNameContainer::symbolSetToString(const SymbolSet &set) const {
@@ -744,10 +744,10 @@ String Grammar::stateToString(const LR1State &state, int flags) const {
   }
   if(flags & DUMP_ACTIONS) {
     result += _T("\n");
-    const ActionArray &actions    = m_result[state.m_index].m_actions;
-    const ActionArray &successors = m_result[state.m_index].m_succs;
-    result += actions.toString(   *this, true );
-    result += successors.toString(*this, false);
+    const ParserActionArray   &actions    = m_result[state.m_index].m_actions;
+    const SuccessorStateArray &successors = m_result[state.m_index].m_succs;
+    result += actions.toString(   *this);
+    result += successors.toString(*this);
   }
   return result;
 }

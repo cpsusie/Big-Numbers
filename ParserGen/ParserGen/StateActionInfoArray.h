@@ -2,15 +2,12 @@
 
 #include "StateActionInfo.h"
 
-class StateActionInfoArray : public CompactArray<const StateActionInfo*>, public SymbolNameContainer {
+class StateActionInfoArray : public CompactArray<const StateActionInfo*> {
 private:
-  const StringArray m_symbolNameArray;
+  const GrammarTables &m_tables;
 public:
   StateActionInfoArray(const GrammarTables &tables);
   ~StateActionInfoArray() override;
   void clear() override;
   String toString() const;
-  const TCHAR *getSymbolName(UINT symbolIndex) const override {
-    return m_symbolNameArray[symbolIndex].cstr();
-  }
 };

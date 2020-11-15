@@ -222,20 +222,20 @@ int _tmain(int argc, TCHAR **argv) {
           ok = false;
           code.generateDocFile();
           verbose(1, _T("Time:%.3lf\n"), (getProcessTime() - starttime)/1000000);
-          verbose(1, _T("%4d\tterminals\n")     , grammar.getTerminalCount()   );
-          verbose(1, _T("%4d\tnonterminals\n")  , grammar.getNonTerminalCount());
-          verbose(1, _T("%4d\tproductions\n")   , grammar.getProductionCount() );
+          verbose(1, _T("%4u\tterminals\n")     , grammar.getTerminalCount()   );
+          verbose(1, _T("%4u\tnonterminals\n")  , grammar.getNTCount()         );
+          verbose(1, _T("%4u\tproductions\n")   , grammar.getProductionCount() );
           _tprintf(_T("**** The grammar is NOT LALR(1) ****\n"));
         } else {
           verbose(2, _T("Generate skeletonparser\n"));
           code.generateParser();
           code.generateDocFile();
           verbose(1, _T("Time:%.3lf\n"), (getProcessTime() - starttime)/1000000);
-          verbose(1, _T("%4d\tterminals\n")     , grammar.getTerminalCount()   );
-          verbose(1, _T("%4d\tnonterminals\n")  , grammar.getNonTerminalCount());
-          verbose(1, _T("%4d\tproductions\n")   , grammar.getProductionCount() );
-          verbose(1, _T("%4d\tLALR(1) states\n"), grammar.getStateCount()      );
-          verbose(1, _T("%4d\titems\n")         , grammar.getItemCount()       );
+          verbose(1, _T("%4u\tterminals\n")     , grammar.getTerminalCount()   );
+          verbose(1, _T("%4u\tnonterminals\n")  , grammar.getNTCount()         );
+          verbose(1, _T("%4u\tproductions\n")   , grammar.getProductionCount() );
+          verbose(1, _T("%4u\tLALR(1) states\n"), grammar.getStateCount()      );
+          verbose(1, _T("%4u\titems\n")         , grammar.getItemCount()       );
           verbose(1, _T("**** The grammar is LALR(1) ****\n"));
   //      grammar.dump();
         }

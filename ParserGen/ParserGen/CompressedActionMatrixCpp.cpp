@@ -3,26 +3,25 @@
 #include "GrammarCode.h"
 #include "CompressedActionMatrixCpp.h"
 
-namespace ActionMatrix {
+namespace ActionMatrixCompression {
 
 CompressedActionMatrix::CompressedActionMatrix(const GrammarTables &tables)
-  : MacroMap(           tables                                )
-  , m_tables(           tables                                )
-  , m_terminalCount(    tables.getTerminalCount()             )
-  , m_stateCount(       tables.getStateCount()                )
-  , m_laSetSizeInBytes((tables.getTerminalCount() - 1) / 8 + 1)
-  , m_terminalType(     tables.getTerminalType()              )
-  , m_actionType(       tables.getActionType()                )
-  , m_stateInfoArray(   tables                                )
+  : MacroMap(             tables                                )
+  , m_tables(             tables                                )
+  , m_stateCount(         tables.getStateCount()                )
+  , m_termSetSizeInBytes((tables.getTerminalCount() - 1) / 8 + 1)
+  , m_terminalType(       tables.getTerminalType()              )
+  , m_actionType(         tables.getActionType()                )
+  , m_stateInfoArray(     tables                                )
 {
   generateCompressedForm();
 }
 
 void CompressedActionMatrix::generateCompressedForm() {
-  m_currentTermListSize   = 0;
-  m_currentActionListSize = 0;
-  m_currentLASetArraySize = 0;
-  m_currentSplitNodeCount = 0;
+  m_currentTermListSize     = 0;
+  m_currentActionListSize   = 0;
+  m_currentTermSetArraySize = 0;
+  m_currentSplitNodeCount   = 0;
 
   for(UINT state = 0; state < getStateCount(); state++) {
     const StateActionInfo *stateInfo = m_stateInfoArray[state];
@@ -46,9 +45,9 @@ Macro CompressedActionMatrix::doStateActionInfo(const StateActionInfo &stateInfo
 
 Macro CompressedActionMatrix::doTermListState(const StateActionInfo &stateInfo) {
   const UINT              state      = stateInfo.getState();
-  const ActionArray      &termList   = stateInfo.getTermList();
-  const TermSet         laSet      = termList.getLookaheadSet(getTerminalCount());
-  IndexMapValue          *imvp       = m_termListMap.get(laSet);
+  const ParserActionArray &termList  = stateInfo.getTermList();
+  const TermSet           termSet    = termList.getLegalTermSet(getTerminalCount());
+  IndexMapValue          *imvp       = m_termListMap.get(termSet);
   UINT                    termListIndex, laCount;
 
   if(imvp != nullptr) {
@@ -59,22 +58,22 @@ Macro CompressedActionMatrix::doTermListState(const StateActionInfo &stateInfo) 
     termListIndex = m_currentTermListSize;
     laCount       = m_termListMap.getCount();
     IndexMapValue nv(getStateCount(), state, termListIndex);
-    m_termListMap.put(laSet, nv);
-    m_currentTermListSize += (UINT)laSet.size() + 1;
+    m_termListMap.put(termSet, nv);
+    m_currentTermListSize += (UINT)termSet.size() + 1;
   }
 
-  const RawActionArray    actionList = termList.getRawActionArray();
-  imvp = m_raaMap.get(actionList);
-  UINT                    actionListIndex, raCount;
+  const ActionArray actionList = termList.getActionArray();
+  imvp = m_actionListMap.get(actionList);
+  UINT              actionListIndex, raCount;
   if(imvp != nullptr) {
     actionListIndex = imvp->m_arrayIndex;
     raCount         = imvp->m_commentIndex;
     imvp->addState(state);
   } else {
     actionListIndex = m_currentActionListSize;
-    raCount         = m_raaMap.getCount();
+    raCount         = m_actionListMap.getCount();
     IndexMapValue nv(getStateCount(), state, actionListIndex);
-    m_raaMap.put(actionList, nv);
+    m_actionListMap.put(actionList, nv);
     m_currentActionListSize += (UINT)actionList.size();
   }
   const String            macroValue = encodeMacroValue(ParserTables::CompCodeTermList, actionListIndex, termListIndex);
@@ -121,11 +120,11 @@ Macro CompressedActionMatrix::doOneItemState(const StateActionInfo &stateInfo) {
   const UINT              state      = stateInfo.getState();
   const ParserAction      pa         = stateInfo.getOneItemAction();
   const int               action     = pa.m_action;                    // positive or negative
-  const UINT              token      = pa.m_token;
-  const String            macroValue = encodeMacroValue(ParserTables::CompCodeOneItem, action, token);
+  const UINT              term       = pa.m_term;
+  const String            macroValue = encodeMacroValue(ParserTables::CompCodeOneItem, action, term);
   const String            comment    = (action <= 0)
-                                     ? format(_T("Reduce by %3u on %s"), -action, getSymbolName(pa.m_token))
-                                     : format(_T("Shift  to %3u on %s"),  action, getSymbolName(pa.m_token));
+                                     ? format(_T("Reduce by %3u on %s"), -action, getSymbolName(pa.m_term))
+                                     : format(_T("Shift  to %3u on %s"),  action, getSymbolName(pa.m_term));
   return Macro(getStateCount(), state, macroValue, comment);
 }
 
@@ -133,19 +132,19 @@ Macro CompressedActionMatrix::doTermSetState(const StateActionInfo &stateInfo) {
   const UINT              state      = stateInfo.getState();
   const TermSetReduction &tsr        = stateInfo.getTermSetReduction();
 
-  const TermSet        &laSet      = tsr.getTermSet();
-  IndexMapValue          *vp         = m_laSetMap.get(laSet);
+  const TermSet          &termSet    = tsr.getTermSet();
+  IndexMapValue          *vp         = m_termSetMap.get(termSet);
   UINT                    byteIndex, termSetCount;
   if(vp != nullptr) {
     byteIndex    = vp->m_arrayIndex;
     termSetCount = vp->m_commentIndex;
     vp->addState(state);
   } else {
-    byteIndex    = m_currentLASetArraySize;
-    termSetCount = m_laSetMap.getCount();
+    byteIndex    = m_currentTermSetArraySize;
+    termSetCount = m_termSetMap.getCount();
     IndexMapValue nv(getStateCount(), state, byteIndex);
-    m_laSetMap.put(laSet, nv);
-    m_currentLASetArraySize += m_laSetSizeInBytes;
+    m_termSetMap.put(termSet, nv);
+    m_currentTermSetArraySize += m_termSetSizeInBytes;
   }
   const int               prod       = tsr.getProduction();
   const int               action     = -prod;
@@ -221,16 +220,16 @@ ByteCount CompressedActionMatrix::printTermAndActionList(MarginFile &output) con
     byteCount += outputEndArrayDefinition(output, m_terminalType, tableSize);
   }
 
-  { const RawActionArrayIndexArray raaArray   = m_raaMap.getEntryArray();
-    UINT                           tableSize  = 0;
-    TCHAR                          delim      = ' ';
+  { const ActionArrayIndexArray actionListArray = m_actionListMap.getEntryArray();
+    UINT                        tableSize       = 0;
+    TCHAR                       delim           = ' ';
 
-    outputBeginArrayDefinition(output, _T("actionListTable"), m_actionType, raaArray.getElementCount(false));
-    for(auto it = raaArray.getIterator(); it.hasNext();) {
-      const IndexArrayEntry<RawActionArray> &e       = it.next();
-      String                                 comment = format(_T("%3u %s"), e.m_commentIndex, e.getComment().cstr());
-      const UINT                             n       = (UINT)e.m_key.size();
-      UINT                                   counter = 0;
+    outputBeginArrayDefinition(output, _T("actionListTable"), m_actionType, actionListArray.getElementCount(false));
+    for(auto it = actionListArray.getIterator(); it.hasNext();) {
+      const IndexArrayEntry<ActionArray> &e       = it.next();
+      String                              comment = format(_T("%3u %s"), e.m_commentIndex, e.getComment().cstr());
+      const UINT                          n       = (UINT)e.m_key.size();
+      UINT                                counter = 0;
       for(auto it1 = e.m_key.getIterator(); it1.hasNext(); counter++, delim = ',') {
         output.printf(_T("%c%4d"), delim, it1.next());
         if((counter % 20 == 19) && (counter != n - 1)) {
@@ -247,13 +246,13 @@ ByteCount CompressedActionMatrix::printTermAndActionList(MarginFile &output) con
 
 ByteCount CompressedActionMatrix::printTermSetTable(MarginFile &output) const {
   ByteCount byteCount;
-  if(m_laSetMap.size() == 0) {
+  if(m_termSetMap.size() == 0) {
     output.printf(_T("#define termSetTable nullptr\n\n"));
   } else {
-    const TermSetIndexArray laSetArray = m_laSetMap.getEntryArray();
-    outputBeginArrayDefinition(output, _T("termSetTable"), TYPE_UCHAR, m_currentLASetArraySize);
+    const TermSetIndexArray termSetArray = m_termSetMap.getEntryArray();
+    outputBeginArrayDefinition(output, _T("termSetTable"), TYPE_UCHAR, m_currentTermSetArraySize);
     TCHAR delim = ' ';
-    for(auto it = laSetArray.getIterator(); it.hasNext();) {
+    for(auto it = termSetArray.getIterator(); it.hasNext();) {
       const IndexArrayEntry<TermSet> &e  = it.next();
       const ByteArray                   ba = symbolSetToByteArray(e.m_key);
       const UINT                        n  = (UINT)ba.size();
@@ -263,9 +262,9 @@ ByteCount CompressedActionMatrix::printTermSetTable(MarginFile &output) const {
       }
       newLine(output, comment);
     }
-    byteCount = outputEndArrayDefinition(output, TYPE_UCHAR, m_currentLASetArraySize);
+    byteCount = outputEndArrayDefinition(output, TYPE_UCHAR, m_currentTermSetArraySize);
   }
   return byteCount;
 }
 
-}; // namespace ActionMatrix
+}; // namespace ActionMatrixCompression

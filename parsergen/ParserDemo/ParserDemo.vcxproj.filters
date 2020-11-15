@@ -69,13 +69,16 @@
     <ClCompile Include="TreeDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ParserGen\ActionArray.cpp">
-      <Filter>Source Files\ParserGen Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\parsergen\Grammar.cpp">
       <Filter>Source Files\ParserGen Files</Filter>
     </ClCompile>
     <ClCompile Include="..\ParserGen\Options.cpp">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ParserGen\ParserActionArray.cpp">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ParserGen\SuccessorStateArray.cpp">
       <Filter>Source Files\ParserGen Files</Filter>
     </ClCompile>
   </ItemGroup>

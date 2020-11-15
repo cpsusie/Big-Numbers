@@ -4,13 +4,11 @@
 #include "CompressEncoding.h"
 #include "CompressedSuccessorMatrixCpp.h"
 
-namespace SuccessorMatrix {
+namespace SuccessorMatrixCompression {
 
 CompressedSuccessorMatrix::CompressedSuccessorMatrix(const GrammarTables &tables)
   : MacroMap(           tables                                )
   , m_tables(           tables                                )
-  , m_terminalCount(    tables.getTerminalCount()             )
-  , m_symbolCount(      tables.getSymbolCount()               )
   , m_stateCount(       tables.getStateCount()                )
   , m_NTindexType(      tables.getNTindexType()               )
   , m_stateType(        tables.getStateType()                 )
@@ -23,11 +21,11 @@ void CompressedSuccessorMatrix::generateCompressedForm() {
   m_currentNTindexListSize = 0;
   m_currentStateListSize   = 0;
 
-  const Array<ActionArray> &stateSucc = m_tables.getStateSuccessors();
+  const SuccessorMatrix &sm = m_tables.getSuccessorMatrix();
 
   for(UINT state = 0; state < m_stateCount; state++) {
-    const ActionArray &succList  = stateSucc[state];
-    const UINT         succCount = (UINT)succList.size();
+    const SuccessorStateArray &succList  = sm[state];
+    const UINT                 succCount = (UINT)succList.size();
     if(succCount == 0) {
       continue;
     }
@@ -36,7 +34,7 @@ void CompressedSuccessorMatrix::generateCompressedForm() {
   }
 }
 
-Macro CompressedSuccessorMatrix::doSuccList(UINT state, const ActionArray &succList) {
+Macro CompressedSuccessorMatrix::doSuccList(UINT state, const SuccessorStateArray &succList) {
   m_definedStateSet.add(state);
   const UINT succCount = (UINT)succList.size();
   if(succCount == 1) {
@@ -46,8 +44,8 @@ Macro CompressedSuccessorMatrix::doSuccList(UINT state, const ActionArray &succL
   }
 }
 
-Macro CompressedSuccessorMatrix::doNTindexListState(UINT state, const ActionArray &succList) {
-  const NTindexSet    ntIndexSet = succList.getNTindexSet(m_terminalCount, m_symbolCount);
+Macro CompressedSuccessorMatrix::doNTindexListState(UINT state, const SuccessorStateArray &succList) {
+  const NTindexSet    ntIndexSet = succList.getNTindexSet(getTerminalCount(), getSymbolCount());
   IndexMapValue      *imvp       = m_NTindexMap.get(ntIndexSet);
   UINT                ntIndex, ntCount;
 
@@ -82,10 +80,10 @@ Macro CompressedSuccessorMatrix::doNTindexListState(UINT state, const ActionArra
   return Macro(getStateCount(), state, macroValue, comment);
 }
 
-Macro CompressedSuccessorMatrix::doOneSuccessorState(UINT state, const ParserAction &pa) {
-  const UINT    NT         = pa.m_token;
-  const UINT    newState   = pa.m_action;
-  const UINT    NTindex    = NT - m_terminalCount;
+Macro CompressedSuccessorMatrix::doOneSuccessorState(UINT state, const SuccessorState &ss) {
+  const UINT    NT         = ss.m_nt;
+  const UINT    newState   = ss.m_newState;
+  const UINT    NTindex    = NT - getTerminalCount();
   const String  macroValue = encodeMacroValue(ParserTables::CompCodeOneItem, newState, NTindex);
   const String  comment    = format(_T("Goto %u on %s"), newState, getSymbolName(NT));
   return Macro(getStateCount(), state, macroValue, comment);
@@ -93,13 +91,8 @@ Macro CompressedSuccessorMatrix::doOneSuccessorState(UINT state, const ParserAct
 
 ByteCount CompressedSuccessorMatrix::print(MarginFile &output) const {
   ByteCount byteCount;
-  if(m_currentNTindexListSize == 0) {
-    output.printf(_T("#define NTindexListTable nullptr\n"));
-    output.printf(_T("#define stateListTable   nullptr\n\n"));
-  } else {
-    byteCount += printMacroesAndSuccessorCode(output);
-    byteCount += printNTindexAndStateList(    output);
-  }
+  byteCount += printMacroesAndSuccessorCode(output);
+  byteCount += printNTindexAndStateList(    output);
   return byteCount;
 }
 
@@ -135,55 +128,55 @@ ByteCount CompressedSuccessorMatrix::printNTindexAndStateList(MarginFile &output
   if(m_currentNTindexListSize == 0) {
     output.printf(_T("#define NTindexListTable nullptr\n"));
     output.printf(_T("#define stateListTable   nullptr\n\n"));
-  } else {
-    { const NTindexSetIndexArray ntSetArray = m_NTindexMap.getEntryArray();
+    return byteCount;
+  }
+  { const NTindexSetIndexArray ntSetArray = m_NTindexMap.getEntryArray();
 
-      outputBeginArrayDefinition(output, _T("NTindexListTable"), m_NTindexType, ntSetArray.getElementCount(true));
-      UINT  tableSize = 0;
-      TCHAR delim     = ' ';
-      for(auto it = ntSetArray.getIterator(); it.hasNext();) {
-        const IndexArrayEntry<NTindexSet> &e       = it.next();
-        String                             comment = format(_T("%3u %s"), e.m_commentIndex, e.getComment().cstr());
-        const UINT                         n       = (UINT)e.m_key.size();
-        UINT                               counter = 0;
-        output.setLeftMargin(2);
-        output.printf(_T("%c%3u"), delim, n); delim = ',';
-        output.setLeftMargin(6);
-        for(auto it1 = e.m_key.getIterator(); it1.hasNext(); counter++) {
-          output.printf(_T(",%4zu"), it1.next());
-          if((counter % 20 == 19) && (counter != n - 1)) {
-            newLine(output, comment, 108);
-          }
+    outputBeginArrayDefinition(output, _T("NTindexListTable"), m_NTindexType, ntSetArray.getElementCount(true));
+    UINT  tableSize = 0;
+    TCHAR delim     = ' ';
+    for(auto it = ntSetArray.getIterator(); it.hasNext();) {
+      const IndexArrayEntry<NTindexSet> &e       = it.next();
+      String                             comment = format(_T("%3u %s"), e.m_commentIndex, e.getComment().cstr());
+      const UINT                         n       = (UINT)e.m_key.size();
+      UINT                               counter = 0;
+      output.setLeftMargin(2);
+      output.printf(_T("%c%3u"), delim, n); delim = ',';
+      output.setLeftMargin(6);
+      for(auto it1 = e.m_key.getIterator(); it1.hasNext(); counter++) {
+        output.printf(_T(",%4zu"), it1.next());
+        if((counter % 20 == 19) && (counter != n - 1)) {
+          newLine(output, comment, 108);
         }
-        newLine(output, comment, 108);
-        tableSize += n + 1;
       }
-      byteCount += outputEndArrayDefinition(output, m_NTindexType, tableSize);
+      newLine(output, comment, 108);
+      tableSize += n + 1;
     }
+    byteCount += outputEndArrayDefinition(output, m_NTindexType, tableSize);
+  }
 
-    { const SuccessorArrayIndexArray saArray  = m_successorMap.getEntryArray();
+  { const SuccessorArrayIndexArray saArray  = m_successorMap.getEntryArray();
 
-      outputBeginArrayDefinition(output, _T("stateListTable"), m_stateType, saArray.getElementCount(false));
-      UINT  tableSize = 0;
-      TCHAR delim     = ' ';
-      for(auto it = saArray.getIterator(); it.hasNext();) {
-        const IndexArrayEntry<SuccessorArray> &e       = it.next();
-        String                                 comment = format(_T("%3u %s"), e.m_commentIndex, e.getComment().cstr());
-        const UINT                             n       = (UINT)e.m_key.size();
-        UINT                                   counter = 0;
-        for(auto it1 = e.m_key.getIterator(); it1.hasNext(); counter++, delim=',') {
-          output.printf(_T("%c%4u"), delim, it1.next());
-          if((counter % 20 == 19) && (counter != n - 1)) {
-            newLine(output, comment, 108);
-          }
+    outputBeginArrayDefinition(output, _T("stateListTable"), m_stateType, saArray.getElementCount(false));
+    UINT  tableSize = 0;
+    TCHAR delim     = ' ';
+    for(auto it = saArray.getIterator(); it.hasNext();) {
+      const IndexArrayEntry<SuccessorArray> &e       = it.next();
+      String                                 comment = format(_T("%3u %s"), e.m_commentIndex, e.getComment().cstr());
+      const UINT                             n       = (UINT)e.m_key.size();
+      UINT                                   counter = 0;
+      for(auto it1 = e.m_key.getIterator(); it1.hasNext(); counter++, delim=',') {
+        output.printf(_T("%c%4u"), delim, it1.next());
+        if((counter % 20 == 19) && (counter != n - 1)) {
+          newLine(output, comment, 108);
         }
-        newLine(output, comment, 108);
-        tableSize += n;
       }
-      byteCount += outputEndArrayDefinition(output, m_stateType, tableSize);
+      newLine(output, comment, 108);
+      tableSize += n;
     }
+    byteCount += outputEndArrayDefinition(output, m_stateType, tableSize);
   }
   return byteCount;
 }
 
-}; // namespace SuccessorMatrix
+}; // namespace SuccessorMatrixCompression

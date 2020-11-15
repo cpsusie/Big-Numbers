@@ -31,14 +31,14 @@
     <Filter Include="Source Files\GrammarOutput\ActionCompression\Header Files">
       <UniqueIdentifier>{6f46e068-0527-4acd-bf3f-cb4d0d65bf3d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\KeyWordHandlers">
-      <UniqueIdentifier>{6993516d-2c03-4b5a-9e11-a9cb1198826a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\GrammarOutput\SuccessorCompression">
       <UniqueIdentifier>{6ffb4198-29f2-4cde-a1f2-b4e8fccb23f4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\GrammarOutput\SuccessorCompression\Header Files">
       <UniqueIdentifier>{33ec9186-2c5a-4b53-b050-a84d86b8f0b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GrammarOutput\KeyWordHandlers">
+      <UniqueIdentifier>{6993516d-2c03-4b5a-9e11-a9cb1198826a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -55,9 +55,6 @@
       <Filter>Source Files\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Wizard.h">
-      <Filter>Source Files\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GrammarTables.h">
       <Filter>Source Files\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StateActionInfo.h">
@@ -114,6 +111,9 @@
     <ClInclude Include="MacroMap.h">
       <Filter>Source Files\GrammarOutput\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GrammarTables.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -125,26 +125,20 @@
     <ClCompile Include="Grammar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GrammarTables.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Wizard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ActionsWriter.cpp">
-      <Filter>Source Files\KeyWordHandlers</Filter>
+      <Filter>Source Files\GrammarOutput\KeyWordHandlers</Filter>
     </ClCompile>
     <ClCompile Include="DocFileWriter.cpp">
-      <Filter>Source Files\KeyWordHandlers</Filter>
+      <Filter>Source Files\GrammarOutput\KeyWordHandlers</Filter>
     </ClCompile>
     <ClCompile Include="SymbolsWriter.cpp">
-      <Filter>Source Files\KeyWordHandlers</Filter>
+      <Filter>Source Files\GrammarOutput\KeyWordHandlers</Filter>
     </ClCompile>
     <ClCompile Include="TablesWriter.cpp">
-      <Filter>Source Files\KeyWordHandlers</Filter>
-    </ClCompile>
-    <ClCompile Include="ActionArray.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\GrammarOutput\KeyWordHandlers</Filter>
     </ClCompile>
     <ClCompile Include="CompressedActionMatrixCpp.cpp">
       <Filter>Source Files\GrammarOutput\ActionCompression</Filter>
@@ -198,6 +192,15 @@
       <Filter>Source Files\GrammarOutput</Filter>
     </ClCompile>
     <ClCompile Include="MacroMap.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="ParserActionArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SuccessorStateArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GrammarTables.cpp">
       <Filter>Source Files\GrammarOutput</Filter>
     </ClCompile>
   </ItemGroup>

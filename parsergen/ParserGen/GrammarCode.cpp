@@ -72,19 +72,19 @@ void GrammarCode::generateDocFile(MarginFile &output) const {
   }
   m_grammar.dumpStates(dumpformat, &output);
   output.printf(_T("\n"));
-  output.printf(_T("%4d\tterminals\n"              ), m_grammar.getTerminalCount()   );
-  output.printf(_T("%4d\tnonterminals\n"           ), m_grammar.getNonTerminalCount());
-  output.printf(_T("%4d\tproductions\n"            ), m_grammar.getProductionCount() );
-  output.printf(_T("%4d\tLALR(1) states\n"         ), m_grammar.getStateCount()      );
-  output.printf(_T("%4d\titems\n"                  ), m_grammar.getItemCount()       );
+  output.printf(_T("%4u\tterminals\n"              ), m_grammar.getTerminalCount()   );
+  output.printf(_T("%4u\tnonterminals\n"           ), m_grammar.getNTCount()         );
+  output.printf(_T("%4u\tproductions\n"            ), m_grammar.getProductionCount() );
+  output.printf(_T("%4u\tLALR(1) states\n"         ), m_grammar.getStateCount()      );
+  output.printf(_T("%4u\titems\n"                  ), m_grammar.getItemCount()       );
   const ByteCount &byteCount = getByteCount();
   if(!byteCount.isEmpty()) {
     output.printf(_T("%s\t required for parsertables\n"), byteCount.toString().cstr());
   }
   output.printf(_T("\n"));
-  output.printf(_T("%4d\tshift/reduce  conflicts\n"), m_grammar.m_SRconflicts        );
-  output.printf(_T("%4d\treduce/reduce conflicts\n"), m_grammar.m_RRconflicts        );
-  output.printf(_T("%4d\twarnings\n"               ), m_grammar.m_warningCount       );
+  output.printf(_T("%4u\tshift/reduce  conflicts\n"), m_grammar.m_SRconflicts        );
+  output.printf(_T("%4u\treduce/reduce conflicts\n"), m_grammar.m_RRconflicts        );
+  output.printf(_T("%4u\twarnings\n"               ), m_grammar.m_warningCount       );
 
   if(!m_grammar.allStatesConsistent()) {
     _tprintf(_T("See %s for details\n"), output.getName().cstr());

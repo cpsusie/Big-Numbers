@@ -1,31 +1,33 @@
 #pragma once
 
+typedef Array<ParserActionArray>   ActionMatrix;
+typedef Array<SuccessorStateArray> SuccessorMatrix;
+
 class GrammarTables : public ParserTables, public SymbolNameContainer {
 private:
-  const UINT              m_terminalCount;
   const UINT              m_symbolCount;
+  const UINT              m_terminalCount;
   const UINT              m_productionCount;
   const UINT              m_stateCount;
   const String            m_parserClassName;
   const String            m_tablesClassName;
   CompactUShortArray      m_productionLength, m_left;
   StringArray             m_symbolNameArray;
-  Array<CompactIntArray>  m_rightSide;
-  Array<ActionArray>      m_stateActions;
-  Array<ActionArray>      m_stateSucc;
+  Array<CompactUIntArray> m_rightSide;
+  ActionMatrix            m_actionMatrix;
+  SuccessorMatrix         m_successorMatrix;
   mutable StateSet        m_compressibleStateSet;
   mutable ByteCount       m_countTableBytes;
   mutable IntegerType     m_terminalType, m_NTindexType, m_symbolType, m_actionType, m_stateType;
 
   void                findTemplateTypes()                 const;
-  UINT                getMaxInputCount()                  const;
   void                initCompressibleStateSet();
   bool                calcIsCompressibleState(UINT state) const;
   inline bool         isCompressibleState(    UINT state) const {
     return m_compressibleStateSet.contains(state);
   }
   inline bool         isOneItemState(         UINT state) const {
-    return m_stateActions[state].size() == 1;
+    return m_actionMatrix[state].size() == 1;
   }
 
   void      printCpp(                         MarginFile &output) const;
@@ -48,21 +50,18 @@ public:
   UINT getSymbolCount()                                   const override { return m_symbolCount;                            }
   UINT getProductionCount()                               const override { return m_productionCount;                        }
   UINT getStateCount()                                    const override { return m_stateCount;                             }
-  UINT getLegalInputCount(   UINT state                 ) const override { return (UINT)m_stateActions[state].size();       }
+  UINT getLegalInputCount(   UINT state                 ) const override { return (UINT)m_actionMatrix[state].size();       }
   void getLegalInputs(       UINT state, UINT *symbols  ) const override;
-  UINT getLegalNTCount(      UINT state                 ) const override { return (UINT)m_stateSucc[state].size();          }
+  UINT getLegalNTCount(      UINT state                 ) const override { return (UINT)m_successorMatrix[state].size();    }
   void getLegalNTerms(       UINT state, UINT *symbols  ) const override;
   UINT getTableByteCount(    Platform platform          ) const override { return m_countTableBytes.getByteCount(platform); }
 
-  inline IntegerType            getTerminalType()             const          { return m_terminalType;                                         }
-  inline IntegerType            getActionType()               const          { return m_actionType;                                           }
-  inline IntegerType            getNTindexType()              const          { return m_NTindexType;                                          }
-  inline IntegerType            getStateType()                const          { return m_stateType;                                            }
-  inline TermSet                getLookaheadSet(  UINT state) const          { return m_stateActions[state].getLookaheadSet(m_terminalCount); }
-  inline RawActionArray         getRawActionArray(UINT state) const          { return m_stateActions[state].getRawActionArray();              }
-  inline const StringArray     &getSymbolNameArray()          const          { return m_symbolNameArray;                                      }
-  const Array<ActionArray>     &getStateActions()             const          { return m_stateActions;                                         }
-  const Array<ActionArray>     &getStateSuccessors()          const          { return m_stateSucc;                                            }
-  ByteCount                     getTotalSizeInBytes()         const;
+  inline IntegerType            getTerminalType()         const          { return m_terminalType;                           }
+  inline IntegerType            getActionType()           const          { return m_actionType;                             }
+  inline IntegerType            getNTindexType()          const          { return m_NTindexType;                            }
+  inline IntegerType            getStateType()            const          { return m_stateType;                              }
+  const  ActionMatrix          &getActionMatrix()         const          { return m_actionMatrix;                           }
+  const  SuccessorMatrix       &getSuccessorMatrix()      const          { return m_successorMatrix;                        }
+  ByteCount                     getTotalSizeInBytes()     const;
   void print(MarginFile &output) const;
 };

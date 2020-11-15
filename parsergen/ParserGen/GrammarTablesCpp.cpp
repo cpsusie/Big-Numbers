@@ -229,12 +229,12 @@ void GrammarTables::findTemplateTypes() const {
 // Return size in bytes
 ByteCount GrammarTables::printCompressedActionMatrixCpp(MarginFile &output) const {
   output.printf(_T("%s"), comment1);
-  return ActionMatrix::CompressedActionMatrix(*this).print(output);
+  return ActionMatrixCompression::CompressedActionMatrix(*this).print(output);
 }
 
 ByteCount GrammarTables::printCompressedSuccessorMatrixCpp(MarginFile &output) const {
   output.printf(_T("%s"), comment2);
-  return SuccessorMatrix::CompressedSuccessorMatrix(*this).print(output);
+  return SuccessorMatrixCompression::CompressedSuccessorMatrix(*this).print(output);
 }
 
 ByteCount GrammarTables::printProductionLengthTableCpp(MarginFile &output) const {
@@ -288,13 +288,13 @@ ByteCount GrammarTables::printRightSideTableCpp(MarginFile &output) const {
   outputBeginArrayDefinition(output, _T("rightSideTable"), m_symbolType, itemCount);
   TCHAR delim = ' ';
   for(UINT p = 0; p < productionCount; p++) {
-    const CompactIntArray &r = m_rightSide[p];
+    const CompactUIntArray &r = m_rightSide[p];
     if(r.size() == 0) {
       continue;
     }
     output.printf(_T("/* %3u */ "), p);
     for(size_t i = 0; i < r.size(); i++, delim = ',') {
-      output.printf(_T("%c%3d"), delim, r[i]);
+      output.printf(_T("%c%3u"), delim, r[i]);
     }
     output.printf(_T("\n"));
   }

@@ -5,7 +5,7 @@
 #include "IndexMap.h"
 #include "MacroMap.h"
 
-namespace ActionMatrix {
+namespace ActionMatrixCompression {
 
 inline int termSetCmp(const TermSet &s1, const TermSet &s2) {
   assert(s1.getCapacity() == s2.getCapacity());
@@ -20,33 +20,29 @@ public:
 
 typedef IndexArray<TermSet> TermSetIndexArray;
 
-class RawActionArrayIndexMap : public IndexMap<RawActionArray> {
+class ActionArrayIndexMap : public IndexMap<ActionArray> {
 public:
-  RawActionArrayIndexMap() : IndexMap<RawActionArray>(rawActionArrayCmp) {
+  ActionArrayIndexMap() : IndexMap<ActionArray>(actionArrayCmp) {
   }
 };
 
-typedef IndexArray<RawActionArray> RawActionArrayIndexArray;
+typedef IndexArray<ActionArray> ActionArrayIndexArray;
 
 class CompressedActionMatrix : public MacroMap {
 private:
   const GrammarTables          &m_tables;
-  const UINT                    m_terminalCount;
   const UINT                    m_stateCount;
-  const UINT                    m_laSetSizeInBytes;
+  const UINT                    m_termSetSizeInBytes;
   UINT                          m_currentTermListSize;
   UINT                          m_currentActionListSize;
-  UINT                          m_currentLASetArraySize;
+  UINT                          m_currentTermSetArraySize;
   UINT                          m_currentSplitNodeCount;
   const IntegerType             m_terminalType, m_actionType;
   StateActionInfoArray          m_stateInfoArray;
-  TermSetIndexMap               m_laSetMap;
+  TermSetIndexMap               m_termSetMap;
   TermSetIndexMap               m_termListMap;
-  RawActionArrayIndexMap        m_raaMap;
+  ActionArrayIndexMap           m_actionListMap;
 
-  inline UINT getTerminalCount() const {
-    return m_terminalCount;
-  }
   inline UINT getStateCount() const {
     return m_stateCount;
   }
@@ -66,4 +62,4 @@ public:
   ByteCount print(MarginFile &output) const;
 };
 
-}; // namespace ActionMatrix
+}; // namespace ActionMatrixCompression

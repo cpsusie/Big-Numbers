@@ -14,12 +14,12 @@ GrammarTables::GrammarTables(const Grammar &grammar, const String &tablesClassNa
 
   for(UINT p = 0; p < m_productionCount; p++) {
     const Production &prod   = grammar.getProduction(p);
-    const int         length = prod.getLength();
+    const UINT        length = prod.getLength();
     m_productionLength.add(length);
     m_left.add(prod.m_leftSide);
-    m_rightSide.add(CompactIntArray());
-    CompactIntArray &rightside = m_rightSide.last();
-    for(int i = 0; i < length; i++) {
+    m_rightSide.add(CompactUIntArray(length));
+    CompactUIntArray &rightside = m_rightSide.last();
+    for(UINT i = 0; i < length; i++) {
       rightside.add(prod.m_rightSide[i]);
     }
   }
@@ -29,24 +29,13 @@ GrammarTables::GrammarTables(const Grammar &grammar, const String &tablesClassNa
   }
 
   const UINT stateCount = getStateCount();
-  m_stateActions.setCapacity(stateCount);
-  m_stateSucc.setCapacity(   stateCount);
+  m_actionMatrix.setCapacity(   stateCount);
+  m_successorMatrix.setCapacity(stateCount);
   for(UINT s = 0; s < stateCount; s++) {
-    m_stateActions.add(grammar.m_result[s].m_actions);
-    m_stateSucc.add(grammar.m_result[s].m_succs);
+    m_actionMatrix.add(   grammar.m_result[s].m_actions);
+    m_successorMatrix.add(grammar.m_result[s].m_succs);
   }
   initCompressibleStateSet();
-}
-
-UINT GrammarTables::getMaxInputCount() const {
-  UINT m = 0;
-  for(UINT s = 0; s < getStateCount(); s++) {
-    const UINT count = getLegalInputCount(s);
-    if(count > m) {
-      m = count;
-    }
-  }
-  return m;
 }
 
 void GrammarTables::initCompressibleStateSet() {
@@ -60,8 +49,8 @@ void GrammarTables::initCompressibleStateSet() {
 
 // Returns true if actionArray.size == 1 or all actions in the specified state is reduce by the same production
 bool GrammarTables::calcIsCompressibleState(UINT state) const {
-  const ActionArray &aa    = m_stateActions[state];
-  const UINT         count = (UINT)aa.size();
+  const ParserActionArray &aa    = m_actionMatrix[state];
+  const UINT               count = (UINT)aa.size();
   switch(count) {
   case 0 :
     throwException(_T("actionArray for state %u has size 0"), state);
@@ -87,19 +76,19 @@ ByteCount GrammarTables::getTotalSizeInBytes() const {
 }
 
 UINT GrammarTables::getSuccessor(UINT state, UINT nt) const {
-  const ActionArray &ssu = m_stateSucc[state];
-  for(const ParserAction &su : ssu) {
-    if(su.m_token == nt) {
-      return su.m_action;
+  const SuccessorStateArray &ssa = m_successorMatrix[state];
+  for(SuccessorState ss : ssa) {
+    if(ss.m_nt == nt) {
+      return ss.m_newState;
     }
   }
   return _ParserError;
 }
 
 int GrammarTables::getAction(UINT state, UINT input) const {
-  const ActionArray &aa = m_stateActions[state];
-  for(const ParserAction &pa : aa) {
-    if(pa.m_token == input) {
+  const ParserActionArray &paa = m_actionMatrix[state];
+  for(ParserAction pa : paa) {
+    if(pa.m_term == input) {
       return pa.m_action;
     }
   }
@@ -107,22 +96,22 @@ int GrammarTables::getAction(UINT state, UINT input) const {
 }
 
 void GrammarTables::getLegalInputs(UINT state, UINT *symbols) const {
-  const ActionArray &aa = m_stateActions[state];
-  for(const ParserAction &pa : aa) {
-    *(symbols++) = pa.m_token;
+  const ParserActionArray &paa = m_actionMatrix[state];
+  for(ParserAction pa : paa) {
+    *(symbols++) = pa.m_term;
   }
 }
 
 void GrammarTables::getLegalNTerms(UINT state, UINT *symbols) const {
-  const ActionArray &ssu = m_stateSucc[state];
-  for(const ParserAction &su : ssu) {
-    *(symbols++) = su.m_token;
+  const SuccessorStateArray &ssa = m_successorMatrix[state];
+  for(SuccessorState ss : ssa) {
+    *(symbols++) = ss.m_nt;
   }
 };
 
 void GrammarTables::getRightSide(UINT prod, UINT *dst) const {
-  const CompactIntArray &r = m_rightSide[prod];
-  for(INT s : r) {
+  const CompactUIntArray &r = m_rightSide[prod];
+  for(UINT s : r) {
     *(dst++) = s;
   }
 }

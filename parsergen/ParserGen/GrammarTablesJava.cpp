@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "GrammarTables.h"
 
-static void printUncompressedActionArrayJava(MarginFile &output, const TCHAR *tableType, const int index, const ActionArray &actions) {
+static void printUncompressedActionArrayJava(MarginFile &output, const TCHAR *tableType, const int index, const ParserActionArray &actions) {
   const int actionCount = (int)actions.size();
   output.setLeftMargin(4);
   output.printf(_T("%s act%04d[] = { 0"), tableType, index);
   for(int a = 0; a < actionCount; a++) {
     const ParserAction &pa = actions[a];
-    output.printf(_T(",%4d,%4d"), pa.m_token, pa.m_action);
+    output.printf(_T(",%4d,%4d"), pa.m_term, pa.m_action);
     if(a % 5 == 4 && a != actionCount-1) {
       output.printf(_T("\n"));
       output.setLeftMargin(46);
@@ -16,13 +16,13 @@ static void printUncompressedActionArrayJava(MarginFile &output, const TCHAR *ta
   output.printf(_T("};\n"));
 }
 
-static void printCompressedActionArrayJava(MarginFile &output, const TCHAR *tableType, const int index, const ActionArray &actions) {
+static void printCompressedActionArrayJava(MarginFile &output, const TCHAR *tableType, const int index, const ParserActionArray &actions) {
   const int actionCount = (int)actions.size();
   output.setLeftMargin(4);
   output.printf(_T("%s act%04d[] = { 1"), tableType, index);
   for(int a = 0; a < actionCount; a++) {
     const ParserAction &pa = actions[a];
-    output.printf(_T(",%4d"), pa.m_token);
+    output.printf(_T(",%4d"), pa.m_term);
     if(a % 10 == 9) {
       output.printf(_T("\n"));
       output.setLeftMargin(46);
@@ -63,13 +63,13 @@ void GrammarTables::printJava(MarginFile &output) const {
           "\\*****************************************************************/\n")
          );
 
-  const int stateCount      = getStateCount();
-  const int productionCount = getProductionCount();
+  const UINT stateCount      = getStateCount();
+  const UINT productionCount = getProductionCount();
   const Options &options    = Options::getInstance();
   const TCHAR *tableType = _T("private static final short");
 
-  for(int s = 0; s < stateCount; s++) {
-    const ActionArray &actions = m_stateActions[s];
+  for(UINT s = 0; s < stateCount; s++) {
+    const ParserActionArray &actions = m_actionMatrix[s];
     if(options.m_useTableCompression && isCompressibleState(s)) {
       printCompressedActionArrayJava(output, tableType, s, actions);
     } else {
@@ -80,12 +80,12 @@ void GrammarTables::printJava(MarginFile &output) const {
   output.setLeftMargin(4);
   output.printf(_T("%s action[][] = {\n"), tableType);
   output.setLeftMargin(8);
-  for(int s = 0; s < stateCount; s++) {
+  for(UINT s = 0; s < stateCount; s++) {
     if(s % 10 == 0) {
-      output.printf(_T("/* %4d */ "), s);
+      output.printf(_T("/* %4u */ "), s);
     }
     output.printf(s > 0 ? _T(","):_T(" "));
-    output.printf(_T("act%04d"), s);
+    output.printf(_T("act%04u"), s);
     if(s % 10 == 9 || s == stateCount-1) {
       output.printf(_T("\n"));
     }
@@ -106,17 +106,17 @@ void GrammarTables::printJava(MarginFile &output) const {
           "\\****************************************************************************/\n")
          );
   StateSet hasSuccessor(stateCount);
-  for(int s = 0; s < stateCount; s++) {
-    const ActionArray &succlist = m_stateSucc[s];
-    const int count = (int)succlist.size();
+  for(UINT s = 0; s < stateCount; s++) {
+    const SuccessorStateArray &succlist = m_successorMatrix[s];
+    const UINT                 count    = (UINT)succlist.size();
     if(count > 0) {
       output.setLeftMargin(4);
       output.printf(_T("%s succ%04d[] = {"), tableType, s);
       TCHAR *delim = EMPTYSTRING;
-      for(int a = 0; a < count; a++, delim=_T(",")) {
-        const ParserAction &pa = succlist[a];
-        output.printf(_T("%s%4d,%4d"), delim, pa.m_token, pa.m_action);
-        if(a % 5 == 4 && a != count-1) {
+      for(UINT a = 0; a < count; a++, delim=_T(",")) {
+        const SuccessorState &ss = succlist[a];
+        output.printf(_T("%s%4u,%4d"), delim, ss.m_nt, ss.m_newState);
+        if((a % 5 == 4) && (a != count-1)) {
           output.printf(_T("\n"));
           output.setLeftMargin(44);
         }
@@ -129,17 +129,17 @@ void GrammarTables::printJava(MarginFile &output) const {
   output.setLeftMargin(4);
   output.printf(_T("%s successor[][] = {\n"), tableType);
   output.setLeftMargin(8);
-  for(int s = 0; s < stateCount; s++) {
+  for(UINT s = 0; s < stateCount; s++) {
     if(s % 10 == 0) {
-      output.printf(_T("/* %4d */ "), s);
+      output.printf(_T("/* %4u */ "), s);
     }
     output.printf(s > 0 ? _T(","):_T(" "));
     if(hasSuccessor.contains(s)) {
-      output.printf(_T("succ%04d"), s);
+      output.printf(_T("succ%04u"), s);
     } else {
       output.printf(_T("null    "));
     }
-    if(s % 10 == 9 || s == stateCount-1) {
+    if((s % 10 == 9) || (s == stateCount-1)) {
       output.printf(_T("\n"));
     }
   }
@@ -155,12 +155,12 @@ void GrammarTables::printJava(MarginFile &output) const {
          );
   output.printf(_T("%s leftSide[] = {\n"), tableType);
   output.setLeftMargin(8);
-  for(int p = 0; p < productionCount; p++) {
-    int l = m_left[p];
+  for(UINT p = 0; p < productionCount; p++) {
+    UINT l = m_left[p];
     if(p % 10 == 0) {
-      output.printf(_T("/* %3d */ "), p);
+      output.printf(_T("/* %3u */ "), p);
     }
-    output.printf(_T(" %3d"), l);
+    output.printf(_T(" %3u"), l);
     if(p < productionCount-1) {
       output.printf(_T(","));
     }
@@ -179,17 +179,17 @@ void GrammarTables::printJava(MarginFile &output) const {
           "* Used for debugging.                                              *\n"
           "\\******************************************************************/\n")
          );
-  for(int p = 0; p < productionCount; p++) {
-    const CompactIntArray &r = m_rightSide[p];
+  for(UINT p = 0; p < productionCount; p++) {
+    const CompactUIntArray &r = m_rightSide[p];
     if(r.size() == 0) {
       continue;
     }
-    output.printf(_T("%s right%04d[] = {"), tableType, p);
+    output.printf(_T("%s right%04u[] = {"), tableType, p);
     for(size_t i = 0; i < r.size(); i++) {
       if(i > 0) {
         output.printf(_T(","));
       }
-      output.printf(_T("%3d"), r[i]);
+      output.printf(_T("%3u"), r[i]);
     }
     output.printf(_T("};\n"));
   }
@@ -198,7 +198,7 @@ void GrammarTables::printJava(MarginFile &output) const {
   output.setLeftMargin(4);
   output.printf(_T("%s rightSide[][] = {\n"), tableType);
   output.setLeftMargin(8);
-  for(int p = 0; p < productionCount; p++) {
+  for(UINT p = 0; p < productionCount; p++) {
     if(m_rightSide[p].size() == 0) {
       output.printf(_T("null     "));
     } else {
@@ -207,7 +207,7 @@ void GrammarTables::printJava(MarginFile &output) const {
     if(p < productionCount-1) {
       output.printf(_T(","));
     }
-    if(p % 10 == 9 || p == productionCount-1) {
+    if((p % 10 == 9) || (p == productionCount-1)) {
       output.printf(_T("\n"));
     }
   }
@@ -222,12 +222,12 @@ void GrammarTables::printJava(MarginFile &output) const {
           "* Used for debugging.                                   *\n"
           "\\*******************************************************/\n")
          );
-  const int terminalCount = getTerminalCount();
-  const int symbolCount   = getSymbolCount();
+  const UINT terminalCount = getTerminalCount();
+  const UINT symbolCount   = getSymbolCount();
   output.printf(_T("private static final String symbolName[] = {\n"));
   output.setLeftMargin(8);
-  for(int s = 0; s < symbolCount; s++) {
-    output.printf(_T("/* %3d */ \"%s\""), s, m_symbolNameArray[s].cstr());
+  for(UINT s = 0; s < symbolCount; s++) {
+    output.printf(_T("/* %3u */ \"%s\""), s, m_symbolNameArray[s].cstr());
     if(s < symbolCount-1) {
       output.printf(_T(","));
     }
