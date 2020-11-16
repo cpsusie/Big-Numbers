@@ -14,10 +14,11 @@ private:
   void cleanup();
   void indexError(const TCHAR *method, size_t index) const;
   void indexError(const TCHAR *method, size_t index, size_t count) const;
+  static void emptyArrayError(const TCHAR *method);
 protected:
   void init();
-  virtual BYTE *allocateBytes( size_t size);
-  virtual void  deallocateBytes(BYTE *buffer);
+  virtual BYTE  *allocateBytes( size_t size);
+  virtual void   deallocateBytes(BYTE *buffer);
   virtual size_t getCapacityCeil(size_t capacity) const {
     return capacity;
   }
@@ -55,6 +56,26 @@ public:
   inline BYTE &operator[](size_t i) {
     if(i >= m_size) indexError(__TFUNCTION__, i);
     return m_data[i];
+  }
+
+  inline BYTE &first() {
+    if(isEmpty()) emptyArrayError(__TFUNCTION__);
+    return m_data[0];
+  }
+
+  inline const BYTE &first() const {
+    if(isEmpty()) emptyArrayError(__TFUNCTION__);
+    return m_data[0];
+  }
+
+  inline BYTE &last() {
+    if(isEmpty()) emptyArrayError(__TFUNCTION__);
+    return m_data[m_size-1];
+  }
+
+  inline const BYTE &last() const {
+    if(isEmpty()) emptyArrayError(__TFUNCTION__);
+    return m_data[m_size-1];
   }
 
   bool operator==(const ByteArray &a) const;
@@ -123,6 +144,19 @@ public:
   // typeName cannot be String, because of MAKEINTRESOURCE
   // Return *this
   ByteArray &loadFromResource(int resId, const TCHAR *typeName);
+
+  inline BYTE       *begin() {
+    return isEmpty() ? nullptr : &first();
+  }
+  inline BYTE       *end() {
+    return isEmpty() ? nullptr : (&first() + size());
+  }
+  inline const BYTE *begin() const {
+    return isEmpty() ? nullptr : &first();
+  }
+  inline const BYTE *end() const {
+    return isEmpty() ? nullptr : (&first() + size());
+  }
 };
 
 class ByteFileArray {   // Read-only BYTE array accessed by seeking the file, instead of loading

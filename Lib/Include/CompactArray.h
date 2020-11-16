@@ -560,13 +560,13 @@ public:
       m_current     = -1;
       m_updateCount = m_a.getUpdateCount();
     }
-    AbstractIterator *clone()       override {
+    AbstractIterator *clone()          override {
       return new CompactArrayIterator(*this);
     }
-    inline bool hasNext()     const override {
+    inline bool hasNext()        const override {
       return m_next < m_a.size();
     }
-    void *next()                    override {
+    void *next()                       override {
       if(m_next >= m_a.size()) {
         noNextElementError(_compactArrayIteratorClassName);
       }
@@ -574,7 +574,7 @@ public:
       m_current = m_next++;
       return &m_a[m_current];
     }
-    void remove()                   override {
+    void remove()                      override {
       if(m_current < 0) {
         noCurrentElementError(_compactArrayIteratorClassName);
       }
@@ -590,19 +590,19 @@ public:
   Iterator<T>      getIterator()       override {
     return Iterator<T>(new CompactArrayIterator(this));
   }
-  bool      hasOrder()   const override {
+  bool             hasOrder()    const override {
     return true;
   }
-  inline T *begin() {
+  inline T        *begin() {
     return isEmpty() ? nullptr : &first();
   }
-  inline T *end() {
+  inline T        *end() {
     return isEmpty() ? nullptr : (&first() + size());
   }
-  inline const T *begin() const {
+  inline const T  *begin()       const {
     return isEmpty() ? nullptr : &first();
   }
-  inline const T *end() const {
+  inline const T  *end()         const {
     return isEmpty() ? nullptr : (&first() + size());
   }
 };

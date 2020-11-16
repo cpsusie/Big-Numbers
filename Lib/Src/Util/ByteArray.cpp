@@ -178,6 +178,10 @@ void ByteArray::indexError(const TCHAR *method, size_t index, size_t count) cons
   throwIndexOutOfRangeException(method, index, count, size());
 }
 
+void ByteArray::emptyArrayError(const TCHAR *method) { // static
+  throwEmptyArrayException(method);
+}
+
 void ByteArray::init() {
   m_data     = nullptr;
   m_capacity = 0;
