@@ -97,7 +97,7 @@ ByteCount CompressedSuccessorMatrix::print(MarginFile &output) const {
 ByteCount CompressedSuccessorMatrix::printMacroesAndSuccessorCode(MarginFile &output) const {
   const UINT   macroCount = getMacroCount();
   Array<Macro> macroes(getMacroArray());
-  if(macroes.size() > 0) {
+  if(macroCount > 0) {
     macroes.sort(macroCmpByName);
     for(auto it = macroes.getIterator(); it.hasNext();) {
       it.next().print(output);
@@ -108,6 +108,7 @@ ByteCount CompressedSuccessorMatrix::printMacroesAndSuccessorCode(MarginFile &ou
   outputBeginArrayDefinition(output, _T("successorCode"), TYPE_UINT, getStateCount());
 
   TCHAR delim     = ' ';
+
   for(UINT state = 0; state < getStateCount(); state++, delim=',') {
     if(!m_definedStateSet.contains(state)) {
       output.printf(_T("%c%-7s"), delim, _T("nil"));
@@ -128,16 +129,15 @@ ByteCount CompressedSuccessorMatrix::printNTindexAndStateList(MarginFile &output
     output.printf(_T("#define stateListTable   nullptr\n\n"));
     return byteCount;
   }
-  { const NTindexSetIndexArray ntSetArray = m_NTindexMap.getEntryArray();
-
-    outputBeginArrayDefinition(output, _T("NTindexListTable"), m_NTindexType, ntSetArray.getElementCount(true));
-    UINT  tableSize = 0;
-    TCHAR delim     = ' ';
-    for(auto it = ntSetArray.getIterator(); it.hasNext();) {
-      const IndexArrayEntry<NTindexSet> &e       = it.next();
-      String                             comment = format(_T("%3u %s"), e.m_commentIndex, e.getComment().cstr());
-      const UINT                         n       = (UINT)e.m_key.size();
-      UINT                               counter = 0;
+  { const NTindexSetIndexArray            ntSetArray        = m_NTindexMap.getEntryArray();
+    UINT                                  tableSize         = 0;
+    TCHAR                                 delim             = ' ';
+    outputBeginArrayDefinition(output, _T("NTindexListTable"), m_NTindexType , ntSetArray.getElementCount(true));
+    for(auto it = ntSetArray.getIterator();      it.hasNext();) {
+      const IndexArrayEntry<NTindexSet>  &e                 = it.next();
+      String                              comment           = format(_T("%3u %s"), e.m_commentIndex, e.getComment().cstr());
+      const UINT                          n                 = (UINT)e.m_key.size();
+      UINT                                counter           = 0;
       output.setLeftMargin(2);
       output.printf(_T("%c%3u"), delim, n); delim = ',';
       output.setLeftMargin(6);
@@ -150,19 +150,17 @@ ByteCount CompressedSuccessorMatrix::printNTindexAndStateList(MarginFile &output
       newLine(output, comment, 108);
       tableSize += n + 1;
     }
-    byteCount += outputEndArrayDefinition(output, m_NTindexType, tableSize);
+    byteCount += outputEndArrayDefinition(output, m_NTindexType , tableSize);
   }
-
-  { const StateArrayIndexArray saArray  = m_stateListMap.getEntryArray();
-
-    outputBeginArrayDefinition(output, _T("stateListTable"), m_stateType, saArray.getElementCount(false));
-    UINT  tableSize = 0;
-    TCHAR delim     = ' ';
-    for(auto it = saArray.getIterator(); it.hasNext();) {
-      const IndexArrayEntry<StateArray> &e       = it.next();
-      String                             comment = format(_T("%3u %s"), e.m_commentIndex, e.getComment().cstr());
-      const UINT                         n       = (UINT)e.m_key.size();
-      UINT                               counter = 0;
+  { const StateArrayIndexArray            stateListArray    = m_stateListMap.getEntryArray();
+    UINT                                  tableSize         = 0;
+    TCHAR                                 delim             = ' ';
+    outputBeginArrayDefinition(output, _T("stateListTable"  ), m_stateType , stateListArray.getElementCount(false));
+    for(auto it = stateListArray.getIterator();  it.hasNext();) {
+      const IndexArrayEntry<StateArray>  &e                 = it.next();
+      String                              comment           = format(_T("%3u %s"), e.m_commentIndex, e.getComment().cstr());
+      const UINT                          n                 = (UINT)e.m_key.size();
+      UINT                                counter           = 0;
       for(auto it1 = e.m_key.getIterator(); it1.hasNext(); counter++, delim = ',') {
         output.printf(_T("%c%4u"), delim, it1.next());
         if((counter % 20 == 19) && (counter != n - 1)) {
@@ -172,7 +170,7 @@ ByteCount CompressedSuccessorMatrix::printNTindexAndStateList(MarginFile &output
       newLine(output, comment, 108);
       tableSize += n;
     }
-    byteCount += outputEndArrayDefinition(output, m_stateType, tableSize);
+    byteCount += outputEndArrayDefinition(output, m_stateType , tableSize);
   }
   return byteCount;
 }

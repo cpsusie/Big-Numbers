@@ -239,9 +239,7 @@ ByteCount GrammarTables::printCompressedSuccessorMatrixCpp(MarginFile &output) c
 
 ByteCount GrammarTables::printProductionLengthTableCpp(MarginFile &output) const {
   output.printf(_T("%s"), comment3);
-
   const UINT productionCount = getProductionCount();
-
   outputBeginArrayDefinition(output, _T("productionLength"), TYPE_UCHAR, productionCount);
   TCHAR delim = ' ';
   for(UINT p = 0; p < productionCount; p++, delim = ',') {
@@ -259,10 +257,8 @@ ByteCount GrammarTables::printProductionLengthTableCpp(MarginFile &output) const
 
 ByteCount GrammarTables::printLeftSideTableCpp(MarginFile &output) const {
   output.printf(_T("%s"), comment4);
-
   const UINT productionCount = getProductionCount();
   outputBeginArrayDefinition(output, _T("leftSideTable"), m_NTindexType, productionCount);
-
   TCHAR delim = ' ';
   for(UINT p = 0; p < productionCount; p++, delim = ',') {
     const int l = m_left[p] - m_terminalCount;
