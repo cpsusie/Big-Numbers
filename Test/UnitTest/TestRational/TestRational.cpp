@@ -355,19 +355,19 @@ namespace TestRational {
 
     TEST_METHOD(TestRationalRandom0To1) {
       JavaRandom rnd(45);
-      redirectDebugLog();
+//      redirectDebugLog();
       for(UINT64 maxden = 2; maxden <= _I64_MAX; maxden*=3) {
         for(int i = 0; i < 1000; i++) {
           Rational r = randRational(maxden, rnd);
           verify((r >= 0) && (r < 1));
-          debugLog(_T("%23.15le\n"), (double)r);
+//          debugLog(_T("%23.15le\n"), (double)r);
         }
       }
     }
 
     TEST_METHOD(TestRationalRandomLowToHigh) {
       JavaRandom rnd(45);
-      redirectDebugLog();
+//      redirectDebugLog();
       for(UINT64 maxden = 30; maxden <= _I32_MAX/100; maxden *= 3) {
         Rational low  = randRational(maxden,rnd) * randInt(-30, 30, rnd);
         Rational high = randRational(maxden,rnd) * randInt(-30, 30, rnd);
@@ -377,7 +377,7 @@ namespace TestRational {
         for(int i = 0; i < 1000; i++) {
           Rational r = randRational(low, high, rnd);
           verify((r >= low) && (r <= high));
-          debugLog(_T("%23.15le\n"), (double)r);
+//          debugLog(_T("%23.15le\n"), (double)r);
         }
       }
     }
