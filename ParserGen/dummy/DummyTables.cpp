@@ -88,9 +88,9 @@ static const unsigned int actionCode[6] = {
 }; // Size of table:24(x86)/24(x64) bytes.
 
 static const unsigned char termListTable[10] = {
-     2,   1,   2                                                                                             /*    0 Used by state  [0]                               */
-  ,  2,   0,   1                                                                                             /*    1 Used by states [1,5]                             */
-  ,  3,   0,   1,   2                                                                                        /*    2 Used by state  [2]                               */
+     2,   1,   2                                                                                             /*   0 Used by state  [0]                                */
+  ,  2,   0,   1                                                                                             /*   1 Used by states [1,5]                              */
+  ,  3,   0,   1,   2                                                                                        /*   2 Used by state  [2]                                */
 }; // Size of table:12(x86)/16(x64) bytes.
 
 static const char actionListTable[9] = {
