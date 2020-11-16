@@ -181,7 +181,7 @@ public:
   String toString(const SymbolNameContainer &nameContainer) const;
 };
 
-typedef CompactUShortArray SuccessorArray;
+typedef CompactUShortArray StateArray;
 
 inline int compactShortArrayCmp(const CompactShortArray &a1, const CompactShortArray &a2) {
   const size_t n = a1.size();
@@ -194,7 +194,7 @@ inline int actionArrayCmp(const ActionArray &a1, const ActionArray &a2) {
   return compactShortArrayCmp((const CompactShortArray&)a1, (const CompactShortArray&)a2);
 }
 
-inline int successorArrayCmp(const SuccessorArray &a1, const SuccessorArray &a2) {
+inline int stateArrayCmp(const StateArray &a1, const StateArray &a2) {
   return compactShortArrayCmp((const CompactShortArray&)a1, (const CompactShortArray&)a2);
 }
 
@@ -239,7 +239,7 @@ public:
     return *this;
   }
   NTindexSet     getNTindexSet(UINT terminalCount, UINT symbolCount) const;
-  SuccessorArray getSuccessorArray()                 const;
+  StateArray     getStateArray()                     const;
   inline UINT    getNewStateCount()                  const {
     return(UINT)size();
   }

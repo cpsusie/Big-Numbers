@@ -22,7 +22,7 @@ typedef IndexArray<TermSet> TermSetIndexArray;
 
 class ActionArrayIndexMap : public IndexMap<ActionArray> {
 public:
-  ActionArrayIndexMap() : IndexMap<ActionArray>(actionArrayCmp) {
+  ActionArrayIndexMap() : IndexMap(actionArrayCmp) {
   }
 };
 

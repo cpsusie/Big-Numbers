@@ -48,36 +48,34 @@ Macro CompressedActionMatrix::doTermListState(const StateActionInfo &stateInfo) 
   const ParserActionArray &termList  = stateInfo.getTermList();
   const TermSet           termSet    = termList.getLegalTermSet(getTerminalCount());
   IndexMapValue          *imvp       = m_termListMap.get(termSet);
-  UINT                    termListIndex, laCount;
+  UINT                    termListIndex, termListCount;
 
   if(imvp != nullptr) {
     termListIndex = imvp->m_arrayIndex;
-    laCount       = imvp->m_commentIndex;
+    termListCount = imvp->m_commentIndex;
     imvp->addState(state);
   } else {
     termListIndex = m_currentTermListSize;
-    laCount       = m_termListMap.getCount();
-    IndexMapValue nv(getStateCount(), state, termListIndex);
-    m_termListMap.put(termSet, nv);
+    termListCount = m_termListMap.getCount();
+    m_termListMap.put(termSet, IndexMapValue(getStateCount(), state, termListIndex));
     m_currentTermListSize += (UINT)termSet.size() + 1;
   }
 
   const ActionArray actionList = termList.getActionArray();
   imvp = m_actionListMap.get(actionList);
-  UINT              actionListIndex, raCount;
+  UINT              actionListIndex, actionListCount;
   if(imvp != nullptr) {
     actionListIndex = imvp->m_arrayIndex;
-    raCount         = imvp->m_commentIndex;
+    actionListCount = imvp->m_commentIndex;
     imvp->addState(state);
   } else {
     actionListIndex = m_currentActionListSize;
-    raCount         = m_actionListMap.getCount();
-    IndexMapValue nv(getStateCount(), state, actionListIndex);
-    m_actionListMap.put(actionList, nv);
+    actionListCount = m_actionListMap.getCount();
+    m_actionListMap.put(actionList, IndexMapValue(getStateCount(), state, actionListIndex));
     m_currentActionListSize += (UINT)actionList.size();
   }
   const String            macroValue = encodeMacroValue(ParserTables::CompCodeTermList, actionListIndex, termListIndex);
-  const String            comment    = format(_T("termList %4u, actionList %4u"), laCount, raCount);
+  const String            comment    = format(_T("termList %4u, actionList %4u"), termListCount, actionListCount);
   return Macro(getStateCount(), state, macroValue, comment);
 }
 
@@ -142,8 +140,7 @@ Macro CompressedActionMatrix::doTermSetState(const StateActionInfo &stateInfo) {
   } else {
     byteIndex    = m_currentTermSetArraySize;
     termSetCount = m_termSetMap.getCount();
-    IndexMapValue nv(getStateCount(), state, byteIndex);
-    m_termSetMap.put(termSet, nv);
+    m_termSetMap.put(termSet, IndexMapValue(getStateCount(), state, byteIndex));
     m_currentTermSetArraySize += m_termSetSizeInBytes;
   }
   const int               prod       = tsr.getProduction();
@@ -202,9 +199,9 @@ ByteCount CompressedActionMatrix::printTermAndActionList(MarginFile &output) con
     outputBeginArrayDefinition(output, _T("termListTable"), m_terminalType, termListArray.getElementCount(true));
     for(auto it = termListArray.getIterator(); it.hasNext();) {
       const IndexArrayEntry<TermSet> &e       = it.next();
-      String                            comment = format(_T(" %3u %s"), e.m_commentIndex, e.getComment().cstr());
-      const UINT                        n       = (UINT)e.m_key.size();
-      UINT                              counter = 0;
+      String                          comment = format(_T(" %3u %s"), e.m_commentIndex, e.getComment().cstr());
+      const UINT                      n       = (UINT)e.m_key.size();
+      UINT                            counter = 0;
       output.setLeftMargin(2);
       output.printf(_T("%c%3u"), delim, n); delim = ',';
       output.setLeftMargin(6);
@@ -253,10 +250,10 @@ ByteCount CompressedActionMatrix::printTermSetTable(MarginFile &output) const {
     outputBeginArrayDefinition(output, _T("termSetTable"), TYPE_UCHAR, m_currentTermSetArraySize);
     TCHAR delim = ' ';
     for(auto it = termSetArray.getIterator(); it.hasNext();) {
-      const IndexArrayEntry<TermSet> &e  = it.next();
-      const ByteArray                   ba = symbolSetToByteArray(e.m_key);
-      const UINT                        n  = (UINT)ba.size();
-      String                            comment = format(_T("%3u %3u tokens %s"), e.m_commentIndex, (UINT)e.m_key.size(), e.getComment().cstr());
+      const IndexArrayEntry<TermSet> &e       = it.next();
+      const ByteArray                 ba      = symbolSetToByteArray(e.m_key);
+      const UINT                      n       = (UINT)ba.size();
+      String                          comment = format(_T("%3u %3u tokens %s"), e.m_commentIndex, (UINT)e.m_key.size(), e.getComment().cstr());
       for(const BYTE *cp = ba.getData(), *last = cp + n; cp < last; delim = ',') {
         output.printf(_T("%c0x%02x"), delim, *(cp++));
       }

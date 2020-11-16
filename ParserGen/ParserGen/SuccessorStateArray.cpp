@@ -9,8 +9,8 @@ NTindexSet SuccessorStateArray::getNTindexSet(UINT terminalCount, UINT symbolCou
   return result;
 }
 
-SuccessorArray SuccessorStateArray::getSuccessorArray() const {
-  SuccessorArray result(size());
+StateArray SuccessorStateArray::getStateArray() const {
+  StateArray result(size());
   for(const SuccessorState &ss : *this) {
     result.add(ss.m_newState);
   }

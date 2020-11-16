@@ -19,13 +19,13 @@ public:
 
 typedef IndexArray<NTindexSet> NTindexSetIndexArray;
 
-class SuccessorArrayIndexMap : public IndexMap<SuccessorArray> {
+class StateArrayIndexMap : public IndexMap<StateArray> {
 public:
-  SuccessorArrayIndexMap() : IndexMap<SuccessorArray>(successorArrayCmp) {
+  StateArrayIndexMap() : IndexMap(stateArrayCmp) {
   }
 };
 
-typedef IndexArray<SuccessorArray> SuccessorArrayIndexArray;
+typedef IndexArray<StateArray> StateArrayIndexArray;
 
 class CompressedSuccessorMatrix : public MacroMap {
 private:
@@ -35,7 +35,7 @@ private:
   UINT                          m_currentStateListSize;
   const IntegerType             m_NTindexType, m_stateType;
   NTindexSetIndexMap            m_NTindexMap;
-  SuccessorArrayIndexMap        m_successorMap;
+  StateArrayIndexMap            m_stateListMap;
   StateSet                      m_definedStateSet;
 
   inline UINT getStateCount() const {
