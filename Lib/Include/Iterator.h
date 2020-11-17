@@ -99,7 +99,7 @@ public:
   }
 
   // T must be enumerable (e1 + 1 == e2 must be defined for T e1,e2)
-  String rangesToString(AbstractStringifier<T> &sf, const TCHAR *delimiter = _T(",")) const {
+  String toRangeString(AbstractStringifier<T> &sf, const TCHAR *delimiter = _T(",")) const {
     String result;
     result += '[';
     if(hasNext()) {

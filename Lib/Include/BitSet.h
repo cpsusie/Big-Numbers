@@ -185,7 +185,8 @@ public:
 
   ULONG  hashCode()    const;
   String toBitString() const;
-  String toString(AbstractStringifier<size_t> *sf = nullptr, const TCHAR *delim = _T(",")) const;
+  String toString(     AbstractStringifier<size_t> &sf = SizeTStringifier(), const TCHAR *delim = _T(",")) const;
+  String toRangeString(AbstractStringifier<size_t> &sf = SizeTStringifier(), const TCHAR *delim = _T(",")) const;
 };
 
 // Union        = set containing all elements from lts and rhs
@@ -220,8 +221,8 @@ inline BitSet  compl(const BitSet &s) {
   return BitSet(s).invert();
 }
 
-inline String charBitSetToString(const BitSet &set, AbstractStringifier<size_t> *sf = CharacterFormater::stdAsciiFormater) {
-  return set.getIterator().rangesToString(*sf);
+inline String charBitSetToString(const BitSet &set, AbstractStringifier<size_t> &sf = CharacterFormater::stdAsciiFormater) {
+  return set.toRangeString(sf);
 }
 
 class FileBitSet {

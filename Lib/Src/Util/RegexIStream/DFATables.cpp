@@ -56,7 +56,7 @@ UINT DFATables::getMemoryUsage() const {
 }
 
 static CharacterFormater &getCharFormater() {
-  return *CharacterFormater::hexEscapedExtendedAsciiFormater;
+  return CharacterFormater::hexEscapedExtendedAsciiFormater;
 }
 
 static String thinCharMapToString(const FixedIntArray &a) {

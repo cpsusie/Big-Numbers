@@ -34,7 +34,7 @@ void SimpleLayoutManager::addControl(int ctrlId, int flags) {
 #define BOTTOM_EDGE_BITS     (RELATIVE_BOTTOM | PCT_RELATIVE_BOTTOM | PCT_RELATIVE_Y_CENTER)
 
   if(MANYSET(flags, LEFT_EDGE_BITS) || MANYSET(flags, TOP_EDGE_BITS) || MANYSET(flags, RIGHT_EDGE_BITS) || MANYSET(flags, RIGHT_EDGE_BITS)) {
-    showError(_T("%s:Invalid bit-combination for ctrlId %d:%s"), method, ctrlId, sprintbin((char)flags).cstr());
+    showError(_T("%s:Invalid bit-combination for ctrlId %d:%#08x"), method, ctrlId, flags);
     return;
   }
   if((flags & CONSTANT_WIDTH) && ANYSET(flags, LEFT_EDGE_BITS)) {

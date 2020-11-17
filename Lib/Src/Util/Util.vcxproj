@@ -951,7 +951,11 @@
     <ClCompile Include="BitMatrixRowIterator.cpp" />
     <ClCompile Include="BitOutputStream.cpp" />
     <ClCompile Include="BitSet.cpp" />
+    <ClCompile Include="BitSetRangeTable.cpp" />
+    <ClCompile Include="BitSetToRangeString.cpp" />
     <ClCompile Include="BitSetSelect.cpp" />
+    <ClCompile Include="BitSetToBitString.cpp" />
+    <ClCompile Include="BitSetToString.cpp" />
     <ClCompile Include="BitSetXml.cpp" />
     <ClCompile Include="Date.cpp" />
     <ClCompile Include="DateEaster.cpp" />
@@ -1157,7 +1161,6 @@
     <ClCompile Include="SocketStream.cpp" />
     <ClCompile Include="SourcePosition.cpp" />
     <ClCompile Include="SpaceString.cpp" />
-    <ClCompile Include="sprintbin.cpp" />
     <ClCompile Include="Stat.cpp" />
     <ClCompile Include="stat64.cpp" />
     <ClCompile Include="straccent.cpp" />

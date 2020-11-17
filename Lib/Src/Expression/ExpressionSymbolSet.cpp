@@ -28,7 +28,7 @@ public:
 };
 
 String NodeTypeSet::toString() const {
-  return __super::toString(&NodeTypeSetStringifier());
+  return __super::toString(NodeTypeSetStringifier());
 }
 
 ExpressionSymbolSet::ExpressionSymbolSet() : BitSet(ParserTree::getTerminalCount()) {
@@ -70,7 +70,7 @@ public:
 };
 
 String ExpressionSymbolSet::toString() const {
-  return __super::toString(&SymbolSetStringifier());
+  return __super::toString(SymbolSetStringifier());
 }
 
 }; // namespace Expr

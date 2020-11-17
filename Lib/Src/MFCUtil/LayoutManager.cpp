@@ -22,13 +22,12 @@ void LayoutManager::setFont(CFont *font) {
 #define BOTHSET(flags, f1,f2) (((flags) & ((f1)|(f2))) == ((f1)|(f2)))
 
 void LayoutManager::OnInitDialog(CWnd *wnd, int flags) {
-  DEFINEMETHODNAME;
   if(wnd == nullptr) {
-    showError(_T("%s:wnd==nullptr"), method);
+    showError(_T("%s:wnd==nullptr"), __FUNCTION__);
   }
 
   if(BOTHSET(flags, FONT_RELATIVE_SIZE, RETAIN_ASPECTRATIO)) {
-    showError(_T("%s:Invalid bit-combination for window flags:%s"), method, sprintbin((short)flags).cstr());
+    showError(_T("%s:Invalid bit-combination for window flags:%#08x"), __FUNCTION__, flags);
     return;
   }
 

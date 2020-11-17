@@ -225,9 +225,6 @@
     <ClCompile Include="TreeSetIterator.cpp">
       <Filter>Source Files\Collection</Filter>
     </ClCompile>
-    <ClCompile Include="sprintbin.cpp">
-      <Filter>Source Files\String</Filter>
-    </ClCompile>
     <ClCompile Include="straccent.cpp">
       <Filter>Source Files\String</Filter>
     </ClCompile>
@@ -1023,6 +1020,18 @@
     </ClCompile>
     <ClCompile Include="SysSemaphore.cpp">
       <Filter>Source Files\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="BitSetToString.cpp">
+      <Filter>Source Files\Collection</Filter>
+    </ClCompile>
+    <ClCompile Include="BitSetRangeTable.cpp">
+      <Filter>Source Files\Collection</Filter>
+    </ClCompile>
+    <ClCompile Include="BitSetToBitString.cpp">
+      <Filter>Source Files\Collection</Filter>
+    </ClCompile>
+    <ClCompile Include="BitSetToRangeString.cpp">
+      <Filter>Source Files\Collection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

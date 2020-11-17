@@ -578,15 +578,6 @@ void PackedArray::markBit(int bit) const {
   Console::setCursorPos(oldPos);
 }
 
-static TCHAR *sprintbin(TCHAR *dst, UINT v) { // low-end bits first
-  TCHAR *t = dst;
-  for(int i = 32; i--; v >>= 1) {
-    *(t++) = _T('0') + (v & 1);
-  }
-  *t = 0;
-  return dst;
-}
-
 String PackedArray::toDebugString() const {
   String result = format(_T("Packed Array:Bits/Item:%d, Size:%s, firstFreeBit:%s. m_data.size:%s\n")
                         ,m_bitsPerItem
@@ -629,7 +620,7 @@ String PackedArray::toDebugString() const {
   }
   result += _T("\n");
   for(size_t i = 0; i < m_data.size(); i++) { // print all integers of m_data
-    result += format(_T("%s:"), sprintbin(tmp, m_data[i]));
+    result += format(_T("%s:"), strRev(sprintBin(tmp, m_data[i]));
   }
   result += _T("\n");
 

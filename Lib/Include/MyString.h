@@ -424,11 +424,11 @@ public:
 
 class CharacterFormater : public AbstractStringifier<size_t> {
 public:
-  static CharacterFormater *stdAsciiFormater;
-  static CharacterFormater *extendedAsciiFormater;
-  static CharacterFormater *octalEscapedAsciiFormater;
-  static CharacterFormater *hexEscapedAsciiFormater;
-  static CharacterFormater *hexEscapedExtendedAsciiFormater;
+  static CharacterFormater &stdAsciiFormater;
+  static CharacterFormater &extendedAsciiFormater;
+  static CharacterFormater &octalEscapedAsciiFormater;
+  static CharacterFormater &hexEscapedAsciiFormater;
+  static CharacterFormater &hexEscapedExtendedAsciiFormater;
 };
 
 TCHAR *strRemove(       TCHAR *s  , TCHAR ch);              // Remove any occurence of ch in s
@@ -443,16 +443,17 @@ TCHAR *strToUpperCase(  TCHAR *s);
 TCHAR *strTabExpand(    TCHAR *dst, const TCHAR *src, int tabSize, TCHAR subst = _T(' '));
 int    findMatchingpParanthes(const TCHAR *str, int pos);
 
-String sprintbin(CHAR    c);
-String sprintbin(UCHAR   c);
-String sprintbin(SHORT   s);
-String sprintbin(USHORT  s);
-String sprintbin(INT     i);
-String sprintbin(UINT    i);
-String sprintbin(LONG    l);
-String sprintbin(ULONG   l);
-String sprintbin(INT64   i);
-String sprintbin(UINT64  i);
+// convert bits in V (integer-type) to string of 0 and 1, most significant bit first
+// reverse string to get least significant bit first
+template<typename CharType, typename T> CharType *sprintBin(CharType *str, T v) {
+  constexpr int bitCount = sizeof(T) * 8;
+  CharType     *t        = str + bitCount;
+  *t = 0;
+  for(T mask = 1; t > str; mask <<= 1) {
+    *(--t) = (v & mask) ? '1':'0';
+  }
+  return str;
+}
 
 inline const TCHAR *boolToStr(bool b) {
   return b ? _T("true") : _T("false");

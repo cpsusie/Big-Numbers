@@ -62,8 +62,8 @@ static EscapedAsciiFormater  _octalEscapedAsciiFormater(      127, false);
 static EscapedAsciiFormater  _hexEscapedAsciiFormater(        127, true );
 static EscapedAsciiFormater  _hexEscapedExtendedAsciiFormater(255, true );
 
-CharacterFormater *CharacterFormater::stdAsciiFormater                = &_stdAsciiFormater;
-CharacterFormater *CharacterFormater::extendedAsciiFormater           = &_extendedAsciiFormater;
-CharacterFormater *CharacterFormater::octalEscapedAsciiFormater       = &_octalEscapedAsciiFormater;
-CharacterFormater *CharacterFormater::hexEscapedAsciiFormater         = &_hexEscapedAsciiFormater;
-CharacterFormater *CharacterFormater::hexEscapedExtendedAsciiFormater = &_hexEscapedExtendedAsciiFormater;
+CharacterFormater &CharacterFormater::stdAsciiFormater                = _stdAsciiFormater;
+CharacterFormater &CharacterFormater::extendedAsciiFormater           = _extendedAsciiFormater;
+CharacterFormater &CharacterFormater::octalEscapedAsciiFormater       = _octalEscapedAsciiFormater;
+CharacterFormater &CharacterFormater::hexEscapedAsciiFormater         = _hexEscapedAsciiFormater;
+CharacterFormater &CharacterFormater::hexEscapedExtendedAsciiFormater = _hexEscapedExtendedAsciiFormater;

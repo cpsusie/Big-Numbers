@@ -362,8 +362,7 @@ public:
     checkIsValidType(method, info.type(), info.name());
   }
   inline String toString() const {
-    ValueTypeStringifier sf;
-    return __super::toString(&sf);
+    return __super::toString(ValueTypeStringifier());
   }
 };
 
