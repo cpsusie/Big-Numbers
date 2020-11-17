@@ -60,8 +60,8 @@ public:
   ConstIterator<UINT> getIterator() const;
   ConstIterator<UINT> getReverseIterator() const;
 
-  String toString(const TCHAR *delimiter = _T(",")) const {
-    return getIterator().toString(UIntStringifier(), delimiter);
+  String toString(const TCHAR *delimiter = _T(","), BracketType bracketType = BT_ROUNDBRACKETS) const {
+    return getIterator().toString(UIntStringifier(), delimiter, bracketType);
   }
   void checkInvariant(const TCHAR *method) const;
 

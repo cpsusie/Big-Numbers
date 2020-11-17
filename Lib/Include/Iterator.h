@@ -69,9 +69,9 @@ public:
     return *(const T *)m_it->next();
   }
 
-  String toString(AbstractStringifier<T> &sf, const TCHAR *delimiter = _T(",")) const {
+  String toString(AbstractStringifier<T> &sf, const TCHAR *delimiter = _T(","), BracketType bracketType = BT_ROUNDBRACKETS) const {
     String result;
-    result += '(';
+    result.addStartBracket(bracketType);
     if(hasNext()) {
       ConstIterator<T> it = *this;
       result += sf.toString(it.next());
@@ -80,13 +80,15 @@ public:
         result += sf.toString(it.next());
       }
     }
-    result += ')';
+    result.addEndBracket(bracketType);
     return result;
   }
 
-  String toString(const TCHAR *delimiter = _T(",")) const {
+  String toString(const TCHAR *delimiter = _T(","), BracketType bracketType = BT_ROUNDBRACKETS) const {
     std::wostringstream result;
-    result << '(';
+    if(bracketType != BT_NOBRACKETS) {
+      result << String::getBracketChar(bracketType, STARTBRACKET);
+    }
     if(hasNext()) {
       ConstIterator<T> it = *this;
       result << it.next();
@@ -94,14 +96,16 @@ public:
         result << delimiter << it.next();
       }
     }
-    result << ')';
+    if(bracketType != BT_NOBRACKETS) {
+      result << String::getBracketChar(bracketType, ENDBRACKET);
+    }
     return result.str().c_str();
   }
 
   // T must be enumerable (e1 + 1 == e2 must be defined for T e1,e2)
-  String toRangeString(AbstractStringifier<T> &sf, const TCHAR *delimiter = _T(",")) const {
+  String toRangeString(AbstractStringifier<T> &sf, const TCHAR *delimiter = _T(","), BracketType bracketType = BT_BRACKETS) const {
     String result;
-    result += '[';
+    result.addStartBracket(bracketType);
     if(hasNext()) {
       ConstIterator<T> it    = *this;
       const TCHAR     *delim = nullptr;
@@ -117,7 +121,7 @@ public:
       }
       flushRange(result,first,last,sf, delim, delimiter);
     }
-    result += ']';
+    result.addEndBracket(bracketType);
     return result;
   }
 };

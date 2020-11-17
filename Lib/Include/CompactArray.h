@@ -525,8 +525,9 @@ public:
     m_size = (size_t)size64;
   }
 
-  String toStringPointerType(const TCHAR *delimiter = _T(",")) const {
-    String result = _T("(");
+  String toStringPointerType(const TCHAR *delimiter = _T(","), BracketType bracketType = BT_ROUNDBRACKETS) const {
+    String result;
+    result.addStartBracket(bracketType);
     if(m_size) {
       const T *p = m_array;
       result += (*(p++))->toString();
@@ -535,7 +536,7 @@ public:
         result += (*(p++))->toString();
       }
     }
-    result += _T(")");
+    result.addEndBracket(bracketType);
     return result;
   }
 

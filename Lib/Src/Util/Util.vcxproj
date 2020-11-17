@@ -1026,6 +1026,7 @@
     <ClCompile Include="fstat64.cpp" />
     <ClCompile Include="fwrite.cpp" />
     <ClCompile Include="GenericDebugger.cpp" />
+    <ClCompile Include="BracketChars.cpp" />
     <ClCompile Include="GetCommandline.cpp" />
     <ClCompile Include="GetCurrentThreadHandle.cpp" />
     <ClCompile Include="getcwd.cpp" />

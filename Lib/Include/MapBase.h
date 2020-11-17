@@ -126,12 +126,12 @@ public:
     }
   }
 
-  inline String toString(AbstractStringifier<Entry<K,V> > &sf, const TCHAR *delimiter = _T(",")) const {
-    return getIterator().toString(sf, delimiter);
+  inline String toString(AbstractStringifier<Entry<K,V> > &sf, const TCHAR *delimiter = _T(","), BracketType bracketType = BT_ROUNDBRACKETS) const {
+    return getIterator().toString(sf, delimiter, bracketType);
   }
 
-  inline String toString(const TCHAR *delimiter = _T(",")) const {
-    return getIterator().toString(delimiter);
+  inline String toString(const TCHAR *delimiter = _T(","), BracketType bracketType = BT_ROUNDBRACKETS) const {
+    return getIterator().toString(delimiter, bracketType);
   }
 };
 

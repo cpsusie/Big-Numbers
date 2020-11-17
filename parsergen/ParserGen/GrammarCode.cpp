@@ -29,7 +29,7 @@ String getStateSetComment(const StateSet &set) {
   const size_t n = set.size();
   return format(_T("Used by %s %s")
                ,(n == 1) ? _T("state ") : _T("states")
-               ,set.getIterator().rangesToString(SizeTStringifier()).cstr());
+               ,set.toRangeString(SizeTStringifier(),_T(","), BT_BRACES).cstr());
 }
 
 void      outputBeginArrayDefinition(MarginFile &output, const TCHAR *tableName, IntegerType elementType, UINT size) {

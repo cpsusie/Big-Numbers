@@ -305,8 +305,8 @@ public:
     return Iterator<UINT>(new TinyBitSetReverseIterator(this, start, end));
   }
 
-  String toString(AbstractStringifier<UINT> &sf = UIntStringifier(), const TCHAR *delim = _T(",")) const {
-    return getIterator().toString(sf, delim);
+  String toString(AbstractStringifier<UINT> &sf = UIntStringifier(), const TCHAR *delim = _T(","), BracketType bracketType = BT_ROUNDBRACKETS) const {
+    return getIterator().toString(sf, delim, bracketType);
   }
 
   static TinyBitSet all() {

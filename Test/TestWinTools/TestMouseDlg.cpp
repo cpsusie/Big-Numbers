@@ -75,8 +75,9 @@ BOOL CTestMouseDlg::OnInitDialog() {
 }
 
 void CTestMouseDlg::showFlags(const TCHAR *function, UINT flags) {
-  const String s = format(_T("%-13s:flags:%3d (%02x) [%s]"), function, flags, flags, sprintbin((unsigned char)flags).cstr()).cstr();
-  CClientDC(this).TextOut(10,10,s.cstr(), (int)s.length());
+  TCHAR flagStr[20];
+  const String s = format(_T("%-13s:flags:%3d (%02x) [%s]"), function, flags, flags, sprintBin(flagStr, (BYTE)flags)).cstr();
+  textOut(CClientDC(this),10,10,s);
 }
 
 #define SHOWFLAGS() showFlags(__TFUNCTION__, nFlags)

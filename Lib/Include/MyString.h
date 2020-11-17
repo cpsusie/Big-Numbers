@@ -107,6 +107,19 @@ template<typename CharType> CharType *strRev(CharType *str) {
                                  : (CharType*)_wcsrev((wchar_t*)str);
 }
 
+typedef enum {
+  BT_NOBRACKETS        // No enclosing brackets
+ ,BT_ROUNDBRACKETS     // (...)
+ ,BT_BRACES            // {...}
+ ,BT_BRACKETS          // [...]
+ ,BT_CHEVRONS          // <...>
+} BracketType;
+
+typedef enum {
+  STARTBRACKET
+ ,ENDBRACKET
+} BracketPosition;
+
 class String {
 private:
   size_t m_len, m_capacity;
@@ -297,6 +310,25 @@ public:
       }
     }
     return true;
+  }
+
+  static const TCHAR *s_bracketChars[5];
+  static inline TCHAR getBracketChar(BracketType type, BracketPosition pos) {
+    return s_bracketChars[type][pos];
+  }
+
+  inline String &addStartBracket(BracketType type) {
+    if(type != BT_NOBRACKETS) {
+      *this += getBracketChar(type, STARTBRACKET);
+    }
+    return *this;
+  }
+
+  inline String &addEndBracket(BracketType type) {
+    if(type != BT_NOBRACKETS) {
+      *this += getBracketChar(type, ENDBRACKET);
+    }
+    return *this;
   }
 
   // works only for characters [0..255]

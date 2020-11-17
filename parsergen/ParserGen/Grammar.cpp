@@ -693,17 +693,7 @@ void Grammar::checkStateIsConsistent(const LR1State &state, StateResult &result)
 }
 
 String SymbolNameContainer::symbolSetToString(const SymbolSet &set) const {
-  String result = _T("[");
-  UINT i = 0;
-  for(auto it = set.getIterator(); it.hasNext();) {
-    const UINT s = (UINT)it.next();
-    if(i++ != 0) {
-      result += ' ';
-    }
-    result += getSymbolName(s);
-  }
-  result += ']';
-  return result;
+  return set.toString(SymbolStringifier(*this), _T(" "), BT_BRACKETS);
 }
 
 String Grammar::itemToString(const LR1Item &item, int flags) const {

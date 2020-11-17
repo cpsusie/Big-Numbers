@@ -37,6 +37,17 @@ public:
   String symbolSetToString(const SymbolSet &set) const;
 };
 
+class SymbolStringifier: public AbstractStringifier<size_t> {
+private:
+  const SymbolNameContainer &m_nameContainer;
+public:
+  inline SymbolStringifier(const SymbolNameContainer &nameContainer) : m_nameContainer(nameContainer) {
+  }
+  String toString(const size_t &symbolIndex) override {
+    return m_nameContainer.getSymbolName((UINT)symbolIndex);
+  }
+};
+
 class GrammarSymbol {
 public:
   const UINT       m_index;

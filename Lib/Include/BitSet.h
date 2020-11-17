@@ -185,8 +185,8 @@ public:
 
   ULONG  hashCode()    const;
   String toBitString() const;
-  String toString(     AbstractStringifier<size_t> &sf = SizeTStringifier(), const TCHAR *delim = _T(",")) const;
-  String toRangeString(AbstractStringifier<size_t> &sf = SizeTStringifier(), const TCHAR *delim = _T(",")) const;
+  String toString(     AbstractStringifier<size_t> &sf = SizeTStringifier(), const TCHAR *delim = _T(","), BracketType bracketType = BT_ROUNDBRACKETS) const;
+  String toRangeString(AbstractStringifier<size_t> &sf = SizeTStringifier(), const TCHAR *delim = _T(","), BracketType bracketType = BT_BRACKETS     ) const;
 };
 
 // Union        = set containing all elements from lts and rhs

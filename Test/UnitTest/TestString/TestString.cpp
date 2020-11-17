@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <Random.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -376,5 +377,33 @@ namespace TestString {
       verify(s5.compareIgnoreCase(s2) > 0);
 
     }
+
+    template<typename T, typename S> void testToBitString(TCHAR *(*stdconv)(S v, TCHAR *dst, int radix)) {
+      constexpr size_t bitCount = sizeof(T) * 8;
+      for(int i = 0; i < 100; i++) {
+        const T v = (T)randInt64();
+        TCHAR str1[200], str2[200];
+        memset(str1, 0, sizeof(str1));
+        memset(str2, 0, sizeof(str2));
+        const String s1 = sprintBin(str1, v);
+        String       s2 = stdconv(v, str2, 2);
+        if(s2.length() < bitCount) {
+          s2.insert(0, bitCount - s2.length(), '0');
+        } else if(s2.length() > bitCount) {
+          s2.remove(0, s2.length() - bitCount);
+        }
+        verify(s1 == s2);
+      }
+    }
+
+    TEST_METHOD(testSprintBin) {
+      testToBitString<SHORT ,INT  >(_itow  );
+      testToBitString<USHORT,INT  >(_itow  );
+      testToBitString<INT   ,INT  >(_itow  );
+      testToBitString<UINT  ,INT  >(_itow  );
+      testToBitString<INT64 ,INT64>(_i64tow);
+      testToBitString<UINT64,INT64>(_i64tow);
+    }
+
   };
 }

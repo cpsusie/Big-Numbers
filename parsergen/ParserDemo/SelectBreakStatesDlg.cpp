@@ -22,18 +22,7 @@ END_MESSAGE_MAP()
 
 BOOL CSelectBreakStatesDlg::OnInitDialog() {
   __super::OnInitDialog();
-  String s;
-
-  TCHAR *delimiter = nullptr;
-  for(auto it = m_stateSet.getIterator(); it.hasNext(); ) {
-    if(delimiter == nullptr) {
-      delimiter = _T(" ");
-    } else {
-      s += delimiter;
-    }
-    s += format(_T("%d"), (int)it.next());
-  }
-  m_states = s.cstr();
+  m_states = m_stateSet.toString(SizeTStringifier(), _T(" "), BT_NOBRACKETS).cstr();
   UpdateData(false);
   gotoEditBox(this, IDC_EDITSTATES);
   return FALSE;
@@ -43,7 +32,7 @@ void CSelectBreakStatesDlg::OnOK() {
   const int maxStateNumber = m_tables.getStateCount() - 1;
 
   UpdateData();
-  BitSet stateSet(m_tables.getStateCount()+1);
+  BitSet stateSet((size_t)m_tables.getStateCount()+1);
   bool ok = true;
   for(Tokenizer tok(m_states.GetBuffer(m_states.GetLength()), _T(" ;,:")); tok.hasNext() && ok;) {
     int tmp;
