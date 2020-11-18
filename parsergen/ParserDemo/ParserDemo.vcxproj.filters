@@ -81,6 +81,9 @@
     <ClCompile Include="..\ParserGen\SuccessorStateArray.cpp">
       <Filter>Source Files\ParserGen Files</Filter>
     </ClCompile>
+    <ClCompile Include="TransitionMatrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ParserDemo.rc">
@@ -150,6 +153,9 @@
     </ClInclude>
     <ClInclude Include="..\ParserGen\Options.h">
       <Filter>Source Files\ParserGen Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TransitionMatrix.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

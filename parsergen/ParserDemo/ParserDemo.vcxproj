@@ -317,6 +317,7 @@
     </ClCompile>
     <ClCompile Include="TestParser.cpp" />
     <ClCompile Include="TextBox.cpp" />
+    <ClCompile Include="TransitionMatrix.cpp" />
     <ClCompile Include="TreeDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -343,6 +344,7 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestParser.h" />
     <ClInclude Include="TextBox.h" />
+    <ClInclude Include="TransitionMatrix.h" />
     <ClInclude Include="TreeDlg.h" />
   </ItemGroup>
   <ItemGroup>
