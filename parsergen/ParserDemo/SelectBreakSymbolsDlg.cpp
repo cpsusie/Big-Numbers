@@ -12,11 +12,11 @@ CSelectBreakSymbolsDlg::CSelectBreakSymbolsDlg(const ParserTables &tables, BitSe
 }
 
 void CSelectBreakSymbolsDlg::DoDataExchange(CDataExchange *pDX) {
-	__super::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CSelectBreakSymbolsDlg, CDialog)
-	ON_BN_CLICKED(IDC_BUTTONCLEAR, OnButtonclear)
+  ON_BN_CLICKED(IDC_BUTTONCLEAR, OnButtonclear)
 END_MESSAGE_MAP()
 
 BOOL CSelectBreakSymbolsDlg::OnInitDialog() {
@@ -39,7 +39,6 @@ BOOL CSelectBreakSymbolsDlg::OnInitDialog() {
       lb->SetSel(symbolPos.m_symbolSetIndex);
     }
   }
-
   lb->SetFocus();
   return FALSE;
 }

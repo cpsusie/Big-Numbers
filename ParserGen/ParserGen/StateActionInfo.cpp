@@ -36,7 +36,7 @@ ShiftAndReduceActions::ShiftAndReduceActions(const InfoNodeCommonData &cd, const
 ParserActionArray ShiftAndReduceActions::mergeAll() const {
   ParserActionArray result(getLegalTermCount());
   result.addAll(m_shiftActionArray);
-  if(m_termSetReductionArray.size() > 0) {
+  if(!m_termSetReductionArray.isEmpty()) {
     for(auto it = m_termSetReductionArray.getIterator(); it.hasNext();) {
       result.addAll((ParserActionArray)it.next());
     }
@@ -49,7 +49,7 @@ ParserActionArray ShiftAndReduceActions::mergeAll() const {
 
 StateActionInfo *StateActionInfo::allocateStateActionInfo(UINT state, const SymbolNameContainer &nameContainer, const ParserActionArray &actionArray) {
   const InfoNodeCommonData commonData(state, nameContainer);
-  const Options &options = Options::getInstance();
+  const Options           &options = Options::getInstance();
   if(!options.m_useTableCompression) {
     return new TermListNode(nullptr, commonData, actionArray);
   } else {

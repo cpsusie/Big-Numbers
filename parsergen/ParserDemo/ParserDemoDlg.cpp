@@ -566,11 +566,11 @@ void CParserDemoDlg::beginParse() {
   m_parser.setNewInput(getInputString().cstr());
   m_parser.parseBegin();
   m_breakPosDone    = false;
-  enableMenuItem(this, ID_RUN_STARTDEBUG_STEP, true);
-  enableMenuItem(this, ID_RUN_STARTDEBUG_STEPOVER, true);
-  enableMenuItem(this, ID_EDIT_DERIVATIONTREE, false);
-  enableMenuItem(this, ID_EDIT_NEXTERROR, false);
-  enableMenuItem(this, ID_EDIT_PREVERROR, false);
+  enableMenuItem(this, ID_RUN_STARTDEBUG_STEP    , true );
+  enableMenuItem(this, ID_RUN_STARTDEBUG_STEPOVER, true );
+  enableMenuItem(this, ID_EDIT_DERIVATIONTREE    , false);
+  enableMenuItem(this, ID_EDIT_NEXTERROR         , false);
+  enableMenuItem(this, ID_EDIT_PREVERROR         , false);
   showStatus();
 
 //  gettotallegalinput(m_parser);

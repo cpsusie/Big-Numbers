@@ -19,7 +19,6 @@ END_MESSAGE_MAP()
 
 BOOL GotoDlg::OnInitDialog() {
   __super::OnInitDialog();
-	
   gotoEditBox(this, IDC_EDITLINENUMBER);
   return FALSE;
 }

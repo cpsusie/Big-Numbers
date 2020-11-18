@@ -297,20 +297,20 @@ Scanner *LRparser::setScanner(Scanner *scanner) {
 
 void LRparser::error(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
-  va_start(argptr,format);
-  verror(pos,format,argptr);
+  va_start(argptr, format);
+  verror(pos,format, argptr);
   va_end(argptr);
 }
 
 void LRparser::debug(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
-  va_start(argptr,format);
-  vdebug(format,argptr);
+  va_start(argptr, format);
+  vdebug(format, argptr);
   va_end(argptr);
 }
 
 void LRparser::verror(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
-  _tprintf(_T("error in line %d:"), pos. getLineNumber());
+  _tprintf(_T("Error in line %d:"), pos.getLineNumber());
   _vtprintf(format, argptr);
   _tprintf(_T("\n")); // we default append a newline.
 }
@@ -325,7 +325,10 @@ String ParserTables::getRightString(UINT prod) const {
   if(length == 0) {
     return _T("epsilon");
   } else {
-    UINT symbols[1000];
+    UINT symbolArray[1000], *symbols = symbolArray;
+    if(length > ARRAYSIZE(symbolArray)) { // just in case....
+      symbols = new UINT[length]; TRACE_NEW(symbols);
+    }
     getRightSide(prod, symbols);
     String result;
     for(UINT i = 0; i < length; i++) {
@@ -333,6 +336,9 @@ String ParserTables::getRightString(UINT prod) const {
         result += _T(" ");
       }
       result += getSymbolName(symbols[i]);
+    }
+    if(symbols != symbolArray) {
+      SAFEDELETEARRAY(symbols);
     }
     return result;
   }
