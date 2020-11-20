@@ -1,6 +1,6 @@
 #pragma once
 
-#include <LRparser.h>
+#include <AbstractParserTables.h>
 
 typedef enum {
   TYPE_CHAR     // [CHAR_MIN..CHAR_MAX ]

@@ -14,14 +14,14 @@ private:
 public:
   MacroMap(const SymbolNameContainer &nameContainer) : m_nameContainer(nameContainer) {
   }
-  const TCHAR *getSymbolName(UINT symbolIndex) const override {
+  const String &getSymbolName(UINT symbolIndex) const override {
     return m_nameContainer.getSymbolName(symbolIndex);
   }
-  UINT         getSymbolCount()                const override {
+  UINT          getSymbolCount()                const override {
     return m_nameContainer.getSymbolCount();
   }
-  UINT         getTerminalCount()              const override {
-    return m_nameContainer.getTerminalCount();
+  UINT          getTermCount()                  const override {
+    return m_nameContainer.getTermCount();
   }
 
   // Return pointer to macro with same value if it exist, or nullptr if not

@@ -13,7 +13,7 @@ GrammarCode::GrammarCode(const Grammar &grammar)
 {
 }
 
-ByteArray symbolSetToByteArray(const SymbolSet &set) {
+ByteArray bitSetToByteArray(const BitSet &set) {
   const size_t byteCount = (set.getCapacity() - 1) / 8 + 1;
   ByteArray    result(byteCount);
   result.addZeroes(byteCount);
@@ -72,8 +72,8 @@ void GrammarCode::generateDocFile(MarginFile &output) const {
   }
   m_grammar.dumpStates(dumpformat, &output);
   output.printf(_T("\n"));
-  output.printf(_T("%4u\tterminals\n"              ), m_grammar.getTerminalCount()   );
-  output.printf(_T("%4u\tnonterminals\n"           ), m_grammar.getNTCount()         );
+  output.printf(_T("%4u\tterminals\n"              ), m_grammar.getTermCount()       );
+  output.printf(_T("%4u\tnonterminals\n"           ), m_grammar.getNTermCount()      );
   output.printf(_T("%4u\tproductions\n"            ), m_grammar.getProductionCount() );
   output.printf(_T("%4u\tLALR(1) states\n"         ), m_grammar.getStateCount()      );
   output.printf(_T("%4u\titems\n"                  ), m_grammar.getItemCount()       );
@@ -115,7 +115,7 @@ void GrammarCode::generateParser() {
   writer.addMacro(         _T("PARSERCLASSNAME"    ), m_parserClassName    );
   writer.addMacro(         _T("TABLESCLASSNAME"    ), m_tablesClassName    );
   writer.addMacro(         _T("DOCFILENAME"        ), m_docFileName        );
-  writer.addMacro(         _T("TERMINALCOUNT"      ), toString(m_grammar.getTerminalCount(  )));
+  writer.addMacro(         _T("TERMINALCOUNT"      ), toString(m_grammar.getTermCount(      )));
   writer.addMacro(         _T("SYMBOLCOUNT"        ), toString(m_grammar.getSymbolCount(    )));
   writer.addMacro(         _T("PRODUCTIONCOUNT"    ), toString(m_grammar.getProductionCount()));
   writer.addMacro(         _T("STATECOUNT"         ), toString(m_grammar.getStateCount(     )));

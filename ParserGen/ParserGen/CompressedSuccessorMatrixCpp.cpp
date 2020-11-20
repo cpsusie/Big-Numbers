@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <CompactHashMap.h>
 #include "GrammarCode.h"
 #include "CompressEncoding.h"
 #include "CompressedSuccessorMatrixCpp.h"
@@ -9,7 +8,6 @@ namespace SuccessorMatrixCompression {
 CompressedSuccessorMatrix::CompressedSuccessorMatrix(const GrammarTables &tables)
   : MacroMap(          tables                  )
   , m_tables(          tables                  )
-  , m_stateCount(      tables.getStateCount()  )
   , m_NTindexType(     tables.getNTindexType() )
   , m_stateType(       tables.getStateType()   )
   , m_definedStateSet( tables.getStateCount()  )
@@ -45,14 +43,14 @@ Macro CompressedSuccessorMatrix::doSuccList(UINT state, const SuccessorStateArra
 }
 
 Macro CompressedSuccessorMatrix::doNTindexListState(UINT state, const SuccessorStateArray &succList) {
-  const NTindexSet    ntIndexSet = succList.getNTindexSet(getTerminalCount(), getSymbolCount());
+  const NTindexSet    ntIndexSet = succList.getNTindexSet(getTermCount(), getSymbolCount());
   IndexMapValue      *imvp       = m_NTindexMap.get(ntIndexSet);
   UINT                ntListIndex, ntListCount;
 
   if(imvp != nullptr) {
     ntListIndex = imvp->m_arrayIndex;
     ntListCount = imvp->m_commentIndex;
-    imvp->addState(state);
+    imvp->addUsedByValue(state);
   } else {
     ntListIndex = m_currentNTindexListSize;
     ntListCount = m_NTindexMap.getCount();
@@ -66,24 +64,24 @@ Macro CompressedSuccessorMatrix::doNTindexListState(UINT state, const SuccessorS
   if(imvp != nullptr) {
     stateListIndex = imvp->m_arrayIndex;
     stateListCount = imvp->m_commentIndex;
-    imvp->addState(state);
+    imvp->addUsedByValue(state);
   } else {
     stateListIndex = m_currentStateListSize;
     stateListCount = m_stateListMap.getCount();
     m_stateListMap.put(sa, IndexMapValue(getStateCount(), state, stateListIndex));
     m_currentStateListSize += (UINT)sa.size();
   }
-  const String macroValue = encodeMacroValue(ParserTables::CompCodeTermList, stateListIndex, ntListIndex);
+  const String macroValue = encodeMacroValue(AbstractParserTables::CompCodeBinSearch, stateListIndex, ntListIndex);
   const String comment    = format(_T("NTindexList %3u, stateList %3u"), ntListCount, stateListCount);
   return Macro(getStateCount(), state, macroValue, comment);
 }
 
 Macro CompressedSuccessorMatrix::doOneSuccessorState(UINT state, const SuccessorState &ss) {
-  const UINT    NT         = ss.m_nt;
+  const UINT    nterm      = ss.m_nterm;
   const UINT    newState   = ss.m_newState;
-  const UINT    NTindex    = NT - getTerminalCount();
-  const String  macroValue = encodeMacroValue(ParserTables::CompCodeOneItem, newState, NTindex);
-  const String  comment    = format(_T("Goto %u on %s"), newState, getSymbolName(NT));
+  const UINT    NTindex    = nterm - getTermCount();
+  const String  macroValue = encodeMacroValue(AbstractParserTables::CompCodeImmediate, newState, NTindex);
+  const String  comment    = format(_T("Goto %u on %s"), newState, getSymbolName(nterm).cstr());
   return Macro(getStateCount(), state, macroValue, comment);
 }
 
@@ -135,7 +133,7 @@ ByteCount CompressedSuccessorMatrix::printNTindexAndStateList(MarginFile &output
     outputBeginArrayDefinition(output, _T("NTindexListTable"), m_NTindexType , ntSetArray.getElementCount(true));
     for(auto it = ntSetArray.getIterator();      it.hasNext();) {
       const IndexArrayEntry<NTindexSet>  &e                 = it.next();
-      String                              comment           = format(_T("%3u %s"), e.m_commentIndex, e.getComment().cstr());
+      String                              comment           = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment().cstr());
       const UINT                          n                 = (UINT)e.m_key.size();
       UINT                                counter           = 0;
       output.setLeftMargin(2);
@@ -158,7 +156,7 @@ ByteCount CompressedSuccessorMatrix::printNTindexAndStateList(MarginFile &output
     outputBeginArrayDefinition(output, _T("stateListTable"  ), m_stateType , stateListArray.getElementCount(false));
     for(auto it = stateListArray.getIterator();  it.hasNext();) {
       const IndexArrayEntry<StateArray>  &e                 = it.next();
-      String                              comment           = format(_T("%3u %s"), e.m_commentIndex, e.getComment().cstr());
+      String                              comment           = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment().cstr());
       const UINT                          n                 = (UINT)e.m_key.size();
       UINT                                counter           = 0;
       for(auto it1 = e.m_key.getIterator(); it1.hasNext(); counter++, delim = ',') {

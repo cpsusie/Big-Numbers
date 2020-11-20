@@ -7,7 +7,7 @@
 #include "ExpressionSymbol.h"
 #include "SNode.h"
 
-class ParserTables;
+class AbstractParserTables;
 
 namespace Expr {
 
@@ -378,10 +378,10 @@ public:
   }
 
   // From grammar
-  static const ParserTables &getParserTables();
-  static UINT                getTerminalCount();
-  static bool                isValidName(const String &str);
-  static String              getSymbolName(ExpressionInputSymbol symbol);
+  static const AbstractParserTables &getParserTables();
+  static UINT                        getTerminalCount();
+  static bool                        isValidName(const String &str);
+  static String                      getSymbolName(ExpressionInputSymbol symbol);
 
   String toString() const;
 };

@@ -1,9 +1,11 @@
 #include "stdafx.h"
 #include <CompactHashMap.h>
-#include "StateActionInfo.h"
+#include "StateActionNode.h"
+
+namespace ActionMatrixCompression {
 
 TermSetReduction::operator ParserActionArray() const {
-  ParserActionArray result(getTermSetSize());
+  ParserActionArray result(getLegalTermCount());
   const short action = -(int)m_prod;
   for(auto it = m_termSet.getIterator(); it.hasNext();) {
     result.add(ParserAction((USHORT)it.next(), action));
@@ -11,8 +13,8 @@ TermSetReduction::operator ParserActionArray() const {
   return result;
 }
 
-ShiftAndReduceActions::ShiftAndReduceActions(const InfoNodeCommonData &cd, const ParserActionArray &actionArray)
-  : InfoNodeCommonData(cd)
+ShiftAndReduceActions::ShiftAndReduceActions(const ActionNodeCommonData &cd, const ParserActionArray &actionArray)
+  : ActionNodeCommonData(cd)
 {
   CompactUIntHashMap<UINT, 256>  termSetReductionMap(241); // map from reduce-production -> index into termSetReductionArray
   for(const ParserAction pa : actionArray) {
@@ -30,7 +32,7 @@ ShiftAndReduceActions::ShiftAndReduceActions(const InfoNodeCommonData &cd, const
       }
     }
   }
-  m_termSetReductionArray.sortBySetSize();
+  m_termSetReductionArray.sortByLegalTermCount();
 }
 
 ParserActionArray ShiftAndReduceActions::mergeAll() const {
@@ -47,8 +49,8 @@ ParserActionArray ShiftAndReduceActions::mergeAll() const {
   return result;
 }
 
-StateActionInfo *StateActionInfo::allocateStateActionInfo(UINT state, const SymbolNameContainer &nameContainer, const ParserActionArray &actionArray) {
-  const InfoNodeCommonData commonData(state, nameContainer);
+StateActionNode *StateActionNode::allocateStateActionNode(UINT state, const SymbolNameContainer &nameContainer, const ParserActionArray &actionArray) {
+  const ActionNodeCommonData commonData(state, nameContainer);
   const Options           &options = Options::getInstance();
   if(!options.m_useTableCompression) {
     return new TermListNode(nullptr, commonData, actionArray);
@@ -57,7 +59,7 @@ StateActionInfo *StateActionInfo::allocateStateActionInfo(UINT state, const Symb
   }
 }
 
-StateActionInfo *StateActionInfo::allocateNode(const StateActionInfo *parent, const ShiftAndReduceActions &sra) {
+StateActionNode *StateActionNode::allocateNode(const StateActionNode *parent, const ShiftAndReduceActions &sra) {
   const Options &options       = Options::getInstance();
   const UINT     shiftActions  = sra.m_shiftActionArray.getLegalTermCount();
   const UINT     reduceActions = (UINT)sra.m_termSetReductionArray.size();
@@ -73,25 +75,25 @@ StateActionInfo *StateActionInfo::allocateNode(const StateActionInfo *parent, co
   }
 
   const BYTE recurseLevel = parent ? parent->getRecurseLevel() + 1 : 0;
-  if((reduceActions == 0) || (sra.m_termSetReductionArray[0].getTermSetSize() < 2) || (recurseLevel >= options.m_maxRecursiveCalls)) {
+  if((reduceActions == 0) || (sra.m_termSetReductionArray[0].getLegalTermCount() < 2) || (recurseLevel >= options.m_maxRecursiveCalls)) {
     return allocateTermListNode(parent, sra, sra.mergeAll());
   }
 
   return allocateSplitNode(parent, sra);
 }
 
-StateActionInfo *StateActionInfo::allocateSplitNode(const StateActionInfo *parent, const ShiftAndReduceActions &sra) {
+StateActionNode *StateActionNode::allocateSplitNode(const StateActionNode *parent, const ShiftAndReduceActions &sra) {
   const UINT legalTokenCount = sra.getLegalTermCount();
   SplitNode *p = new SplitNode(parent, sra, legalTokenCount); TRACE_NEW(p);
   // (shiftActions + reduceActions >= 2) && (reduceActions >= 1) && (m_termSetReductionArray[0].getTermSetSize() >= 2)
-  StateActionInfo *child0 = allocateTermSetNode(p, sra, sra.m_termSetReductionArray[0]);
-  StateActionInfo *child1 = allocateNode(       p, ShiftAndReduceActions(sra).removeFirstTermSet());
+  StateActionNode *child0 = allocateTermSetNode(p, sra, sra.m_termSetReductionArray[0]);
+  StateActionNode *child1 = allocateNode(       p, ShiftAndReduceActions(sra).removeFirstTermSet());
   p->setChild(0, child0).setChild(1, child1);
   return p;
 }
 
-StateActionInfo *StateActionInfo::allocateTermListNode(const StateActionInfo *parent, const InfoNodeCommonData &cd, const ParserActionArray &actionArray) {
-  StateActionInfo *p;
+StateActionNode *StateActionNode::allocateTermListNode(const StateActionNode *parent, const ActionNodeCommonData &cd, const ParserActionArray &actionArray) {
+  StateActionNode *p;
   if(actionArray.size() == 1) {
     p = new OneItemNode( parent, cd, actionArray[0]); TRACE_NEW(p);
   } else {
@@ -101,9 +103,9 @@ StateActionInfo *StateActionInfo::allocateTermListNode(const StateActionInfo *pa
 }
 
 
-StateActionInfo *StateActionInfo::allocateTermSetNode(const StateActionInfo *parent, const InfoNodeCommonData &cd, const TermSetReduction &termSetReduction) {
-  StateActionInfo *p;
-  if(termSetReduction.getTermSetSize() == 1) {
+StateActionNode *StateActionNode::allocateTermSetNode(const StateActionNode *parent, const ActionNodeCommonData &cd, const TermSetReduction &termSetReduction) {
+  StateActionNode *p;
+  if(termSetReduction.getLegalTermCount() == 1) {
     const ParserActionArray paa(termSetReduction);
     p = new OneItemNode(parent, cd, paa[0]          ); TRACE_NEW(p);
   } else {
@@ -117,14 +119,14 @@ SplitNode::~SplitNode() {
   SAFEDELETE(m_child[1]);
 }
 
-SplitNode &SplitNode::setChild(BYTE index, StateActionInfo *child) {
+SplitNode &SplitNode::setChild(BYTE index, StateActionNode *child) {
   assert(index < 2);
   assert(m_child[index] == nullptr);
   m_child[index] = child;
   return *this;
 }
 
-String StateActionInfo::toString() const {
+String StateActionNode::toString() const {
   return format(_T("State %u %-20s recurseLevel:%u, (Legal tokens:%u)\n"), m_state, compressMethodToString(getCompressionMethod()), m_recurseLevel, m_legalTermCount);
 }
 
@@ -149,3 +151,5 @@ String TermSetNode::toString() const {
   const String result = __super::toString() + indentString(m_termSetReduction.toString(),3);
   return indentString(result, m_recurseLevel * 2);
 }
+
+}; // namespace ActionMatrixCompression

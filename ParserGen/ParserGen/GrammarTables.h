@@ -3,10 +3,10 @@
 typedef Array<ParserActionArray>   ActionMatrix;
 typedef Array<SuccessorStateArray> SuccessorMatrix;
 
-class GrammarTables : public ParserTables, public SymbolNameContainer {
+class GrammarTables : public AbstractParserTables {
 private:
   const UINT              m_symbolCount;
-  const UINT              m_terminalCount;
+  const UINT              m_termCount;
   const UINT              m_productionCount;
   const UINT              m_stateCount;
   const String            m_parserClassName;
@@ -18,7 +18,7 @@ private:
   SuccessorMatrix         m_successorMatrix;
   mutable StateSet        m_compressibleStateSet;
   mutable ByteCount       m_countTableBytes;
-  mutable IntegerType     m_terminalType, m_NTindexType, m_symbolType, m_actionType, m_stateType;
+  mutable IntegerType     m_symbolType, m_termType, m_NTindexType, m_actionType, m_stateType;
 
   void                findTemplateTypes()                 const;
   void                initCompressibleStateSet();
@@ -40,25 +40,26 @@ private:
   ByteCount printSymbolNameTableCpp(          MarginFile &output) const; // return size in bytes
 public:
   GrammarTables(const Grammar &g, const String &tableClassName, const String &parserClassName);
-  int  getAction(            UINT state, UINT input     ) const override;
-  UINT getSuccessor(         UINT state, UINT nt        ) const override;
-  UINT getProductionLength(  UINT prod                  ) const override { return m_productionLength[prod];                 }
-  UINT getLeftSymbol(        UINT prod                  ) const override { return m_left[prod];                             }
-  const TCHAR *getSymbolName(UINT symbol                ) const override { return m_symbolNameArray[symbol].cstr();         }
-  void getRightSide(         UINT prod, UINT *dst       ) const override;
-  UINT getTerminalCount()                                 const override { return m_terminalCount;                          }
+  int  getAction(             UINT state, UINT term     ) const override;
+  UINT getSuccessor(          UINT state, UINT nterm    ) const override;
+  UINT getProductionLength(   UINT prod                 ) const override { return m_productionLength[prod];                 }
+  UINT getLeftSymbol(         UINT prod                 ) const override { return m_left[prod];                             }
+  const String &getSymbolName(UINT symbol               ) const override { return m_symbolNameArray[symbol];                }
+  void getRightSide(          UINT prod, UINT *dst      ) const override;
   UINT getSymbolCount()                                   const override { return m_symbolCount;                            }
+  UINT getTermCount()                                     const override { return m_termCount;                              }
   UINT getProductionCount()                               const override { return m_productionCount;                        }
   UINT getStateCount()                                    const override { return m_stateCount;                             }
-  UINT getLegalInputCount(   UINT state                 ) const override { return (UINT)m_actionMatrix[state].size();       }
-  void getLegalInputs(       UINT state, UINT *symbols  ) const override;
-  UINT getLegalNTCount(      UINT state                 ) const override { return (UINT)m_successorMatrix[state].size();    }
-  void getLegalNTerms(       UINT state, UINT *symbols  ) const override;
-  UINT getTableByteCount(    Platform platform          ) const override { return m_countTableBytes.getByteCount(platform); }
+  UINT getLegalInputCount(    UINT state                ) const override { return (UINT)m_actionMatrix[state].size();       }
+  void getLegalInputs(        UINT state, UINT *symbols ) const override;
+  UINT getLegalNTermCount(    UINT state                ) const override { return (UINT)m_successorMatrix[state].size();    }
+  void getLegalNTerms(        UINT state, UINT *symbols ) const override;
+  UINT getTableByteCount(     Platform platform         ) const override { return m_countTableBytes.getByteCount(platform); }
 
-  inline IntegerType            getTerminalType()         const          { return m_terminalType;                           }
-  inline IntegerType            getActionType()           const          { return m_actionType;                             }
+  inline IntegerType            getSymbolType()           const          { return m_symbolType;                             }
+  inline IntegerType            getTermType()             const          { return m_termType;                               }
   inline IntegerType            getNTindexType()          const          { return m_NTindexType;                            }
+  inline IntegerType            getActionType()           const          { return m_actionType;                             }
   inline IntegerType            getStateType()            const          { return m_stateType;                              }
   const  ActionMatrix          &getActionMatrix()         const          { return m_actionMatrix;                           }
   const  SuccessorMatrix       &getSuccessorMatrix()      const          { return m_successorMatrix;                        }

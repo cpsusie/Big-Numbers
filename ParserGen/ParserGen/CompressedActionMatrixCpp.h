@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GrammarTables.h"
-#include "StateActionInfoArray.h"
+#include "StateActionNodeArray.h"
 #include "IndexMap.h"
 #include "MacroMap.h"
 
@@ -31,26 +31,25 @@ typedef IndexArray<ActionArray> ActionArrayIndexArray;
 class CompressedActionMatrix : public MacroMap {
 private:
   const GrammarTables          &m_tables;
-  const UINT                    m_stateCount;
   const UINT                    m_termSetSizeInBytes;
   UINT                          m_currentTermListSize;
   UINT                          m_currentActionListSize;
   UINT                          m_currentTermSetArraySize;
   UINT                          m_currentSplitNodeCount;
-  const IntegerType             m_terminalType, m_actionType;
-  StateActionInfoArray          m_stateInfoArray;
+  const IntegerType             m_termType, m_actionType;
+  StateActionNodeArray          m_stateActionNodeArray;
   TermSetIndexMap               m_termSetMap;
   TermSetIndexMap               m_termListMap;
   ActionArrayIndexMap           m_actionListMap;
 
   inline UINT getStateCount() const {
-    return m_stateCount;
+    return m_tables.getStateCount();
   }
-  Macro        doStateActionInfo(      const StateActionInfo &stateInfo);
-  Macro        doTermListState(        const StateActionInfo &stateInfo);
-  Macro        doSplitNodeState(       const StateActionInfo &stateInfo);
-  Macro        doOneItemState(         const StateActionInfo &stateInfo);
-  Macro        doTermSetState(         const StateActionInfo &stateInfo);
+  Macro        doStateActionNode(     const StateActionNode &node);
+  Macro        doTermListNode(        const StateActionNode &node);
+  Macro        doSplitNode(           const StateActionNode &node);
+  Macro        doOneItemNode(         const StateActionNode &node);
+  Macro        doTermSetNode(         const StateActionNode &node);
   void         generateCompressedForm();
 
   ByteCount    printMacroesAndActionCode(MarginFile &output) const;

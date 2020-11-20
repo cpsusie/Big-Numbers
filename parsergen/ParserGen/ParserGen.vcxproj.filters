@@ -40,6 +40,12 @@
     <Filter Include="Source Files\GrammarOutput\KeyWordHandlers">
       <UniqueIdentifier>{6993516d-2c03-4b5a-9e11-a9cb1198826a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\GrammarOutput\TransSuccCompression">
+      <UniqueIdentifier>{e6cc144b-0c82-4f2f-9a23-eef4829f5e23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GrammarOutput\TransSuccCompression\Header Files">
+      <UniqueIdentifier>{e2bd17c3-483e-4563-b193-7bcbd21a48b4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -56,9 +62,6 @@
     </ClInclude>
     <ClInclude Include="Wizard.h">
       <Filter>Source Files\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StateActionInfo.h">
-      <Filter>Source Files\GrammarOutput\ActionCompression\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CompressEncoding.h">
       <Filter>Source Files\GrammarOutput\ActionCompression\Header Files</Filter>
@@ -90,9 +93,6 @@
     <ClInclude Include="TemplateWriter.h">
       <Filter>Source Files\GrammarOutput\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StateActionInfoArray.h">
-      <Filter>Source Files\GrammarOutput\ActionCompression\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Lib\Include\LRparser.h">
       <Filter>Source Files\Header Files</Filter>
     </ClInclude>
@@ -113,6 +113,21 @@
     </ClInclude>
     <ClInclude Include="GrammarTables.h">
       <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CompressedTransSuccMatrixCpp.h">
+      <Filter>Source Files\GrammarOutput\TransSuccCompression\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NTindexNode.h">
+      <Filter>Source Files\GrammarOutput\TransSuccCompression\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NTindexNodeArray.h">
+      <Filter>Source Files\GrammarOutput\TransSuccCompression\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StateActionNode.h">
+      <Filter>Source Files\GrammarOutput\ActionCompression\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StateActionNodeArray.h">
+      <Filter>Source Files\GrammarOutput\ActionCompression\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -144,12 +159,6 @@
       <Filter>Source Files\GrammarOutput\ActionCompression</Filter>
     </ClCompile>
     <ClCompile Include="CompressEncoding.cpp">
-      <Filter>Source Files\GrammarOutput\ActionCompression</Filter>
-    </ClCompile>
-    <ClCompile Include="StateActionInfo.cpp">
-      <Filter>Source Files\GrammarOutput\ActionCompression</Filter>
-    </ClCompile>
-    <ClCompile Include="StateActionInfoArray.cpp">
       <Filter>Source Files\GrammarOutput\ActionCompression</Filter>
     </ClCompile>
     <ClCompile Include="GrammarParser.cpp">
@@ -202,6 +211,21 @@
     </ClCompile>
     <ClCompile Include="GrammarTables.cpp">
       <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="CompressedTransSuccMatrixCpp.cpp">
+      <Filter>Source Files\GrammarOutput\TransSuccCompression</Filter>
+    </ClCompile>
+    <ClCompile Include="NTindexNode.cpp">
+      <Filter>Source Files\GrammarOutput\TransSuccCompression</Filter>
+    </ClCompile>
+    <ClCompile Include="NTindexNodeArray.cpp">
+      <Filter>Source Files\GrammarOutput\TransSuccCompression</Filter>
+    </ClCompile>
+    <ClCompile Include="StateActionNode.cpp">
+      <Filter>Source Files\GrammarOutput\ActionCompression</Filter>
+    </ClCompile>
+    <ClCompile Include="StateActionNodeArray.cpp">
+      <Filter>Source Files\GrammarOutput\ActionCompression</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

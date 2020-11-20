@@ -12,11 +12,11 @@ void Macro::print(MarginFile &f) const {
 }
 
 String Macro::getComment() const {
-  if((getStateSetSize() == 1) && m_stateSet.contains(m_index)) {
+  if((getUsedByCount() == 1) && m_usedBySet.contains(m_index)) {
     return m_comment;
   }
   return format(_T("%s %s")
                ,m_comment.cstr()
-               ,getStateSetComment(getStateSet()).cstr()
+               ,getStateSetComment(getUsedBySet()).cstr()
                );
 }

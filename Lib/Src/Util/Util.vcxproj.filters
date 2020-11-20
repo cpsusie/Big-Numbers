@@ -97,6 +97,12 @@
     <Filter Include="Source Files\Date\Private Header Files">
       <UniqueIdentifier>{8f9756b9-8032-46f0-95b6-ec8c5a0e3cdb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Parser">
+      <UniqueIdentifier>{2479987b-c4fe-4123-98fe-10c6a6decbe5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parser\Header Files">
+      <UniqueIdentifier>{fe77159a-d0de-4526-98c7-c2e554cf5cc7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="access.cpp">
@@ -382,18 +388,6 @@
       <Filter>Source Files\Stream</Filter>
     </ClCompile>
     <ClCompile Include="DecompressFilter.cpp">
-      <Filter>Source Files\Stream</Filter>
-    </ClCompile>
-    <ClCompile Include="LexFileStream.cpp">
-      <Filter>Source Files\Stream</Filter>
-    </ClCompile>
-    <ClCompile Include="LexStringStream.cpp">
-      <Filter>Source Files\Stream</Filter>
-    </ClCompile>
-    <ClCompile Include="LRparser.cpp">
-      <Filter>Source Files\Stream</Filter>
-    </ClCompile>
-    <ClCompile Include="Scanner.cpp">
       <Filter>Source Files\Stream</Filter>
     </ClCompile>
     <ClCompile Include="SourcePosition.cpp">
@@ -1036,6 +1030,24 @@
     <ClCompile Include="BracketChars.cpp">
       <Filter>Source Files\String</Filter>
     </ClCompile>
+    <ClCompile Include="LexFileStream.cpp">
+      <Filter>Source Files\Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="LexStringStream.cpp">
+      <Filter>Source Files\Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="LRparser.cpp">
+      <Filter>Source Files\Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="Scanner.cpp">
+      <Filter>Source Files\Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="SymbolNameContainer.cpp">
+      <Filter>Source Files\Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="AbstractParserTables.cpp">
+      <Filter>Source Files\Parser</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -1124,9 +1136,6 @@
     <ClInclude Include="..\..\Include\CountedByteStream.h">
       <Filter>Source Files\Stream\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\LRparser.h">
-      <Filter>Source Files\Stream\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\MarginFile.h">
       <Filter>Source Files\Stream\Header Files</Filter>
     </ClInclude>
@@ -1139,13 +1148,7 @@
     <ClInclude Include="..\..\Include\RegexIStream.h">
       <Filter>Source Files\Stream\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Scanner.h">
-      <Filter>Source Files\Stream\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\SocketStream.h">
-      <Filter>Source Files\Stream\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\SourcePosition.h">
       <Filter>Source Files\Stream\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\StreamParameters.h">
@@ -1495,6 +1498,24 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\SysSemaphore.h">
       <Filter>Source Files\Process\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\LRparser.h">
+      <Filter>Source Files\Parser\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Scanner.h">
+      <Filter>Source Files\Parser\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\SourcePosition.h">
+      <Filter>Source Files\Parser\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\SymbolNameContainer.h">
+      <Filter>Source Files\Parser\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\AbstractParserTables.h">
+      <Filter>Source Files\Parser\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\ParserTablesTemplate.h">
+      <Filter>Source Files\Parser\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

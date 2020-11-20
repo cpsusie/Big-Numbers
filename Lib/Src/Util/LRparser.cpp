@@ -1,9 +1,10 @@
 #include "pch.h"
 #include <String.h>
 #include <stdarg.h>
+#include <Scanner.h>
 #include <LRparser.h>
 
-LRparser::LRparser(const ParserTables &tables, Scanner *scanner, UINT stackSize) : m_tables(tables), m_scanner(scanner) {
+LRparser::LRparser(const AbstractParserTables &tables, Scanner *scanner, UINT stackSize) : m_tables(tables), m_scanner(scanner) {
   m_parserStack   = nullptr;
   parserStackCreate(stackSize);
 
@@ -47,7 +48,7 @@ void LRparser::setStackSize(UINT newSize) {
 }
 
 int LRparser::getNextAction() const {
-  return done() ? (accept() ? 0 : _ParserError) : m_tables.getAction(m_state, m_input);
+  return done() ? (accept() ? 0 : AbstractParserTables::_ParserError) : m_tables.getAction(m_state, m_input);
 }
 
 void LRparser::stackOverflow() {
@@ -62,7 +63,7 @@ void LRparser::stackOverflow() {
 void LRparser::dumpState() {
   debug(_T("--------New state:%-4u. Input=%-15s ('%s')")
        ,state()
-       ,getSymbolName(input())
+       ,getSymbolName(input()).cstr()
        ,getScanner()->getText());
 }
 
@@ -82,7 +83,7 @@ bool LRparser::recover() {
 
   const UINT startHeight  = getStackHeight();
   do {
-    while(!stackEmpty() && m_tables.getAction(getParserStackTop().m_state, m_input) == _ParserError) {
+    while(!stackEmpty() && m_tables.getAction(getParserStackTop().m_state, m_input) == AbstractParserTables::_ParserError) {
       parserStackPop(1);
     }
 
@@ -109,7 +110,7 @@ bool LRparser::recover() {
     }
 
     if(m_debug) {
-      debug(_T("Recovering. Skipping bad input %s ('%s')"), getSymbolName(m_input), m_scanner->getText());
+      debug(_T("Recovering. Skipping bad input %s ('%s')"), getSymbolName(m_input).cstr(), m_scanner->getText());
     }
 
     parserStackRestore(startHeight);
@@ -124,7 +125,7 @@ SourcePosition LRparser::getPos() const {
   return SourcePosition(m_pos.getLineNumber(),m_pos.getColumn()-m_textLength);
 }
 
-const SourcePosition &LRparser::getPos(int i) const {
+const SourcePosition &LRparser::getPos(UINT i) const {
   if(m_done) {
     return m_pos;
   }
@@ -139,13 +140,10 @@ int LRparser::parseStep() { // return 0 on continue, != 0 terminate parse
   if(m_suppressError) {
      m_suppressError--;
   }
-  if(action == _ParserError) {
+  if(action == AbstractParserTables::_ParserError) {
 
     if(m_debug) {
-      debug(_T("Error in state %u. Input=%s ('%s')")
-           ,m_state
-           ,getSymbolName(m_input)
-           ,m_scanner->getText());
+      debug(_T("Error in state %u. Input=%s ('%s')"), m_state, getSymbolName(m_input).cstr(), m_scanner->getText());
     }
 
     if(!recover()) {
@@ -155,7 +153,6 @@ int LRparser::parseStep() { // return 0 on continue, != 0 terminate parse
         debug(_T("Recover failed"));
         debug(_T("Dont accept"));
       }
-
       return -1;
     }
     m_suppressError = m_cascadeCount;
@@ -164,9 +161,7 @@ int LRparser::parseStep() { // return 0 on continue, != 0 terminate parse
     m_pos   = m_scanner->getPreviousPos();
 
     if(m_debug) {
-      debug(_T("Shift %s ('%s') to stack.")
-           ,getSymbolName(m_input)
-           ,m_scanner->getText());
+      debug(_T("Shift %s ('%s') to stack."), getSymbolName(m_input).cstr(), m_scanner->getText());
 /*
       debug(_T("parser.m_pos:(%s)  scanner:pos:%s length:%d,   prevPos:(%s) , prevLength:%d")
            ,m_pos.toString().cstr()
@@ -189,7 +184,7 @@ int LRparser::parseStep() { // return 0 on continue, != 0 terminate parse
     if(m_debug) {
       debug(_T("Reduce by %-3u :%s -> %s.")
            ,reduceProduction
-           ,m_tables.getLeftSymbolName(reduceProduction)
+           ,m_tables.getLeftSymbolName(reduceProduction).cstr()
            ,m_tables.getRightString(reduceProduction).cstr());
     }
 
@@ -318,28 +313,4 @@ void LRparser::verror(const SourcePosition &pos, _In_z_ _Printf_format_string_ T
 void LRparser::vdebug(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   _vtprintf(format, argptr);
   _tprintf(_T("\n"));
-}
-
-String ParserTables::getRightString(UINT prod) const {
-  const UINT length = getProductionLength(prod);
-  if(length == 0) {
-    return _T("epsilon");
-  } else {
-    UINT symbolArray[1000], *symbols = symbolArray;
-    if(length > ARRAYSIZE(symbolArray)) { // just in case....
-      symbols = new UINT[length]; TRACE_NEW(symbols);
-    }
-    getRightSide(prod, symbols);
-    String result;
-    for(UINT i = 0; i < length; i++) {
-      if(i > 0) {
-        result += _T(" ");
-      }
-      result += getSymbolName(symbols[i]);
-    }
-    if(symbols != symbolArray) {
-      SAFEDELETEARRAY(symbols);
-    }
-    return result;
-  }
 }

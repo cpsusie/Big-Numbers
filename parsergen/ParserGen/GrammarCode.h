@@ -32,7 +32,7 @@ public:
   }
 };
 
-ByteArray    symbolSetToByteArray(const SymbolSet &set);
+ByteArray    bitSetToByteArray(   const BitSet    &set);
 String       getStateSetComment(  const StateSet  &set);
 void         outputBeginArrayDefinition(MarginFile &output, const TCHAR *tableName, IntegerType elementType, UINT size); // size = #elements in array
 ByteCount    outputEndArrayDefinition(  MarginFile &output,                         IntegerType elementType, UINT size, bool addNewLine=false);
@@ -61,12 +61,14 @@ public:
 class SymbolsWriter : public KeywordHandler {
 private:
   const GrammarCode &m_coder;
-  bool m_terminals;
+  const bool         m_writeTerminals;
   void writeCppSymbols( TemplateWriter &writer) const;
   void writeJavaSymbols(TemplateWriter &writer) const;
 public:
-  SymbolsWriter(const GrammarCode &coder, bool terminals) : m_coder(coder) {
-    m_terminals = terminals;
+  SymbolsWriter(const GrammarCode &coder, bool writeTerminals)
+    : m_coder(coder)
+    , m_writeTerminals(writeTerminals)
+  {
   }
   void handleKeyword(TemplateWriter &writer, String &line) const override;
 };

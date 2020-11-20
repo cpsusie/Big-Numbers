@@ -115,7 +115,7 @@ void GrammarTables::printJava(MarginFile &output) const {
       TCHAR *delim = EMPTYSTRING;
       for(UINT a = 0; a < count; a++, delim=_T(",")) {
         const SuccessorState &ss = succlist[a];
-        output.printf(_T("%s%4u,%4d"), delim, ss.m_nt, ss.m_newState);
+        output.printf(_T("%s%4u,%4d"), delim, ss.m_nterm, ss.m_newState);
         if((a % 5 == 4) && (a != count-1)) {
           output.printf(_T("\n"));
           output.setLeftMargin(44);
@@ -222,8 +222,8 @@ void GrammarTables::printJava(MarginFile &output) const {
           "* Used for debugging.                                   *\n"
           "\\*******************************************************/\n")
          );
-  const UINT terminalCount = getTerminalCount();
-  const UINT symbolCount   = getSymbolCount();
+  const UINT symbolCount = getSymbolCount();
+  const UINT termCount   = getTermCount();
   output.printf(_T("private static final String symbolName[] = {\n"));
   output.setLeftMargin(8);
   for(UINT s = 0; s < symbolCount; s++) {

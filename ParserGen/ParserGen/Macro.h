@@ -2,20 +2,20 @@
 
 class Macro {
 private:
-  mutable StateSet m_stateSet;
-  mutable UINT     m_stateSetSize;
-  int              m_index;     // index in array m_actionCode
+  mutable BitSet   m_usedBySet;
+  mutable UINT     m_usedByCount; // == m_usedBySet.size()
+  int              m_index;       // index in array m_actionCode
   String           m_name;
   const String     m_value, m_comment;
 public:
-  Macro(UINT stateCount, UINT state0, const String &value, const String &comment)
-    : m_stateSet(stateCount)
-    , m_stateSetSize(0)
-    , m_index(  -1         )
-    , m_value(  value      )
-    , m_comment(comment    )
+  Macro(UINT usedBySetSize, UINT usedByV0, const String &value, const String &comment)
+    : m_usedBySet(usedBySetSize)
+    , m_usedByCount(0          )
+    , m_index(  -1             )
+    , m_value(  value          )
+    , m_comment(comment        )
   {
-    addState(state0);
+    addUsedByValue(usedByV0);
   }
   inline int getIndex() const {
     return m_index;
@@ -35,15 +35,15 @@ public:
     return m_value;
   }
   String getComment() const;
-  inline const StateSet &getStateSet() const {
-    return m_stateSet;
+  inline const BitSet &getUsedBySet() const {
+    return m_usedBySet;
   }
-  inline UINT getStateSetSize() const {
-    return m_stateSetSize;
+  inline UINT getUsedByCount() const {
+    return m_usedByCount;
   }
-  inline void addState(UINT state) const {
-    m_stateSet.add(state);
-    m_stateSetSize++;
+  inline void addUsedByValue(UINT usedBy) const {
+    m_usedBySet.add(usedBy);
+    m_usedByCount++;
   }
   void print(MarginFile &f) const;
 };

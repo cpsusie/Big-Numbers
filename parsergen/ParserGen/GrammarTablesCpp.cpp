@@ -3,6 +3,7 @@
 #include "GrammarCode.h"
 #include "CompressedActionMatrixCpp.h"
 #include "CompressedSuccessorMatrixCpp.h"
+#include "CompressedTransSuccMatrixCpp.h"
 
 static const TCHAR *comment1 =
 _T("/************************************************************************************\\\n"
@@ -179,12 +180,12 @@ void GrammarTables::printCpp(MarginFile &output) const {
   int column = output.getCurrentLineLength();
   output.setLeftMargin(column - 1);
   output.printf(_T("%u,%u,%u,%u\n,%s\n,%s\n,%s\n,%s\n,%s> %s_s(")
-               ,getTerminalCount(),getSymbolCount(), getProductionCount(), getStateCount()
-               ,getTypeName(m_terminalType )
-               ,getTypeName(m_NTindexType  )
-               ,getTypeName(m_symbolType   )
-               ,getTypeName(m_actionType   )
-               ,getTypeName(m_stateType    )
+               ,getTermCount(), getSymbolCount(), getProductionCount(), getStateCount()
+               ,getTypeName(getTermType()   )
+               ,getTypeName(getNTindexType())
+               ,getTypeName(getSymbolType() )
+               ,getTypeName(getActionType() )
+               ,getTypeName(m_stateType     )
                ,m_tablesClassName.cstr()
                );
 
@@ -200,7 +201,7 @@ void GrammarTables::printCpp(MarginFile &output) const {
                );
   output.setLeftMargin(0);
 
-  output.printf(_T("const ParserTables *%s::%s = &%s_s;\n")
+  output.printf(_T("const AbstractParserTables *%s::%s = &%s_s;\n")
                ,m_parserClassName.cstr()
                ,m_tablesClassName.cstr()
                ,m_tablesClassName.cstr()
@@ -216,14 +217,13 @@ void GrammarTables::printCpp(MarginFile &output) const {
 }
 
 void GrammarTables::findTemplateTypes() const {
-  const UINT ntCount = getSymbolCount() - getTerminalCount();
-  m_terminalType     = findIntType(0,m_terminalCount  - 1);
-  m_NTindexType      = findIntType(0,ntCount          - 1);
-  m_symbolType       = findIntType(0,getSymbolCount() - 1);
-  m_stateType        = findIntType(0,getStateCount()  - 1);
-  m_actionType       = ((getStateCount() < 128) && (getProductionCount() < 128))
-                     ? TYPE_CHAR
-                     : TYPE_SHORT;
+  m_termType     = findIntType(0,getTermCount()   - 1);
+  m_NTindexType  = findIntType(0,getNTermCount()  - 1);
+  m_symbolType   = findIntType(0,getSymbolCount() - 1);
+  m_stateType    = findIntType(0,getStateCount()  - 1);
+  m_actionType   = ((getStateCount() < 128) && (getProductionCount() < 128))
+                 ? TYPE_CHAR
+                 : TYPE_SHORT;
 }
 
 // Return size in bytes
@@ -233,8 +233,13 @@ ByteCount GrammarTables::printCompressedActionMatrixCpp(MarginFile &output) cons
 }
 
 ByteCount GrammarTables::printCompressedSuccessorMatrixCpp(MarginFile &output) const {
-  output.printf(_T("%s"), comment2);
-  return SuccessorMatrixCompression::CompressedSuccessorMatrix(*this).print(output);
+  const Options &options = Options::getInstance();
+  if(options.m_compressSuccTransposed) {
+    return TransSuccMatrixCompression::CompressedTransSuccMatrix(*this).print(output);
+  } else {
+    output.printf(_T("%s"), comment2);
+    return SuccessorMatrixCompression::CompressedSuccessorMatrix(*this).print(output);
+  }
 }
 
 ByteCount GrammarTables::printProductionLengthTableCpp(MarginFile &output) const {
@@ -261,7 +266,7 @@ ByteCount GrammarTables::printLeftSideTableCpp(MarginFile &output) const {
   outputBeginArrayDefinition(output, _T("leftSideTable"), m_NTindexType, productionCount);
   TCHAR delim = ' ';
   for(UINT p = 0; p < productionCount; p++, delim = ',') {
-    const int l = m_left[p] - m_terminalCount;
+    const int l = m_left[p] - getTermCount();
     if(p % 10 == 0) {
       output.printf(_T("/* %3u */ "), p);
     }
@@ -300,18 +305,18 @@ ByteCount GrammarTables::printRightSideTableCpp(MarginFile &output) const {
 ByteCount GrammarTables::printSymbolNameTableCpp(MarginFile &output) const {
   output.printf(_T("%s"), comment6);
 
-  const UINT terminalCount = getTerminalCount();
-  const UINT symbolCount   = getSymbolCount();
-  size_t     charCount     = 0;
+  const UINT termCount   = getTermCount();
+  const UINT symbolCount = getSymbolCount();
+  size_t     charCount   = 0;
   output.printf(_T("static const char *symbolNames = {\n"));
   output.setLeftMargin(2);
   for(UINT s = 0; s < symbolCount; s++) {
     const String &name = m_symbolNameArray[s];
     output.printf(s ? _T("\" ") : _T("\""));
     const int    l       = (int)name.length()+(s?1:0), fillerLen = minMax(50 - l, 0, 50);
-    const String comment = (s < m_terminalCount)
+    const String comment = (s < m_termCount)
                          ? format(_T("T  %4u"), s)
-                         : format(_T("NT %4u NTindex=%u"), s, s-m_terminalCount);
+                         : format(_T("NT %4u NTindex=%u"), s, s-m_termCount);
     output.printf(_T("%s\"%*s/* %-21s */\n"), name.cstr(), fillerLen,_T(""),comment.cstr());
     charCount += l;
   }

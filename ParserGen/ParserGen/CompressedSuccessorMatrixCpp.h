@@ -30,7 +30,6 @@ typedef IndexArray<StateArray> StateArrayIndexArray;
 class CompressedSuccessorMatrix : public MacroMap {
 private:
   const GrammarTables          &m_tables;
-  const UINT                    m_stateCount;
   UINT                          m_currentNTindexListSize;
   UINT                          m_currentStateListSize;
   const IntegerType             m_NTindexType, m_stateType;
@@ -39,7 +38,7 @@ private:
   StateSet                      m_definedStateSet;
 
   inline UINT getStateCount() const {
-    return m_stateCount;
+    return m_tables.getStateCount();
   }
   Macro        doSuccList(             UINT state, const SuccessorStateArray &succList);
   Macro        doNTindexListState(     UINT state, const SuccessorStateArray &succList);

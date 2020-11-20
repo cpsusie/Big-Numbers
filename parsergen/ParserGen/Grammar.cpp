@@ -11,14 +11,14 @@ static String getModifierString(SymbolModifier modifier) {
   }
 }
 
-GrammarSymbol::GrammarSymbol(UINT index, const String &name, SymbolType type, int precedence, const SourcePosition &pos, UINT terminalCount)
-: m_index( index        )
-, m_name(  name         )
-, m_type(  type         )
-, m_first1(terminalCount)
-, m_pos(   pos          )
+GrammarSymbol::GrammarSymbol(UINT index, const String &name, SymbolType type, int precedence, const SourcePosition &pos, UINT termCount)
+: m_index( index    )
+, m_name(  name     )
+, m_type(  type     )
+, m_first1(termCount)
+, m_pos(   pos      )
 {
-  if((type == NONTERMINAL) && (terminalCount == 0)) {
+  if((type == NONTERMINAL) && (termCount == 0)) {
     throwException(_T("Cannot add nonterminal <%s> when terminalCount == 0"), name.cstr());
   }
 
@@ -111,7 +111,7 @@ Grammar::Grammar()
 : m_stateMap(     4001)
 , m_unfinishedSet(1001)
 , m_symbolMap(    1001)
-, m_terminalCount(   0)
+, m_termCount(       0)
 , m_startSymbol(     0)
 , m_SRconflicts(     0)
 , m_RRconflicts(     0)
@@ -119,22 +119,22 @@ Grammar::Grammar()
 {
 }
 
-Grammar::Grammar(const ParserTables &src)
+Grammar::Grammar(const AbstractParserTables &src)
 : m_stateMap(     4001)
 , m_unfinishedSet(1001)
 , m_symbolMap(    1001)
-, m_terminalCount(   0)
+, m_termCount(       0)
 , m_startSymbol(     0)
 , m_SRconflicts(     0)
 , m_RRconflicts(     0)
 , m_warningCount(    0)
 {
   SourcePosition dummyPos;
-  for(UINT t = 0; t < src.getTerminalCount(); t++) {
-    addTerminal(src.getSymbolName(t), TERMINAL, 0, dummyPos);
+  for(UINT t = 0; t < src.getTermCount(); t++) {
+    addTerm(src.getSymbolName(t), TERMINAL, 0, dummyPos);
   }
-  for(UINT nt = src.getTerminalCount(); nt < src.getSymbolCount(); nt++) {
-    addNonTerminal(src.getSymbolName(nt), dummyPos);
+  for(UINT nt = src.getTermCount(); nt < src.getSymbolCount(); nt++) {
+    addNTerm(src.getSymbolName(nt), dummyPos);
   }
   for(UINT p = 0; p < src.getProductionCount(); p++) {
     Production production(src.getLeftSymbol(p), dummyPos);
@@ -147,7 +147,7 @@ Grammar::Grammar(const ParserTables &src)
   }
 }
 
-int Grammar::findSymbol(const String &name) const {
+int Grammar::getSymbolIndex(const String &name) const {
   const UINT *id = m_symbolMap.get(name.cstr());
   return id != nullptr ? *id : -1;
 }
@@ -159,13 +159,13 @@ UINT Grammar::addSymbol(const GrammarSymbol &symbol) {
   return index;
 }
 
-UINT Grammar::addTerminal(const String &name, SymbolType type, int precedence, const SourcePosition &pos) {
-  m_terminalCount++;
+UINT Grammar::addTerm(const String &name, SymbolType type, int precedence, const SourcePosition &pos) {
+  m_termCount++;
   return addSymbol(GrammarSymbol(getSymbolCount(), name, type, precedence, pos, 1));
 }
 
-UINT Grammar::addNonTerminal(const String &name, const SourcePosition &pos) {
-  return addSymbol(GrammarSymbol(getSymbolCount(), name, NONTERMINAL, 0, pos, getTerminalCount()));
+UINT Grammar::addNTerm(const String &name, const SourcePosition &pos) {
+  return addSymbol(GrammarSymbol(getSymbolCount(), name, NONTERMINAL, 0, pos, getTermCount()));
 }
 
 void Grammar::addProduction(const Production &production) {
@@ -202,9 +202,9 @@ void Grammar::addClosureProductions() {
         case ONEORMANY  : // +
           { GrammarSymbol &m = getSymbol(symbol);
             String ntName = m.m_name + _T("_plus");
-            int nt = findSymbol(ntName);
+            int nt = getSymbolIndex(ntName);
             if(nt < 0) {
-              nt = addNonTerminal(ntName, prod.m_pos);
+              nt = addNTerm(ntName, prod.m_pos);
               Production newProd1(nt, prod.m_pos);
               newProd1.m_rightSide.add(RightSideSymbol(nt, NO_MODIFIER));
               newProd1.m_rightSide.add(RightSideSymbol(symbol, NO_MODIFIER));
@@ -272,7 +272,7 @@ void Grammar::findReachable() {
 }
 
 void Grammar::findTerminate() {
-  for(UINT s = 0; s < getTerminalCount(); s++) { // all terminals terminate
+  for(UINT s = 0; s < getTermCount(); s++) { // all terminals terminate
     getSymbol(s).m_terminate = true;
   }
   const UINT n = getProductionCount();
@@ -320,9 +320,9 @@ void Grammar::findFirst1Sets() {
   do {
     stable = true;
     for(UINT p = 0; p < n; p++) {
-      const Production &prod = getProduction(p);
-      const UINT length = prod.getLength();
-      GrammarSymbol &ls = getSymbol(prod.m_leftSide);
+      const Production &prod   = getProduction(p);
+      const UINT        length = prod.getLength();
+      GrammarSymbol    &ls     = getSymbol(prod.m_leftSide);
       for(UINT k = 0; k < length; k++) {
         const UINT sk = prod.m_rightSide[k];
         if(isTerminal(sk)) {
@@ -332,8 +332,7 @@ void Grammar::findFirst1Sets() {
             stable = false;
           }
           break;
-        }
-        else { // nonterminal
+        } else { // nonterminal
           const GrammarSymbol &nt = getSymbol(sk);
           const TermSet        diff(nt.m_first1 - ls.m_first1);
           if(!diff.isEmpty()) {
@@ -350,10 +349,10 @@ void Grammar::findFirst1Sets() {
 
 /*
   gotoxy(0, 0);
-  for(long s = getTerminalCount(); s < getSymbolCount(); s++) {
-    GrammarSymbol &nonTerm = getSymbol(s);
-    _tprintf(_T("first(%-10s):"), nonTerm.m_name.cstr());
-    dump(nonTerm.m_first1);
+  for(UINT nterm = getTermCount(); nterm < getSymbolCount(); nterm++) {
+    const GrammarSymbol &NTSymbol = getSymbol(nterm);
+    _tprintf(_T("first(%-10s):"), NTSymbol.m_name.cstr());
+    dump(NTSymbol.m_first1);
     _tprintf(_T("\n"));
   }
   pause();
@@ -366,7 +365,7 @@ void Grammar::findFirst1Sets() {
 TermSet Grammar::first1(const LR1Item &item) const {
   const Production &prod   = getProduction(item.m_prod);
   const UINT        length = prod.getLength();
-  TermSet         result(getTerminalCount());
+  TermSet           result(getTermCount());
   for(UINT k = item.m_dot+1; k < length; k++) {
     const UINT symbol = prod.m_rightSide[k];
     if(isTerminal(symbol)) {
@@ -511,7 +510,7 @@ void Grammar::generateStates() {
   m_stateMap.clear();
   m_unfinishedSet.clear();
 
-  TermSet eoiset(getTerminalCount());
+  TermSet eoiset(getTermCount());
   eoiset.add(0); // EOI
   LR1Item initialItem(true, 0, 0, eoiset);
   LR1State initialState(0);
@@ -635,7 +634,7 @@ void Grammar::checkStateIsConsistent(const LR1State &state, StateResult &result)
   for(UINT i = 0; i < itemCount; i++) {
     const LR1Item &itemi = state.m_items[i];
     if(isReduceItem(itemi)) {
-      TermSet tokensReducedByOtherItems(getTerminalCount());
+      TermSet tokensReducedByOtherItems(getTermCount());
       if(isAcceptItem(itemi)) {  // check if this is start -> S . [EOI]
         result.m_actions.add(ParserAction(0, 0));
         if(symbolsDone.contains(0)) {
@@ -689,11 +688,7 @@ void Grammar::checkStateIsConsistent(const LR1State &state, StateResult &result)
   } // for
 
   result.m_actions.sortByTerm(); // sort actions by symbolnumber (terminal   )
-  result.m_succs.sortByNT();     // sort result  by symbolnumber (nonTerminal)
-}
-
-String SymbolNameContainer::symbolSetToString(const SymbolSet &set) const {
-  return set.toString(SymbolStringifier(*this), _T(" "), BT_BRACKETS);
+  result.m_succs.sortByNTerm();     // sort result  by symbolnumber (nonTerminal)
 }
 
 String Grammar::itemToString(const LR1Item &item, int flags) const {
@@ -765,30 +760,6 @@ String Grammar::getProductionString(UINT prod) const {
   return getSymbol(getProduction(prod).m_leftSide).m_name
        + _T(" -> ")
        + getRightSide(prod);
-}
-
-UINT Grammar::getMaxSymbolNameLength() const {
-  const UINT n = getSymbolCount();
-  size_t     m = 0;
-  for(UINT i = 0; i < n; i++) {
-    const size_t l = getSymbol(i).m_name.length();
-    if(l > m) {
-      m = l;
-    }
-  }
-  return (UINT)m;
-}
-
-UINT Grammar::getMaxNonTerminalNameLength() const {
-  const UINT n = getSymbolCount();
-  size_t     m = 0;
-  for(UINT i = getTerminalCount(); i < n; i++) {
-    const size_t l = getSymbol(i).m_name.length();
-    if(l > m) {
-      m = l;
-    }
-  }
-  return (UINT)m;
 }
 
 UINT Grammar::getItemCount() const {

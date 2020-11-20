@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "Grammar.h"
 
-NTindexSet SuccessorStateArray::getNTindexSet(UINT terminalCount, UINT symbolCount) const {
-  NTindexSet result(symbolCount - terminalCount);
+NTindexSet SuccessorStateArray::getNTindexSet(UINT termCount, UINT symbolCount) const {
+  NTindexSet result(symbolCount - termCount);
   for(const SuccessorState &ss : *this) {
-    result.add((size_t)ss.m_nt - terminalCount);
+    result.add((size_t)ss.m_nterm - termCount);
   }
   return result;
 }
@@ -26,6 +26,6 @@ String SuccessorStateArray::toString(const SymbolNameContainer &nameContainer) c
 }
 
 String SuccessorState::toString(const SymbolNameContainer &nameContainer) const {
-  const TCHAR *name = nameContainer.getSymbolName(m_nt);
+  const TCHAR *name = nameContainer.getSymbolName(m_nterm).cstr();
   return format(_T("goto %u on %s"), m_newState, name);
 }

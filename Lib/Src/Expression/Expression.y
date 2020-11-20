@@ -8,12 +8,12 @@ $PUSHNAMESPACE$
 
 class ExpressionParser : public LRparser {
 private:
-  static const ParserTables *ExpressionTables;
+  static const AbstractParserTables *ExpressionTables;
 public:
   ExpressionParser(ParserTree &tree, Scanner *scanner = nullptr) : m_tree(tree), LRparser(*ExpressionTables,scanner) {
   }
   void verror(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) override;
-  static const ParserTables &getTables() {
+  static const AbstractParserTables &getTables() {
     return *ExpressionTables;
   }
 private:

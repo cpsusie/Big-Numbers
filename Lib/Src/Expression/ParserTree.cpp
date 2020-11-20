@@ -106,16 +106,16 @@ bool ParserTree::isValidName(const String &s) { // static
   return true;
 }
 
-const ParserTables &ParserTree::getParserTables() { // static
+const AbstractParserTables &ParserTree::getParserTables() { // static
   return ExpressionParser::getTables();
 }
 
 UINT ParserTree::getTerminalCount() { // static
-  return getParserTables().getTerminalCount();
+  return getParserTables().getTermCount();
 };
 
 String ParserTree::getSymbolName(ExpressionInputSymbol symbol) { // static
-  const ParserTables &tables = getParserTables();
+  const AbstractParserTables &tables = getParserTables();
   if((UINT)symbol >= tables.getSymbolCount()) {
     return format(_T("Unknown symbol (=%u)"), symbol);
   }

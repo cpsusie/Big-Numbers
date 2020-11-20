@@ -3,6 +3,8 @@
 #include "GrammarTables.h"
 #include "CompressEncoding.h"
 
+namespace ActionMatrixCompression {
+
 class TermSetReduction {
 private:
   const UINT                 m_prod;
@@ -11,10 +13,10 @@ private:
   UINT                       m_setSize;
 public:
   TermSetReduction(UINT prod, UINT term0, const SymbolNameContainer &nameContainer)
-    : m_prod(         prod                            )
-    , m_nameContainer(nameContainer                   )
-    , m_termSet(      nameContainer.getTerminalCount())
-    , m_setSize(      0                               )
+    : m_prod(         prod                        )
+    , m_nameContainer(nameContainer               )
+    , m_termSet(      nameContainer.getTermCount())
+    , m_setSize(      0                           )
   {
     addTerminal(term0);
   }
@@ -28,7 +30,7 @@ public:
     m_termSet.add(term);
     m_setSize++;
   }
-  inline UINT getTermSetSize() const {
+  inline UINT getLegalTermCount() const {
     return m_setSize;
   }
   operator ParserActionArray() const;
@@ -37,27 +39,27 @@ public:
   }
 };
 
-inline int setSizeReverseCmp(const TermSetReduction &i1, const TermSetReduction &i2) {
-  return (int)i2.getTermSetSize() - (int)i1.getTermSetSize();
+inline int legalTermCountReverseCmp(const TermSetReduction &i1, const TermSetReduction &i2) {
+  return (int)i2.getLegalTermCount() - (int)i1.getLegalTermCount();
 }
 
 class TermSetReductionArray : public Array<TermSetReduction> {
 public:
   TermSetReductionArray() {
   }
-  TermSetReductionArray(size_t capacity) : Array<TermSetReduction>(capacity) {
+  TermSetReductionArray(size_t capacity) : Array(capacity) {
   }
   // sort by setSize, decreasing, ie. largest set first
-  inline void sortBySetSize() {
+  inline void sortByLegalTermCount() {
     if(size() > 1) {
-      sort(setSizeReverseCmp);
+      sort(legalTermCountReverseCmp);
     }
   }
   // Return sum(((*this)[i].getTermSetSize()...i=0..size-1)
   UINT getLegalTermCount() const {
     UINT sum = 0;
     for(auto it = getIterator(); it.hasNext();) {
-      sum += it.next().getTermSetSize();
+      sum += it.next().getLegalTermCount();
     }
     return sum;
   }
@@ -70,19 +72,22 @@ public:
   }
 };
 
-class InfoNodeCommonData {
+class ActionNodeCommonData {
 public:
   const UINT                 m_state;
   const SymbolNameContainer &m_nameContainer;
-  InfoNodeCommonData(UINT state, const SymbolNameContainer &nameContainer) : m_state(state), m_nameContainer(nameContainer) {
+  ActionNodeCommonData(UINT state, const SymbolNameContainer &nameContainer) : m_state(state), m_nameContainer(nameContainer) {
+  }
+  inline UINT                getState() const {
+    return m_state;
   }
 };
 
-class ShiftAndReduceActions : public InfoNodeCommonData {
+class ShiftAndReduceActions : public ActionNodeCommonData {
 public:
   ParserActionArray          m_shiftActionArray;
   TermSetReductionArray      m_termSetReductionArray;
-  ShiftAndReduceActions(const InfoNodeCommonData &cd, const ParserActionArray &actionArray);
+  ShiftAndReduceActions(const ActionNodeCommonData &cd, const ParserActionArray &actionArray);
   ParserActionArray mergeAll() const;
   inline UINT getLegalTermCount() const {
     return m_shiftActionArray.getLegalTermCount() + m_termSetReductionArray.getLegalTermCount();
@@ -93,35 +98,32 @@ public:
   }
 };
 
-class StateActionInfo : public InfoNodeCommonData {
+class StateActionNode : public ActionNodeCommonData {
 private:
-  StateActionInfo(           const StateActionInfo &src); // not implemented
-  StateActionInfo &operator=(const StateActionInfo &src); // not implemented
+  StateActionNode(           const StateActionNode &src); // not implemented
+  StateActionNode &operator=(const StateActionNode &src); // not implemented
 protected:
-  const StateActionInfo     *m_parent;
+  const StateActionNode     *m_parent;
   const UINT                 m_legalTermCount;
   const BYTE                 m_recurseLevel;
   const CompressionMethod    m_compressMethod;
-  StateActionInfo(const StateActionInfo *parent, const InfoNodeCommonData &cd, UINT legalTermCount, CompressionMethod compressMethod)
-    : InfoNodeCommonData(cd)
+  StateActionNode(const StateActionNode *parent, const ActionNodeCommonData &cd, UINT legalTermCount, CompressionMethod compressMethod)
+    : ActionNodeCommonData(cd)
     , m_parent(         parent         )
     , m_legalTermCount( legalTermCount )
     , m_recurseLevel(   parent?(parent->getRecurseLevel()+1) : 0)
     , m_compressMethod( compressMethod )
   {
   }
-  static StateActionInfo *allocateNode(        const StateActionInfo *parent, const ShiftAndReduceActions &sra);
-  static StateActionInfo *allocateSplitNode(   const StateActionInfo *parent, const ShiftAndReduceActions &sra);
-  static StateActionInfo *allocateTermListNode(const StateActionInfo *parent, const InfoNodeCommonData    &cd , const ParserActionArray &actionArray     );
-  static StateActionInfo *allocateTermSetNode( const StateActionInfo *parent, const InfoNodeCommonData    &cd , const TermSetReduction  &termSetReduction);
+  static StateActionNode *allocateNode(        const StateActionNode *parent, const ShiftAndReduceActions &sra);
+  static StateActionNode *allocateSplitNode(   const StateActionNode *parent, const ShiftAndReduceActions &sra);
+  static StateActionNode *allocateTermListNode(const StateActionNode *parent, const ActionNodeCommonData    &cd , const ParserActionArray &actionArray     );
+  static StateActionNode *allocateTermSetNode( const StateActionNode *parent, const ActionNodeCommonData    &cd , const TermSetReduction  &termSetReduction);
 public:
-  static StateActionInfo             *allocateStateActionInfo(UINT state, const SymbolNameContainer &nameContainer, const ParserActionArray &actionArray);
-  virtual                            ~StateActionInfo() {
+  static StateActionNode             *allocateStateActionNode(UINT state, const SymbolNameContainer &nameContainer, const ParserActionArray &actionArray);
+  virtual                            ~StateActionNode() {
   }
 
-  inline UINT                         getState()             const {
-    return m_state;
-  }
   inline UINT                         getLegalTermCount()    const {
     return m_legalTermCount;
   }
@@ -143,14 +145,14 @@ public:
     __assume(0);
     return ParserAction();
   }
-  // Call only if getCompressionMethod() == ParserTables::CompCodeTermSet
+  // Call only if getCompressionMethod() == AbstractParserTables::CompCodeBitset
   virtual const TermSetReduction     &getTermSetReduction()  const {
     throwUnsupportedOperationException(__TFUNCTION__);
     __assume(0);
     return *new TermSetReduction(0,0,m_nameContainer);
   }
-  // Call only if getCompressionMethod() == ParserTables::CompCodeSplitNode
-  virtual const StateActionInfo      &getChild(BYTE index)   const {
+  // Call only if getCompressionMethod() == AbstractParserTables::CompCodeSplitNode
+  virtual const StateActionNode      &getChild(BYTE index)   const {
     throwUnsupportedOperationException(__TFUNCTION__);
     __assume(0);
     return *this;
@@ -158,12 +160,12 @@ public:
   virtual String toString() const;
 };
 
-class TermListNode : public StateActionInfo {
+class TermListNode : public StateActionNode {
 private:
   ParserActionArray  m_termListActionArray;
 public:
-  TermListNode(const StateActionInfo *parent, const InfoNodeCommonData &cd, const ParserActionArray &termListActionArray)
-    : StateActionInfo(parent, cd, termListActionArray.getLegalTermCount(), ParserTables::CompCodeTermList)
+  TermListNode(const StateActionNode *parent, const ActionNodeCommonData &cd, const ParserActionArray &termListActionArray)
+    : StateActionNode(parent, cd, termListActionArray.getLegalTermCount(), AbstractParserTables::CompCodeBinSearch)
     , m_termListActionArray(termListActionArray)
   {
   }
@@ -173,30 +175,30 @@ public:
   String toString() const override;
 };
 
-class SplitNode : public StateActionInfo {
+class SplitNode : public StateActionNode {
 private:
-  const StateActionInfo *m_child[2];
+  const StateActionNode *m_child[2];
 public:
-  SplitNode(const StateActionInfo *parent, const InfoNodeCommonData &cd, UINT legalTermCount)
-    : StateActionInfo(parent, cd, legalTermCount, ParserTables::CompCodeSplitNode)
+  SplitNode(const StateActionNode *parent, const ActionNodeCommonData &cd, UINT legalTermCount)
+    : StateActionNode(parent, cd, legalTermCount, AbstractParserTables::CompCodeSplitNode)
   {
     m_child[0] = m_child[1] = nullptr;
   }
   ~SplitNode() override;
-  SplitNode &setChild(BYTE index, StateActionInfo *child);
-  const StateActionInfo &getChild(BYTE index) const override {
+  SplitNode &setChild(BYTE index, StateActionNode *child);
+  const StateActionNode &getChild(BYTE index) const override {
     assert(index < 2);
     return *m_child[index];
   }
   String toString() const override;
 };
 
-class OneItemNode : public StateActionInfo {
+class OneItemNode : public StateActionNode {
 private:
   const ParserAction m_action;
 public:
-  OneItemNode(const StateActionInfo *parent, const InfoNodeCommonData &cd, ParserAction action)
-    : StateActionInfo(parent, cd, 1, ParserTables::CompCodeOneItem)
+  OneItemNode(const StateActionNode *parent, const ActionNodeCommonData &cd, ParserAction action)
+    : StateActionNode(parent, cd, 1, AbstractParserTables::CompCodeImmediate)
     , m_action(action)
   {
   }
@@ -206,12 +208,12 @@ public:
   String toString() const override;
 };
 
-class TermSetNode : public StateActionInfo {
+class TermSetNode : public StateActionNode {
 private:
   const TermSetReduction m_termSetReduction;
 public:
-  TermSetNode(const StateActionInfo *parent, const InfoNodeCommonData &cd, const TermSetReduction &termSetReduction)
-    : StateActionInfo(parent, cd, termSetReduction.getTermSetSize(), ParserTables::CompCodeTermSet)
+  TermSetNode(const StateActionNode *parent, const ActionNodeCommonData &cd, const TermSetReduction &termSetReduction)
+    : StateActionNode(parent, cd, termSetReduction.getLegalTermCount(), AbstractParserTables::CompCodeBitset)
     , m_termSetReduction(termSetReduction)
   {
   }
@@ -220,3 +222,5 @@ public:
   }
   String toString() const override;
 };
+
+}; // namespace ActionMatrixCompression

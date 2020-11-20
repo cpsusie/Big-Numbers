@@ -20,6 +20,7 @@ static void usage() {
        " -h : Write lookahead symbols in docfile.\n"
        " [-c|+c<level>]: Disable or enable parser tables compression. If enabled, level specifies max number of recursive calls\n"
        "                 to determine parseraction. level=[0..%u]. Default is +c%u\n"
+       " -T : Compress successor matrix with same technique as action-matrix compression, but on the transposed of successor-matrix.\n"
        " -v[level]:verbose.\n"
        "     level = 0 -> silence.\n"
        "     level = 1 -> write main steps in process.\n"
@@ -99,23 +100,26 @@ int _tmain(int argc, TCHAR **argv) {
           }
           break;
         case 'l':
-          options.m_lineDirectives       = false;
+          options.m_lineDirectives         = false;
           continue;
         case 'b':
-          options.m_generateBreaks       = false;
+          options.m_generateBreaks         = false;
           continue;
         case 'a':
-          options.m_generateActions      = false;
+          options.m_generateActions        = false;
           continue;
         case 'h':
-          options.m_generateLookahead    = true;
+          options.m_generateLookahead      = true;
           continue;
         case 'c':
-          options.m_useTableCompression  = false;
-          options.m_maxRecursiveCalls    = 0;
+          options.m_useTableCompression    = false;
+          options.m_maxRecursiveCalls      = 0;
+          continue;
+        case 'T':
+          options.m_compressSuccTransposed = true;
           continue;
         case 'n':
-          options.m_generateNonTerminals = true;
+          options.m_generateNonTerminals   = true;
           continue;
         case 'f':
           options.m_first1File = cp+1;
@@ -222,8 +226,8 @@ int _tmain(int argc, TCHAR **argv) {
           ok = false;
           code.generateDocFile();
           verbose(1, _T("Time:%.3lf\n"), (getProcessTime() - starttime)/1000000);
-          verbose(1, _T("%4u\tterminals\n")     , grammar.getTerminalCount()   );
-          verbose(1, _T("%4u\tnonterminals\n")  , grammar.getNTCount()         );
+          verbose(1, _T("%4u\tterminals\n")     , grammar.getTermCount()       );
+          verbose(1, _T("%4u\tnonterminals\n")  , grammar.getNTermCount()      );
           verbose(1, _T("%4u\tproductions\n")   , grammar.getProductionCount() );
           _tprintf(_T("**** The grammar is NOT LALR(1) ****\n"));
         } else {
@@ -231,8 +235,8 @@ int _tmain(int argc, TCHAR **argv) {
           code.generateParser();
           code.generateDocFile();
           verbose(1, _T("Time:%.3lf\n"), (getProcessTime() - starttime)/1000000);
-          verbose(1, _T("%4u\tterminals\n")     , grammar.getTerminalCount()   );
-          verbose(1, _T("%4u\tnonterminals\n")  , grammar.getNTCount()         );
+          verbose(1, _T("%4u\tterminals\n")     , grammar.getTermCount()       );
+          verbose(1, _T("%4u\tnonterminals\n")  , grammar.getNTermCount()      );
           verbose(1, _T("%4u\tproductions\n")   , grammar.getProductionCount() );
           verbose(1, _T("%4u\tLALR(1) states\n"), grammar.getStateCount()      );
           verbose(1, _T("%4u\titems\n")         , grammar.getItemCount()       );

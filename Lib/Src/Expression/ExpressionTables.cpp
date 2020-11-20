@@ -5,6 +5,7 @@
 #include <Math/Expression/ExpressionParser.h>
 
 #line 36 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+#include <ParserTablesTemplate.h>
 
 namespace Expr {
 
@@ -766,7 +767,7 @@ static const ParserTablesTemplate<84,102,94,159
                                                                    ,rightSideTable  , symbolNames
                                                                    ,3700, 3784);
 
-const ParserTables *ExpressionParser::ExpressionTables = &ExpressionTables_s;
+const AbstractParserTables *ExpressionParser::ExpressionTables = &ExpressionTables_s;
 // Size of ExpressionTables_s: 68(x86)/128(x64) bytes. Size of ExpressionTables:4(x86)/8(x64) bytes
 
 // Total size of table data:3.700(x86)/3.784(x64) bytes.

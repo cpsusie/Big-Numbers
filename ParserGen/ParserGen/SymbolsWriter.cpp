@@ -16,19 +16,19 @@ void SymbolsWriter::handleKeyword(TemplateWriter &writer, String &line) const {
 void SymbolsWriter::writeCppSymbols(TemplateWriter &writer) const {
   const Options &options       = Options::getInstance();
   const Grammar &grammar       = m_coder.getGrammar();
-  const int      maxNameLength = grammar.getMaxSymbolNameLength();
+  const UINT     maxNameLength = grammar.getMaxSymbolNameLength();
   String text;
-  if(m_terminals) {
+  if(m_writeTerminals) {
     TCHAR delimiter = ' ';
-    for(UINT s = 0; s < grammar.getTerminalCount(); s++, delimiter = ',') {
-      text += format(_T("%c%-*s = %3u\n"), delimiter, maxNameLength, grammar.getSymbol(s).m_name.cstr(), s);
+    for(UINT term = 0; term < grammar.getTermCount(); term++, delimiter = ',') {
+      text += format(_T("%c%-*s = %3u\n"), delimiter, maxNameLength, grammar.getSymbolName(term).cstr(), term);
     }
   } else {
     if(options.m_generateNonTerminals) {
       TCHAR delimiter = ' ';
       UINT  NTindex   = 0;
-      for(UINT s = grammar.getTerminalCount(); s < grammar.getSymbolCount(); s++, delimiter = ',', NTindex++) {
-        text += format(_T("%c%-*s = %3u   /* NTindex = %3u */\n"), delimiter, maxNameLength, grammar.getSymbol(s).m_name.cstr(), s, NTindex);
+      for(UINT nterm = grammar.getTermCount(); nterm < grammar.getSymbolCount(); nterm++, delimiter = ',', NTindex++) {
+        text += format(_T("%c%-*s = %3u   /* NTindex = %3u */\n"), delimiter, maxNameLength, grammar.getSymbolName(nterm).cstr(), nterm, NTindex);
       }
     }
   }
@@ -38,16 +38,16 @@ void SymbolsWriter::writeCppSymbols(TemplateWriter &writer) const {
 void SymbolsWriter::writeJavaSymbols(TemplateWriter &writer) const {
   const Options &options       = Options::getInstance();
   const Grammar &grammar       = m_coder.getGrammar();
-  int            maxNameLength = grammar.getMaxSymbolNameLength();
+  const UINT     maxNameLength = grammar.getMaxSymbolNameLength();
   String         text;
-  if(m_terminals) {
-    for(UINT s = 0; s < grammar.getTerminalCount(); s++) {
-      text += format(_T("public static final int %-*s = %3u;\n"), maxNameLength, grammar.getSymbol(s).m_name.cstr(), s);
+  if(m_writeTerminals) {
+    for(UINT term = 0; term < grammar.getTermCount(); term++) {
+      text += format(_T("public static final int %-*s = %3u;\n"), maxNameLength, grammar.getSymbolName(term).cstr(), term);
     }
   } else {
     if(options.m_generateNonTerminals) {
-      for(UINT s = grammar.getTerminalCount(); s < grammar.getSymbolCount(); s++) {
-        text += format(_T("public static final int %-*s = %3u;\n"), maxNameLength, grammar.getSymbol(s).m_name.cstr(), s);
+      for(UINT nterm = grammar.getTermCount(); nterm < grammar.getSymbolCount(); nterm++) {
+        text += format(_T("public static final int %-*s = %3u;\n"), maxNameLength, grammar.getSymbolName(nterm).cstr(), nterm);
       }
     }
   }

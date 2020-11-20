@@ -6,7 +6,7 @@ GrammarParser::GrammarParser(const String &fileName, Grammar &g)
 , m_grammar(g)
 {
   m_currentPrecedence = 0;
-  m_grammar.addTerminal(_T("EOI"), TERMINAL, m_currentPrecedence, SourcePosition(0, 0)); /* always make EOI symbol no. 0, see skeletonparser parser.cpp */
+  m_grammar.addTerm(_T("EOI"), TERMINAL, m_currentPrecedence, SourcePosition(0, 0)); /* always make EOI symbol no. 0, see skeletonparser parser.cpp */
   m_grammar.setName(fileName);
 }
 
@@ -100,26 +100,26 @@ void GrammarParser::parseTermDef() {
   while(next() == NAME) {
     String name = m_lex.getText();
     bool ok = true;
-    if(m_grammar.findSymbol(name) >= 0) {
+    if(m_grammar.getSymbolIndex(name) >= 0) {
       m_lex.error(_T("Terminal %s already defined."), name.cstr());
       ok = false;
     }
     if(ok) {
-      m_grammar.addTerminal(name, type, m_currentPrecedence, m_lex.getSourcePos());
+      m_grammar.addTerm(name, type, m_currentPrecedence, m_lex.getSourcePos());
     }
   }
 }
 
 void GrammarParser::parseProduction() { // m_token == NAME (=leftside of production)
   const String leftName = m_lex.getText();
-  int leftIndex = m_grammar.findSymbol(leftName);
+  int leftIndex = m_grammar.getSymbolIndex(leftName);
   if(leftIndex >= 0) {
     const GrammarSymbol &sym = m_grammar.getSymbol(leftIndex);
     if(sym.m_type != NONTERMINAL) {
       m_lex.error(_T("Symbol %s is a terminal and cannot be on the leftside of a production."), leftName.cstr());
     }
   } else {
-    leftIndex = m_grammar.addNonTerminal(leftName, m_lex.getSourcePos());
+    leftIndex = m_grammar.addNTerm(leftName, m_lex.getSourcePos());
   }
   next();
   if(m_token != COLON) {
@@ -160,9 +160,9 @@ void GrammarParser::parseRightSide(int leftSide) {
 
     next();
     const SymbolModifier modifier   = parseModifier();
-    int                  rightIndex = m_grammar.findSymbol(name);
+    int                  rightIndex = m_grammar.getSymbolIndex(name);
     if(rightIndex < 0) {
-      rightIndex = m_grammar.addNonTerminal(name, pos);
+      rightIndex = m_grammar.addNTerm(name, pos);
     } else if(m_grammar.isTerminal(rightIndex)) {
       prod.m_precedence = m_grammar.getSymbol(rightIndex).m_precedence;
     }
@@ -180,7 +180,7 @@ void GrammarParser::parseRightSide(int leftSide) {
     case NAME:
       { const String name = m_lex.getText();
         next();
-        int tokenIndex = m_grammar.findSymbol(name);
+        int tokenIndex = m_grammar.getSymbolIndex(name);
         bool ok = true;
         if(tokenIndex < 0) {
           m_lex.error(_T("Unknown symbol in %%prec-clause:%s."), name.cstr());
@@ -393,7 +393,7 @@ void GrammarParser::checkTerminal(UINT t) { // check, that terminal-symbol is us
 }
 
 void GrammarParser::checkDuplicateProd() {
-  for(UINT nt = m_grammar.getTerminalCount(); nt < m_grammar.getSymbolCount(); nt++) { // for all nonterminals
+  for(UINT nt = m_grammar.getTermCount(); nt < m_grammar.getSymbolCount(); nt++) { // for all nonterminals
     const CompactUIntArray &prodlist  = m_grammar.getSymbol(nt).m_leftSideOf;
     const UINT              prodCount = (UINT)prodlist.size();
     for(UINT i = 0; i < prodCount; i++) {
@@ -410,7 +410,7 @@ void GrammarParser::checkDuplicateProd() {
 
 void GrammarParser::checkReachability() {
   m_grammar.findReachable();
-  for(UINT i = m_grammar.getTerminalCount(); i < m_grammar.getSymbolCount(); i++) {
+  for(UINT i = m_grammar.getTermCount(); i < m_grammar.getSymbolCount(); i++) {
     const GrammarSymbol &sym = m_grammar.getSymbol(i);
     if(!sym.m_reachable) {
       m_lex.error(sym.m_pos, _T("%s is not reachable from startsymbol."), sym.m_name.cstr());

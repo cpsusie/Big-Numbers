@@ -60,8 +60,8 @@ void Grammar::dump(MarginFile *f) const {
 }
 
 void Grammar::dumpFirst1Sets(FILE *f) const {
-  const UINT maxLength = getMaxNonTerminalNameLength() + 1;
-  for(UINT s = getTerminalCount(); s < getSymbolCount(); s++) {
+  const UINT maxLength = getMaxNTermNameLength() + 1;
+  for(UINT s = getTermCount(); s < getSymbolCount(); s++) {
     const GrammarSymbol &nt = getSymbol(s);
     _ftprintf(f, _T("%-*.*s:%s\n"), maxLength, maxLength, nt.m_name.cstr(), symbolSetToString(nt.m_first1).cstr());
   }

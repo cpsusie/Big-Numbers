@@ -26,7 +26,7 @@ String ParserActionArray::toString(const SymbolNameContainer &nameContainer) con
 }
 
 String ParserAction::toString(const SymbolNameContainer &nameContainer) const {
-  const TCHAR *name = nameContainer.getSymbolName(m_term);
+  const TCHAR *name = nameContainer.getSymbolName(m_term).cstr();
   if(m_action > 0) {        // shiftItem
     return format(_T("shift to %d on %s" ),  m_action, name);
   } else if(m_action < 0) { // reduceItem

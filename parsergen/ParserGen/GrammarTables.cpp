@@ -2,8 +2,8 @@
 #include "GrammarTables.h"
 
 GrammarTables::GrammarTables(const Grammar &grammar, const String &tablesClassName, const String &parserClassName)
-: m_terminalCount(       grammar.getTerminalCount()  )
-, m_symbolCount(         grammar.getSymbolCount()    )
+: m_symbolCount(         grammar.getSymbolCount()    )
+, m_termCount(           grammar.getTermCount()      )
 , m_productionCount(     grammar.getProductionCount())
 , m_stateCount(          grammar.getStateCount()     )
 , m_compressibleStateSet(grammar.getStateCount()     )
@@ -75,21 +75,22 @@ ByteCount GrammarTables::getTotalSizeInBytes() const {
   return ByteCount(getTableByteCount(PLATFORM_X86), getTableByteCount(PLATFORM_X64));
 }
 
-UINT GrammarTables::getSuccessor(UINT state, UINT nt) const {
-  const SuccessorStateArray &ssa = m_successorMatrix[state];
-  for(SuccessorState ss : ssa) {
-    if(ss.m_nt == nt) {
-      return ss.m_newState;
+
+int GrammarTables::getAction(UINT state, UINT term) const {
+  const ParserActionArray &paa = m_actionMatrix[state];
+  for(ParserAction pa : paa) {
+    if(pa.m_term == term) {
+      return pa.m_action;
     }
   }
   return _ParserError;
 }
 
-int GrammarTables::getAction(UINT state, UINT input) const {
-  const ParserActionArray &paa = m_actionMatrix[state];
-  for(ParserAction pa : paa) {
-    if(pa.m_term == input) {
-      return pa.m_action;
+UINT GrammarTables::getSuccessor(UINT state, UINT nterm) const {
+  const SuccessorStateArray &ssa = m_successorMatrix[state];
+  for(SuccessorState ss : ssa) {
+    if(ss.m_nterm == nterm) {
+      return ss.m_newState;
     }
   }
   return _ParserError;
@@ -105,7 +106,7 @@ void GrammarTables::getLegalInputs(UINT state, UINT *symbols) const {
 void GrammarTables::getLegalNTerms(UINT state, UINT *symbols) const {
   const SuccessorStateArray &ssa = m_successorMatrix[state];
   for(SuccessorState ss : ssa) {
-    *(symbols++) = ss.m_nt;
+    *(symbols++) = ss.m_nterm;
   }
 };
 

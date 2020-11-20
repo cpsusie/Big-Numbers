@@ -2,8 +2,8 @@
 
 #include <HashMap.h>
 #include <CompactHashMap.h>
-#include <LRParser.h>
 #include <MarginFile.h>
+#include <AbstractParserTables.h>
 #include "ByteCount.h"
 #include "SourceText.h"
 
@@ -25,28 +25,6 @@ typedef BitSet    SymbolSet;
 typedef SymbolSet TermSet;    // capacity always #terminals
 typedef BitSet    StateSet;   // capacity always #states
 typedef BitSet    NTindexSet; // capacity always #non-terminals
-
-class SymbolNameContainer {
-public:
-  virtual const TCHAR *getSymbolName(UINT symbolIndex) const = 0;
-  virtual UINT         getSymbolCount()                const = 0;
-  virtual UINT         getTerminalCount()              const = 0;
-  inline UINT          getNTCount()                    const {
-    return getSymbolCount() - getTerminalCount();
-  }
-  String symbolSetToString(const SymbolSet &set) const;
-};
-
-class SymbolStringifier: public AbstractStringifier<size_t> {
-private:
-  const SymbolNameContainer &m_nameContainer;
-public:
-  inline SymbolStringifier(const SymbolNameContainer &nameContainer) : m_nameContainer(nameContainer) {
-  }
-  String toString(const size_t &symbolIndex) override {
-    return m_nameContainer.getSymbolName((UINT)symbolIndex);
-  }
-};
 
 class GrammarSymbol {
 public:
@@ -173,15 +151,15 @@ typedef CompactShortArray ActionArray;
 
 class SuccessorState {
 public:
-  USHORT m_nt;
+  USHORT m_nterm;
   USHORT m_newState;
 
-  inline SuccessorState() : m_nt(0), m_newState(0) {
+  inline SuccessorState() : m_nterm(0), m_newState(0) {
   }
-  inline SuccessorState(USHORT nt, USHORT newState) : m_nt(nt), m_newState(newState) {
+  inline SuccessorState(USHORT nterm, USHORT newState) : m_nterm(nterm), m_newState(newState) {
   }
   inline ULONG hashCode() const {
-    return *(ULONG*)(&m_nt);
+    return *(ULONG*)(&m_nterm);
   }
   inline bool operator==(const SuccessorState &a) const {
     return hashCode() == a.hashCode();
@@ -235,8 +213,8 @@ public:
   String         toString(const SymbolNameContainer &nameContainer) const;
 };
 
-inline int successorStateCompareNT(const SuccessorState &s1, const SuccessorState &s2) {
-  return (int)s1.m_nt - (int)s2.m_nt;
+inline int successorStateCompareNTerm(const SuccessorState &s1, const SuccessorState &s2) {
+  return (int)s1.m_nterm - (int)s2.m_nterm;
 }
 
 class SuccessorStateArray : public CompactArray<SuccessorState> {
@@ -245,11 +223,11 @@ public:
   }
   SuccessorStateArray(UINT capacity) : CompactArray(capacity) {
   }
-  inline SuccessorStateArray &sortByNT() {
-    sort(successorStateCompareNT);
+  inline SuccessorStateArray &sortByNTerm() {
+    sort(successorStateCompareNTerm);
     return *this;
   }
-  NTindexSet     getNTindexSet(UINT terminalCount, UINT symbolCount) const;
+  NTindexSet     getNTindexSet(UINT termCount, UINT symbolCount) const;
   StateArray     getStateArray()                     const;
   inline UINT    getNewStateCount()                  const {
     return(UINT)size();
@@ -289,7 +267,7 @@ private:
   Array<LR1State>              m_states;
   StateHashMap                 m_stateMap; // map core(state) -> index (UINT) into m_states
   CompactUIntHashSet<1000>     m_unfinishedSet;
-  UINT                         m_terminalCount, m_startSymbol;
+  UINT                         m_termCount, m_startSymbol;
 
 
   UINT    addSymbol(            const GrammarSymbol &symbol);
@@ -334,32 +312,42 @@ public:
   SourceText             m_header, m_driverHead, m_driverTail; // programtext between %{ and %}
 
   Grammar();
-  Grammar(const ParserTables &src);
+  Grammar(const AbstractParserTables &src);
   ~Grammar() {
   }
 
-  inline UINT                 getSymbolCount()                const override { return (UINT)m_symbols.size();                }
-  inline UINT                 getTerminalCount()              const override { return m_terminalCount;                       }
-  inline UINT                 getProductionCount()            const          { return (UINT)m_productions.size();            }
-  inline UINT                 getStateCount()                 const          { return (UINT)m_states.size();                 }
-  inline bool                 isTerminal(   UINT symbolIndex) const          { return symbolIndex < m_terminalCount;         }
-  inline bool                 isNonTerminal(UINT symbolIndex) const          { return symbolIndex >= m_terminalCount;        }
-  inline       GrammarSymbol &getSymbol(    UINT symbolIndex)                { return m_symbols[symbolIndex];                }
-  inline const GrammarSymbol &getSymbol(    UINT symbolIndex) const          { return m_symbols[symbolIndex];                }
-  const  TCHAR               *getSymbolName(UINT symbolIndex) const override {
-    return getSymbol(symbolIndex).m_name.cstr();
+  inline UINT                 getSymbolCount()                const final { return (UINT)m_symbols.size();                }
+  inline UINT                 getTermCount()                  const final { return m_termCount;                           }
+  const  String              &getSymbolName(UINT symbolIndex) const final {
+    return getSymbol(symbolIndex).m_name;
   }
-  inline const Production    &getProduction(UINT index      ) const          { return m_productions[index];                  }
-  inline const LR1State      &getState(     UINT index      ) const          { return m_states[index];                       }
+  inline UINT                 getProductionCount()            const       { return (UINT)m_productions.size();            }
+  inline UINT                 getStateCount()                 const       { return (UINT)m_states.size();                 }
+  inline bool                 isTerminal(   UINT symbolIndex) const       { return symbolIndex < m_termCount;             }
+  inline bool                 isNonTerminal(UINT symbolIndex) const       { return symbolIndex >= m_termCount;            }
+  inline       GrammarSymbol &getSymbol(    UINT symbolIndex)             { return m_symbols[symbolIndex];                }
+  inline const GrammarSymbol &getSymbol(    UINT symbolIndex) const       { return m_symbols[symbolIndex];                }
+  inline const Production    &getProduction(UINT index      ) const       { return m_productions[index];                  }
+  inline const LR1State      &getState(     UINT index      ) const       { return m_states[index];                       }
 
-  int  findSymbol(    const String &name) const;
-  UINT addTerminal(   const String &name, SymbolType type, int precedence, const SourcePosition &pos);
-  UINT addNonTerminal(const String &name, const SourcePosition &pos);
+  // Return index of symbol (terminal or non-terminal) with specified name if it exist
+  // or -1, if not found
+  int  getSymbolIndex(    const String &name) const;
+  // Add terminal symbol to symboltable
+  // Assume that no symbol with specified name alrady exist in symboltable
+  // Return index, which can be found by getSymbolIndex
+  UINT addTerm(       const String &name, SymbolType type, int precedence, const SourcePosition &pos);
+  // Add non-terminal symbol to symboltable
+  // Assume that no symbol with specified name alrady exist in symboltable
+  // Return index, which can be found by getSymbolIndex
+  UINT addNTerm(      const String &name, const SourcePosition &pos);
   void addProduction( const Production &production);
   void addClosureProductions();
 
-  void findReachable();  // find all symbols that are reachable from startsymbol
-  void findTerminate();  // find all symbols that can terminate
+  // find all symbols that are reachable from startsymbol
+  void findReachable();
+  // find all symbols that can terminate
+  void findTerminate();
   void generateStates();
 
   const String &getName() const             { return m_name; }
@@ -374,15 +362,12 @@ public:
   const  SourceText &getDriverHead()   const { return m_driverHead;   }
   const  SourceText &getDriverTail()   const { return m_driverTail;   }
 
-
-  // convert symbolset to String
+  // Convert symbolset to String
   String itemToString(     const LR1Item   &item , int flags = DUMP_LOOKAHEAD) const; // flags any combination of {DUMP_LOOKAHEAD,DUMP_SUCC}
   String stateToString(    const LR1State  &state, int flags = DUMP_ALL      ) const; // flags any combination of {DUMP_KERNELONLY,DUMP_SHIFTITEMS,DUMP_ACTIONS} + {flags for itemToString}
 
   String getRightSide(       UINT prod) const;
   String getProductionString(UINT prod) const;
-  UINT   getMaxSymbolNameLength()       const;
-  UINT   getMaxNonTerminalNameLength()  const;
   UINT   getItemCount()                 const; // return total number of generated LALR(1) items
 
   void   dump(             const SymbolSet  &set  ,                             MarginFile *f = tostdout) const;
