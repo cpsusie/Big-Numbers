@@ -14,14 +14,14 @@ public:
 
 class CSelectBreakSymbolsDlg : public CDialog {
 public:
-  CSelectBreakSymbolsDlg(const ParserTables &tables, BitSet &symbolSet, CWnd *pParent = nullptr);
+  CSelectBreakSymbolsDlg(const AbstractParserTables &tables, BitSet &symbolSet, CWnd *pParent = nullptr);
 
   enum { IDD = IDD_DIALOGBREAKSYMBOLS };
 
 private:
-  const ParserTables      &m_tables;
-  BitSet                  &m_symbolSet;
-  StringTreeMap<SymbolPos> m_symbolMap;
+  const AbstractParserTables &m_tables;
+  BitSet                     &m_symbolSet;
+  StringTreeMap<SymbolPos>    m_symbolMap;
 protected:
   virtual void DoDataExchange(CDataExchange *pDX);
   virtual BOOL OnInitDialog();

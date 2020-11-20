@@ -9,7 +9,7 @@
 
 class Java5Parser : public LRparser {
 public:
-  static const ParserTables *Java5Tables;
+  static const AbstractParserTables *Java5Tables;
 private:
   int reduceAction(         UINT prod  ) override;
 

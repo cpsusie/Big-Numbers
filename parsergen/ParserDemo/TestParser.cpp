@@ -4,10 +4,11 @@
 #include "GRAMMARS.h"
 #include "TransitionMatrix.h"
 
-SyntaxNode::SyntaxNode(const TCHAR *symbol, UINT childCount, bool terminal, TestParser *parser) {
-  m_symbol     = symbol;
-  m_childCount = childCount;
-  m_terminal   = terminal;
+SyntaxNode::SyntaxNode(const String &symbol, UINT childCount, bool terminal, TestParser *parser)
+: m_symbol(    symbol    )
+, m_childCount(childCount)
+, m_terminal(  terminal  )
+{
   if(m_childCount == 0) {
     m_children = nullptr;
   } else {
@@ -41,7 +42,7 @@ public:
   TestScanner(LRparser &parser) : m_parser(parser) {}
 };
 
-static String getLegalInput(const ParserTables &tables, UINT state) {
+static String getLegalInput(const AbstractParserTables &tables, UINT state) {
   UINT      *symbols = nullptr;
   const UINT n       = tables.getLegalInputCount(state);
   try {
@@ -106,8 +107,8 @@ void TestParser::deleteNodeList() {
 }
 
 void TestParser::buildLegalInputArray() {
-  const ParserTables &tables     = getParserTables();
-  const UINT          stateCount = tables.getStateCount();
+  const AbstractParserTables &tables     = getParserTables();
+  const UINT                  stateCount = tables.getStateCount();
   m_legalLookahead.setCapacity(stateCount);
   for(UINT i = 0; i < stateCount; i++) {
     m_legalLookahead.add(::getLegalInput(tables, i));
@@ -115,13 +116,13 @@ void TestParser::buildLegalInputArray() {
 }
 
 void TestParser::buildReduceActionArray() {
-  const ParserTables &tables    = getParserTables();
-  const UINT          prodCount = tables.getProductionCount();
+  const AbstractParserTables &tables    = getParserTables();
+  const UINT                  prodCount = tables.getProductionCount();
   m_reduceActionStr.setCapacity(prodCount);
   for(UINT prod = 0; prod < prodCount; prod++) {
     m_reduceActionStr.add(format(_T("Reduce by (%d) %s -> %s")
                                 ,prod
-                                ,getSymbolName(tables.getLeftSymbol(prod))
+                                ,tables.getLeftSymbolName(prod).cstr()
                                 ,tables.getRightString(prod).cstr()
                                 )
                          );
@@ -184,10 +185,10 @@ void TestParser::userStackShiftSymbol(UINT symbol) {
 
 int TestParser::reduceAction(UINT prod) {
   m_cycleCount++;
-  const ParserTables &tables  = getParserTables();
-  const UINT  symbol  = tables.getLeftSymbol(prod);
-  const UINT  prodlen = tables.getProductionLength(prod);
-  SyntaxNodep p       = new SyntaxNode(getSymbolName(symbol), prodlen, false, this);
+  const AbstractParserTables &tables  = getParserTables();
+  const UINT                  symbol  = tables.getLeftSymbol(prod);
+  const UINT                  prodlen = tables.getProductionLength(prod);
+  SyntaxNodep                 p       = new SyntaxNode(getSymbolName(symbol), prodlen, false, this);
   for(UINT i = 0; i < prodlen; i++) {
     SyntaxNodep child = getStackTop(prodlen - i - 1);
     p->setChild(i, child);
@@ -202,7 +203,7 @@ int TestParser::reduceAction(UINT prod) {
 
 String TestParser::getActionString() const {
   const int action = getNextAction();
-  if(action == _ParserError) {
+  if(action == AbstractParserTables::_ParserError) {
     return _T("Error");
   } else if(action > 0) {
     return format(_T("Shift to state %d"), action);
@@ -216,8 +217,8 @@ String TestParser::getActionMatrixDump() const {
 }
 
 String TestParser::getSuccessorMatrixDump() const {
-  const ParserTables &tables = getParserTables();
-  String              result;
+  const AbstractParserTables &tables = getParserTables();
+  String                      result;
   result += SuccessorMatrix(tables).toString();
   result += _T("\n\n\n");
   result += TransposeSuccessorMatrix(tables).toString();

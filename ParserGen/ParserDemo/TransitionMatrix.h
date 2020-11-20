@@ -1,13 +1,13 @@
 #pragma once
 
-#include <LRparser.h>
+#include <AbstractParserTables.h>
 #include <MatrixTemplate.h>
 
 class ActionMatrix : public MatrixTemplate<SHORT> {
 private:
-  const UINT m_termCount, m_symbolCount, m_NTCount, m_stateCount;
+  const UINT m_symbolCount, m_termCount, m_NTermCount, m_stateCount;
 public:
-  ActionMatrix(const ParserTables &tables);
+  ActionMatrix(const AbstractParserTables &tables);
   String toString() const override;
 };
 
@@ -16,9 +16,9 @@ public:
 // NTIndex = [0..m_NTCount-1   ]
 class SuccessorMatrix : public MatrixTemplate<USHORT> {
 private:
-  const UINT m_termCount, m_symbolCount, m_NTCount, m_stateCount;
+  const UINT m_symbolCount, m_termCount, m_NTermCount, m_stateCount;
 public:
-  SuccessorMatrix(const ParserTables &tables);
+  SuccessorMatrix(const AbstractParserTables &tables);
   String toString() const override;
 };
 
@@ -50,8 +50,8 @@ public:
 // rows indexed by NTindex, has variable length. Each elment in a row is a StateSucc containing m_state,m_newState
 class TransposeSuccessorMatrix: public Array<StateSuccArray> {
 private:
-  const UINT m_termCount, m_symbolCount, m_NTCount, m_stateCount;
+  const UINT m_symbolCount, m_termCount, m_NTermCount, m_stateCount;
 public:
-  TransposeSuccessorMatrix(const ParserTables &tables);
+  TransposeSuccessorMatrix(const AbstractParserTables &tables);
   String toString() const;
 };

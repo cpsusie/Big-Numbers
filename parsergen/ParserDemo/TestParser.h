@@ -1,18 +1,20 @@
 #pragma once
 
-#include <grammar.h>
+#include <Scanner.h>
+#include <LRparser.h>
+#include <Grammar.h>
 #include <SafeRunnable.h>
 
 class TestParser;
 
 class SyntaxNode {
 private:
-  String       m_symbol;
-  UINT         m_childCount;
+  const String m_symbol;
+  const UINT   m_childCount : 31;
+  const bool   m_terminal   : 1;
   SyntaxNode **m_children;
-  bool         m_terminal;
 public:
-  SyntaxNode(const TCHAR *symbol, UINT childCount, bool terminal, TestParser *parser);
+  SyntaxNode(const String &symbol, UINT childCount, bool terminal, TestParser *parser);
   ~SyntaxNode();
   void         setChild(UINT i, SyntaxNode *n) { m_children[i] = n;      }
   UINT         getChildCount() const           { return m_childCount;    }

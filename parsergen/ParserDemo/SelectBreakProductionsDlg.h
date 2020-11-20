@@ -9,13 +9,13 @@ public:
   const String m_text;
   int          m_index;
   bool         m_selected;
-  ProductionLine(const ParserTables &tables, UINT production, UINT leftSideLength);
+  ProductionLine(const AbstractParserTables &tables, UINT production, UINT leftSideLength);
 };
 
 class ProductionLineArray : public Array<ProductionLine> {
   void unselectAll();
 public:
-  ProductionLineArray(const ParserTables &tables);
+  ProductionLineArray(const AbstractParserTables &tables);
   void setSelectProductions(const BitSet &productionSet);
   void sortByProduction();
   void sortGroupByLeftSide();
@@ -33,7 +33,7 @@ private:
   void      ajourSelectedProductions();
   CListBox *getListBox()                   const;
 public:
-  CSelectBreakProductionsDlg(const ParserTables &tables, BitSet &selectedProductionSet, CWnd *pParent = nullptr);
+  CSelectBreakProductionsDlg(const AbstractParserTables &tables, BitSet &selectedProductionSet, CWnd *pParent = nullptr);
 
   enum { IDD = IDD_DIALOGPRODUCTIONS };
 

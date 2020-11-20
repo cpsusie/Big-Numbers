@@ -7,7 +7,7 @@
 
 class Olm641Parser : public LRparser {
 public:
-  static const ParserTables *Olm641Tables;
+  static const AbstractParserTables *Olm641Tables;
 public:
   Olm641Parser(Scanner *lex=nullptr) : LRparser(*Olm641Tables,lex) {
   }

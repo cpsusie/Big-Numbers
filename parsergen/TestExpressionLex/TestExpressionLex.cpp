@@ -18,7 +18,7 @@ static void scan(TCHAR *s) {
     const SourcePosition ppos = lex.getPreviousPos();
     _tprintf(_T("ppos:%s. startPos:%s : symbol:%s\n")
             ,ppos.toString().cstr(), pos.toString().cstr()
-            ,ExpressionParser::getTables().getSymbolName(symbol));
+            ,ExpressionParser::getTables().getSymbolName(symbol).cstr());
     lex.markPrevious();
   } while(symbol != 0);
 }

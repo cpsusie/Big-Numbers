@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CSelectBreakSymbolsDlg::CSelectBreakSymbolsDlg(const ParserTables &tables, BitSet &symbolSet, CWnd *pParent)
+CSelectBreakSymbolsDlg::CSelectBreakSymbolsDlg(const AbstractParserTables &tables, BitSet &symbolSet, CWnd *pParent)
 : CDialog(CSelectBreakSymbolsDlg::IDD, pParent), m_tables(tables), m_symbolSet(symbolSet)
 {
 }
@@ -23,7 +23,7 @@ BOOL CSelectBreakSymbolsDlg::OnInitDialog() {
   __super::OnInitDialog();
   CListBox *lb = (CListBox*)GetDlgItem(IDC_LISTSYMBOLS);
   UINT s;
-  for(s = 0; s < m_tables.getTerminalCount(); s++) {
+  for(s = 0; s < m_tables.getTermCount(); s++) {
     m_symbolMap.put(m_tables.getSymbolName(s), SymbolPos(s, m_symbolSet.contains(s)));
   }
   s = 0;

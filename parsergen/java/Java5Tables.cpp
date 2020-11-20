@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "Java5Parser.h"
 #line 36 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+#include <ParserTablesTemplate.h>
 /************************************************************************************\
 * The 4 arrays actionCode, termListTable, actionListTable and termSetTable           *
 * holds a compressed action-matrix, used by LRParser to find                         *
@@ -4509,7 +4510,7 @@ static const ParserTablesTemplate<105,306,635,1191
                                                                ,rightSideTable  , symbolNames
                                                                ,39732, 39824);
 
-const ParserTables *Java5Parser::Java5Tables = &Java5Tables_s;
+const AbstractParserTables *Java5Parser::Java5Tables = &Java5Tables_s;
 // Size of Java5Tables_s: 68(x86)/128(x64) bytes. Size of Java5Tables:4(x86)/8(x64) bytes
 
 // Total size of table data:39.732(x86)/39.824(x64) bytes.

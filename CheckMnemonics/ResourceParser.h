@@ -10,14 +10,14 @@
 
 class ResourceParser : public LRparser {
 private:
-  static const ParserTables *ResourceTables;
+  static const AbstractParserTables *ResourceTables;
   static int    _ttoi(const TCHAR *s);
   static String stripQuotes(const String &s);
 public:
   ResourceParser(ParserTree &tree, ResourceLex *lex = nullptr) : m_tree(tree), LRparser(*ResourceTables,lex) {
   }
   void  verror(const SourcePosition &pos, const TCHAR *format,va_list argptr) override;
-  static const ParserTables &getTables() {
+  static const AbstractParserTables &getTables() {
     return *ResourceTables;
   }
 private:

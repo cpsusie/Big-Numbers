@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "dummyparser.h"
 #line 36 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#include <ParserTablesTemplate.h>
 /************************************************************************************\
 * The 4 arrays actionCode, termListTable, actionListTable and termSetTable           *
 * holds a compressed action-matrix, used by LRParser to find                         *
@@ -217,7 +218,7 @@ static const ParserTablesTemplate<3,5,5,6
                                                               ,rightSideTable  , symbolNames
                                                               ,188, 264);
 
-const ParserTables *DummyParser::DummyTables = &DummyTables_s;
+const AbstractParserTables *DummyParser::DummyTables = &DummyTables_s;
 // Size of DummyTables_s: 68(x86)/128(x64) bytes. Size of DummyTables:4(x86)/8(x64) bytes
 
 // Total size of table data:188(x86)/264(x64) bytes.

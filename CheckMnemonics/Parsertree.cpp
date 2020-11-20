@@ -144,10 +144,10 @@ void ParserTree::dumpSyntaxNode(const SyntaxNode *node, FILE *f, int level, bool
   if(node) {
     const SourcePosition &pos = node->getPos();
     _ftprintf(f,_T("%*.*s (%d,%d) [%s] ")
-           ,level,level,_T(" ")
-           ,pos.getLineNumber(), pos.getColumn()
-           ,ResourceParser::getTables().getSymbolName(node->getSymbol())
-           );
+             ,level,level,_T(" ")
+             ,pos.getLineNumber(), pos.getColumn()
+             ,ResourceParser::getTables().getSymbolName(node->getSymbol()).cstr()
+             );
     switch(node->getSymbol()) {
     case IDENTIFIER:
       _ftprintf(f, _T(":[%s]\n"), node->getName().cstr() );

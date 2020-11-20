@@ -9,7 +9,7 @@
 #define YYSTYPE int
 class Olm637Parser : public LRparser {
 private:
-  static const ParserTables *Olm637Tables;
+  static const AbstractParserTables *Olm637Tables;
 public:
   Olm637Parser(Scanner *lex=nullptr) : LRparser(*Olm637Tables,lex) {
   }

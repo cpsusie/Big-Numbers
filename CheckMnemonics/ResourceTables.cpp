@@ -4,6 +4,7 @@
 #include "ResourceParser.h"
 
 #line 36 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#include <ParserTablesTemplate.h>
 /************************************************************************************\
 * The 4 arrays actionCode, termListTable, actionListTable and termSetTable           *
 * holds a compressed action-matrix, used by LRParser to find                         *
@@ -2486,7 +2487,7 @@ static const ParserTablesTemplate<328,446,475,635
                                                                   ,rightSideTable  , symbolNames
                                                                   ,20108, 20200);
 
-const ParserTables *ResourceParser::ResourceTables = &ResourceTables_s;
+const AbstractParserTables *ResourceParser::ResourceTables = &ResourceTables_s;
 // Size of ResourceTables_s: 68(x86)/128(x64) bytes. Size of ResourceTables:4(x86)/8(x64) bytes
 
 // Total size of table data:20.108(x86)/20.200(x64) bytes.

@@ -38,7 +38,7 @@ ResourceFile::ResourceFile(const String &fileName) {
           case acceleratorsDefinition: currentSection->m_acceleratorDefinitions.add(AcceleratorsDefinition(n,this)); break;
           case stringTableDefinition:  currentSection->m_stringTable.append(StringTableDefinition(n,this));          break;
           default:
-            tree.addError(_T("unknown resourceNode:symbol:%s\n"), ResourceParser::getTables().getSymbolName(n->getSymbol()));
+            tree.addError(_T("Unknown resourceNode:symbol:%s\n"), ResourceParser::getTables().getSymbolName(n->getSymbol()).cstr());
             break;
           }
         }

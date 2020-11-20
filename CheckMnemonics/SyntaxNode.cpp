@@ -19,7 +19,7 @@ Exception SyntaxNode::createException(const String &attribute) const {
 }
 
 String SyntaxNode::getSymbolName() const {
-  const ParserTables &tables = ResourceParser::getTables();
+  const AbstractParserTables &tables = ResourceParser::getTables();
   if(m_symbol < 0 || m_symbol >= (int)tables.getSymbolCount()) {
     return format(_T("Unknown symbol (=%d)"),m_symbol);
   }

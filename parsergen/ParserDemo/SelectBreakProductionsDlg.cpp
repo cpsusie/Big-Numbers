@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CSelectBreakProductionsDlg::CSelectBreakProductionsDlg(const ParserTables &tables, BitSet &selectedProductionSet, CWnd *pParent)
+CSelectBreakProductionsDlg::CSelectBreakProductionsDlg(const AbstractParserTables &tables, BitSet &selectedProductionSet, CWnd *pParent)
 : CDialog(IDD, pParent)
 , m_selectedProductionSet(selectedProductionSet)
 , m_productionLines(      tables               )
@@ -112,40 +112,40 @@ void ProductionLineArray::setSelectProductions(const BitSet &productionSet) {
   }
 }
 
-ProductionLine::ProductionLine(const ParserTables &tables, UINT production, UINT leftSideLength)
+ProductionLine::ProductionLine(const AbstractParserTables &tables, UINT production, UINT leftSideLength)
 : m_production(production)
 , m_leftSide(tables.getLeftSymbol(production))
 , m_text(format(_T("%3u:%-*.*s -> %s")
                ,production
-               ,leftSideLength, leftSideLength, tables.getSymbolName(m_leftSide)
+               ,leftSideLength, leftSideLength, tables.getSymbolName(m_leftSide).cstr()
                ,tables.getRightString(production).cstr()))
 , m_selected(false)
 , m_index(-1)
 {
 }
 
-ProductionLineArray::ProductionLineArray(const ParserTables &tables) {
-  const UINT       terminalCount  = tables.getTerminalCount();
+ProductionLineArray::ProductionLineArray(const AbstractParserTables &tables) {
+  const UINT       terminalCount  = tables.getTermCount();
   const UINT       symbolCount    = tables.getSymbolCount();
-  const UINT       NtCount        = symbolCount - terminalCount;
+  const UINT       NTCount        = tables.getNTermCount();
   const UINT       prodCount      = tables.getProductionCount();
   Array<BitSet>    productionsUsingLeftSide; // indexed by NT-index (left-side of each production)
                                           // bitSet has capacity prductionCount and contains
                                           // all productions using the Nonterminal corresponding to NtIndex
-  productionsUsingLeftSide.setCapacity(NtCount);
-  for(UINT ntIndex = 0; ntIndex < NtCount; ntIndex++) {
+  productionsUsingLeftSide.setCapacity(NTCount);
+  for(UINT ntIndex = 0; ntIndex < NTCount; ntIndex++) {
     productionsUsingLeftSide.add(BitSet(prodCount));
   }
   UINT leftSideLength = 0;
   for(UINT prod = 0; prod < prodCount; prod++) {
-    const UINT length = (int)_tcsclen(tables.getLeftSymbolName(prod));
+    const UINT length = (UINT)tables.getLeftSymbolName(prod).length();
     if(length > leftSideLength) {
       leftSideLength = length;
     }
   }
   for(UINT prod = 0; prod < prodCount; prod++) {
-    const UINT NtIndex = tables.getLeftSymbol(prod) - terminalCount;
-    productionsUsingLeftSide[NtIndex].add(prod);
+    const UINT NTindex = tables.getLeftSymbol(prod) - terminalCount;
+    productionsUsingLeftSide[NTindex].add(prod);
     add(ProductionLine(tables, prod, leftSideLength));
   }
   int indexCounter = 0;

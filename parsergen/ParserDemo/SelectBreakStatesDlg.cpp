@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CSelectBreakStatesDlg::CSelectBreakStatesDlg(const ParserTables &tables, BitSet &stateSet, CWnd *pParent)
+CSelectBreakStatesDlg::CSelectBreakStatesDlg(const AbstractParserTables &tables, BitSet &stateSet, CWnd *pParent)
 : CDialog(CSelectBreakStatesDlg::IDD, pParent), m_tables(tables), m_stateSet(stateSet)
 {
   m_states = EMPTYSTRING;

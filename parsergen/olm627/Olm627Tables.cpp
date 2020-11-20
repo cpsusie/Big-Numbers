@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "Olm627Parser.h"
 #line 36 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+#include <ParserTablesTemplate.h>
 /************************************************************************************\
 * The 4 arrays actionCode, termListTable, actionListTable and termSetTable           *
 * holds a compressed action-matrix, used by LRParser to find                         *
@@ -227,7 +228,7 @@ static const ParserTablesTemplate<6,9,6,12
                                                                ,rightSideTable  , symbolNames
                                                                ,240, 304);
 
-const ParserTables *Olm627Parser::Olm627Tables = &Olm627Tables_s;
+const AbstractParserTables *Olm627Parser::Olm627Tables = &Olm627Tables_s;
 // Size of Olm627Tables_s: 68(x86)/128(x64) bytes. Size of Olm627Tables:4(x86)/8(x64) bytes
 
 // Total size of table data:240(x86)/304(x64) bytes.

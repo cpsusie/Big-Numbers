@@ -10,7 +10,7 @@
 
 class SqlParser : public LRparser {
 private:
-  static const ParserTables *SqlTables;
+  static const AbstractParserTables *SqlTables;
   ParserTree &m_tree;
   Date      ttoDate(     const TCHAR *str);
   Time      ttoTime(     const TCHAR *str);
@@ -30,7 +30,7 @@ public:
   }
   void      parse( const SourcePosition &pos, const String &stmt); // parse stmt
   void      verror(const SourcePosition &pos, const TCHAR  *format, va_list argptr) override;
-  static inline const ParserTables &getTables() {
+  static inline const AbstractParserTables &getTables() {
     return *SqlTables;
   }
 };

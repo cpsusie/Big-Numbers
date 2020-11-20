@@ -13,7 +13,7 @@
 
 class DummyParser : public LRparser {
 private:
-  static const ParserTables *DummyTables;
+  static const AbstractParserTables *DummyTables;
 public:
   DummyParser(Scanner *lex) : LRparser(*DummyTables,lex) {
   }

@@ -4,6 +4,7 @@
 #include "CppParser.h"
 
 #line 36 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#include <ParserTablesTemplate.h>
 /************************************************************************************\
 * The 4 arrays actionCode, termListTable, actionListTable and termSetTable           *
 * holds a compressed action-matrix, used by LRParser to find                         *
@@ -1341,7 +1342,7 @@ static const ParserTablesTemplate<74,126,165,301
                                                              ,rightSideTable  , symbolNames
                                                              ,7560, 7640);
 
-const ParserTables *CppParser::CppTables = &CppTables_s;
+const AbstractParserTables *CppParser::CppTables = &CppTables_s;
 // Size of CppTables_s: 68(x86)/128(x64) bytes. Size of CppTables:4(x86)/8(x64) bytes
 
 // Total size of table data:7.560(x86)/7.640(x64) bytes.

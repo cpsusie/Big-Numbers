@@ -3,17 +3,17 @@
 
 #define MATRIX_ERROR SHORT_MAX
 
-ActionMatrix::ActionMatrix(const ParserTables &tables)
-: m_termCount(  tables.getTerminalCount())
+ActionMatrix::ActionMatrix(const AbstractParserTables &tables)
+: m_termCount(  tables.getTermCount()    )
 , m_symbolCount(tables.getSymbolCount()  )
-, m_NTCount(    tables.getNTCount()      )
+, m_NTermCount( tables.getNTermCount()   )
 , m_stateCount( tables.getStateCount()   )
 {
   setDimension(m_stateCount, m_termCount);
   for(UINT state = 0; state < m_stateCount; state++) {
     for(UINT term = 0; term < m_termCount; term++) {
       const int action = tables.getAction(state, term);
-      (*this)(state, term) = (action == _ParserError) ? MATRIX_ERROR : action;
+      (*this)(state, term) = (action == AbstractParserTables::_ParserError) ? MATRIX_ERROR : action;
     }
   }
 }
@@ -46,15 +46,15 @@ String ActionMatrix::toString() const {
   return result;
 }
 
-SuccessorMatrix::SuccessorMatrix(const ParserTables &tables)
-: m_termCount(  tables.getTerminalCount())
+SuccessorMatrix::SuccessorMatrix(const AbstractParserTables &tables)
+: m_termCount(  tables.getTermCount()    )
 , m_symbolCount(tables.getSymbolCount()  )
-, m_NTCount(    tables.getNTCount()      )
+, m_NTermCount( tables.getNTermCount()   )
 , m_stateCount( tables.getStateCount()   )
 {
-  setDimension(m_stateCount, m_NTCount).setValue(0,0,m_stateCount,m_NTCount, MATRIX_ERROR);
+  setDimension(m_stateCount, m_NTermCount).setValue(0,0,m_stateCount,m_NTermCount, MATRIX_ERROR);
   for(UINT state = 0; state < m_stateCount; state++) {
-    const UINT n = tables.getLegalNTCount(state);
+    const UINT n = tables.getLegalNTermCount(state);
     if(n > 0) {
       CompactUIntArray row(n);
       row.insert(0, (UINT)0, n);
@@ -78,7 +78,7 @@ String SuccessorMatrix::toString() const {
   for(UINT state = 0; state < m_stateCount; state++) {
     String line;
     line = format(_T("%4u | "), state);
-    for(UINT NTindex = 0; NTindex < m_NTCount; NTindex++) {
+    for(UINT NTindex = 0; NTindex < m_NTermCount; NTindex++) {
       const USHORT v = (*this)(state, NTindex);
       if(v == MATRIX_ERROR) {
         line += _T("   E ");
@@ -125,18 +125,18 @@ String StateSuccArray::toString() const {
   return result;
 }
 
-TransposeSuccessorMatrix::TransposeSuccessorMatrix(const ParserTables &tables)
-: m_termCount(  tables.getTerminalCount())
-, m_symbolCount(tables.getSymbolCount()  )
-, m_NTCount(    tables.getNTCount()      )
+TransposeSuccessorMatrix::TransposeSuccessorMatrix(const AbstractParserTables &tables)
+: m_symbolCount(tables.getSymbolCount()  )
+, m_termCount(  tables.getTermCount()    )
+, m_NTermCount( tables.getNTermCount()   )
 , m_stateCount( tables.getStateCount()   )
 {
-  setCapacity(m_NTCount);
-  for(UINT ntIndex = 0; ntIndex < m_NTCount; ntIndex++) {
+  setCapacity(m_NTermCount);
+  for(UINT ntIndex = 0; ntIndex < m_NTermCount; ntIndex++) {
     add(StateSuccArray(m_stateCount));
   }
   for(UINT state = 0; state < m_stateCount; state++) {
-    const UINT n = tables.getLegalNTCount(state);
+    const UINT n = tables.getLegalNTermCount(state);
     if(n > 0) {
       CompactUIntArray ntArray(n);
       ntArray.insert(0, (UINT)0, n);

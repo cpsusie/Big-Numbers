@@ -18,52 +18,52 @@
 #if USE_GRAMMAR == EXPR_GRAMMAR
 
 #include <Math/Expression/ExpressionLex.h>
-typedef      ExpressionLex  ScannerToTest;
-const extern ParserTables  *ExpressionTables;
-#define      tablesToTest   ExpressionTables
+typedef      ExpressionLex          ScannerToTest;
+const extern AbstractParserTables  *ExpressionTables;
+#define      tablesToTest           ExpressionTables
 
 #elif USE_GRAMMAR == EVAL_GRAMMAR
 
 #include "../../Math/Eval/EvalLex.h"
-typedef      EvalLex        ScannerToTest;
-const extern ParserTables *EvalTables;
-#define      tablesToTest  EvalTables
+typedef      EvalLex               ScannerToTest;
+const extern AbstractParserTables *EvalTables;
+#define      tablesToTest          EvalTables
 
 #elif USE_GRAMMAR == SQL_GRAMMAR
 
 #include "../../Dbase/SqlParse/SqlLex.h"
-typedef      SqlLex        ScannerToTest;
-const extern ParserTables *SqlTables;
-#define      tablesToTest  SqlTables
+typedef      SqlLex                ScannerToTest;
+const extern AbstractParserTables *SqlTables;
+#define      tablesToTest          SqlTables
 
 #elif USE_GRAMMAR == OLM641_GRAMMAR
 
 #include <../Olm641/Olm641Lex.h>
-typedef      Olm641Lex     ScannerToTest;
-const extern ParserTables *Olm641Tables;
-#define      tablesToTest  Olm641Tables
+typedef      Olm641Lex             ScannerToTest;
+const extern AbstractParserTables *Olm641Tables;
+#define      tablesToTest          Olm641Tables
 
 #elif USE_GRAMMAR == EXCEL_GRAMMAR
 
 #include <../../ConvExcel/ExcelLex.h>
 
-typedef      ExcelLex      ScannerToTest;
-const extern ParserTables *ExcelTables;
-#define      tablesToTest  ExcelTables
+typedef      ExcelLex              ScannerToTest;
+const extern AbstractParserTables *ExcelTables;
+#define      tablesToTest          ExcelTables
 
 #elif USE_GRAMMAR == ACCESS_GRAMMAR
 
 #include "../../SqlBeauty/SqlLex.h"
-typedef      SqlLex        ScannerToTest;
-const extern ParserTables *SqlTables;
-#define      tablesToTest  SqlTables
+typedef      SqlLex                ScannerToTest;
+const extern AbstractParserTables *SqlTables;
+#define      tablesToTest          SqlTables
 
 #elif USE_GRAMMAR == CPP_GRAMMAR
 
 #include "../Cpp/CppLex.h"
-typedef      CppLex        ScannerToTest;
-const extern ParserTables *CppTables;
-#define      tablesToTest  CppTables
+typedef      CppLex                ScannerToTest;
+const extern AbstractParserTables *CppTables;
+#define      tablesToTest          CppTables
 
 #elif USE_GRAMMAR == JAVA5_GRAMMAR
 

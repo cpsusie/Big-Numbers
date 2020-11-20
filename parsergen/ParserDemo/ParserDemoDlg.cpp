@@ -38,7 +38,7 @@ CParserDemoDlg::CParserDemoDlg(CWnd *pParent) : CDialog(CParserDemoDlg::IDD, pPa
   m_parser.setHandler(this);
   m_breakProductions = new BitSet(m_parser.getParserTables().getProductionCount()); TRACE_NEW(m_breakProductions);
   m_breakStates      = new BitSet(m_parser.getParserTables().getStateCount());      TRACE_NEW(m_breakStates     );
-  m_breakSymbols     = new BitSet(m_parser.getParserTables().getTerminalCount());   TRACE_NEW(m_breakSymbols    );
+  m_breakSymbols     = new BitSet(m_parser.getParserTables().getTermCount());       TRACE_NEW(m_breakSymbols    );
 }
 
 CParserDemoDlg::~CParserDemoDlg() {
@@ -379,7 +379,7 @@ void CParserDemoDlg::showStatus(bool gotoLastDebug) {
     enableMenuItem(this, ID_RUN_STARTDEBUG_STEP    , false);
     enableMenuItem(this, ID_RUN_STARTDEBUG_STEPOVER, false);
   } else {
-    const TCHAR *input = m_parser.getSymbolName(m_parser.input());
+    const TCHAR *input = m_parser.getSymbolName(m_parser.input()).cstr();
     String LAtext;
     if(m_parser.getScanner()) {
       String lexeme = m_parser.getScanner()->getText();
@@ -513,7 +513,7 @@ void CParserDemoDlg::OnRunStartDebugGo() {
   UINT errorCount = (UINT)m_errorPos.size();
   while(!m_parser.done()) {
     int action = m_parser.getNextAction();
-    if(m_breakOnError && (m_errorPos.size() > errorCount || (action == _ParserError))) {
+    if(m_breakOnError && (m_errorPos.size() > errorCount || (action == AbstractParserTables::_ParserError))) {
       break;
     }
     if(m_breakOnProduction && (action <= 0) && m_breakProductions->contains(-action)) {
