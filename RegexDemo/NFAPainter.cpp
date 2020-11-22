@@ -352,8 +352,8 @@ void NFAPainter::paintTransition(const NFAStatePoint *from, const NFAStatePoint 
   }
   Point2D tv(v.y(), -v.x());
   Point2D textPos = cf + (v * (CIRCLE_RADIUS+2) + tv * 17);
-  String text;
-  CFont *font;
+  String  text;
+  CFont  *font;
   switch(sf.getEdge()) {
   case EDGE_EPSILON :
     text = format(_T("%c"),101);
@@ -364,7 +364,7 @@ void NFAPainter::paintTransition(const NFAStatePoint *from, const NFAStatePoint 
     font = &getFont(false, v);
     break;
   default           :
-    text = NFAState::getFormater()->toString(sf.getEdge());
+    text = NFAState::getFormater().toString(sf.getEdge());
     font = &getFont(false, v);
     break;
   }

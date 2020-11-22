@@ -133,11 +133,11 @@ public:
   static String allAllocatedToString();
   static const CompactArray<NFAState*> &getAllAllocated();
 
-  static void setFormater(CharacterFormater *formater) {
-    NFAState::s_formater = formater;
+  static void setFormater(CharacterFormater &formater) {
+    NFAState::s_formater = &formater;
   }
-  static CharacterFormater *getFormater() {
-    return s_formater;
+  static CharacterFormater &getFormater() {
+    return *s_formater;
   }
   static int getAllocated() {
     return s_stateCount;

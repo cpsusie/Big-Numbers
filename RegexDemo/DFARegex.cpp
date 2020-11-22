@@ -314,8 +314,8 @@ DFARegexStepHandler *DFARegex::setHandler(DFARegexStepHandler *handler) {
   return oldHandler;
 }
 
-CharacterFormater *DFARegex::setCharacterFormater(CharacterFormater *formater) {
-  CharacterFormater *oldFormater = NFAState::getFormater();
+CharacterFormater &DFARegex::setCharacterFormater(CharacterFormater &formater) {
+  CharacterFormater &oldFormater = NFAState::getFormater();
   NFAState::setFormater(formater);
   return oldFormater;
 }

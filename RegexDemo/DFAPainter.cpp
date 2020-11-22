@@ -54,7 +54,7 @@ String DFATransition::toString() const {
   if(m_set) {
     return charBitSetToString(*m_set, NFAState::getFormater());
   } else {
-    return NFAState::getFormater()->toString(m_ch);
+    return NFAState::getFormater().toString(m_ch);
   }
 }
 

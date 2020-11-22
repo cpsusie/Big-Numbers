@@ -114,7 +114,7 @@ static String thinCharMapToString(const short *a) { // size = MAX_CHARS
   map.sort(charMapElemCmp);
   String result = _T("EOI = 0\n");
   for(const CharMapElement e : map) {
-    result += format(_T("'%s' = %d\n"), NFAState::getFormater()->toString(e.m_ch).cstr(), e.m_mapsTo);
+    result += format(_T("'%s' = %d\n"), NFAState::getFormater().toString(e.m_ch).cstr(), e.m_mapsTo);
   }
   return result;
 }

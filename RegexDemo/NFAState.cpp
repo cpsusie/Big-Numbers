@@ -18,7 +18,7 @@ String AcceptType::toString() const {
 }
 
 int                     NFAState::s_stateCount = 0;
-CharacterFormater      *NFAState::s_formater   = CharacterFormater::hexEscapedExtendedAsciiFormater;
+CharacterFormater      *NFAState::s_formater   = &CharacterFormater::hexEscapedExtendedAsciiFormater;
 CompactArray<NFAState*> NFAState::s_allocatedStates;
 
 #define incrCount() s_stateCount++
@@ -160,7 +160,7 @@ String NFAState::toString() const {
     result += _T(" on ");
     switch(m_edge) {
     case EDGE_CHCLASS :
-      result += charBitSetToString(*m_charClass, s_formater);
+      result += charBitSetToString(*m_charClass, getFormater());
       break;
     case EDGE_EPSILON :
       result += _T("EPSILON ");
@@ -169,7 +169,7 @@ String NFAState::toString() const {
       throwException(_T("NFAState::toString:m_edge==EDGE_UNUSED"));
       break;
     default           :
-      result += s_formater->toString(m_edge) + _T(" ");
+      result += getFormater().toString(m_edge) + _T(" ");
       break;
     }
   }

@@ -213,7 +213,7 @@ public:
 
 #if defined(_DEBUG)
   DFARegexStepHandler *setHandler(DFARegexStepHandler *handler);
-  CharacterFormater   *setCharacterFormater(CharacterFormater *formater);
+  CharacterFormater   &setCharacterFormater(CharacterFormater &formater);
   const String &toString() const;
   String fastMapToString() const;
   String tableToString()   const;
