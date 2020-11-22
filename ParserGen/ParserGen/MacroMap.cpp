@@ -12,3 +12,14 @@ void MacroMap::addMacro(const Macro &m) {
   m_macroArray.add(m);
   m_valueMap.put(m.getValue(), index);
 }
+
+UINT MacroMap::getMaxCommentLength() const {
+  size_t maxlen = 0;
+  for(auto it = m_macroArray.getIterator(); it.hasNext();) {
+    const size_t l = it.next().getComment().length();
+    if(l > maxlen) {
+      maxlen = l;
+    }
+  }
+  return (UINT)maxlen;
+}

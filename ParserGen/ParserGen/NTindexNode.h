@@ -6,14 +6,21 @@ namespace TransSuccMatrixCompression {
 
 class StatePair {
 public:
+  static constexpr UINT NoFromStateCheck = 0x7fff; // special value for fromState, indicating always goto newState, no matter which state we come from
   UINT m_fromState;
   UINT m_newState;
   inline StatePair() : m_fromState(0), m_newState(0) {
   }
   inline StatePair(UINT fromState, UINT newState) : m_fromState(fromState), m_newState(newState) {
+    assert(m_newState != NoFromStateCheck);
+  }
+  inline bool isNoFromStateCheck() const {
+    return m_fromState == NoFromStateCheck;
   }
   String toString() const {
-    return format(_T("Goto %u from %u"), m_newState, m_fromState);
+    return isNoFromStateCheck()
+         ? format(_T("Goto %u"        ), m_newState)
+         : format(_T("Goto %u from %u"), m_newState, m_fromState);
   }
 };
 
@@ -39,21 +46,28 @@ public:
     sort(statePairCmpByNewState);
     return *this;
   }
+  // Return all legal from-states in array as a BitSet
   StateSet       getFromStateSet(UINT stateCount) const;
+  // Return all (no neccessary distinct) newstates in array
   StateArray     getNewStateArray()               const;
+  // = size() = number of different from-states in array
   inline UINT    getFromStateCount()              const {
     return(UINT)size();
+  }
+  // = size() = number of different to-states in array
+  inline UINT    getNewStateCount()               const {
+    return (UINT)size();
   }
   String         toString() const;
 };
 
-class StatePairSet {
+class StatePairBitSet {
 private:
   const UINT m_newState;
   StateSet   m_fromStateSet;     // set of states having newState as successor
   UINT       m_fromStateCount;
 public:
-  StatePairSet(UINT newState, UINT fromState0, UINT stateCount)
+  StatePairBitSet(UINT newState, UINT fromState0, UINT stateCount)
     : m_newState(      newState   )
     , m_fromStateSet(  stateCount )
     , m_fromStateCount(0          )
@@ -70,8 +84,12 @@ public:
     m_fromStateSet.add(fromState);
     m_fromStateCount++;
   }
-  inline UINT getFromStateCount() const {
+  inline UINT getFromStateCount()   const {
     return m_fromStateCount;
+  }
+  // = 1
+  inline UINT    getNewStateCount() const {
+    return 1;
   }
   operator StatePairArray() const;
   String toString() const {
@@ -79,15 +97,15 @@ public:
   }
 };
 
-inline int setSizeReverseCmp(const StatePairSet &sp1, const StatePairSet &sp2) {
+inline int setSizeReverseCmp(const StatePairBitSet &sp1, const StatePairBitSet &sp2) {
   return (int)sp2.getFromStateCount() - (int)sp1.getFromStateCount();
 }
 
-class StatePairSetArray : public Array<StatePairSet> {
+class StatePairBitSetArray : public Array<StatePairBitSet> {
 public:
-  StatePairSetArray() {
+  StatePairBitSetArray() {
   }
-  StatePairSetArray(size_t capacity) : Array(capacity) {
+  StatePairBitSetArray(size_t capacity) : Array(capacity) {
   }
   // sort by setSize, decreasing, ie. largest set first
   inline void sortBySetSize() {
@@ -103,6 +121,11 @@ public:
     }
     return sum;
   }
+  // = size() = number of different to-states in array
+  inline UINT    getNewStateCount() const {
+    return (UINT)size();
+  }
+
   String toString() const {
     String result;
     for(auto it = getIterator(); it.hasNext();) {
@@ -126,14 +149,17 @@ public:
 class MixedSuccessorTable : public NTindexNodeCommonData {
 public:
   StatePairArray              m_statePairArray;
-  StatePairSetArray           m_statePairSetArray;
+  StatePairBitSetArray        m_statePairBitSetArray;
   MixedSuccessorTable(const NTindexNodeCommonData &cd, const StatePairArray &statePairArray);
   StatePairArray mergeAll() const;
   inline UINT    getFromStateCount() const {
-    return m_statePairArray.getFromStateCount() + m_statePairSetArray.getFromStateCount();
+    return m_statePairArray.getFromStateCount() + m_statePairBitSetArray.getFromStateCount();
   }
-  MixedSuccessorTable &removeFirstStatePairSet() {
-    m_statePairSetArray.removeIndex(0);
+  inline UINT    getNewStateCount() const {
+    return m_statePairArray.getNewStateCount() + m_statePairBitSetArray.getNewStateCount();
+  }
+  MixedSuccessorTable &removeFirstStatePairBitSet() {
+    m_statePairBitSetArray.removeIndex(0);
     return *this;
   }
 };
@@ -148,10 +174,11 @@ protected:
   const BYTE                  m_recurseLevel;
   const CompressionMethod     m_compressMethod;
   NTindexNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, UINT fromStateCount, CompressionMethod compressMethod);
-  static NTindexNode *allocateNode(             const NTindexNode *parent, const MixedSuccessorTable  &mst);
-  static NTindexNode *allocateSplitNode(        const NTindexNode *parent, const MixedSuccessorTable  &mst);
-  static NTindexNode *allocateStatePairListNode(const NTindexNode *parent, const NTindexNodeCommonData &cd , const StatePairArray &statePairArray);
-  static NTindexNode *allocateStatePairSetNode( const NTindexNode *parent, const NTindexNodeCommonData &cd , const StatePairSet   &statePairSet  );
+  static NTindexNode *allocateNode(                 const NTindexNode *parent, const MixedSuccessorTable  &mst);
+  static NTindexNode *allocateSplitNode(            const NTindexNode *parent, const MixedSuccessorTable  &mst);
+  static NTindexNode *allocateStatePairArrayNode(   const NTindexNode *parent, const NTindexNodeCommonData &cd , const StatePairArray  &statePairArray );
+  static NTindexNode *allocateStatePairBitSetNode(  const NTindexNode *parent, const NTindexNodeCommonData &cd , const StatePairBitSet &statePairBitSet);
+  static NTindexNode *allocateImmediateDontCareNode(const NTindexNode *parent, const MixedSuccessorTable  &mst);
 public:
   static NTindexNode *allocateNTindexNode(UINT NTindex, const AbstractParserTables &tables, const StatePairArray &statePairArray);
   virtual            ~NTindexNode() {
@@ -166,44 +193,51 @@ public:
   inline CompressionMethod            getCompressionMethod() const {
     return m_compressMethod;
   }
-  // Call only if getCompressionMethod() == CompCodeTermList
-  virtual const StatePairArray       &getStatePairList()     const {
+  // Call only if getCompressionMethod() == CompCodeBinSearch
+  virtual const StatePairArray       &getStatePairArray()    const {
     throwUnsupportedOperationException(__TFUNCTION__);
     __assume(0);
     return *new StatePairArray();
   }
-  // Call only if getCompressionMethod() == CompCodeOneItem
-  virtual const StatePair            &getStatePair()         const {
-    throwUnsupportedOperationException(__TFUNCTION__);
-    __assume(0);
-    return *new StatePair();
-  }
-  // Call only if getCompressionMethod() == ParserTables::CompCodeTermSet
-  virtual const StatePairSet         &getStatePairSet()      const {
-    throwUnsupportedOperationException(__TFUNCTION__);
-    __assume(0);
-    return *new StatePairSet(0,0,0);
-  }
-  // Call only if getCompressionMethod() == ParserTables::CompCodeSplitNode
+  // Call only if getCompressionMethod() == CompCodeSplitNode
   virtual const NTindexNode          &getChild(BYTE index)   const {
     throwUnsupportedOperationException(__TFUNCTION__);
     __assume(0);
     return *this;
   }
+  // Call only if getCompressionMethod() == CompCodeImmediate
+  virtual const StatePair            &getStatePair()         const {
+    throwUnsupportedOperationException(__TFUNCTION__);
+    __assume(0);
+    return *new StatePair();
+  }
+  // Call only if getCompressionMethod() == CompCodeImmediate
+  virtual bool                        isDontCareNode()       const {
+    throwUnsupportedOperationException(__TFUNCTION__);
+    __assume(0);
+    return false;
+  }
+  // Call only if getCompressionMethod() == CompCodeBitSet
+  virtual const StatePairBitSet         &getStatePairBitSet()      const {
+    throwUnsupportedOperationException(__TFUNCTION__);
+    __assume(0);
+    return *new StatePairBitSet(0,0,0);
+  }
   virtual String toString() const;
 };
 
-class StatePairListNode : public NTindexNode {
+class BinSearchNode : public NTindexNode {
 private:
   StatePairArray m_statePairArray;
 public:
-  StatePairListNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, const StatePairArray &statePairArray)
+  BinSearchNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, const StatePairArray &statePairArray)
     : NTindexNode(parent, cd, statePairArray.getFromStateCount(), AbstractParserTables::CompCodeBinSearch)
     , m_statePairArray(statePairArray)
   {
+    assert(statePairArray.getFromStateCount() >= 2);
     m_statePairArray.sortByFromState();
   }
-  const StatePairArray &getStatePairList() const override {
+  const StatePairArray &getStatePairArray() const override {
     return m_statePairArray;
   }
   String toString() const override;
@@ -227,14 +261,22 @@ public:
   String toString() const override;
 };
 
-class OneStatePairNode : public NTindexNode {
+class ImmediateNode : public NTindexNode {
 private:
   const StatePair m_statePair;
 public:
-  OneStatePairNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, const StatePair &statePair)
+  ImmediateNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, const StatePair &statePair)
     : NTindexNode(parent, cd, 1, AbstractParserTables::CompCodeImmediate)
     , m_statePair(statePair)
   {
+  }
+  ImmediateNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, UINT newState)
+    : NTindexNode(parent, cd, 1, AbstractParserTables::CompCodeImmediate)
+    , m_statePair(StatePair(StatePair::NoFromStateCheck, newState))
+  {
+  }
+  bool isDontCareNode() const override {
+    return m_statePair.isNoFromStateCheck();
   }
   const StatePair &getStatePair() const override {
     return m_statePair;
@@ -242,17 +284,17 @@ public:
   String toString() const override;
 };
 
-class StatePairSetNode : public NTindexNode {
+class BitSetNode : public NTindexNode {
 private:
-  const StatePairSet m_statePairSet;
+  const StatePairBitSet m_statePairBitSet;
 public:
-  StatePairSetNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, const StatePairSet &statePairSet)
-    : NTindexNode(parent, cd, statePairSet.getFromStateCount(), AbstractParserTables::CompCodeBitset)
-    , m_statePairSet(statePairSet)
+  BitSetNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, const StatePairBitSet &statePairBitSet)
+    : NTindexNode(parent, cd, statePairBitSet.getFromStateCount(), AbstractParserTables::CompCodeBitSet)
+    , m_statePairBitSet(statePairBitSet)
   {
   }
-  const StatePairSet &getStatePairSet() const override {
-    return m_statePairSet;
+  const StatePairBitSet &getStatePairBitSet() const override {
+    return m_statePairBitSet;
   }
   String toString() const override;
 };

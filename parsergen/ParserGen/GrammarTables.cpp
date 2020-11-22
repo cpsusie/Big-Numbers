@@ -1,18 +1,16 @@
 #include "stdafx.h"
+#include "GrammarCode.h"
 #include "GrammarTables.h"
 
-GrammarTables::GrammarTables(const Grammar &grammar, const String &tablesClassName, const String &parserClassName)
-: m_symbolCount(         grammar.getSymbolCount()    )
-, m_termCount(           grammar.getTermCount()      )
-, m_productionCount(     grammar.getProductionCount())
-, m_stateCount(          grammar.getStateCount()     )
-, m_compressibleStateSet(grammar.getStateCount()     )
-, m_tablesClassName(     tablesClassName             )
-, m_parserClassName(     parserClassName             )
+GrammarTables::GrammarTables(const GrammarCode &grammarCode)
+: m_grammarCode(grammarCode)
+, m_compressibleStateSet(grammarCode.getGrammar().getStateCount())
 {
   m_countTableBytes.clear();
 
-  for(UINT p = 0; p < m_productionCount; p++) {
+  const Grammar &grammar = getGrammar();
+  const UINT productionCount = getProductionCount();
+  for(UINT p = 0; p < productionCount; p++) {
     const Production &prod   = grammar.getProduction(p);
     const UINT        length = prod.getLength();
     m_productionLength.add(length);
@@ -23,9 +21,11 @@ GrammarTables::GrammarTables(const Grammar &grammar, const String &tablesClassNa
       rightside.add(prod.m_rightSide[i]);
     }
   }
-  for(UINT s = 0; s < m_symbolCount; s++) {
-    const GrammarSymbol &symbol = grammar.getSymbol(s);
-    m_symbolNameArray.add(symbol.m_name);
+
+  const UINT symbolCount = getSymbolCount();
+  m_symbolNameArray.setCapacity(symbolCount);
+  for(UINT symbol = 0; symbol < symbolCount; symbol++) {
+    m_symbolNameArray.add(grammar.getSymbolName(symbol));
   }
 
   const UINT stateCount = getStateCount();
@@ -36,6 +36,10 @@ GrammarTables::GrammarTables(const Grammar &grammar, const String &tablesClassNa
     m_successorMatrix.add(grammar.m_result[s].m_succs);
   }
   initCompressibleStateSet();
+}
+
+const Grammar &GrammarTables::getGrammar() const {
+  return getGrammarCode().getGrammar();
 }
 
 void GrammarTables::initCompressibleStateSet() {
@@ -53,7 +57,7 @@ bool GrammarTables::calcIsCompressibleState(UINT state) const {
   const UINT               count = (UINT)aa.size();
   switch(count) {
   case 0 :
-    throwException(_T("actionArray for state %u has size 0"), state);
+    throwException(_T("ActionArray for state %u has size 0"), state);
   case 1 :
     return true;
   default:
@@ -109,6 +113,19 @@ void GrammarTables::getLegalNTerms(UINT state, UINT *symbols) const {
     *(symbols++) = ss.m_nterm;
   }
 };
+
+UINT GrammarTables::getSymbolCount()     const {
+  return getGrammar().getSymbolCount();
+}
+UINT GrammarTables::getTermCount()       const {
+  return getGrammar().getTermCount();
+}
+UINT GrammarTables::getProductionCount() const {
+  return getGrammar().getProductionCount();
+}
+UINT GrammarTables::getStateCount()      const {
+  return getGrammar().getStateCount();
+}
 
 void GrammarTables::getRightSide(UINT prod, UINT *dst) const {
   const CompactUIntArray &r = m_rightSide[prod];

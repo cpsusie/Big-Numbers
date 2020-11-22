@@ -1,19 +1,21 @@
 #pragma once
 
+#include "GrammarCode.h"
+
 class Macro {
 private:
-  mutable BitSet   m_usedBySet;
-  mutable UINT     m_usedByCount; // == m_usedBySet.size()
-  int              m_index;       // index in array m_actionCode
-  String           m_name;
-  const String     m_value, m_comment;
+  mutable UsedByBitSet m_usedBySet;
+  mutable UINT         m_usedByCount; // == m_usedBySet.size()
+  int                  m_index;       // index in array
+  String               m_name, m_comment;
+  const String         m_value;
 public:
-  Macro(UINT usedBySetSize, UINT usedByV0, const String &value, const String &comment)
-    : m_usedBySet(usedBySetSize)
-    , m_usedByCount(0          )
-    , m_index(  -1             )
-    , m_value(  value          )
-    , m_comment(comment        )
+  Macro(const BitSetParam &usedByParam, UINT usedByV0, const String &value, const String &comment)
+    : m_usedBySet(usedByParam)
+    , m_usedByCount(0        )
+    , m_index(  -1           )
+    , m_value(  value        )
+    , m_comment(comment      )
   {
     addUsedByValue(usedByV0);
   }
@@ -34,8 +36,13 @@ public:
   inline const String &getValue() const {
     return m_value;
   }
-  String getComment() const;
-  inline const BitSet &getUsedBySet() const {
+  Macro &setComment(const String &comment) {
+    m_comment = comment;
+    return *this;
+  }
+  // commentWidth1 = min width of comment excl usedBy-string
+  String getComment(bool includeUsedBy = false, UINT commentWidth1 = 0) const;
+  inline const UsedByBitSet &getUsedBySet() const {
     return m_usedBySet;
   }
   inline UINT getUsedByCount() const {
@@ -45,7 +52,7 @@ public:
     m_usedBySet.add(usedBy);
     m_usedByCount++;
   }
-  void print(MarginFile &f) const;
+  void print(MarginFile &f, UINT commentWidth1 = 0) const;
 };
 
 inline bool operator==(const Macro &m1, const Macro &m2) {

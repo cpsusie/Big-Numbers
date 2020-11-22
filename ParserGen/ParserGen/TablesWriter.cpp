@@ -4,13 +4,9 @@
 #include "GrammarCode.h"
 
 void TablesWriter::handleKeyword(TemplateWriter &writer, String &line) const {
-  GrammarTables tables(m_coder.getGrammar(), m_coder.getTablesClassName(), m_coder.getParserClassName());
-  const String  tmpFileName = TemplateWriter::createTempFileName(_T("txt"));
-  MarginFile    f(tmpFileName);
-  tables.print(f);
-  f.close();
-  const String text = readTextFile(tmpFileName);
-  writer.printf(_T("%s"), text.cstr());
-  unlink(tmpFileName);
+  const GrammarTables tables(m_coder);
+  std::wostringstream tmp;
+  tables.print(MarginFile(tmp));
+  writer.printf(_T("%s"), tmp.str().c_str());
   m_coder.setByteCount(tables.getTotalSizeInBytes());
 }

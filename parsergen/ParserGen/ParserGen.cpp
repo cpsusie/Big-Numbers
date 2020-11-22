@@ -20,7 +20,11 @@ static void usage() {
        " -h : Write lookahead symbols in docfile.\n"
        " [-c|+c<level>]: Disable or enable parser tables compression. If enabled, level specifies max number of recursive calls\n"
        "                 to determine parseraction. level=[0..%u]. Default is +c%u\n"
-       " -T : Compress successor matrix with same technique as action-matrix compression, but on the transposed of successor-matrix.\n"
+       " -T[,p][,r<maxlevel>][,m<minBitSetSize>]"
+       "    : Compress successor matrix with same technique as action-matrix compression, but on the transposed successor-matrix.\n"
+       "      p               : Prune matrix, if there only 1 newstate for all possible from-states to a given nterm. ie no check is done.\n"
+       "      r<maxLevel>     : Max recurse level when following splitnodes, actually a linked list\n"
+       "      m<minBitSetSize>: Make only stateBitSets which will contain at least the specified number of 1-bits. Must be >= 2. Default minbitsetsize=2\n"
        " -v[level]:verbose.\n"
        "     level = 0 -> silence.\n"
        "     level = 1 -> write main steps in process.\n"
@@ -57,6 +61,13 @@ void checkhas2reduce(Grammar &g) {
 }
 */
 
+static UINT parseUINT(TCHAR *&cp) {
+  TCHAR *endp = nullptr;
+  const UINT v = _tcstoul(cp, &endp, 10);
+  if(v) cp = endp;
+  return v;
+}
+
 int _tmain(int argc, TCHAR **argv) {
   TCHAR    *cp;
   Options  &options = Options::getInstance();
@@ -67,16 +78,18 @@ int _tmain(int argc, TCHAR **argv) {
         switch(*cp) {
         case 'c':
           { options.m_useTableCompression  = true;
-            UINT maxRecurseLevel;
-            if((_stscanf(cp + 1, _T("%u"), &maxRecurseLevel) != 1) || (maxRecurseLevel > Options::maxRecursiveCalls)) {
+            cp++;
+            const UINT maxRecurseLevel = parseUINT(cp);
+            if(maxRecurseLevel > Options::maxRecursiveCalls) {
               usage();
             }
-            options.m_maxRecursiveCalls = maxRecurseLevel;
+            options.m_maxRecursionAction = maxRecurseLevel;
           }
           break;
         default:
           usage();
         }
+        continue;
       }
       // *cp = '-'
       for(cp++; *cp; cp++) {
@@ -113,11 +126,46 @@ int _tmain(int argc, TCHAR **argv) {
           continue;
         case 'c':
           options.m_useTableCompression    = false;
-          options.m_maxRecursiveCalls      = 0;
+          options.m_maxRecursionAction     = 0;
           continue;
         case 'T':
-          options.m_compressSuccTransposed = true;
-          continue;
+          { options.m_compressSuccTransposed = true;
+            cp++;
+            if(*cp) {
+              for(Tokenizer tok(cp, _T(",")); tok.hasNext();) {
+                String s = tok.next();
+                for(TCHAR *cp1 = s.cstr(); *cp1;) {
+                  switch(*cp1) {
+                  case 'p':
+                    options.m_pruneSuccTransBitSet = true;
+                    cp1++;
+                    break;
+                  case 'm':
+                    { cp1++;
+                      const UINT v = parseUINT(cp1);
+                      if((v < 2)) {
+                        usage();
+                      }
+                      options.m_minStateBitSetSize = v;
+                    }
+                    break;
+                  case 'r':
+                    { cp1++;
+                      const UINT v = parseUINT(cp1);
+                      if(v > Options::maxRecursiveCalls) {
+                        usage();
+                      }
+                      options.m_maxRecursionTransSucc = v;
+                    }
+                    break;
+                  default:
+                    usage();
+                  }
+                }
+              }
+            }
+          }
+          break;
         case 'n':
           options.m_generateNonTerminals   = true;
           continue;
@@ -151,8 +199,9 @@ int _tmain(int argc, TCHAR **argv) {
           options.m_wizardName = cp+1;
           break;
         case 't':
-          { UINT tabSize;
-            if((_stscanf(cp+1, _T("%u"), &tabSize) != 1) || (tabSize < 1) || (tabSize > Options::maxTabSize)) {
+          { cp++;
+            const UINT tabSize = parseUINT(cp);
+            if((tabSize < 1) || (tabSize > Options::maxTabSize)) {
               usage();
             }
             options.m_tabSize = (BYTE)tabSize;

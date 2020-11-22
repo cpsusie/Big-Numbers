@@ -13,53 +13,6 @@ GrammarCode::GrammarCode(const Grammar &grammar)
 {
 }
 
-ByteArray bitSetToByteArray(const BitSet &set) {
-  const size_t byteCount = (set.getCapacity() - 1) / 8 + 1;
-  ByteArray    result(byteCount);
-  result.addZeroes(byteCount);
-  BYTE *b = (BYTE*)result.getData();
-  for(auto it = set.getIterator(); it.hasNext();) {
-    const UINT v = (UINT)it.next();
-    b[v >> 3] |= (1 << (v & 7));
-  }
-  return result;
-}
-
-String getStateSetComment(const StateSet &set) {
-  const size_t n = set.size();
-  return format(_T("Used by %s %s")
-               ,(n == 1) ? _T("state ") : _T("states")
-               ,set.toRangeString(SizeTStringifier(),_T(","), BT_BRACKETS).cstr());
-}
-
-void      outputBeginArrayDefinition(MarginFile &output, const TCHAR *tableName, IntegerType elementType, UINT size) {
-  output.setLeftMargin(0);
-  output.printf(_T("static const %s %s[%u] = {\n"), getTypeName(elementType), tableName, size);
-  output.setLeftMargin(2);
-}
-
-ByteCount outputEndArrayDefinition(  MarginFile &output,                         IntegerType elementType, UINT size, bool addNewLine) {
-  const ByteCount byteCount = ByteCount::wordAlignedSize(size * getTypeSize(elementType));
-  output.setLeftMargin(0);
-  output.printf(_T("%s}; // Size of table:%s.\n\n"), addNewLine?_T("\n"):_T(""), byteCount.toString().cstr());
-  return byteCount;
-}
-
-void newLine(MarginFile &output, String &comment, int minColumn) { // static
-  if(comment.length() > 0) {
-    if(minColumn > 0) {
-      const int fillerSize = minColumn - output.getCurrentLineLength();
-      if(fillerSize > 0) {
-        output.printf(_T("%*s"), fillerSize, EMPTYSTRING);
-      }
-    }
-    output.printf(_T(" /* %-*s*/\n"), commentWidth, comment.cstr());
-    comment = EMPTYSTRING;
-  } else {
-    output.printf(_T("\n"));
-  }
-}
-
 void GrammarCode::generateDocFile() const {
   generateDocFile(MarginFile(m_docFileName));
 }
@@ -122,3 +75,71 @@ void GrammarCode::generateParser() {
 
   writer.generateOutput();
 }
+
+BitSetParam GrammarCode::getBitSetParam(BitSetType type) const {
+  switch(type) {
+  case SYMBOL_BITSET    : return BitSetParam(type, m_grammar.getSymbolCount()    );
+  case TERM_BITSET      : return BitSetParam(type, m_grammar.getTermCount()      );
+  case NTINDEX_BITSET   : return BitSetParam(type, m_grammar.getNTermCount()     );
+  case PRODUCTION_BITSET: return BitSetParam(type, m_grammar.getProductionCount());
+  case STATE_BITSET     : return BitSetParam(type, m_grammar.getStateCount()     );
+  default               : throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), type);
+  }
+  return BitSetParam(type, 0);
+}
+
+ByteArray bitSetToByteArray(const BitSet &set) {
+  const size_t byteCount = (set.getCapacity() - 1) / 8 + 1;
+  ByteArray    result(byteCount);
+  result.addZeroes(byteCount);
+  BYTE *b = (BYTE*)result.getData();
+  for(auto it = set.getIterator(); it.hasNext();) {
+    const UINT v = (UINT)it.next();
+    b[v >> 3] |= (1 << (v & 7));
+  }
+  return result;
+}
+
+const TCHAR *BitSetParam::s_elementName[][2] = {
+  _T("symbol "    ), _T("symbols"    )
+ ,_T("terminal "  ), _T("terminals"  )
+ ,_T("NTindex  "  ), _T("NTindices"  )
+ ,_T("production "), _T("productions")
+ ,_T("state "     ), _T("states"     )
+};
+
+String UsedByBitSet::toString() const {
+  const size_t n = size();
+  return format(_T("Used by %s %s")
+               ,BitSetParam::getElementName(m_type,n > 1)
+               ,toRangeString(SizeTStringifier(),_T(","), BT_BRACKETS).cstr());
+}
+
+void      outputBeginArrayDefinition(MarginFile &output, const TCHAR *tableName, IntegerType elementType, UINT size) {
+  output.setLeftMargin(0);
+  output.printf(_T("static const %s %s[%u] = {\n"), getTypeName(elementType), tableName, size);
+  output.setLeftMargin(2);
+}
+
+ByteCount outputEndArrayDefinition(  MarginFile &output,                         IntegerType elementType, UINT size, bool addNewLine) {
+  const ByteCount byteCount = ByteCount::wordAlignedSize(size * getTypeSize(elementType));
+  output.setLeftMargin(0);
+  output.printf(_T("%s}; // Size of table:%s.\n\n"), addNewLine?_T("\n"):_T(""), byteCount.toString().cstr());
+  return byteCount;
+}
+
+void newLine(MarginFile &output, String &comment, int minColumn) { // static
+  if(comment.length() > 0) {
+    if(minColumn > 0) {
+      const int fillerSize = minColumn - output.getCurrentLineLength();
+      if(fillerSize > 0) {
+        output.printf(_T("%*s"), fillerSize, EMPTYSTRING);
+      }
+    }
+    output.printf(_T(" /* %-*s*/\n"), commentWidth, comment.cstr());
+    comment = EMPTYSTRING;
+  } else {
+    output.printf(_T("\n"));
+  }
+}
+

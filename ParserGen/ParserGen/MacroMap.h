@@ -33,4 +33,6 @@ public:
   inline const Array<Macro> getMacroArray() const {
     return m_macroArray;
   }
+  // find max length of all comments excl usedBy-strings
+  UINT getMaxCommentLength() const;
 };

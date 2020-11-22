@@ -115,10 +115,10 @@ protected:
     , m_compressMethod( compressMethod )
   {
   }
-  static StateActionNode *allocateNode(        const StateActionNode *parent, const ShiftAndReduceActions &sra);
-  static StateActionNode *allocateSplitNode(   const StateActionNode *parent, const ShiftAndReduceActions &sra);
-  static StateActionNode *allocateTermListNode(const StateActionNode *parent, const ActionNodeCommonData    &cd , const ParserActionArray &actionArray     );
-  static StateActionNode *allocateTermSetNode( const StateActionNode *parent, const ActionNodeCommonData    &cd , const TermSetReduction  &termSetReduction);
+  static StateActionNode *allocateNode(         const StateActionNode *parent, const ShiftAndReduceActions &sra);
+  static StateActionNode *allocateBinSearchNode(const StateActionNode *parent, const ActionNodeCommonData    &cd , const ParserActionArray &actionArray     );
+  static StateActionNode *allocateSplitNode(    const StateActionNode *parent, const ShiftAndReduceActions &sra);
+  static StateActionNode *allocateBitSetNode(   const StateActionNode *parent, const ActionNodeCommonData    &cd , const TermSetReduction  &termSetReduction);
 public:
   static StateActionNode             *allocateStateActionNode(UINT state, const SymbolNameContainer &nameContainer, const ParserActionArray &actionArray);
   virtual                            ~StateActionNode() {
@@ -133,38 +133,38 @@ public:
   inline CompressionMethod            getCompressionMethod() const {
     return m_compressMethod;
   }
-  // Call only if getCompressionMethod() == CompCodeTermList
+  // Call only if getCompressionMethod() == CompCodeBinSearch
   virtual const ParserActionArray    &getTermList()          const {
     throwUnsupportedOperationException(__TFUNCTION__);
     __assume(0);
     return *new ParserActionArray();
   }
-  // Call only if getCompressionMethod() == CompCodeOneItem
-  virtual ParserAction                getOneItemAction()     const {
-    throwUnsupportedOperationException(__TFUNCTION__);
-    __assume(0);
-    return ParserAction();
-  }
-  // Call only if getCompressionMethod() == AbstractParserTables::CompCodeBitset
-  virtual const TermSetReduction     &getTermSetReduction()  const {
-    throwUnsupportedOperationException(__TFUNCTION__);
-    __assume(0);
-    return *new TermSetReduction(0,0,m_nameContainer);
-  }
-  // Call only if getCompressionMethod() == AbstractParserTables::CompCodeSplitNode
+  // Call only if getCompressionMethod() == CompCodeSplitNode
   virtual const StateActionNode      &getChild(BYTE index)   const {
     throwUnsupportedOperationException(__TFUNCTION__);
     __assume(0);
     return *this;
   }
+  // Call only if getCompressionMethod() == CompCodeImmediate
+  virtual ParserAction                getOneItemAction()     const {
+    throwUnsupportedOperationException(__TFUNCTION__);
+    __assume(0);
+    return ParserAction();
+  }
+  // Call only if getCompressionMethod() == CompCodeBitSet
+  virtual const TermSetReduction     &getTermSetReduction()  const {
+    throwUnsupportedOperationException(__TFUNCTION__);
+    __assume(0);
+    return *new TermSetReduction(0,0,m_nameContainer);
+  }
   virtual String toString() const;
 };
 
-class TermListNode : public StateActionNode {
+class BinSearchNode : public StateActionNode {
 private:
   ParserActionArray  m_termListActionArray;
 public:
-  TermListNode(const StateActionNode *parent, const ActionNodeCommonData &cd, const ParserActionArray &termListActionArray)
+  BinSearchNode(const StateActionNode *parent, const ActionNodeCommonData &cd, const ParserActionArray &termListActionArray)
     : StateActionNode(parent, cd, termListActionArray.getLegalTermCount(), AbstractParserTables::CompCodeBinSearch)
     , m_termListActionArray(termListActionArray)
   {
@@ -193,11 +193,11 @@ public:
   String toString() const override;
 };
 
-class OneItemNode : public StateActionNode {
+class ImmediateNode : public StateActionNode {
 private:
   const ParserAction m_action;
 public:
-  OneItemNode(const StateActionNode *parent, const ActionNodeCommonData &cd, ParserAction action)
+  ImmediateNode(const StateActionNode *parent, const ActionNodeCommonData &cd, ParserAction action)
     : StateActionNode(parent, cd, 1, AbstractParserTables::CompCodeImmediate)
     , m_action(action)
   {
@@ -208,12 +208,12 @@ public:
   String toString() const override;
 };
 
-class TermSetNode : public StateActionNode {
+class BitSetNode : public StateActionNode {
 private:
   const TermSetReduction m_termSetReduction;
 public:
-  TermSetNode(const StateActionNode *parent, const ActionNodeCommonData &cd, const TermSetReduction &termSetReduction)
-    : StateActionNode(parent, cd, termSetReduction.getLegalTermCount(), AbstractParserTables::CompCodeBitset)
+  BitSetNode(const StateActionNode *parent, const ActionNodeCommonData &cd, const TermSetReduction &termSetReduction)
+    : StateActionNode(parent, cd, termSetReduction.getLegalTermCount(), AbstractParserTables::CompCodeBitSet)
     , m_termSetReduction(termSetReduction)
   {
   }

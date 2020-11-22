@@ -20,18 +20,21 @@ public:
   String   m_nameSpace;
   BYTE     m_tabSize;
   BYTE     m_verboseLevel;
-  bool     m_verbose                : 1;
-  Language m_language               : 2;
-  bool     m_lineDirectives         : 1;
-  bool     m_generateBreaks         : 1;
-  bool     m_generateActions        : 1;
-  bool     m_generateLookahead      : 1;
-  bool     m_generateNonTerminals   : 1;
-  bool     m_skipIfEqual            : 1;
-  bool     m_callWizard             : 1;
-  bool     m_useTableCompression    : 1;
-  bool     m_compressSuccTransposed : 1;
-  UINT     m_maxRecursiveCalls      : 4;
+  bool     m_verbose                 : 1;
+  Language m_language                : 2;
+  bool     m_lineDirectives          : 1;
+  bool     m_generateBreaks          : 1;
+  bool     m_generateActions         : 1;
+  bool     m_generateLookahead       : 1;
+  bool     m_generateNonTerminals    : 1;
+  bool     m_skipIfEqual             : 1;
+  bool     m_callWizard              : 1;
+  bool     m_useTableCompression     : 1;
+  bool     m_compressSuccTransposed  : 1;
+  bool     m_pruneSuccTransBitSet    : 1;
+  UINT     m_maxRecursionAction      : 4;
+  UINT     m_maxRecursionTransSucc   : 4;
+  UINT     m_minStateBitSetSize      : 8;
   DEFINESINGLETON(Options)
 
   static constexpr UINT maxTabSize          = 16;

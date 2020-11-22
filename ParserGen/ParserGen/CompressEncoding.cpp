@@ -47,10 +47,10 @@ String encodeMacroValue(CompressionMethod method, int highEnd, int lowEnd) {
 }
 
 static const TCHAR *methodNames[] = {
-  _T("TermList"  )
+  _T("BinSearch" )
  ,_T("SplitNode" )
- ,_T("OneItem"   )
- ,_T("TermSet"   )
+ ,_T("Immediate" )
+ ,_T("BitSet"    )
 };
 
 const TCHAR *compressMethodToString(CompressionMethod method) {

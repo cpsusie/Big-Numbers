@@ -42,7 +42,7 @@ public:
   static constexpr CompressionMethod CompCodeBinSearch = 0;
   static constexpr CompressionMethod CompCodeSplitNode = 1;
   static constexpr CompressionMethod CompCodeImmediate = 2;
-  static constexpr CompressionMethod CompCodeBitset    = 3;
+  static constexpr CompressionMethod CompCodeBitSet    = 3;
 
   // Return value from getAction, on invalid input => parser will not accept
   static constexpr INT               _ParserError      = 0xffff;

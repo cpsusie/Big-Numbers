@@ -16,7 +16,10 @@ Options::Options() : Singleton(__TFUNCTION__) {
   m_callWizard             = false;
   m_useTableCompression    = true;
   m_compressSuccTransposed = false;
-  m_maxRecursiveCalls      = defaultRecurseLevel;
+  m_pruneSuccTransBitSet   = false;
+  m_maxRecursionAction     = defaultRecurseLevel;
+  m_maxRecursionTransSucc  = defaultRecurseLevel;
+  m_minStateBitSetSize     = 2;
 }
 
 void Options::checkTemplateExist(const String &defaultTemplateName) {
@@ -40,4 +43,3 @@ void verbose(int level, _In_z_ _Printf_format_string_ TCHAR const * const format
     va_end(argptr);
   }
 }
-

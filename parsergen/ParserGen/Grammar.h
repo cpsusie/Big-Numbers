@@ -205,8 +205,11 @@ public:
     sort(parserActionCompareTerm);
     return *this;
   }
+  // Return all legal terminals in array as a BitSet
   TermSet        getLegalTermSet(UINT terminalCount) const;
+  // Return all actions (no neccessary distinct) actions in array
   ActionArray    getActionArray()                    const;
+  // = size() = number of different terminal symbols in array
   inline UINT    getLegalTermCount()                 const {
     return(UINT)size();
   }

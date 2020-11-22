@@ -6,18 +6,19 @@
 namespace SuccessorMatrixCompression {
 
 CompressedSuccessorMatrix::CompressedSuccessorMatrix(const GrammarTables &tables)
-  : MacroMap(          tables                  )
-  , m_tables(          tables                  )
-  , m_NTindexType(     tables.getNTindexType() )
-  , m_stateType(       tables.getStateType()   )
-  , m_definedStateSet( tables.getStateCount()  )
+  : MacroMap(          tables                                              )
+  , m_tables(          tables                                              )
+  , m_usedByParam(     tables.getGrammarCode().getBitSetParam(STATE_BITSET))
+  , m_NTindexType(     tables.getNTindexType()                             )
+  , m_stateType(       tables.getStateType()                               )
+  , m_definedStateSet( tables.getStateCount()                              )
 {
   generateCompressedForm();
 }
 
 void CompressedSuccessorMatrix::generateCompressedForm() {
-  m_currentNTindexListSize = 0;
-  m_currentStateListSize   = 0;
+  m_NTindexArraySize  = 0;
+  m_newStateArraySize = 0;
 
   const SuccessorMatrix &sm = m_tables.getSuccessorMatrix();
 
@@ -44,36 +45,36 @@ Macro CompressedSuccessorMatrix::doSuccList(UINT state, const SuccessorStateArra
 
 Macro CompressedSuccessorMatrix::doNTindexListState(UINT state, const SuccessorStateArray &succList) {
   const NTindexSet    ntIndexSet = succList.getNTindexSet(getTermCount(), getSymbolCount());
-  IndexMapValue      *imvp       = m_NTindexMap.get(ntIndexSet);
-  UINT                ntListIndex, ntListCount;
+  IndexMapValue      *imvp       = m_NTindexArrayMap.get(ntIndexSet);
+  UINT                ntArrayIndex, ntArrayCount;
 
   if(imvp != nullptr) {
-    ntListIndex = imvp->m_arrayIndex;
-    ntListCount = imvp->m_commentIndex;
+    ntArrayIndex = imvp->m_arrayIndex;
+    ntArrayCount = imvp->m_commentIndex;
     imvp->addUsedByValue(state);
   } else {
-    ntListIndex = m_currentNTindexListSize;
-    ntListCount = m_NTindexMap.getCount();
-    m_NTindexMap.put(ntIndexSet, IndexMapValue(getStateCount(), state, ntListIndex));
-    m_currentNTindexListSize += (UINT)ntIndexSet.size() + 1;
+    ntArrayIndex = m_NTindexArraySize;
+    ntArrayCount = m_NTindexArrayMap.getCount();
+    m_NTindexArrayMap.put(ntIndexSet, IndexMapValue(m_usedByParam, state, ntArrayIndex));
+    m_NTindexArraySize += (UINT)ntIndexSet.size() + 1;
   }
 
   const StateArray sa   = succList.getStateArray();
-  imvp                  = m_stateListMap.get(sa);
-  UINT                 stateListIndex, stateListCount;
+  imvp                  = m_newStateArrayMap.get(sa);
+  UINT                 newStateArrayIndex, newStateArrayCount;
   if(imvp != nullptr) {
-    stateListIndex = imvp->m_arrayIndex;
-    stateListCount = imvp->m_commentIndex;
+    newStateArrayIndex = imvp->m_arrayIndex;
+    newStateArrayCount = imvp->m_commentIndex;
     imvp->addUsedByValue(state);
   } else {
-    stateListIndex = m_currentStateListSize;
-    stateListCount = m_stateListMap.getCount();
-    m_stateListMap.put(sa, IndexMapValue(getStateCount(), state, stateListIndex));
-    m_currentStateListSize += (UINT)sa.size();
+    newStateArrayIndex = m_newStateArraySize;
+    newStateArrayCount = m_newStateArrayMap.getCount();
+    m_newStateArrayMap.put(sa, IndexMapValue(m_usedByParam, state, newStateArrayIndex));
+    m_newStateArraySize += (UINT)sa.size();
   }
-  const String macroValue = encodeMacroValue(AbstractParserTables::CompCodeBinSearch, stateListIndex, ntListIndex);
-  const String comment    = format(_T("NTindexList %3u, stateList %3u"), ntListCount, stateListCount);
-  return Macro(getStateCount(), state, macroValue, comment);
+  const String macroValue = encodeMacroValue(AbstractParserTables::CompCodeBinSearch, newStateArrayIndex, ntArrayIndex);
+  const String comment    = format(_T("NTindexArray %3u, newStateArray %3u"), ntArrayCount, newStateArrayCount);
+  return Macro(m_usedByParam, state, macroValue, comment);
 }
 
 Macro CompressedSuccessorMatrix::doOneSuccessorState(UINT state, const SuccessorState &ss) {
@@ -82,17 +83,17 @@ Macro CompressedSuccessorMatrix::doOneSuccessorState(UINT state, const Successor
   const UINT    NTindex    = nterm - getTermCount();
   const String  macroValue = encodeMacroValue(AbstractParserTables::CompCodeImmediate, newState, NTindex);
   const String  comment    = format(_T("Goto %u on %s"), newState, getSymbolName(nterm).cstr());
-  return Macro(getStateCount(), state, macroValue, comment);
+  return Macro(m_usedByParam, state, macroValue, comment);
 }
 
 ByteCount CompressedSuccessorMatrix::print(MarginFile &output) const {
   ByteCount byteCount;
-  byteCount += printMacroesAndSuccessorCode(output);
-  byteCount += printNTindexAndStateList(    output);
+  byteCount += printMacroesAndSuccessorCodeArray(output);
+  byteCount += printNTindexAndNewStateArray(     output);
   return byteCount;
 }
 
-ByteCount CompressedSuccessorMatrix::printMacroesAndSuccessorCode(MarginFile &output) const {
+ByteCount CompressedSuccessorMatrix::printMacroesAndSuccessorCodeArray(MarginFile &output) const {
   const UINT   macroCount = getMacroCount();
   Array<Macro> macroes(getMacroArray());
   if(macroCount > 0) {
@@ -103,7 +104,7 @@ ByteCount CompressedSuccessorMatrix::printMacroesAndSuccessorCode(MarginFile &ou
     output.printf(_T("\n"));
   }
   output.printf(_T("#define nil (unsigned int)-1\n"));
-  outputBeginArrayDefinition(output, _T("successorCode"), TYPE_UINT, getStateCount());
+  outputBeginArrayDefinition(output, _T("successorCodeArray"), TYPE_UINT, getStateCount());
 
   TCHAR delim     = ' ';
 
@@ -120,17 +121,17 @@ ByteCount CompressedSuccessorMatrix::printMacroesAndSuccessorCode(MarginFile &ou
   return outputEndArrayDefinition(output, TYPE_UINT, getStateCount(), true);
 }
 
-ByteCount CompressedSuccessorMatrix::printNTindexAndStateList(MarginFile &output) const {
+ByteCount CompressedSuccessorMatrix::printNTindexAndNewStateArray(MarginFile &output) const {
   ByteCount byteCount;
-  if(m_currentNTindexListSize == 0) {
-    output.printf(_T("#define NTindexListTable nullptr\n"));
-    output.printf(_T("#define stateListTable   nullptr\n\n"));
+  if(m_NTindexArraySize == 0) {
+    output.printf(_T("#define NTindexArrayTable  nullptr\n"));
+    output.printf(_T("#define newStateArrayTable nullptr\n\n"));
     return byteCount;
   }
-  { const NTindexSetIndexArray            ntSetArray        = m_NTindexMap.getEntryArray();
+  { const NTindexSetIndexArray            ntSetArray        = m_NTindexArrayMap.getEntryArray();
     UINT                                  tableSize         = 0;
     TCHAR                                 delim             = ' ';
-    outputBeginArrayDefinition(output, _T("NTindexListTable"), m_NTindexType , ntSetArray.getElementCount(true));
+    outputBeginArrayDefinition(output, _T("NTindexArrayTable"), m_NTindexType , ntSetArray.getElementCount(true));
     for(auto it = ntSetArray.getIterator();      it.hasNext();) {
       const IndexArrayEntry<NTindexSet>  &e                 = it.next();
       String                              comment           = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment().cstr());
@@ -150,10 +151,10 @@ ByteCount CompressedSuccessorMatrix::printNTindexAndStateList(MarginFile &output
     }
     byteCount += outputEndArrayDefinition(output, m_NTindexType , tableSize);
   }
-  { const StateArrayIndexArray            stateListArray    = m_stateListMap.getEntryArray();
+  { const StateArrayIndexArray            stateListArray    = m_newStateArrayMap.getEntryArray();
     UINT                                  tableSize         = 0;
     TCHAR                                 delim             = ' ';
-    outputBeginArrayDefinition(output, _T("stateListTable"  ), m_stateType , stateListArray.getElementCount(false));
+    outputBeginArrayDefinition(output, _T("newStateArrayTable"), m_stateType , stateListArray.getElementCount(false));
     for(auto it = stateListArray.getIterator();  it.hasNext();) {
       const IndexArrayEntry<StateArray>  &e                 = it.next();
       String                              comment           = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment().cstr());

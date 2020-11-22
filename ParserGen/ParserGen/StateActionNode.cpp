@@ -53,7 +53,7 @@ StateActionNode *StateActionNode::allocateStateActionNode(UINT state, const Symb
   const ActionNodeCommonData commonData(state, nameContainer);
   const Options           &options = Options::getInstance();
   if(!options.m_useTableCompression) {
-    return new TermListNode(nullptr, commonData, actionArray);
+    return new BinSearchNode(nullptr, commonData, actionArray);
   } else {
     return allocateNode(nullptr, ShiftAndReduceActions(commonData, actionArray));
   }
@@ -68,15 +68,15 @@ StateActionNode *StateActionNode::allocateNode(const StateActionNode *parent, co
 
   if(shiftActions + reduceActions == 1) {
     if(reduceActions == 0) {
-      return allocateTermListNode(parent, sra, sra.m_shiftActionArray);
+      return allocateBinSearchNode(parent, sra, sra.m_shiftActionArray);
     } else { // reduceActions == 1
-      return allocateTermSetNode( parent, sra, sra.m_termSetReductionArray[0]);
+      return allocateBitSetNode( parent, sra, sra.m_termSetReductionArray[0]);
     }
   }
 
   const BYTE recurseLevel = parent ? parent->getRecurseLevel() + 1 : 0;
-  if((reduceActions == 0) || (sra.m_termSetReductionArray[0].getLegalTermCount() < 2) || (recurseLevel >= options.m_maxRecursiveCalls)) {
-    return allocateTermListNode(parent, sra, sra.mergeAll());
+  if((reduceActions == 0) || (sra.m_termSetReductionArray[0].getLegalTermCount() < 2) || (recurseLevel >= options.m_maxRecursionAction)) {
+    return allocateBinSearchNode(parent, sra, sra.mergeAll());
   }
 
   return allocateSplitNode(parent, sra);
@@ -86,30 +86,30 @@ StateActionNode *StateActionNode::allocateSplitNode(const StateActionNode *paren
   const UINT legalTokenCount = sra.getLegalTermCount();
   SplitNode *p = new SplitNode(parent, sra, legalTokenCount); TRACE_NEW(p);
   // (shiftActions + reduceActions >= 2) && (reduceActions >= 1) && (m_termSetReductionArray[0].getTermSetSize() >= 2)
-  StateActionNode *child0 = allocateTermSetNode(p, sra, sra.m_termSetReductionArray[0]);
+  StateActionNode *child0 = allocateBitSetNode(p, sra, sra.m_termSetReductionArray[0]);
   StateActionNode *child1 = allocateNode(       p, ShiftAndReduceActions(sra).removeFirstTermSet());
   p->setChild(0, child0).setChild(1, child1);
   return p;
 }
 
-StateActionNode *StateActionNode::allocateTermListNode(const StateActionNode *parent, const ActionNodeCommonData &cd, const ParserActionArray &actionArray) {
+StateActionNode *StateActionNode::allocateBinSearchNode(const StateActionNode *parent, const ActionNodeCommonData &cd, const ParserActionArray &actionArray) {
   StateActionNode *p;
-  if(actionArray.size() == 1) {
-    p = new OneItemNode( parent, cd, actionArray[0]); TRACE_NEW(p);
+  if(actionArray.getLegalTermCount() == 1) {
+    p = new ImmediateNode(parent, cd, actionArray[0]  ); TRACE_NEW(p);
   } else {
-    p = new TermListNode(parent, cd, actionArray   ); TRACE_NEW(p);
+    p = new BinSearchNode(parent, cd, actionArray     ); TRACE_NEW(p);
   }
   return p;
 }
 
 
-StateActionNode *StateActionNode::allocateTermSetNode(const StateActionNode *parent, const ActionNodeCommonData &cd, const TermSetReduction &termSetReduction) {
+StateActionNode *StateActionNode::allocateBitSetNode(const StateActionNode *parent, const ActionNodeCommonData &cd, const TermSetReduction &termSetReduction) {
   StateActionNode *p;
   if(termSetReduction.getLegalTermCount() == 1) {
     const ParserActionArray paa(termSetReduction);
-    p = new OneItemNode(parent, cd, paa[0]          ); TRACE_NEW(p);
+    p = new ImmediateNode(parent, cd, paa[0]          ); TRACE_NEW(p);
   } else {
-    p = new TermSetNode(parent, cd, termSetReduction); TRACE_NEW(p);
+    p = new BitSetNode(   parent, cd, termSetReduction); TRACE_NEW(p);
   }
   return p;
 }
@@ -130,7 +130,7 @@ String StateActionNode::toString() const {
   return format(_T("State %u %-20s recurseLevel:%u, (Legal tokens:%u)\n"), m_state, compressMethodToString(getCompressionMethod()), m_recurseLevel, m_legalTermCount);
 }
 
-String TermListNode::toString() const {
+String BinSearchNode::toString() const {
   const String result = __super::toString()  + indentString(m_termListActionArray.toString(m_nameContainer),3);
   return indentString(result, m_recurseLevel * 2);
 }
@@ -142,12 +142,12 @@ String SplitNode::toString() const {
   return indentString(result, m_recurseLevel * 2);
 }
 
-String OneItemNode::toString() const {
+String ImmediateNode::toString() const {
   const String result = __super::toString() + indentString(m_action.toString(m_nameContainer),3);
   return indentString(result, m_recurseLevel * 2);
 }
 
-String TermSetNode::toString() const {
+String BitSetNode::toString() const {
   const String result = __super::toString() + indentString(m_termSetReduction.toString(),3);
   return indentString(result, m_recurseLevel * 2);
 }

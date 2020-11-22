@@ -156,60 +156,18 @@ _T("/***************************************************************************
    "\\************************************************************************************/\n");
 
 void GrammarTables::printCpp(MarginFile &output) const {
+  const Options &options = Options::getInstance();
   m_countTableBytes.clear();
+  findTemplateTypes();
 
-  if(!Options::getInstance().m_useTableCompression) {
+  if(!options.m_useTableCompression) {
     m_compressibleStateSet.clear();
   }
-  findTemplateTypes();
-  m_countTableBytes += printCompressedActionMatrixCpp(   output);
-  m_countTableBytes += printCompressedSuccessorMatrixCpp(output);
-  m_countTableBytes += printProductionLengthTableCpp(    output);
-  m_countTableBytes += printLeftSideTableCpp(            output);
-  m_countTableBytes += printRightSideTableCpp(           output);
-  m_countTableBytes += printSymbolNameTableCpp(          output);
-//  printf("sizeof parserTableTemplate:%zu bytes", sizeof(ParserTablesTemplate<2,2,2,2,char,char,char,char,char>));
-  const int sizeofTableTemlatex86  =  68; // sizeof(ParserTablesTemplate) x86
-  const int sizeofTableTemplatex64 = 128; // sizeof(ParserTablesTemplate) x64
-
-  const ByteCount tableClassSize(sizeofTableTemlatex86, sizeofTableTemplatex64);
-  m_countTableBytes += tableClassSize;
-  m_countTableBytes += ByteCount::s_pointerSize;
-
-  output.printf(_T("static const ParserTablesTemplate<"));
-  int column = output.getCurrentLineLength();
-  output.setLeftMargin(column - 1);
-  output.printf(_T("%u,%u,%u,%u\n,%s\n,%s\n,%s\n,%s\n,%s> %s_s(")
-               ,getTermCount(), getSymbolCount(), getProductionCount(), getStateCount()
-               ,getTypeName(getTermType()   )
-               ,getTypeName(getNTindexType())
-               ,getTypeName(getSymbolType() )
-               ,getTypeName(getActionType() )
-               ,getTypeName(m_stateType     )
-               ,m_tablesClassName.cstr()
-               );
-
-  column = output.getCurrentLineLength();
-  output.setLeftMargin(column - 1);
-  output.printf(_T("actionCode      , termListTable     , actionListTable, termSetTable\n"
-                   ",successorCode   , NTindexListTable  , stateListTable\n"
-                   ",productionLength, leftSideTable\n"
-                   ",rightSideTable  , symbolNames\n"
-                   ",%u, %u);\n\n")
-               ,m_countTableBytes.getByteCount(PLATFORM_X86)
-               ,m_countTableBytes.getByteCount(PLATFORM_X64)
-               );
-  output.setLeftMargin(0);
-
-  output.printf(_T("const AbstractParserTables *%s::%s = &%s_s;\n")
-               ,m_parserClassName.cstr()
-               ,m_tablesClassName.cstr()
-               ,m_tablesClassName.cstr()
-               );
-  output.printf(_T("// Size of %s_s: %s. Size of %s:%s\n\n")
-               ,m_tablesClassName.cstr(), tableClassSize.toString().cstr()
-               ,m_tablesClassName.cstr(), ByteCount::s_pointerSize.toString().cstr()
-               );
+  if(options.m_compressSuccTransposed) {
+    m_countTableBytes = printCppParserTablesTemplateTransSucc(output);
+  } else {
+    m_countTableBytes = printCppParserTablesTemplate(output);
+  }
 
   output.printf(_T("// Total size of table data:%s.\n")
                ,m_countTableBytes.toString().cstr()
@@ -226,6 +184,118 @@ void GrammarTables::findTemplateTypes() const {
                  : TYPE_SHORT;
 }
 
+ByteCount GrammarTables::printCppParserTablesTemplate(MarginFile &output) const {
+  ByteCount byteCount;
+  byteCount += printCompressedActionMatrixCpp(   output);
+  byteCount += printCompressedSuccessorMatrixCpp(output);
+  byteCount += printProductionLengthTableCpp(    output);
+  byteCount += printLeftSideTableCpp(            output);
+  byteCount += printRightSideTableCpp(           output);
+  byteCount += printSymbolNameTableCpp(          output);
+//  printf("sizeof parserTableTemplate:%zu bytes", sizeof(ParserTablesTemplate<2,2,2,2,char,char,char,char,char>));
+  const int sizeofTableTemlatex86  =  68; // sizeof(ParserTablesTemplate) x86
+  const int sizeofTableTemplatex64 = 128; // sizeof(ParserTablesTemplate) x64
+
+  const ByteCount tableClassSize(sizeofTableTemlatex86, sizeofTableTemplatex64);
+  byteCount += tableClassSize;
+  byteCount += ByteCount::s_pointerSize;
+
+  const String &tablesClassName = getGrammarCode().getTablesClassName();
+  const String &parserClassName = getGrammarCode().getParserClassName();
+
+  output.printf(_T("static const ParserTablesTemplate<"));
+  int column = output.getCurrentLineLength();
+  output.setLeftMargin(column - 1);
+  output.printf(_T("%u,%u,%u,%u\n,%s\n,%s\n,%s\n,%s\n,%s> %s_s(")
+               ,getSymbolCount(), getTermCount(), getProductionCount(), getStateCount()
+               ,getTypeName(getSymbolType() )
+               ,getTypeName(getTermType()   )
+               ,getTypeName(getNTindexType())
+               ,getTypeName(getActionType() )
+               ,getTypeName(m_stateType     )
+               ,tablesClassName.cstr()
+               );
+
+  column = output.getCurrentLineLength();
+  output.setLeftMargin(column - 1);
+  output.printf(_T("prodLengthArray   , leftSideArray\n"
+                   ",rightSideTable    , symbolNames\n"
+                   ",%u, %u\n"
+                   ",actionCodeArray   , termArrayTable    , actionArrayTable, termBitSetTable\n"
+                   ",successorCodeArray, NTindexArrayTable , newStateArrayTable\n);\n\n")
+               ,byteCount.getByteCount(PLATFORM_X86)
+               ,byteCount.getByteCount(PLATFORM_X64)
+               );
+  output.setLeftMargin(0);
+
+  output.printf(_T("const AbstractParserTables *%s::%s = &%s_s;\n")
+               ,parserClassName.cstr()
+               ,tablesClassName.cstr()
+               ,tablesClassName.cstr()
+               );
+  output.printf(_T("// Size of %s_s: %s. Size of %s:%s\n\n")
+               ,tablesClassName.cstr(), tableClassSize.toString().cstr()
+               ,tablesClassName.cstr(), ByteCount::s_pointerSize.toString().cstr()
+               );
+  return byteCount;
+}
+
+ByteCount GrammarTables::printCppParserTablesTemplateTransSucc(MarginFile &output) const {
+  ByteCount byteCount;
+  byteCount += printCompressedActionMatrixCpp(   output);
+  byteCount += printCompressedTransSuccMatrixCpp(output);
+  byteCount += printProductionLengthTableCpp(    output);
+  byteCount += printLeftSideTableCpp(            output);
+  byteCount += printRightSideTableCpp(           output);
+  byteCount += printSymbolNameTableCpp(          output);
+//  printf("sizeof parserTableTemplate:%zu bytes", sizeof(ParserTablesTemplate<2,2,2,2,char,char,char,char,char>));
+  const int sizeofTableTemlatex86  =  68; // sizeof(ParserTablesTemplate) x86
+  const int sizeofTableTemplatex64 = 128; // sizeof(ParserTablesTemplate) x64
+
+  const ByteCount tableClassSize(sizeofTableTemlatex86, sizeofTableTemplatex64);
+  byteCount += tableClassSize;
+  byteCount += ByteCount::s_pointerSize;
+
+  const String &tablesClassName = getGrammarCode().getTablesClassName();
+  const String &parserClassName = getGrammarCode().getParserClassName();
+
+  output.printf(_T("static const ParserTablesTemplateTransSucc<"));
+  int column = output.getCurrentLineLength();
+  output.setLeftMargin(column - 1);
+  output.printf(_T("%u,%u,%u,%u\n,%s\n,%s\n,%s\n,%s\n,%s> %s_s(")
+               ,getSymbolCount(), getTermCount(), getProductionCount(), getStateCount()
+               ,getTypeName(getSymbolType() )
+               ,getTypeName(getTermType()   )
+               ,getTypeName(getNTindexType())
+               ,getTypeName(getActionType() )
+               ,getTypeName(m_stateType     )
+               ,tablesClassName.cstr()
+               );
+
+  column = output.getCurrentLineLength();
+  output.setLeftMargin(column - 1);
+  output.printf(_T("prodLengthArray   , leftSideArray\n"
+                   ",rightSideTable    , symbolNames\n"
+                   ",%u, %u\n"
+                   ",actionCodeArray   , termArrayTable , actionArrayTable  , termBitSetTable\n"
+                   ",successorCodeArray, stateArrayTable, newStateArrayTable, stateBitSetTable\n);\n\n")
+               ,byteCount.getByteCount(PLATFORM_X86)
+               ,byteCount.getByteCount(PLATFORM_X64)
+               );
+  output.setLeftMargin(0);
+
+  output.printf(_T("const AbstractParserTables *%s::%s = &%s_s;\n")
+               ,parserClassName.cstr()
+               ,tablesClassName.cstr()
+               ,tablesClassName.cstr()
+               );
+  output.printf(_T("// Size of %s_s: %s. Size of %s:%s\n\n")
+               ,tablesClassName.cstr(), tableClassSize.toString().cstr()
+               ,tablesClassName.cstr(), ByteCount::s_pointerSize.toString().cstr()
+               );
+  return byteCount;
+}
+
 // Return size in bytes
 ByteCount GrammarTables::printCompressedActionMatrixCpp(MarginFile &output) const {
   output.printf(_T("%s"), comment1);
@@ -233,19 +303,18 @@ ByteCount GrammarTables::printCompressedActionMatrixCpp(MarginFile &output) cons
 }
 
 ByteCount GrammarTables::printCompressedSuccessorMatrixCpp(MarginFile &output) const {
-  const Options &options = Options::getInstance();
-  if(options.m_compressSuccTransposed) {
-    return TransSuccMatrixCompression::CompressedTransSuccMatrix(*this).print(output);
-  } else {
-    output.printf(_T("%s"), comment2);
-    return SuccessorMatrixCompression::CompressedSuccessorMatrix(*this).print(output);
-  }
+  output.printf(_T("%s"), comment2);
+  return SuccessorMatrixCompression::CompressedSuccessorMatrix(*this).print(output);
+}
+
+ByteCount GrammarTables::printCompressedTransSuccMatrixCpp(MarginFile &output) const {
+  return TransSuccMatrixCompression::CompressedTransSuccMatrix(*this).print(output);
 }
 
 ByteCount GrammarTables::printProductionLengthTableCpp(MarginFile &output) const {
   output.printf(_T("%s"), comment3);
   const UINT productionCount = getProductionCount();
-  outputBeginArrayDefinition(output, _T("productionLength"), TYPE_UCHAR, productionCount);
+  outputBeginArrayDefinition(output, _T("prodLengthArray"), TYPE_UCHAR, productionCount);
   TCHAR delim = ' ';
   for(UINT p = 0; p < productionCount; p++, delim = ',') {
     const UINT l = m_productionLength[p];
@@ -263,7 +332,7 @@ ByteCount GrammarTables::printProductionLengthTableCpp(MarginFile &output) const
 ByteCount GrammarTables::printLeftSideTableCpp(MarginFile &output) const {
   output.printf(_T("%s"), comment4);
   const UINT productionCount = getProductionCount();
-  outputBeginArrayDefinition(output, _T("leftSideTable"), m_NTindexType, productionCount);
+  outputBeginArrayDefinition(output, _T("leftSideArray"), m_NTindexType, productionCount);
   TCHAR delim = ' ';
   for(UINT p = 0; p < productionCount; p++, delim = ',') {
     const int l = m_left[p] - getTermCount();
@@ -314,9 +383,9 @@ ByteCount GrammarTables::printSymbolNameTableCpp(MarginFile &output) const {
     const String &name = m_symbolNameArray[s];
     output.printf(s ? _T("\" ") : _T("\""));
     const int    l       = (int)name.length()+(s?1:0), fillerLen = minMax(50 - l, 0, 50);
-    const String comment = (s < m_termCount)
+    const String comment = (s < termCount)
                          ? format(_T("T  %4u"), s)
-                         : format(_T("NT %4u NTindex=%u"), s, s-m_termCount);
+                         : format(_T("NT %4u NTindex=%u"), s, s-termCount);
     output.printf(_T("%s\"%*s/* %-21s */\n"), name.cstr(), fillerLen,_T(""),comment.cstr());
     charCount += l;
   }

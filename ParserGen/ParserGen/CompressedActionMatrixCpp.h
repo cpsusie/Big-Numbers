@@ -31,30 +31,30 @@ typedef IndexArray<ActionArray> ActionArrayIndexArray;
 class CompressedActionMatrix : public MacroMap {
 private:
   const GrammarTables          &m_tables;
+  const BitSetParam             m_usedByParam;
   const UINT                    m_termSetSizeInBytes;
-  UINT                          m_currentTermListSize;
-  UINT                          m_currentActionListSize;
-  UINT                          m_currentTermSetArraySize;
-  UINT                          m_currentSplitNodeCount;
   const IntegerType             m_termType, m_actionType;
+  UINT                          m_termArraySize;
+  UINT                          m_actionArraySize;
+  UINT                          m_splitNodeCount;
   StateActionNodeArray          m_stateActionNodeArray;
-  TermSetIndexMap               m_termSetMap;
-  TermSetIndexMap               m_termListMap;
-  ActionArrayIndexMap           m_actionListMap;
+  TermSetIndexMap               m_termArrayMap;
+  ActionArrayIndexMap           m_actionArrayMap;
+  TermSetIndexMap               m_termBitSetMap;
 
   inline UINT getStateCount() const {
     return m_tables.getStateCount();
   }
-  Macro        doStateActionNode(     const StateActionNode &node);
-  Macro        doTermListNode(        const StateActionNode &node);
-  Macro        doSplitNode(           const StateActionNode &node);
-  Macro        doOneItemNode(         const StateActionNode &node);
-  Macro        doTermSetNode(         const StateActionNode &node);
+  Macro        doStateActionNode(    const StateActionNode &node);
+  Macro        doBinSearchNode(      const StateActionNode &node);
+  Macro        doSplitNode(          const StateActionNode &node);
+  Macro        doImmediateNode(      const StateActionNode &node);
+  Macro        doBitSetNode(         const StateActionNode &node);
   void         generateCompressedForm();
 
-  ByteCount    printMacroesAndActionCode(MarginFile &output) const;
-  ByteCount    printTermAndActionList(   MarginFile &output) const;
-  ByteCount    printTermSetTable(        MarginFile &output) const;
+  ByteCount    printMacroesAndActionCodeArray(MarginFile &output) const;
+  ByteCount    printTermAndActionArrayTable(  MarginFile &output) const;
+  ByteCount    printTermBitSetTable(          MarginFile &output) const;
 
 public:
   CompressedActionMatrix(const GrammarTables &tables);

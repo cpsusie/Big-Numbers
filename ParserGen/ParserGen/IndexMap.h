@@ -13,16 +13,16 @@ public:
 
 class IndexMapValue : public ArrayIndex {
 private:
-  BitSet m_usedBySet;
+  UsedByBitSet m_usedBySet;
 public:
-  IndexMapValue(size_t usedBySetSize, UINT usedByV0, UINT arrayIndex) : ArrayIndex(arrayIndex), m_usedBySet(usedBySetSize) {
+  IndexMapValue(const BitSetParam &usedByParam, UINT usedByV0, UINT arrayIndex) : ArrayIndex(arrayIndex), m_usedBySet(usedByParam) {
     addUsedByValue(usedByV0);
   }
   void addUsedByValue(UINT v) {
     m_usedBySet.add(v);
   }
   String getUsedByComment() const {
-    return getStateSetComment(m_usedBySet);
+    return m_usedBySet.toString();
   }
 };
 

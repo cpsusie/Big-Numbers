@@ -30,11 +30,12 @@ typedef IndexArray<StateArray> StateArrayIndexArray;
 class CompressedSuccessorMatrix : public MacroMap {
 private:
   const GrammarTables          &m_tables;
-  UINT                          m_currentNTindexListSize;
-  UINT                          m_currentStateListSize;
+  const BitSetParam             m_usedByParam;
   const IntegerType             m_NTindexType, m_stateType;
-  NTindexSetIndexMap            m_NTindexMap;
-  StateArrayIndexMap            m_stateListMap;
+  UINT                          m_NTindexArraySize;
+  UINT                          m_newStateArraySize;
+  NTindexSetIndexMap            m_NTindexArrayMap;
+  StateArrayIndexMap            m_newStateArrayMap;
   StateSet                      m_definedStateSet;
 
   inline UINT getStateCount() const {
@@ -45,8 +46,8 @@ private:
   Macro        doOneSuccessorState(    UINT state, const SuccessorState      &ss      );
   void         generateCompressedForm();
 
-  ByteCount    printMacroesAndSuccessorCode(MarginFile &output) const;
-  ByteCount    printNTindexAndStateList(    MarginFile &output) const;
+  ByteCount    printMacroesAndSuccessorCodeArray(MarginFile &output) const;
+  ByteCount    printNTindexAndNewStateArray(     MarginFile &output) const;
 
 public:
   CompressedSuccessorMatrix(const GrammarTables &tables);
