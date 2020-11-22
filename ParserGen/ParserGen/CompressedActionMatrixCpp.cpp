@@ -160,6 +160,7 @@ ByteCount CompressedActionMatrix::print(MarginFile &output) const {
 
 ByteCount CompressedActionMatrix::printMacroesAndActionCodeArray(MarginFile &output) const {
   const UINT   macroCount = getMacroCount();
+  const UINT   stateCount = getStateCount();
   Array<Macro> macroes(getMacroArray());
   if(macroCount > 0) {
     const UINT commentLen = getMaxCommentLength() + 1;
@@ -174,10 +175,23 @@ ByteCount CompressedActionMatrix::printMacroesAndActionCodeArray(MarginFile &out
   macroes.sort(macroCmpByIndex);
   TCHAR delim = ' ';
   UINT  count = 0;
-  for(auto it = macroes.getIterator(); it.hasNext(); count++, delim = ',') {
+  auto it = macroes.getIterator();
+  for(;it.hasNext() && (count < stateCount); count++, delim = ',') {
     output.printf(_T("%c%s"), delim, it.next().getName().cstr());
-    if((count % 10 == 9) && (count != macroCount - 1)) {
+    if((count % 10 == 9) && (count != stateCount - 1)) {
       output.printf(_T("\n"));
+    }
+  }
+  if(it.hasNext()) {
+    if(output.getCurrentLineLength() > 0) {
+      output.printf(_T("\n"));
+      count = 0;
+    }
+    for(; it.hasNext(); delim = ',') {
+      output.printf(_T("%c%s"), delim, it.next().getName().cstr());
+      if((count++ % 10 == 9) && it.hasNext()) {
+        output.printf(_T("\n"));
+      }
     }
   }
   return outputEndArrayDefinition(output, TYPE_UINT, macroCount, true);

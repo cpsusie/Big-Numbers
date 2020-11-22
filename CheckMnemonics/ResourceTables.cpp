@@ -823,11 +823,12 @@ static const unsigned int actionCodeArray[680] = {
   ,_ac0600,_ac0601,_ac0602,_ac0603,_ac0604,_ac0605,_ac0606,_ac0607,_ac0608,_ac0609
   ,_ac0610,_ac0611,_ac0612,_ac0613,_ac0614,_ac0615,_ac0616,_ac0617,_ac0618,_ac0619
   ,_ac0620,_ac0621,_ac0622,_ac0623,_ac0624,_ac0625,_ac0626,_ac0627,_ac0628,_ac0629
-  ,_ac0630,_ac0631,_ac0632,_ac0633,_ac0634,_as0000,_as0001,_as0002,_as0003,_as0004
-  ,_as0005,_as0006,_as0007,_as0008,_as0009,_as0010,_as0011,_as0012,_as0013,_as0014
-  ,_as0015,_as0016,_as0017,_as0018,_as0019,_as0020,_as0021,_as0022,_as0023,_as0024
-  ,_as0025,_as0026,_as0027,_as0028,_as0029,_as0030,_as0031,_as0032,_as0033,_as0034
-  ,_as0035,_as0036,_as0037,_as0038,_as0039,_as0040,_as0041,_as0042,_as0043,_as0044
+  ,_ac0630,_ac0631,_ac0632,_ac0633,_ac0634
+  ,_as0000,_as0001,_as0002,_as0003,_as0004,_as0005,_as0006,_as0007,_as0008,_as0009
+  ,_as0010,_as0011,_as0012,_as0013,_as0014,_as0015,_as0016,_as0017,_as0018,_as0019
+  ,_as0020,_as0021,_as0022,_as0023,_as0024,_as0025,_as0026,_as0027,_as0028,_as0029
+  ,_as0030,_as0031,_as0032,_as0033,_as0034,_as0035,_as0036,_as0037,_as0038,_as0039
+  ,_as0040,_as0041,_as0042,_as0043,_as0044
 }; // Size of table:2.720(x86)/2.720(x64) bytes.
 
 static const unsigned short termArrayTable[926] = {
@@ -1179,8 +1180,8 @@ static const unsigned int successorCodeArray[128] = {
   ,_sc0080,_sc0081,_sc0082,_sc0083,_sc0084,_sc0085,_sc0086,_sc0087,_sc0088,_sc0089
   ,_sc0090,_sc0091,_sc0092,_sc0093,_sc0094,_sc0095,_sc0096,_sc0097,_sc0098,_sc0099
   ,_sc0100,_sc0101,_sc0102,_sc0103,_sc0104,_sc0105,_sc0106,_sc0107,_sc0108,_sc0109
-  ,_sc0110,_sc0111,_sc0112,_sc0113,_sc0114,_sc0115,_sc0116,_sc0117,_ss0000,_ss0001
-  ,_ss0002,_ss0003,_ss0004,_ss0005,_ss0006,_ss0007,_ss0008,_ss0009
+  ,_sc0110,_sc0111,_sc0112,_sc0113,_sc0114,_sc0115,_sc0116,_sc0117
+  ,_ss0000,_ss0001,_ss0002,_ss0003,_ss0004,_ss0005,_ss0006,_ss0007,_ss0008,_ss0009
 }; // Size of table:512(x86)/512(x64) bytes.
 
 static const unsigned short stateArrayTable[230] = {
