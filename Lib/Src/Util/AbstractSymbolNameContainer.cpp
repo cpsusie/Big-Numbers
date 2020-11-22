@@ -1,8 +1,8 @@
 #include "pch.h"
 #include <BitSet.h>
-#include <SymbolNameContainer.h>
+#include <AbstractSymbolNameContainer.h>
 
-UINT SymbolNameContainer::getMaxTermNameLength() const {
+UINT AbstractSymbolNameContainer::getMaxTermNameLength() const {
   if(m_maxTermNameLength == 0) {
     const UINT n = getTermCount();
     size_t     m = 0;
@@ -17,7 +17,7 @@ UINT SymbolNameContainer::getMaxTermNameLength() const {
   return m_maxTermNameLength;
 }
 
-UINT SymbolNameContainer::getMaxNTermNameLength() const {
+UINT AbstractSymbolNameContainer::getMaxNTermNameLength() const {
   if(m_maxNTermNameLength == 0) {
     const UINT n = getSymbolCount();
     size_t     m = 0;
@@ -32,21 +32,21 @@ UINT SymbolNameContainer::getMaxNTermNameLength() const {
   return m_maxNTermNameLength;
 }
 
-UINT SymbolNameContainer::getMaxSymbolNameLength() const {
+UINT AbstractSymbolNameContainer::getMaxSymbolNameLength() const {
   return max(getMaxTermNameLength(), getMaxNTermNameLength());
 }
 
 class SymbolStringifier: public AbstractStringifier<size_t> {
 private:
-  const SymbolNameContainer &m_nameContainer;
+  const AbstractSymbolNameContainer &m_nameContainer;
 public:
-  inline SymbolStringifier(const SymbolNameContainer &nameContainer) : m_nameContainer(nameContainer) {
+  inline SymbolStringifier(const AbstractSymbolNameContainer &nameContainer) : m_nameContainer(nameContainer) {
   }
   String toString(const size_t &symbolIndex) override {
     return m_nameContainer.getSymbolName((UINT)symbolIndex);
   }
 };
 
-String SymbolNameContainer::symbolSetToString(const BitSet &set) const {
+String AbstractSymbolNameContainer::symbolSetToString(const BitSet &set) const {
   return set.toString(SymbolStringifier(*this), _T(" "), BT_BRACKETS);
 }

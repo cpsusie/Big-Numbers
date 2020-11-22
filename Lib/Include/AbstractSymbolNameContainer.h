@@ -4,11 +4,11 @@
 
 class BitSet;
 
-class SymbolNameContainer {
+class AbstractSymbolNameContainer {
 private:
   mutable UINT m_maxTermNameLength, m_maxNTermNameLength;
 public:
-  SymbolNameContainer() : m_maxTermNameLength(0), m_maxNTermNameLength(0) {
+  AbstractSymbolNameContainer() : m_maxTermNameLength(0), m_maxNTermNameLength(0) {
   }
   virtual UINT          getSymbolCount()                        const = 0;
   virtual UINT          getTermCount()                          const = 0;

@@ -49,9 +49,9 @@ ParserActionArray ShiftAndReduceActions::mergeAll() const {
   return result;
 }
 
-StateActionNode *StateActionNode::allocateStateActionNode(UINT state, const SymbolNameContainer &nameContainer, const ParserActionArray &actionArray) {
+StateActionNode *StateActionNode::allocateStateActionNode(UINT state, const AbstractSymbolNameContainer &nameContainer, const ParserActionArray &actionArray) {
   const ActionNodeCommonData commonData(state, nameContainer);
-  const Options           &options = Options::getInstance();
+  const Options             &options = Options::getInstance();
   if(!options.m_useTableCompression) {
     return new BinSearchNode(nullptr, commonData, actionArray);
   } else {

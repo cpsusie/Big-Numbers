@@ -5,14 +5,14 @@
 #include "Grammar.h"
 #include "Macro.h"
 
-class MacroMap : public SymbolNameContainer {
+class MacroMap : public AbstractSymbolNameContainer {
 private:
-  const SymbolNameContainer &m_nameContainer;
-  Array<Macro>               m_macroArray;
-  StringHashMap<UINT>        m_valueMap; // map macro-value -> index into macroArray
+  const AbstractSymbolNameContainer &m_nameContainer;
+  Array<Macro>                       m_macroArray;
+  StringHashMap<UINT>                m_valueMap; // map macro-value -> index into macroArray
 
 public:
-  MacroMap(const SymbolNameContainer &nameContainer) : m_nameContainer(nameContainer) {
+  MacroMap(const AbstractSymbolNameContainer &nameContainer) : m_nameContainer(nameContainer) {
   }
   const String &getSymbolName(UINT symbolIndex) const override {
     return m_nameContainer.getSymbolName(symbolIndex);

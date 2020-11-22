@@ -17,7 +17,7 @@ StateArray SuccessorStateArray::getStateArray() const {
   return result;
 }
 
-String SuccessorStateArray::toString(const SymbolNameContainer &nameContainer) const {
+String SuccessorStateArray::toString(const AbstractSymbolNameContainer &nameContainer) const {
   String result;
   for(const SuccessorState ss : *this) {
     result += format(_T("   %s\n"), ss.toString(nameContainer).cstr());
@@ -25,7 +25,7 @@ String SuccessorStateArray::toString(const SymbolNameContainer &nameContainer) c
   return result;
 }
 
-String SuccessorState::toString(const SymbolNameContainer &nameContainer) const {
+String SuccessorState::toString(const AbstractSymbolNameContainer &nameContainer) const {
   const TCHAR *name = nameContainer.getSymbolName(m_nterm).cstr();
   return format(_T("goto %u on %s"), m_newState, name);
 }

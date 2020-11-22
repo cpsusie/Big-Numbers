@@ -144,7 +144,7 @@ public:
   inline bool operator!=(const ParserAction &a) const {
     return !(*this == a);
   }
-  String toString(const SymbolNameContainer &nameContainer) const;
+  String toString(const AbstractSymbolNameContainer &nameContainer) const;
 };
 
 typedef CompactShortArray ActionArray;
@@ -167,7 +167,7 @@ public:
   inline bool operator!=(const SuccessorState &a) const {
     return !(*this == a);
   }
-  String toString(const SymbolNameContainer &nameContainer) const;
+  String toString(const AbstractSymbolNameContainer &nameContainer) const;
 };
 
 typedef CompactUShortArray StateArray;
@@ -213,7 +213,7 @@ public:
   inline UINT    getLegalTermCount()                 const {
     return(UINT)size();
   }
-  String         toString(const SymbolNameContainer &nameContainer) const;
+  String         toString(const AbstractSymbolNameContainer &nameContainer) const;
 };
 
 inline int successorStateCompareNTerm(const SuccessorState &s1, const SuccessorState &s2) {
@@ -235,7 +235,7 @@ public:
   inline UINT    getNewStateCount()                  const {
     return(UINT)size();
   }
-  String         toString(const SymbolNameContainer &nameContainer) const;
+  String         toString(const AbstractSymbolNameContainer &nameContainer) const;
 };
 
 class StateResult {
@@ -261,7 +261,7 @@ public:
 #define DUMP_ALL        DUMP_SHIFTITEMS | DUMP_LOOKAHEAD  | DUMP_SUCC
 #define DUMP_DOCFORMAT  DUMP_SHIFTITEMS | DUMP_ACTIONS    | DUMP_ERRORS | DUMP_WARNINGS
 
-class Grammar : public SymbolNameContainer {
+class Grammar : public AbstractSymbolNameContainer {
 private:
   String                       m_name;
   Array<GrammarSymbol>         m_symbols;

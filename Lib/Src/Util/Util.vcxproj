@@ -774,6 +774,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\AbstractFilterArrayIterator.h" />
+    <ClInclude Include="..\..\Include\AbstractSymbolNameContainer.h" />
     <ClInclude Include="..\..\Include\Array.h" />
     <ClInclude Include="..\..\Include\BasicIncludes.h" />
     <ClInclude Include="..\..\Include\BCDArray.h" />
@@ -881,7 +882,6 @@
     <ClInclude Include="..\..\Include\StringSearchAlgorithm.h" />
     <ClInclude Include="..\..\Include\StrStream.h" />
     <ClInclude Include="..\..\Include\MemSwap.h" />
-    <ClInclude Include="..\..\Include\SymbolNameContainer.h" />
     <ClInclude Include="..\..\Include\SynchronizedQueue.h" />
     <ClInclude Include="..\..\Include\SysSemaphore.h" />
     <ClInclude Include="..\..\Include\targetver.h" />
@@ -937,6 +937,7 @@
   <ItemGroup>
     <ClCompile Include="AbstractIterator.cpp" />
     <ClCompile Include="AbstractParserTables.cpp" />
+    <ClCompile Include="AbstractSymbolNameContainer.cpp" />
     <ClCompile Include="access.cpp" />
     <ClCompile Include="ArgvConversion.cpp" />
     <ClCompile Include="ArgvExpand.cpp" />
@@ -1065,7 +1066,6 @@
     <ClCompile Include="StraHash.cpp" />
     <ClCompile Include="StraIHash.cpp" />
     <ClCompile Include="StrStream.cpp" />
-    <ClCompile Include="SymbolNameContainer.cpp" />
     <ClCompile Include="SysSemaphore.cpp" />
     <ClCompile Include="ThreadAffinityMask.cpp" />
     <ClCompile Include="ThreadDescription.cpp" />

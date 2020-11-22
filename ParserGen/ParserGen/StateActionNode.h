@@ -7,12 +7,12 @@ namespace ActionMatrixCompression {
 
 class TermSetReduction {
 private:
-  const UINT                 m_prod;
-  const SymbolNameContainer &m_nameContainer;
-  SymbolSet                  m_termSet;     // set of terminals which should give reduce by production m_prod
-  UINT                       m_setSize;
+  const UINT                         m_prod;
+  const AbstractSymbolNameContainer &m_nameContainer;
+  SymbolSet                          m_termSet;     // set of terminals which should give reduce by production m_prod
+  UINT                               m_setSize;
 public:
-  TermSetReduction(UINT prod, UINT term0, const SymbolNameContainer &nameContainer)
+  TermSetReduction(UINT prod, UINT term0, const AbstractSymbolNameContainer &nameContainer)
     : m_prod(         prod                        )
     , m_nameContainer(nameContainer               )
     , m_termSet(      nameContainer.getTermCount())
@@ -74,9 +74,12 @@ public:
 
 class ActionNodeCommonData {
 public:
-  const UINT                 m_state;
-  const SymbolNameContainer &m_nameContainer;
-  ActionNodeCommonData(UINT state, const SymbolNameContainer &nameContainer) : m_state(state), m_nameContainer(nameContainer) {
+  const UINT                         m_state;
+  const AbstractSymbolNameContainer &m_nameContainer;
+  ActionNodeCommonData(UINT state, const AbstractSymbolNameContainer &nameContainer)
+   : m_state(state)
+   , m_nameContainer(nameContainer)
+  {
   }
   inline UINT                getState() const {
     return m_state;
@@ -120,7 +123,7 @@ protected:
   static StateActionNode *allocateSplitNode(    const StateActionNode *parent, const ShiftAndReduceActions &sra);
   static StateActionNode *allocateBitSetNode(   const StateActionNode *parent, const ActionNodeCommonData    &cd , const TermSetReduction  &termSetReduction);
 public:
-  static StateActionNode             *allocateStateActionNode(UINT state, const SymbolNameContainer &nameContainer, const ParserActionArray &actionArray);
+  static StateActionNode             *allocateStateActionNode(UINT state, const AbstractSymbolNameContainer &nameContainer, const ParserActionArray &actionArray);
   virtual                            ~StateActionNode() {
   }
 

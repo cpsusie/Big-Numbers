@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SymbolNameContainer.h"
+#include "AbstractSymbolNameContainer.h"
 
 typedef enum {
   PLATFORM_X86 = 0
@@ -14,7 +14,7 @@ typedef enum {
  ,ONEORMANY     // +
 } SymbolModifier;
 
-class AbstractParserTables : public SymbolNameContainer {
+class AbstractParserTables : public AbstractSymbolNameContainer {
 public:
   virtual int           getAction(           UINT state, UINT term    ) const = 0; // > 0:shift, <=0:reduce, _ParserError:Error
   virtual UINT          getSuccessor(        UINT state, UINT nterm   ) const = 0;
