@@ -1,5 +1,6 @@
 #pragma once
 
+#include <FlagTraits.h>
 #include "FindDlg.h"
 #include "TextBox.h"
 #include "TestParser.h"
@@ -9,6 +10,7 @@ private:
   HICON                 m_hIcon;
   CFont                 m_printFont;
   HACCEL                m_accelTable;
+  FLAGTRAITS(CParserDemoDlg, BYTE, m_breakFlags);
   CTextBox              m_textBox;
   CString               m_input;
   BOOL                  m_breakOnProduction;
@@ -19,7 +21,6 @@ private:
   BitSet               *m_breakProductions;
   BitSet               *m_breakStates;
   BitSet               *m_breakSymbols;
-  bool                  m_breakPosDone;
   bool                  m_inputHasChanged;
   bool                  m_animateOn;
   CSize                 m_charSize;
@@ -39,6 +40,7 @@ public:
   void             setBreakProdText();
   void             setBreakStateText();
   void             setBreakSymbolText();
+  void             updateBreakFlags();
   void             OnSelChangeEditInputString();
   void             beginParse();
   SourcePosition   getSourcePosition();

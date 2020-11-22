@@ -77,31 +77,31 @@
 *       Note that each termSet may be shared by several states.                      *
 \************************************************************************************/
 
-#define _ac0000 0x00000000 /* termList    0, actionList    0                        */
-#define _ac0001 0x00040003 /* termList    1, actionList    1                        */
-#define _ac0002 0x00080006 /* termList    2, actionList    2                        */
-#define _ac0003 0xfffb8000 /* Reduce by   3 on tokens in termSet[0]                 */
-#define _ac0004 0xfffd8000 /* Reduce by   2 on tokens in termSet[0]                 */
-#define _ac0005 0x000e0003 /* termList    1, actionList    3                        */
+#define _ac0000 0x00000000 /* termArray    0, actionArray    0                      */
+#define _ac0001 0x00040003 /* termArray    1, actionArray    1                      */
+#define _ac0002 0x00080006 /* termArray    2, actionArray    2                      */
+#define _ac0003 0xfffb8000 /* Reduce by    3 on tokens in termBitSet[0]             */
+#define _ac0004 0xfffd8000 /* Reduce by    2 on tokens in termBitSet[0]             */
+#define _ac0005 0x000e0003 /* termArray    1, actionArray    3                      */
 
-static const unsigned int actionCode[6] = {
+static const unsigned int actionCodeArray[6] = {
    _ac0000,_ac0001,_ac0002,_ac0003,_ac0004,_ac0005
 }; // Size of table:24(x86)/24(x64) bytes.
 
-static const unsigned char termListTable[10] = {
+static const unsigned char termArrayTable[10] = {
      2,   1,   2                                                                                             /*   0 Used by state  [0]                                */
   ,  2,   0,   1                                                                                             /*   1 Used by states [1,5]                              */
   ,  3,   0,   1,   2                                                                                        /*   2 Used by state  [2]                                */
 }; // Size of table:12(x86)/16(x64) bytes.
 
-static const char actionListTable[9] = {
+static const char actionArrayTable[9] = {
       2,   3                                                                                                 /*   0 Used by state  [0]                                */
   ,   0,   4                                                                                                 /*   1 Used by state  [1]                                */
   ,  -4,   2,   3                                                                                            /*   2 Used by state  [2]                                */
   ,  -1,   4                                                                                                 /*   3 Used by state  [5]                                */
 }; // Size of table:12(x86)/16(x64) bytes.
 
-static const unsigned char termSetTable[1] = {
+static const unsigned char termBitSetTable[1] = {
    0x03 /*   0   2 tokens Used by states [3-4]                   */
 }; // Size of table:4(x86)/8(x64) bytes.
 
@@ -157,18 +157,18 @@ static const unsigned char termSetTable[1] = {
 #define _su0002 0x000b0001 /* Goto 5 on S                                           */
 
 #define nil (unsigned int)-1
-static const unsigned int successorCode[6] = {
+static const unsigned int successorCodeArray[6] = {
    _su0000,nil    ,_su0002,nil    ,nil    ,nil
 }; // Size of table:24(x86)/24(x64) bytes.
 
-#define NTindexListTable nullptr
-#define stateListTable   nullptr
+#define NTindexArrayTable  nullptr
+#define newStateArrayTable nullptr
 
 /************************************************************************************\
 * The productionLength[] is indexed by production number and holds the number of     *
 * symbols on the right side of each production.                                      *
 \************************************************************************************/
-static const unsigned char productionLength[5] = {
+static const unsigned char prodLengthArray[5] = {
   /*   0 */    1,  2,  2,  1,  1
 }; // Size of table:8(x86)/8(x64) bytes.
 
@@ -179,7 +179,7 @@ static const unsigned char productionLength[5] = {
 * A' = 0..nonterminalCount-1.                                                        *
 * p  = 0..productionCount-1                                                          *
 \************************************************************************************/
-static const unsigned char leftSideTable[5] = {
+static const unsigned char leftSideArray[5] = {
   /*   0 */    0,  1,  1,  1,  1
 }; // Size of table:8(x86)/8(x64) bytes.
 
@@ -207,16 +207,17 @@ static const char *symbolNames = {
   " S"                                                /* NT    4 NTindex=1     */
 }; // Size of string:16(x86)/16(x64) bytes
 
-static const ParserTablesTemplate<3,5,5,6
+static const ParserTablesTemplate<5,3,5,6
                                  ,unsigned char
                                  ,unsigned char
                                  ,unsigned char
                                  ,char
-                                 ,unsigned char> DummyTables_s(actionCode      , termListTable     , actionListTable, termSetTable
-                                                              ,successorCode   , NTindexListTable  , stateListTable
-                                                              ,productionLength, leftSideTable
-                                                              ,rightSideTable  , symbolNames
-                                                              ,188, 264);
+                                 ,unsigned char> DummyTables_s(prodLengthArray   , leftSideArray
+                                                              ,rightSideTable    , symbolNames
+                                                              ,188, 264
+                                                              ,actionCodeArray   , termArrayTable    , actionArrayTable, termBitSetTable
+                                                              ,successorCodeArray, NTindexArrayTable , newStateArrayTable
+                                                              );
 
 const AbstractParserTables *DummyParser::DummyTables = &DummyTables_s;
 // Size of DummyTables_s: 68(x86)/128(x64) bytes. Size of DummyTables:4(x86)/8(x64) bytes

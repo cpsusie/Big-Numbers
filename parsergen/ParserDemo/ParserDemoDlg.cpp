@@ -312,8 +312,7 @@ void CParserDemoDlg::OnPaint() {
 
     // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
-  }
-  else {
+  } else {
     WINDOWPLACEMENT rect;
 #define CHARHEIGHT   m_charSize.cy
 #define CHARWIDTH    m_charSize.cx
@@ -367,8 +366,8 @@ int CParserDemoDlg::findStackElement(const CPoint &p) {
 }
 
 void CParserDemoDlg::showStatus(bool gotoLastDebug) {
-  setWindowText(this, IDC_STATE     , format(_T("%d"), m_parser.state()));
-  setWindowText(this, IDC_CYCLECOUNT, format(_T("%d"), m_parser.getCycleCount()));
+  setWindowText(this, IDC_STATE     , format(_T("%u"), m_parser.state()));
+  setWindowText(this, IDC_CYCLECOUNT, format(_T("%u"), m_parser.getCycleCount()));
 
   if(m_parser.done()) {
     if(m_parser.accept()) {
@@ -437,18 +436,18 @@ void CParserDemoDlg::OnFileOpen() {
 }
 
 void CParserDemoDlg::OnFileDumpActionMatrix() {
-  const String dump       = m_parser.getActionMatrixDump();
-  String objname          = _T("ActionTestResult");
-  String filter           = format(_T("txt-files (*.txt)%c*.*%cAll files (*.*)%c*.*%c%c"),0,0,0,0,0);
-  String defaultExtension = _T("txt");
-  CFileDialog dlg(FALSE, defaultExtension.cstr(), objname.cstr());
-  dlg.m_ofn.lpstrTitle  = _T("Dump Action Matrix Test result");
-  dlg.m_ofn.lpstrFilter = filter.cstr();
-
-  if((dlg.DoModal() != IDOK) || (_tcslen(dlg.m_ofn.lpstrFile) == 0)) {
-    return;
-  }
   try {
+    const String dump       = m_parser.getActionMatrixDump();
+    String objname          = _T("ActionTestResult");
+    String filter           = format(_T("txt-files (*.txt)%c*.*%cAll files (*.*)%c*.*%c%c"),0,0,0,0,0);
+    String defaultExtension = _T("txt");
+    CFileDialog dlg(FALSE, defaultExtension.cstr(), objname.cstr());
+    dlg.m_ofn.lpstrTitle    = _T("Dump Action Matrix Test result");
+    dlg.m_ofn.lpstrFilter   = filter.cstr();
+
+    if((dlg.DoModal() != IDOK) || (_tcslen(dlg.m_ofn.lpstrFile) == 0)) {
+      return;
+    }
     FILE *f = MKFOPEN(dlg.m_ofn.lpstrFile, _T("w"));
     fputws(dump.cstr(), f);
     fclose(f);
@@ -458,18 +457,18 @@ void CParserDemoDlg::OnFileDumpActionMatrix() {
 }
 
 void CParserDemoDlg::OnFileDumpSuccesorMatrix() {
-  const String dump       = m_parser.getSuccessorMatrixDump();
-  String objname          = _T("SuccessorTestResult");
-  String filter           = format(_T("txt-files (*.txt)%c*.*%cAll files (*.*)%c*.*%c%c"),0,0,0,0,0);
-  String defaultExtension = _T("txt");
-  CFileDialog dlg(FALSE, defaultExtension.cstr(), objname.cstr());
-  dlg.m_ofn.lpstrTitle  = _T("Dump Successor Matrix Test result");
-  dlg.m_ofn.lpstrFilter = filter.cstr();
-
-  if((dlg.DoModal() != IDOK) || (_tcslen(dlg.m_ofn.lpstrFile) == 0)) {
-    return;
-  }
   try {
+    const String dump       = m_parser.getSuccessorMatrixDump();
+    String objname          = _T("SuccessorTestResult");
+    String filter           = format(_T("txt-files (*.txt)%c*.*%cAll files (*.*)%c*.*%c%c"),0,0,0,0,0);
+    String defaultExtension = _T("txt");
+    CFileDialog dlg(FALSE, defaultExtension.cstr(), objname.cstr());
+    dlg.m_ofn.lpstrTitle  = _T("Dump Successor Matrix Test result");
+    dlg.m_ofn.lpstrFilter = filter.cstr();
+
+    if((dlg.DoModal() != IDOK) || (_tcslen(dlg.m_ofn.lpstrFile) == 0)) {
+      return;
+    }
     FILE *f = MKFOPEN(dlg.m_ofn.lpstrFile, _T("w"));
     fputws(dump.cstr(), f);
     fclose(f);
@@ -479,7 +478,7 @@ void CParserDemoDlg::OnFileDumpSuccesorMatrix() {
 }
 
 void CParserDemoDlg::OnFileExit() {
-  PostMessage(WM_CLOSE);
+  EndDialog(IDOK);
 }
 
 void CParserDemoDlg::OnRunStartDebugStep() {
@@ -506,29 +505,49 @@ void CParserDemoDlg::OnRunStartDebugResetParser() {
   beginParse();
 }
 
+#define BREAKONERROR   0x01
+#define BREAKONPROD    0x02
+#define BREAKONSTATE   0x04
+#define BREAKONSYMBOL  0x08
+#define BEFOREBREAKPOS 0x10
+
+void CParserDemoDlg::updateBreakFlags() {
+  m_breakFlags.clr(0xff);
+  if(m_breakOnError      ) m_breakFlags.set(BREAKONERROR );
+  if(m_breakOnProduction ) m_breakFlags.set(BREAKONPROD  );
+  if(m_breakOnState      ) m_breakFlags.set(BREAKONSTATE );
+  if(m_breakOnSymbol     ) m_breakFlags.set(BREAKONSYMBOL);
+  if(m_textBox.isMarked() && (m_parser.getScanner()->getPos() < m_textBox.getMarkedPos())) {
+    m_breakFlags.set(BEFOREBREAKPOS);
+  }
+}
+
 void CParserDemoDlg::OnRunStartDebugGo() {
   if(m_parser.done() || m_inputHasChanged) {
     beginParse();
   }
   UINT errorCount = (UINT)m_errorPos.size();
+  updateBreakFlags();
   while(!m_parser.done()) {
     int action = m_parser.getNextAction();
-    if(m_breakOnError && (m_errorPos.size() > errorCount || (action == AbstractParserTables::_ParserError))) {
-      break;
-    }
-    if(m_breakOnProduction && (action <= 0) && m_breakProductions->contains(-action)) {
-      break;
-    }
-    if(m_breakOnState && m_breakStates->contains(m_parser.state())) {
-      break;
-    }
-    if(m_breakOnSymbol && m_breakSymbols->contains(m_parser.input())) {
-      break;
-    }
-    if(m_textBox.isMarked() && !m_breakPosDone) {
-      if(m_parser.getScanner()->getPos() >= m_textBox.getMarkedPos()) {
-        m_breakPosDone = true;
+    if(m_breakFlags) {
+      if(m_breakOnError       && (m_errorPos.size() > errorCount || (action == AbstractParserTables::_ParserError))) {
         break;
+      }
+      if(m_breakOnProduction  && (action <= 0) && m_breakProductions->contains(-action)) {
+        break;
+      }
+      if(m_breakOnState       && m_breakStates->contains(m_parser.state())) {
+        break;
+      }
+      if(m_breakOnSymbol      && m_breakSymbols->contains(m_parser.input())) {
+        break;
+      }
+      if(m_textBox.isMarked() && m_breakFlags.anySet(BEFOREBREAKPOS)) {
+        if(m_parser.getScanner()->getPos() >= m_textBox.getMarkedPos()) {
+          m_breakFlags.clr(BEFOREBREAKPOS);
+          break;
+        }
       }
     }
     m_parser.parseStep();
@@ -565,7 +584,6 @@ void CParserDemoDlg::beginParse() {
   m_inputHasChanged = false;
   m_parser.setNewInput(getInputString().cstr());
   m_parser.parseBegin();
-  m_breakPosDone    = false;
   enableMenuItem(this, ID_RUN_STARTDEBUG_STEP    , true );
   enableMenuItem(this, ID_RUN_STARTDEBUG_STEPOVER, true );
   enableMenuItem(this, ID_EDIT_DERIVATIONTREE    , false);
@@ -902,12 +920,11 @@ void CParserDemoDlg::OnCheckBreakOnSymbol() {
 
 void CParserDemoDlg::OnEditBreakOnTextPosition() {
   SourcePosition currentPos = getSourcePosition();
-  if(m_textBox.isMarked() && currentPos == m_textBox.getMarkedPos()) {
+  if(m_textBox.isMarked() && (currentPos == m_textBox.getMarkedPos())) {
     m_textBox.markPos(nullptr);
     Invalidate(false);
   } else {
     m_textBox.markPos(&currentPos);
-    m_breakPosDone = false;
     Invalidate(false);
   }
 }

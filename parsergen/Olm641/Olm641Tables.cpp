@@ -75,50 +75,50 @@
 *       Note that each termSet may be shared by several states.                      *
 \************************************************************************************/
 
-#define _ac0000 0x00000000 /* termList    0, actionList    0                        */
-#define _ac0001 0x00010000 /* Reduce by   0 on EOI                                  */
-#define _ac0002 0x00040003 /* termList    1, actionList    1                        */
-#define _ac0003 0x00130005 /* Shift  to   9 on z                                    */
-#define _ac0004 0x00150006 /* Shift  to  10 on x                                    */
-#define _ac0005 0x002a8016 /* Split(_sn0000,_sn0001)                                */
-#define _ac0006 0x000b0003 /* Shift  to   5 on d                                    */
-#define _ac0007 0xfffb0000 /* Reduce by   3 on EOI                                  */
-#define _ac0008 0x00080000 /* termList    0, actionList    2                        */
-#define _ac0009 0xfff90000 /* Reduce by   4 on EOI                                  */
-#define _ac0010 0xfff70000 /* Reduce by   5 on EOI                                  */
-#define _ac0011 0x000c0006 /* termList    2, actionList    3                        */
-#define _ac0012 0x00250006 /* Shift  to  18 on x                                    */
-#define _ac0013 0xfff10000 /* Reduce by   8 on EOI                                  */
-#define _ac0014 0x00270006 /* Shift  to  19 on x                                    */
-#define _ac0015 0x00110004 /* Shift  to   8 on f                                    */
-#define _ac0016 0xffff0000 /* Reduce by   1 on EOI                                  */
-#define _ac0017 0xffe90000 /* Reduce by  12 on EOI                                  */
-#define _ac0018 0xfffd0000 /* Reduce by   2 on EOI                                  */
-#define _ac0019 0xffef0000 /* Reduce by   9 on EOI                                  */
-#define _ac0020 0xffed0000 /* Reduce by  10 on EOI                                  */
-#define _sn0000 0xfff58000 /* Reduce by   6 on tokens in termSet[0] Used by state  [5]*/
-#define _sn0001 0xfff30006 /* Reduce by   7 on x Used by state  [5]                 */
+#define _ac0000 0x00000000 /* termArray    0, actionArray    0                      */
+#define _ac0001 0x00010000 /* Reduce by    0 on EOI                                 */
+#define _ac0002 0x00040003 /* termArray    1, actionArray    1                      */
+#define _ac0003 0x00130005 /* Shift  to    9 on z                                   */
+#define _ac0004 0x00150006 /* Shift  to   10 on x                                   */
+#define _ac0005 0x002a8016 /* Split(_as0000,_as0001)                                */
+#define _ac0006 0x000b0003 /* Shift  to    5 on d                                   */
+#define _ac0007 0xfffb0000 /* Reduce by    3 on EOI                                 */
+#define _ac0008 0x00080000 /* termArray    0, actionArray    2                      */
+#define _ac0009 0xfff90000 /* Reduce by    4 on EOI                                 */
+#define _ac0010 0xfff70000 /* Reduce by    5 on EOI                                 */
+#define _ac0011 0x000c0006 /* termArray    2, actionArray    3                      */
+#define _ac0012 0x00250006 /* Shift  to   18 on x                                   */
+#define _ac0013 0xfff10000 /* Reduce by    8 on EOI                                 */
+#define _ac0014 0x00270006 /* Shift  to   19 on x                                   */
+#define _ac0015 0x00110004 /* Shift  to    8 on f                                   */
+#define _ac0016 0xffff0000 /* Reduce by    1 on EOI                                 */
+#define _ac0017 0xffe90000 /* Reduce by   12 on EOI                                 */
+#define _ac0018 0xfffd0000 /* Reduce by    2 on EOI                                 */
+#define _ac0019 0xffef0000 /* Reduce by    9 on EOI                                 */
+#define _ac0020 0xffed0000 /* Reduce by   10 on EOI                                 */
+#define _as0000 0xfff58000 /* Reduce by    6 on tokens in termBitSet[0]  Used by state  [5]*/
+#define _as0001 0xfff30006 /* Reduce by    7 on x                        Used by state  [5]*/
 
-static const unsigned int actionCode[23] = {
+static const unsigned int actionCodeArray[23] = {
    _ac0000,_ac0001,_ac0002,_ac0003,_ac0004,_ac0005,_ac0006,_ac0007,_ac0008,_ac0009
   ,_ac0010,_ac0011,_ac0012,_ac0013,_ac0014,_ac0015,_ac0016,_ac0017,_ac0018,_ac0019
-  ,_ac0020,_sn0000,_sn0001
+  ,_ac0020,_as0000,_as0001
 }; // Size of table:92(x86)/96(x64) bytes.
 
-static const unsigned char termListTable[9] = {
+static const unsigned char termArrayTable[9] = {
      2,   1,   3                                                                                             /*   0 Used by states [0,8]                              */
   ,  2,   2,   4                                                                                             /*   1 Used by state  [2]                                */
   ,  2,   0,   5                                                                                             /*   2 Used by state  [11]                               */
 }; // Size of table:12(x86)/16(x64) bytes.
 
-static const char actionListTable[8] = {
+static const char actionArrayTable[8] = {
       2,   5                                                                                                 /*   0 Used by state  [0]                                */
   ,   6,   8                                                                                                 /*   1 Used by state  [2]                                */
   ,  15,   5                                                                                                 /*   2 Used by state  [8]                                */
   , -11,  17                                                                                                 /*   3 Used by state  [11]                               */
 }; // Size of table:8(x86)/8(x64) bytes.
 
-static const unsigned char termSetTable[1] = {
+static const unsigned char termBitSetTable[1] = {
    0x21 /*   0   2 tokens Used by state  [5]                     */
 }; // Size of table:4(x86)/8(x64) bytes.
 
@@ -170,26 +170,26 @@ static const unsigned char termSetTable[1] = {
 *                                                                                    *
 \************************************************************************************/
 
-#define _su0000 0x00000000 /* NTindexList   0, stateList   0                        */
+#define _su0000 0x00000000 /* NTindexArray   0, newStateArray   0                   */
 #define _su0002 0x000f0005 /* Goto 7 on D                                           */
-#define _su0006 0x00060004 /* NTindexList   1, stateList   1                        */
-#define _su0008 0x000a0004 /* NTindexList   1, stateList   2                        */
+#define _su0006 0x00060004 /* NTindexArray   1, newStateArray   1                   */
+#define _su0008 0x000a0004 /* NTindexArray   1, newStateArray   2                   */
 #define _su0011 0x00210003 /* Goto 16 on E                                          */
 #define _su0015 0x00290005 /* Goto 20 on D                                          */
 
 #define nil (unsigned int)-1
-static const unsigned int successorCode[21] = {
+static const unsigned int successorCodeArray[21] = {
    _su0000,nil    ,_su0002,nil    ,nil    ,nil    ,_su0006,nil    ,_su0008,nil
   ,nil    ,_su0011,nil    ,nil    ,nil    ,_su0015,nil    ,nil    ,nil    ,nil
   ,nil
 }; // Size of table:84(x86)/88(x64) bytes.
 
-static const unsigned char NTindexListTable[7] = {
+static const unsigned char NTindexArrayTable[7] = {
      3,   1,   2,   4                                                                                        /*   0 Used by state  [0]                                */
   ,  2,   2,   4                                                                                             /*   1 Used by states [6,8]                              */
 }; // Size of table:8(x86)/8(x64) bytes.
 
-static const unsigned char stateListTable[7] = {
+static const unsigned char newStateArrayTable[7] = {
       1,   3,   4                                                                                            /*   0 Used by state  [0]                                */
   ,  11,  12                                                                                                 /*   1 Used by state  [6]                                */
   ,  13,  14                                                                                                 /*   2 Used by state  [8]                                */
@@ -199,7 +199,7 @@ static const unsigned char stateListTable[7] = {
 * The productionLength[] is indexed by production number and holds the number of     *
 * symbols on the right side of each production.                                      *
 \************************************************************************************/
-static const unsigned char productionLength[13] = {
+static const unsigned char prodLengthArray[13] = {
   /*   0 */    1,  4,  4,  2,  2,  2,  1,  1,  2,  3
   /*  10 */ ,  3,  0,  1
 }; // Size of table:16(x86)/16(x64) bytes.
@@ -211,7 +211,7 @@ static const unsigned char productionLength[13] = {
 * A' = 0..nonterminalCount-1.                                                        *
 * p  = 0..productionCount-1                                                          *
 \************************************************************************************/
-static const unsigned char leftSideTable[13] = {
+static const unsigned char leftSideArray[13] = {
   /*   0 */    0,  1,  1,  1,  1,  1,  2,  4,  5,  5
   /*  10 */ ,  5,  3,  3
 }; // Size of table:16(x86)/16(x64) bytes.
@@ -255,16 +255,17 @@ static const char *symbolNames = {
   " D"                                                /* NT   12 NTindex=5     */
 }; // Size of string:32(x86)/32(x64) bytes
 
-static const ParserTablesTemplate<7,13,13,21
+static const ParserTablesTemplate<13,7,13,21
                                  ,unsigned char
                                  ,unsigned char
                                  ,unsigned char
                                  ,char
-                                 ,unsigned char> Olm641Tables_s(actionCode      , termListTable     , actionListTable, termSetTable
-                                                               ,successorCode   , NTindexListTable  , stateListTable
-                                                               ,productionLength, leftSideTable
-                                                               ,rightSideTable  , symbolNames
-                                                               ,380, 464);
+                                 ,unsigned char> Olm641Tables_s(prodLengthArray   , leftSideArray
+                                                               ,rightSideTable    , symbolNames
+                                                               ,380, 464
+                                                               ,actionCodeArray   , termArrayTable    , actionArrayTable, termBitSetTable
+                                                               ,successorCodeArray, NTindexArrayTable , newStateArrayTable
+                                                               );
 
 const AbstractParserTables *Olm641Parser::Olm641Tables = &Olm641Tables_s;
 // Size of Olm641Tables_s: 68(x86)/128(x64) bytes. Size of Olm641Tables:4(x86)/8(x64) bytes

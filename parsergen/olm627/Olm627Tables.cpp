@@ -77,36 +77,36 @@
 *       Note that each termSet may be shared by several states.                      *
 \************************************************************************************/
 
-#define _ac0000 0x00000000 /* termList    0, actionList    0                        */
-#define _ac0001 0x00010000 /* Reduce by   0 on EOI                                  */
-#define _ac0002 0x000b0005 /* Shift  to   5 on f                                    */
-#define _ac0003 0x000f0005 /* Shift  to   7 on f                                    */
-#define _ac0004 0x00110004 /* Shift  to   8 on d                                    */
-#define _ac0005 0x00040003 /* termList    1, actionList    1                        */
-#define _ac0006 0x00150003 /* Shift  to  10 on c                                    */
-#define _ac0007 0x00080003 /* termList    1, actionList    2                        */
-#define _ac0008 0xffff0000 /* Reduce by   1 on EOI                                  */
-#define _ac0009 0xfffd0000 /* Reduce by   2 on EOI                                  */
-#define _ac0010 0xfffb0000 /* Reduce by   3 on EOI                                  */
-#define _ac0011 0xfff90000 /* Reduce by   4 on EOI                                  */
+#define _ac0000 0x00000000 /* termArray    0, actionArray    0                      */
+#define _ac0001 0x00010000 /* Reduce by    0 on EOI                                 */
+#define _ac0002 0x000b0005 /* Shift  to    5 on f                                   */
+#define _ac0003 0x000f0005 /* Shift  to    7 on f                                   */
+#define _ac0004 0x00110004 /* Shift  to    8 on d                                   */
+#define _ac0005 0x00040003 /* termArray    1, actionArray    1                      */
+#define _ac0006 0x00150003 /* Shift  to   10 on c                                   */
+#define _ac0007 0x00080003 /* termArray    1, actionArray    2                      */
+#define _ac0008 0xffff0000 /* Reduce by    1 on EOI                                 */
+#define _ac0009 0xfffd0000 /* Reduce by    2 on EOI                                 */
+#define _ac0010 0xfffb0000 /* Reduce by    3 on EOI                                 */
+#define _ac0011 0xfff90000 /* Reduce by    4 on EOI                                 */
 
-static const unsigned int actionCode[12] = {
+static const unsigned int actionCodeArray[12] = {
    _ac0000,_ac0001,_ac0002,_ac0003,_ac0004,_ac0005,_ac0006,_ac0007,_ac0008,_ac0009
   ,_ac0010,_ac0011
 }; // Size of table:48(x86)/48(x64) bytes.
 
-static const unsigned char termListTable[6] = {
+static const unsigned char termArrayTable[6] = {
      2,   1,   2                                                                                             /*   0 Used by state  [0]                                */
   ,  2,   3,   4                                                                                             /*   1 Used by states [5,7]                              */
 }; // Size of table:8(x86)/8(x64) bytes.
 
-static const char actionListTable[6] = {
+static const char actionArrayTable[6] = {
       2,   3                                                                                                 /*   0 Used by state  [0]                                */
   ,   9,  -5                                                                                                 /*   1 Used by state  [5]                                */
   ,  -5,  11                                                                                                 /*   2 Used by state  [7]                                */
 }; // Size of table:8(x86)/8(x64) bytes.
 
-#define termSetTable nullptr
+#define termBitSetTable nullptr
 
 /************************************************************************************\
 * The 3 arrays successorCode, NTindexListTable and stateListTable holds a            *
@@ -161,19 +161,19 @@ static const char actionListTable[6] = {
 #define _su0003 0x000d0002 /* Goto 6 on A                                           */
 
 #define nil (unsigned int)-1
-static const unsigned int successorCode[12] = {
+static const unsigned int successorCodeArray[12] = {
    _su0000,nil    ,_su0002,_su0003,nil    ,nil    ,nil    ,nil    ,nil    ,nil
   ,nil    ,nil
 }; // Size of table:48(x86)/48(x64) bytes.
 
-#define NTindexListTable nullptr
-#define stateListTable   nullptr
+#define NTindexArrayTable  nullptr
+#define newStateArrayTable nullptr
 
 /************************************************************************************\
 * The productionLength[] is indexed by production number and holds the number of     *
 * symbols on the right side of each production.                                      *
 \************************************************************************************/
-static const unsigned char productionLength[6] = {
+static const unsigned char prodLengthArray[6] = {
   /*   0 */    1,  3,  3,  3,  3,  1
 }; // Size of table:8(x86)/8(x64) bytes.
 
@@ -184,7 +184,7 @@ static const unsigned char productionLength[6] = {
 * A' = 0..nonterminalCount-1.                                                        *
 * p  = 0..productionCount-1                                                          *
 \************************************************************************************/
-static const unsigned char leftSideTable[6] = {
+static const unsigned char leftSideArray[6] = {
   /*   0 */    0,  1,  1,  1,  1,  2
 }; // Size of table:8(x86)/8(x64) bytes.
 
@@ -217,16 +217,17 @@ static const char *symbolNames = {
   " A"                                                /* NT    8 NTindex=2     */
 }; // Size of string:24(x86)/24(x64) bytes
 
-static const ParserTablesTemplate<6,9,6,12
+static const ParserTablesTemplate<9,6,6,12
                                  ,unsigned char
                                  ,unsigned char
                                  ,unsigned char
                                  ,char
-                                 ,unsigned char> Olm627Tables_s(actionCode      , termListTable     , actionListTable, termSetTable
-                                                               ,successorCode   , NTindexListTable  , stateListTable
-                                                               ,productionLength, leftSideTable
-                                                               ,rightSideTable  , symbolNames
-                                                               ,240, 304);
+                                 ,unsigned char> Olm627Tables_s(prodLengthArray   , leftSideArray
+                                                               ,rightSideTable    , symbolNames
+                                                               ,240, 304
+                                                               ,actionCodeArray   , termArrayTable    , actionArrayTable, termBitSetTable
+                                                               ,successorCodeArray, NTindexArrayTable , newStateArrayTable
+                                                               );
 
 const AbstractParserTables *Olm627Parser::Olm627Tables = &Olm627Tables_s;
 // Size of Olm627Tables_s: 68(x86)/128(x64) bytes. Size of Olm627Tables:4(x86)/8(x64) bytes
