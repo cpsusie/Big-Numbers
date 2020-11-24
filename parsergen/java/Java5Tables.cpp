@@ -369,7 +369,7 @@
 #define _ac0289 0x0890024c /* termArray   30, actionArray   59                      */
 #define _ac0290 0x0890024c /* termArray   30, actionArray   59                      */
 #define _ac0291 0x0890024c /* termArray   30, actionArray   59                      */
-#define _ac0292 0x00010000 /* Reduce by    0 on EOI                                 */
+#define _ac0292 0x00010000 /* Reduce by    0 (Accept) on EOI                        */
 #define _ac0293 0xffc180b6 /* Reduce by   32 on tokens in termBitSet[14]            */
 #define _ac0294 0xffbf80b6 /* Reduce by   33 on tokens in termBitSet[14]            */
 #define _ac0295 0xffbd80b6 /* Reduce by   34 on tokens in termBitSet[14]            */
