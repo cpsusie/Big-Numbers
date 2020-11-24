@@ -193,6 +193,9 @@ public:
   inline bool operator!=(const ParserAction &a) const {
     return !(*this == a);
   }
+  inline bool isAcceptAction() const {
+    return (m_action == 0) && (m_term == 0);
+  }
   String toString(const AbstractSymbolNameContainer &nameContainer) const;
 };
 

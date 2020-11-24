@@ -127,9 +127,12 @@ Macro CompressedActionMatrix::doImmediateNode(const StateActionNode &actionNode)
   const int               action     = pa.m_action;                    // positive or negative
   const UINT              term       = pa.m_term;
   const String            macroValue = encodeMacroValue(AbstractParserTables::CompCodeImmediate, action, term);
-  const String            comment    = (action <= 0)
-                                     ? format(_T("Reduce by %4u on %s"), -action, getSymbolName(pa.m_term).cstr())
-                                     : format(_T("Shift  to %4u on %s"),  action, getSymbolName(pa.m_term).cstr());
+  const String            comment    = (action > 0)
+                                     ? format(_T("Shift  to %4u on %s"),  action, getSymbolName(pa.m_term).cstr())
+                                     : (pa.isAcceptAction()
+                                         ? format(_T("Reduce by %4u (Accept) on %s"), action, getSymbolName(pa.m_term).cstr())
+                                         : format(_T("Reduce by %4u on %s"), -action, getSymbolName(pa.m_term).cstr())
+                                       );
   return Macro(m_usedByParam, state, macroValue, comment);
 }
 
