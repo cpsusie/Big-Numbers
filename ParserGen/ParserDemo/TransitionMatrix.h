@@ -3,22 +3,22 @@
 #include <AbstractParserTables.h>
 #include <MatrixTemplate.h>
 
-class ActionMatrix : public MatrixTemplate<SHORT> {
+class FullActionMatrix : public MatrixTemplate<SHORT> {
 private:
   const UINT m_symbolCount, m_termCount, m_NTermCount, m_stateCount;
 public:
-  ActionMatrix(const AbstractParserTables &tables);
+  FullActionMatrix(const AbstractParserTables &tables);
   String toString() const override;
 };
 
 // SuccessorMatrix[state][NTindex] contains newstate or _ParserError if invalid combination
 // state   = [0..m_stateCount-1]
 // NTIndex = [0..m_NTCount-1   ]
-class SuccessorMatrix : public MatrixTemplate<USHORT> {
+class FullSuccessorMatrix : public MatrixTemplate<USHORT> {
 private:
   const UINT m_symbolCount, m_termCount, m_NTermCount, m_stateCount;
 public:
-  SuccessorMatrix(const AbstractParserTables &tables);
+  FullSuccessorMatrix(const AbstractParserTables &tables);
   String toString() const override;
 };
 

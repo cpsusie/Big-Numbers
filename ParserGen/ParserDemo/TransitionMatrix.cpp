@@ -3,7 +3,7 @@
 
 #define MATRIX_ERROR SHORT_MAX
 
-ActionMatrix::ActionMatrix(const AbstractParserTables &tables)
+FullActionMatrix::FullActionMatrix(const AbstractParserTables &tables)
 : m_termCount(  tables.getTermCount()    )
 , m_symbolCount(tables.getSymbolCount()  )
 , m_NTermCount( tables.getNTermCount()   )
@@ -18,7 +18,7 @@ ActionMatrix::ActionMatrix(const AbstractParserTables &tables)
   }
 }
 
-String ActionMatrix::toString() const {
+String FullActionMatrix::toString() const {
   String              result;
   result = _T("     | ");
   for(UINT term = 0; term < m_termCount; term++) {
@@ -46,7 +46,7 @@ String ActionMatrix::toString() const {
   return result;
 }
 
-SuccessorMatrix::SuccessorMatrix(const AbstractParserTables &tables)
+FullSuccessorMatrix::FullSuccessorMatrix(const AbstractParserTables &tables)
 : m_termCount(  tables.getTermCount()    )
 , m_symbolCount(tables.getSymbolCount()  )
 , m_NTermCount( tables.getNTermCount()   )
@@ -66,7 +66,7 @@ SuccessorMatrix::SuccessorMatrix(const AbstractParserTables &tables)
   }
 }
 
-String SuccessorMatrix::toString() const {
+String FullSuccessorMatrix::toString() const {
   String              result;
   result = _T("     | ");
   for(UINT nt = m_termCount; nt < m_symbolCount; nt++) {

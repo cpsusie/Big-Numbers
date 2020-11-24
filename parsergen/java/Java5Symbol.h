@@ -104,8 +104,8 @@
     ,MOD                                   = 100
     ,PLUSPLUS                              = 101
     ,MINUSMINUS                            = 102
-    ,NUMBER                                = 103
-    ,IDENTIFIER                            = 104
+    ,IDENTIFIER                            = 103
+    ,NUMBER                                = 104
   } Java5InputSymbol;
 
   typedef enum {

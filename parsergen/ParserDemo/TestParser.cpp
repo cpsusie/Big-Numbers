@@ -213,13 +213,13 @@ String TestParser::getActionString() const {
 }
 
 String TestParser::getActionMatrixDump() const {
-  return ActionMatrix(getParserTables()).toString();
+  return FullActionMatrix(getParserTables()).toString();
 }
 
 String TestParser::getSuccessorMatrixDump() const {
   const AbstractParserTables &tables = getParserTables();
   String                      result;
-  result += SuccessorMatrix(tables).toString();
+  result += FullSuccessorMatrix(tables).toString();
   result += _T("\n\n\n");
   result += TransposeSuccessorMatrix(tables).toString();
   return result;
