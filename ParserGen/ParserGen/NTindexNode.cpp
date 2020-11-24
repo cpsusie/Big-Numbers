@@ -175,24 +175,24 @@ String NTindexNode::toString() const {
 }
 
 String BinSearchNode::toString() const {
-  const String result = __super::toString()  + indentString(m_statePairArray.toString(),3);
+  const String result = __super::toString()  + indentString(m_statePairArray.toString(), 4);
   return indentString(result, m_recurseLevel * 2);
 }
 
 String SplitNode::toString() const {
   const String cstr0  = indentString(getChild(0).toString(),2);
   const String cstr1  = indentString(getChild(1).toString(),2);
-  const String result = __super::toString() + indentString(format(_T("Child 0:\n%s\nChild 1:\n%s"), cstr0.cstr(), cstr1.cstr()), 3);
+  const String result = __super::toString() + indentString(format(_T("Child 0:\n%s\nChild 1:\n%s"), cstr0.cstr(), cstr1.cstr()), 4);
   return indentString(result, m_recurseLevel * 2);
 }
 
 String ImmediateNode::toString() const {
-  const String result = __super::toString() + indentString(m_statePair.toString(),3);
+  const String result = __super::toString() + indentString(m_statePair.toString(), 4);
   return indentString(result, m_recurseLevel * 2);
 }
 
 String BitSetNode::toString() const {
-  const String result = __super::toString() + indentString(m_statePairBitSet.toString(),3);
+  const String result = __super::toString() + indentString(m_statePairBitSet.toString(), 4);
   return indentString(result, m_recurseLevel * 2);
 }
 
