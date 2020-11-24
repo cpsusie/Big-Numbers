@@ -10,7 +10,6 @@ CompressedTransSuccMatrix::CompressedTransSuccMatrix(const Grammar &grammar)
   : MacroMap(            grammar                                            )
   , m_grammar(           grammar                                            )
   , m_grammarResult(     grammar.getResult()                                )
-  , m_templateTypes(     grammar                                            )
   , m_usedByParam(       grammar.getBitSetParam(NTINDEX_BITSET)             )
   , m_sizeofStateBitSet( getSizeofBitSet(grammar.getStateBitSetCapacity())  )
   , m_maxNTermNameLength(grammar.getMaxNTermNameLength()                    )
@@ -223,7 +222,9 @@ ByteCount CompressedTransSuccMatrix::printStatePairArrayTables(MarginFile &outpu
     output.printf(_T("#define newStateArrayTable nullptr\n\n"));
     return byteCount;
   }
-    const IntegerType                     stateType          = m_templateTypes.getStateType();
+
+  const IntegerType                       stateType          = AllTemplateTypes(m_grammar).getStateType();
+
   { const StateSetIndexArray              stateListArray     = m_fromStateArrayMap.getEntryArray();
     UINT                                  tableSize          = 0;
     TCHAR                                 delim              = ' ';

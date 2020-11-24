@@ -30,7 +30,6 @@ typedef IndexArray<StateArray> StateArrayIndexArray;
 class CompressedSuccessorMatrix : public MacroMap {
 private:
   const Grammar         &m_grammar;
-  const AllTemplateTypes m_templateTypes;
   const BitSetParam      m_usedByParam;
   UINT                   m_NTindexArraySize;
   UINT                   m_newStateArraySize;

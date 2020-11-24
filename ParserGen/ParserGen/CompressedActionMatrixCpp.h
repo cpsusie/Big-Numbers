@@ -32,7 +32,6 @@ class CompressedActionMatrix : public MacroMap {
 private:
   const Grammar             &m_grammar;
   const GrammarResult       &m_grammarResult;
-  const AllTemplateTypes     m_templateTypes;
   const BitSetParam          m_usedByParam;
   const UINT                 m_sizeofTermBitSet;
   UINT                       m_termArraySize;
@@ -53,7 +52,6 @@ private:
   Macro        doImmediateNode(      const StateActionNode &node);
   Macro        doBitSetNode(         const StateActionNode &node);
   void         generateCompressedForm();
-
   ByteCount    printMacroesAndActionCodeArray(MarginFile &output) const;
   ByteCount    printTermAndActionArrayTable(  MarginFile &output) const;
   ByteCount    printTermBitSetTable(          MarginFile &output) const;

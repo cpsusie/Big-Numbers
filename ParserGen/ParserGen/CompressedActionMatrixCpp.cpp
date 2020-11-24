@@ -9,7 +9,6 @@ CompressedActionMatrix::CompressedActionMatrix(const Grammar &grammar)
   : MacroMap(              grammar                                         )
   , m_grammar(             grammar                                         )
   , m_grammarResult(       grammar.getResult()                             )
-  , m_templateTypes(       grammar                                         )
   , m_usedByParam(         grammar.getBitSetParam(STATE_BITSET)            )
   , m_sizeofTermBitSet(    getSizeofBitSet(grammar.getTermBitSetCapacity()))
   , m_stateActionNodeArray(grammar                                         )
@@ -216,10 +215,12 @@ ByteCount CompressedActionMatrix::printTermAndActionArrayTable(MarginFile &outpu
     return byteCount;
   }
 
+  const AllTemplateTypes types(m_grammar);
+
   { const TermSetIndexArray               termArrayTable    = m_termArrayMap.getEntryArray();
     UINT                                  tableSize         = 0;
     TCHAR                                 delim             = ' ';
-    outputBeginArrayDefinition(output, _T("termArrayTable"   ), m_templateTypes.getTermType(), termArrayTable.getElementCount(true));
+    outputBeginArrayDefinition(output, _T("termArrayTable"   ), types.getTermType(), termArrayTable.getElementCount(true));
     for(auto it = termArrayTable.getIterator();   it.hasNext();) {
       const IndexArrayEntry<TermSet>     &e                 = it.next();
       String                              comment           = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment().cstr());
@@ -237,12 +238,12 @@ ByteCount CompressedActionMatrix::printTermAndActionArrayTable(MarginFile &outpu
       newLine(output, comment, 108);
       tableSize += n + 1;
     }
-    byteCount += outputEndArrayDefinition(output, m_templateTypes.getTermType(), tableSize);
+    byteCount += outputEndArrayDefinition(output, types.getTermType(), tableSize);
   }
   { const ActionArrayIndexArray           actionArrayTable  = m_actionArrayMap.getEntryArray();
     UINT                                  tableSize         = 0;
     TCHAR                                 delim             = ' ';
-    outputBeginArrayDefinition(output, _T("actionArrayTable") , m_templateTypes.getActionType(), actionArrayTable.getElementCount(false));
+    outputBeginArrayDefinition(output, _T("actionArrayTable") , types.getActionType(), actionArrayTable.getElementCount(false));
     for(auto it = actionArrayTable.getIterator(); it.hasNext();) {
       const IndexArrayEntry<ActionArray> &e                 = it.next();
       String                              comment           = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment().cstr());
@@ -257,7 +258,7 @@ ByteCount CompressedActionMatrix::printTermAndActionArrayTable(MarginFile &outpu
       newLine(output, comment, 108);
       tableSize += n;
     }
-    byteCount += outputEndArrayDefinition(output, m_templateTypes.getActionType(), tableSize);
+    byteCount += outputEndArrayDefinition(output, types.getActionType(), tableSize);
   }
   return byteCount;
 }

@@ -8,7 +8,6 @@ namespace SuccessorMatrixCompression {
 CompressedSuccessorMatrix::CompressedSuccessorMatrix(const Grammar &grammar)
   : MacroMap(          grammar                             )
   , m_grammar(         grammar                             )
-  , m_templateTypes(   grammar                             )
   , m_usedByParam(     grammar.getBitSetParam(STATE_BITSET))
   , m_definedStateSet( grammar.getStateCount()             )
 {
@@ -128,10 +127,13 @@ ByteCount CompressedSuccessorMatrix::printNTindexAndNewStateArray(MarginFile &ou
     output.printf(_T("#define newStateArrayTable nullptr\n\n"));
     return byteCount;
   }
+
+  const AllTemplateTypes types(m_grammar);
+
   { const NTindexSetIndexArray            ntSetArray        = m_NTindexArrayMap.getEntryArray();
     UINT                                  tableSize         = 0;
     TCHAR                                 delim             = ' ';
-    outputBeginArrayDefinition(output, _T("NTindexArrayTable"), m_templateTypes.getNTindexType(), ntSetArray.getElementCount(true));
+    outputBeginArrayDefinition(output, _T("NTindexArrayTable"), types.getNTindexType(), ntSetArray.getElementCount(true));
     for(auto it = ntSetArray.getIterator();      it.hasNext();) {
       const IndexArrayEntry<NTindexSet>  &e                 = it.next();
       String                              comment           = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment().cstr());
@@ -149,12 +151,12 @@ ByteCount CompressedSuccessorMatrix::printNTindexAndNewStateArray(MarginFile &ou
       newLine(output, comment, 108);
       tableSize += n + 1;
     }
-    byteCount += outputEndArrayDefinition(output, m_templateTypes.getNTindexType(), tableSize);
+    byteCount += outputEndArrayDefinition(output, types.getNTindexType(), tableSize);
   }
   { const StateArrayIndexArray            stateArrayTable   = m_newStateArrayMap.getEntryArray();
     UINT                                  tableSize         = 0;
     TCHAR                                 delim             = ' ';
-    outputBeginArrayDefinition(output, _T("newStateArrayTable"), m_templateTypes.getStateType(), stateArrayTable.getElementCount(false));
+    outputBeginArrayDefinition(output, _T("newStateArrayTable"), types.getStateType(), stateArrayTable.getElementCount(false));
     for(auto it = stateArrayTable.getIterator();  it.hasNext();) {
       const IndexArrayEntry<StateArray>  &e                 = it.next();
       String                              comment           = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment().cstr());
@@ -169,7 +171,7 @@ ByteCount CompressedSuccessorMatrix::printNTindexAndNewStateArray(MarginFile &ou
       newLine(output, comment, 108);
       tableSize += n;
     }
-    byteCount += outputEndArrayDefinition(output, m_templateTypes.getStateType(), tableSize);
+    byteCount += outputEndArrayDefinition(output, types.getStateType(), tableSize);
   }
   return byteCount;
 }

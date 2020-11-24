@@ -32,7 +32,6 @@ class CompressedTransSuccMatrix : public MacroMap {
 private:
   const Grammar                &m_grammar;
   const GrammarResult          &m_grammarResult;
-  const AllTemplateTypes        m_templateTypes;
   const BitSetParam             m_usedByParam;
   const UINT                    m_sizeofStateBitSet;
   const UINT                    m_maxNTermNameLength;
