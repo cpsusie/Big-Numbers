@@ -117,7 +117,7 @@ NTindexNode *NTindexNode::allocateImmediateDontCareNode(const NTindexNode *paren
   const UINT   newStateCount       = newStateCountArray + newStateCountBitSet;
   assert(newStateCount == 1);
   const UINT   newState            = (newStateCountArray == 1) ? mst.m_statePairArray.first().m_newState : mst.m_statePairBitSetArray.first().getNewState();
-  NTindexNode *p                   = new ImmediateNode(parent, mst, newState); TRACE_NEW(p);
+  NTindexNode *p                   = new ImmediateNode(parent, mst, newState, mst.getFromStateCount()); TRACE_NEW(p);
   return p;
 }
 
@@ -165,7 +165,13 @@ SplitNode &SplitNode::setChild(BYTE index, NTindexNode *child) {
 }
 
 String NTindexNode::toString() const {
-  return format(_T("NTindex %u %-20s recurseLevel:%u, (From states:%u)\n"), m_NTindex, compressMethodToString(getCompressionMethod()), m_recurseLevel, getFromStateCount());
+  return format(_T("%u - NTindex %u %s %-20s (From states:%u)\n")
+               ,m_recurseLevel
+               ,m_NTindex
+               ,getSymbolName().cstr()
+               ,compressMethodToString(getCompressionMethod())
+               ,getFromStateCount()
+               );
 }
 
 String BinSearchNode::toString() const {

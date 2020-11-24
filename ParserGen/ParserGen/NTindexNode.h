@@ -70,32 +70,32 @@ private:
   const UINT     m_newState;
 public:
   StatePairBitSet(UINT newState, UINT fromState0, const Grammar &grammar)
-    : m_grammar(grammar                       )
-    , m_fromStateSet(  grammar.getStateCount())
-    , m_fromStateCount(0                      )
-    , m_newState(      newState               )
+    : m_grammar(         grammar                )
+    , m_fromStateSet(    grammar.getStateCount())
+    , m_fromStateCount(  0                      )
+    , m_newState(        newState               )
   {
     addFromState(fromState0);
   }
-  inline const StateSet &getFromStateSet() const {
+  inline const StateSet &getFromStateSet()   const {
     return m_fromStateSet;
   }
-  inline UINT getFromStateCount()   const {
+  inline UINT            getFromStateCount() const {
     return m_fromStateCount;
   }
   // = 1
-  inline UINT    getNewStateCount() const {
+  inline UINT            getNewStateCount()  const {
     return 1;
   }
-  inline UINT getNewState() const {
+  inline UINT            getNewState()       const {
     return m_newState;
   }
-  inline void addFromState(UINT fromState) {
+  inline void            addFromState(UINT fromState) {
     m_fromStateSet.add(fromState);
     m_fromStateCount++;
   }
-  operator StatePairArray() const;
-  String toString() const {
+  operator               StatePairArray()    const;
+  String                 toString()          const {
     return format(_T("Goto %u from %s (%u states)"), m_newState, m_fromStateSet.toRangeString().cstr(), getFromStateCount());
   }
 };
@@ -116,7 +116,7 @@ public:
       sort(setSizeReverseCmp);
     }
   }
-  // Return sum(((*this)[i].getFromSetSize()...i=0..size-1)
+  // Return sum(((*this)[i].getFromStateCount()...i=0..size-1)
   UINT getFromStateCount() const {
     UINT sum = 0;
     for(auto it = getIterator(); it.hasNext();) {
@@ -146,6 +146,9 @@ public:
   }
   inline UINT getNTindex() const {
     return m_NTindex;
+  }
+  inline const String &getSymbolName() const {
+    return m_grammar.getSymbolName(m_grammar.getTermCount() + m_NTindex);
   }
 };
 
@@ -273,8 +276,8 @@ public:
     , m_statePair(statePair)
   {
   }
-  ImmediateNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, UINT newState)
-    : NTindexNode(parent, cd, 1, AbstractParserTables::CompCodeImmediate)
+  ImmediateNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, UINT newState, UINT fromStateCount)
+    : NTindexNode(parent, cd, fromStateCount, AbstractParserTables::CompCodeImmediate)
     , m_statePair(StatePair(StatePair::NoFromStateCheck, newState))
   {
   }

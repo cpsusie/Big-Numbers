@@ -135,12 +135,18 @@ Macro CompressedTransSuccMatrix::doSplitNode(const NTindexNode &node) {
 }
 
 Macro CompressedTransSuccMatrix::doImmediateNode(const NTindexNode &node) {
-  const UINT            NTindex       = node.getNTindex();
-  const StatePair       sp            = node.getStatePair();
-  const UINT            newState      = sp.m_newState;
-  const UINT            fromState     = sp.m_fromState;
-  const String          macroValue    = encodeMacroValue(AbstractParserTables::CompCodeImmediate, newState, fromState);
-  const String          comment       = node.isDontCareNode() ? format(_T("Goto %3u"), newState) : format(_T("Goto %3u on %3u"), newState, fromState);
+  const UINT            NTindex        = node.getNTindex();
+  const StatePair       sp             = node.getStatePair();
+  const UINT            newState       = sp.m_newState;
+  const UINT            fromState      = sp.m_fromState;
+  const UINT            fromStateCount = node.getFromStateCount();
+  const String          macroValue     = encodeMacroValue(AbstractParserTables::CompCodeImmediate, newState, fromState);
+  const String          comment        = node.isDontCareNode()
+                                       ? ( (fromStateCount == 1)
+                                          ? format(_T("Goto %3u No check (  1 state )"), newState)
+                                          : format(_T("Goto %3u No check (%3u states)"), newState, fromStateCount)
+                                         )
+                                       : format(_T("Goto %3u on %3u"), newState, fromState);
   return Macro(m_usedByParam, NTindex, macroValue, comment);
 }
 
@@ -225,15 +231,15 @@ ByteCount CompressedTransSuccMatrix::printStatePairArrayTables(MarginFile &outpu
 
   const IntegerType                       stateType          = AllTemplateTypes(m_grammar).getStateType();
 
-  { const StateSetIndexArray              stateListArray     = m_fromStateArrayMap.getEntryArray();
+  { const StateSetIndexArray              stateArrayTable    = m_fromStateArrayMap.getEntryArray();
     UINT                                  tableSize          = 0;
     TCHAR                                 delim              = ' ';
-    outputBeginArrayDefinition(output, _T("stateArrayTable"   ), stateType, stateListArray.getElementCount(true));
-    for(auto it = stateListArray.getIterator();   it.hasNext();) {
-      const IndexArrayEntry<TermSet>     &e                 = it.next();
-      String                              comment           = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment().cstr());
-      const UINT                          n                 = (UINT)e.m_key.size();
-      UINT                                counter           = 0;
+    outputBeginArrayDefinition(output, _T("stateArrayTable"   ), stateType, stateArrayTable.getElementCount(true));
+    for(auto it = stateArrayTable.getIterator();   it.hasNext();) {
+      const IndexArrayEntry<StateSet>    &e                  = it.next();
+      String                              comment            = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment().cstr());
+      const UINT                          n                  = (UINT)e.m_key.size();
+      UINT                                counter            = 0;
       output.setLeftMargin(2);
       output.printf(_T("%c%3u"), delim, n); delim = ',';
       output.setLeftMargin(6);
@@ -248,17 +254,17 @@ ByteCount CompressedTransSuccMatrix::printStatePairArrayTables(MarginFile &outpu
     }
     byteCount += outputEndArrayDefinition(output, stateType, tableSize);
   }
-  { const StateArrayIndexArray            newStateListArray = m_newStateArrayMap.getEntryArray();
-    UINT                                  tableSize         = 0;
-    TCHAR                                 delim             = ' ';
-    outputBeginArrayDefinition(output, _T("newStateArrayTable") , stateType, newStateListArray.getElementCount(false));
-    for(auto it = newStateListArray.getIterator(); it.hasNext();) {
-      const IndexArrayEntry<StateArray>  &e                 = it.next();
-      String                              comment           = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment().cstr());
-      const UINT                          n                 = (UINT)e.m_key.size();
-      UINT                                counter           = 0;
+  { const StateArrayIndexArray            newStateArrayTable = m_newStateArrayMap.getEntryArray();
+    UINT                                  tableSize          = 0;
+    TCHAR                                 delim              = ' ';
+    outputBeginArrayDefinition(output, _T("newStateArrayTable") , stateType, newStateArrayTable.getElementCount(false));
+    for(auto it = newStateArrayTable.getIterator(); it.hasNext();) {
+      const IndexArrayEntry<StateArray>  &e                  = it.next();
+      String                              comment            = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment().cstr());
+      const UINT                          n                  = (UINT)e.m_key.size();
+      UINT                                counter            = 0;
       for(auto it1 = e.m_key.getIterator(); it1.hasNext(); counter++, delim = ',') {
-        output.printf(_T("%c%4d"), delim, it1.next());
+        output.printf(_T("%c%4u"), delim, it1.next());
         if((counter % 20 == 19) && (counter != n - 1)) {
           newLine(output, comment, 108);
         }
