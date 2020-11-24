@@ -1,9 +1,9 @@
 #pragma once
 
-#include "GrammarTables.h"
-#include "StateActionNodeArray.h"
+#include "Grammar.h"
 #include "IndexMap.h"
 #include "MacroMap.h"
+#include "StateActionNodeArray.h"
 
 namespace ActionMatrixCompression {
 
@@ -30,20 +30,22 @@ typedef IndexArray<ActionArray> ActionArrayIndexArray;
 
 class CompressedActionMatrix : public MacroMap {
 private:
-  const GrammarTables          &m_tables;
-  const BitSetParam             m_usedByParam;
-  const UINT                    m_termSetSizeInBytes;
-  const IntegerType             m_termType, m_actionType;
-  UINT                          m_termArraySize;
-  UINT                          m_actionArraySize;
-  UINT                          m_splitNodeCount;
-  StateActionNodeArray          m_stateActionNodeArray;
-  TermSetIndexMap               m_termArrayMap;
-  ActionArrayIndexMap           m_actionArrayMap;
-  TermSetIndexMap               m_termBitSetMap;
+  const Grammar             &m_grammar;
+  const GrammarResult       &m_grammarResult;
+  const AllTemplateTypes     m_templateTypes;
+  const BitSetParam          m_usedByParam;
+  const UINT                 m_sizeofTermBitSet;
+  UINT                       m_termArraySize;
+  UINT                       m_actionArraySize;
+  UINT                       m_splitNodeCount;
+  StateActionNodeArray       m_stateActionNodeArray;
+  TermSetIndexMap            m_termArrayMap;
+  ActionArrayIndexMap        m_actionArrayMap;
+  TermSetIndexMap            m_termBitSetMap;
+  OptimizedBitSetPermutation m_termBitSetPermutation;
 
   inline UINT getStateCount() const {
-    return m_tables.getStateCount();
+    return m_grammar.getStateCount();
   }
   Macro        doStateActionNode(    const StateActionNode &node);
   Macro        doBinSearchNode(      const StateActionNode &node);
@@ -57,7 +59,13 @@ private:
   ByteCount    printTermBitSetTable(          MarginFile &output) const;
 
 public:
-  CompressedActionMatrix(const GrammarTables &tables);
+  CompressedActionMatrix(const Grammar &grammar);
+  inline const OptimizedBitSetPermutation &getTermBitSetPermutation() const {
+    return m_termBitSetPermutation;
+  }
+  inline ByteCount getSavedBytesByOptimizedTermBitSets() const {
+    return getTermBitSetPermutation().getSavedBytesByOptimizedBitSets((UINT)m_termBitSetMap.size());
+  }
   ByteCount print(MarginFile &output) const;
 };
 

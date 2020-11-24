@@ -29,28 +29,28 @@ typedef IndexArray<StateArray> StateArrayIndexArray;
 
 class CompressedSuccessorMatrix : public MacroMap {
 private:
-  const GrammarTables          &m_tables;
-  const BitSetParam             m_usedByParam;
-  const IntegerType             m_NTindexType, m_stateType;
-  UINT                          m_NTindexArraySize;
-  UINT                          m_newStateArraySize;
-  NTindexSetIndexMap            m_NTindexArrayMap;
-  StateArrayIndexMap            m_newStateArrayMap;
-  StateSet                      m_definedStateSet;
+  const Grammar         &m_grammar;
+  const AllTemplateTypes m_templateTypes;
+  const BitSetParam      m_usedByParam;
+  UINT                   m_NTindexArraySize;
+  UINT                   m_newStateArraySize;
+  NTindexSetIndexMap     m_NTindexArrayMap;
+  StateArrayIndexMap     m_newStateArrayMap;
+  StateSet               m_definedStateSet;
 
   inline UINT getStateCount() const {
-    return m_tables.getStateCount();
+    return m_grammar.getStateCount();
   }
-  Macro        doSuccList(             UINT state, const SuccessorStateArray &succList);
-  Macro        doNTindexListState(     UINT state, const SuccessorStateArray &succList);
-  Macro        doOneSuccessorState(    UINT state, const SuccessorState      &ss      );
+  Macro        doSuccessorArray(       UINT state, const SuccessorStateArray &successorArray);
+  Macro        doNTindexArrayState(    UINT state, const SuccessorStateArray &successorArray);
+  Macro        doOneSuccessorState(    UINT state, const SuccessorState      &ss            );
   void         generateCompressedForm();
 
   ByteCount    printMacroesAndSuccessorCodeArray(MarginFile &output) const;
   ByteCount    printNTindexAndNewStateArray(     MarginFile &output) const;
 
 public:
-  CompressedSuccessorMatrix(const GrammarTables &tables);
+  CompressedSuccessorMatrix(const Grammar &grammar);
   ByteCount print(MarginFile &output) const;
 };
 

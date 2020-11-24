@@ -5,16 +5,24 @@
 
 namespace ActionMatrixCompression {
 
-CompressedActionMatrix::CompressedActionMatrix(const GrammarTables &tables)
-  : MacroMap(              tables                                              )
-  , m_tables(              tables                                              )
-  , m_usedByParam(         tables.getGrammarCode().getBitSetParam(STATE_BITSET))
-  , m_termSetSizeInBytes(( tables.getTermCount() - 1) / 8 + 1                  )
-  , m_termType(            tables.getTermType()                                )
-  , m_actionType(          tables.getActionType()                              )
-  , m_stateActionNodeArray(tables                                              )
+CompressedActionMatrix::CompressedActionMatrix(const Grammar &grammar)
+  : MacroMap(              grammar                                         )
+  , m_grammar(             grammar                                         )
+  , m_grammarResult(       grammar.getResult()                             )
+  , m_templateTypes(       grammar                                         )
+  , m_usedByParam(         grammar.getBitSetParam(STATE_BITSET)            )
+  , m_sizeofTermBitSet(    getSizeofBitSet(grammar.getTermBitSetCapacity()))
+  , m_stateActionNodeArray(grammar                                         )
 {
   generateCompressedForm();
+  if(!m_grammar.getTermReorderingDone()) {
+    TermSet totalTermBitSet(m_grammar.getTermCount());
+    for(auto it = m_termBitSetMap.getIterator(); it.hasNext();) {
+      totalTermBitSet += it.next().getKey();
+    }
+    totalTermBitSet.add(0); // make sure, that term 0 (EOI) remains term 0
+    m_termBitSetPermutation = OptimizedBitSetPermutation(totalTermBitSet);
+  }
 }
 
 void CompressedActionMatrix::generateCompressedForm() {
@@ -138,7 +146,7 @@ Macro CompressedActionMatrix::doBitSetNode(const StateActionNode &actionNode) {
     vp->addUsedByValue(state);
   } else {
     termSetCount = m_termBitSetMap.getCount();
-    byteIndex    = termSetCount * m_termSetSizeInBytes;
+    byteIndex    = termSetCount * m_sizeofTermBitSet;
     m_termBitSetMap.put(termSet, IndexMapValue(m_usedByParam, state, byteIndex));
   }
   const int               prod       = tsr.getProduction();
@@ -204,10 +212,11 @@ ByteCount CompressedActionMatrix::printTermAndActionArrayTable(MarginFile &outpu
     output.printf(_T("#define actionArrayTable nullptr\n\n"));
     return byteCount;
   }
+
   { const TermSetIndexArray               termArrayTable    = m_termArrayMap.getEntryArray();
     UINT                                  tableSize         = 0;
     TCHAR                                 delim             = ' ';
-    outputBeginArrayDefinition(output, _T("termArrayTable"   ), m_termType, termArrayTable.getElementCount(true));
+    outputBeginArrayDefinition(output, _T("termArrayTable"   ), m_templateTypes.getTermType(), termArrayTable.getElementCount(true));
     for(auto it = termArrayTable.getIterator();   it.hasNext();) {
       const IndexArrayEntry<TermSet>     &e                 = it.next();
       String                              comment           = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment().cstr());
@@ -225,12 +234,12 @@ ByteCount CompressedActionMatrix::printTermAndActionArrayTable(MarginFile &outpu
       newLine(output, comment, 108);
       tableSize += n + 1;
     }
-    byteCount += outputEndArrayDefinition(output, m_termType, tableSize);
+    byteCount += outputEndArrayDefinition(output, m_templateTypes.getTermType(), tableSize);
   }
   { const ActionArrayIndexArray           actionArrayTable  = m_actionArrayMap.getEntryArray();
     UINT                                  tableSize         = 0;
     TCHAR                                 delim             = ' ';
-    outputBeginArrayDefinition(output, _T("actionArrayTable") , m_actionType, actionArrayTable.getElementCount(false));
+    outputBeginArrayDefinition(output, _T("actionArrayTable") , m_templateTypes.getActionType(), actionArrayTable.getElementCount(false));
     for(auto it = actionArrayTable.getIterator(); it.hasNext();) {
       const IndexArrayEntry<ActionArray> &e                 = it.next();
       String                              comment           = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment().cstr());
@@ -245,7 +254,7 @@ ByteCount CompressedActionMatrix::printTermAndActionArrayTable(MarginFile &outpu
       newLine(output, comment, 108);
       tableSize += n;
     }
-    byteCount += outputEndArrayDefinition(output, m_actionType, tableSize);
+    byteCount += outputEndArrayDefinition(output, m_templateTypes.getActionType(), tableSize);
   }
   return byteCount;
 }
@@ -257,13 +266,12 @@ ByteCount CompressedActionMatrix::printTermBitSetTable(MarginFile &output) const
   } else {
     const TermSetIndexArray               termBitSetArray   = m_termBitSetMap.getEntryArray();
     TCHAR                                 delim             = ' ';
-    const UINT                            arraySize         = (UINT)m_termBitSetMap.size() * m_termSetSizeInBytes;
-
+    const UINT                            arraySize         = (UINT)m_termBitSetMap.size() * m_sizeofTermBitSet;
     outputBeginArrayDefinition(output, _T("termBitSetTable"), TYPE_UCHAR, arraySize);
     for(auto it = termBitSetArray.getIterator(); it.hasNext();) {
       const IndexArrayEntry<TermSet>     &e                 = it.next();
       String                              comment           = format(_T("%3u %3u tokens %s"), e.m_commentIndex, (UINT)e.m_key.size(), e.getUsedByComment().cstr());
-      const ByteArray                     ba                = bitSetToByteArray(e.m_key);
+      const ByteArray                     ba                = bitSetToByteArray(e.m_key, m_grammar.getTermBitSetCapacity());
       for(BYTE b : ba) {
         output.printf(_T("%c0x%02x"), delim, b);
         delim = ',';

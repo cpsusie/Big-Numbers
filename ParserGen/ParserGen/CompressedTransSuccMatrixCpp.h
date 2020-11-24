@@ -30,11 +30,12 @@ typedef IndexArray<StateArray> StateArrayIndexArray;
 
 class CompressedTransSuccMatrix : public MacroMap {
 private:
-  const AbstractParserTables   &m_tables;
+  const Grammar                &m_grammar;
+  const GrammarResult          &m_grammarResult;
+  const AllTemplateTypes        m_templateTypes;
   const BitSetParam             m_usedByParam;
-  const UINT                    m_stateSetSizeInBytes;
+  const UINT                    m_sizeofStateBitSet;
   const UINT                    m_maxNTermNameLength;
-  const IntegerType             m_NTindexType, m_stateType;
   UINT                          m_fromStateArraySize;
   UINT                          m_newStateArraySize;
   UINT                          m_splitNodeCount;
@@ -42,26 +43,33 @@ private:
   StateSetIndexMap              m_fromStateArrayMap;
   StateArrayIndexMap            m_newStateArrayMap;
   StateSetIndexMap              m_stateBitSetMap;
+  OptimizedBitSetPermutation    m_stateBitSetPermutation;
 
-  inline UINT getStateCount() const {
-    return m_tables.getStateCount();
+  inline UINT         getStateCount() const {
+    return m_grammar.getStateCount();
   }
-  inline UINT getNTermCount() const {
-    return m_tables.getNTermCount();
+  inline UINT         getNTermCount() const {
+    return m_grammar.getNTermCount();
   }
-  Macro        doNTindexNode(   const NTindexNode &node);
-  Macro        doBinSearchNode( const NTindexNode &node);
-  Macro        doSplitNode(     const NTindexNode &node);
-  Macro        doImmediateNode( const NTindexNode &node);
-  Macro        doBitSetNode(    const NTindexNode &node);
-  void         generateCompressedForm();
+  Macro               doNTindexNode(   const NTindexNode &node);
+  Macro               doBinSearchNode( const NTindexNode &node);
+  Macro               doSplitNode(     const NTindexNode &node);
+  Macro               doImmediateNode( const NTindexNode &node);
+  Macro               doBitSetNode(    const NTindexNode &node);
+  void                generateCompressedForm();
 
   ByteCount    printMacroesAndSuccessorCodeArray(MarginFile &output) const;
   ByteCount    printStatePairArrayTables(        MarginFile &output) const;
   ByteCount    printStateBitSetTable(            MarginFile &output) const;
 
 public:
-  CompressedTransSuccMatrix(const GrammarTables &tables);
+  CompressedTransSuccMatrix(const Grammar &grammar);
+  const OptimizedBitSetPermutation &getStateBitSetPermutation() const {
+    return m_stateBitSetPermutation;
+  }
+  inline ByteCount getSavedBytesByOptimizedStateBitSets() const {
+    return getStateBitSetPermutation().getSavedBytesByOptimizedBitSets((UINT)m_stateBitSetMap.size());
+  }
   ByteCount print(MarginFile &output) const;
 };
 

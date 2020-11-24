@@ -258,6 +258,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CompressedTransSuccMatrixCpp.cpp" />
+    <ClCompile Include="OptimizedBitSetPermutation.cpp" />
     <ClCompile Include="NTindexNode.cpp" />
     <ClCompile Include="NTindexNodeArray.cpp" />
     <ClCompile Include="ParserActionArray.cpp" />

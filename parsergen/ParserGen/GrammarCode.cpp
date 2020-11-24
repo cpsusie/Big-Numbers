@@ -1,9 +1,11 @@
 #include "stdafx.h"
 #include <FileNameSplitter.h>
 #include "TemplateWriter.h"
+#include "CompressedActionMatrixCpp.h"
+#include "CompressedTransSuccMatrixCpp.h"
 #include "GrammarCode.h"
 
-GrammarCode::GrammarCode(const Grammar &grammar)
+GrammarCode::GrammarCode(Grammar &grammar)
 : m_grammar(        grammar                                               )
 , m_sourceName(     FileNameSplitter(grammar.getName()).getAbsolutePath() )
 , m_grammarName(    FileNameSplitter(m_grammar.getName()).getFileName()   )
@@ -11,6 +13,27 @@ GrammarCode::GrammarCode(const Grammar &grammar)
 , m_tablesClassName(m_grammarName + _T("Tables")                          )
 , m_docFileName(    FileNameSplitter(m_sourceName).setExtension(_T("txt")).getFullPath())
 {
+  if(!grammar.getResult().allStatesConsistent()) {
+    return;
+  }
+  const Options &options = Options::getInstance();
+  if(options.m_useTableCompression) {
+    ActionMatrixCompression::CompressedActionMatrix am(m_grammar);
+    const ByteCount savedBytes = am.getSavedBytesByOptimizedTermBitSets();
+    if(savedBytes.getByteCount(PLATFORM_X64) > 20) {
+      const OptimizedBitSetPermutation &termBitSetPermutation = am.getTermBitSetPermutation();
+      m_grammar.reorderTerminals(termBitSetPermutation, termBitSetPermutation.getNewCapacity());
+    }
+
+    if(options.m_compressSuccTransposed) {
+      TransSuccMatrixCompression::CompressedTransSuccMatrix sm(m_grammar);
+      const ByteCount savedBytes = sm.getSavedBytesByOptimizedStateBitSets();
+      if(savedBytes.getByteCount(PLATFORM_X64) > 20) {
+        const OptimizedBitSetPermutation &stateBitSetPermutation = sm.getStateBitSetPermutation();
+        m_grammar.reorderStates(stateBitSetPermutation, stateBitSetPermutation.getNewCapacity());
+      }
+    }
+  }
 }
 
 void GrammarCode::generateDocFile() const {
@@ -34,12 +57,13 @@ void GrammarCode::generateDocFile(MarginFile &output) const {
   if(!byteCount.isEmpty()) {
     output.printf(_T("%s\t required for parsertables\n"), byteCount.toString().cstr());
   }
+  const GrammarResult &result = m_grammar.getResult();
   output.printf(_T("\n"));
-  output.printf(_T("%4u\tshift/reduce  conflicts\n"), m_grammar.m_SRconflicts        );
-  output.printf(_T("%4u\treduce/reduce conflicts\n"), m_grammar.m_RRconflicts        );
-  output.printf(_T("%4u\twarnings\n"               ), m_grammar.m_warningCount       );
+  output.printf(_T("%4u\tshift/reduce  conflicts\n"), result.m_SRconflicts        );
+  output.printf(_T("%4u\treduce/reduce conflicts\n"), result.m_RRconflicts        );
+  output.printf(_T("%4u\twarnings\n"               ), result.m_warningCount       );
 
-  if(!m_grammar.allStatesConsistent()) {
+  if(!result.allStatesConsistent()) {
     _tprintf(_T("See %s for details\n"), output.getName().cstr());
   }
 }
@@ -76,43 +100,23 @@ void GrammarCode::generateParser() {
   writer.generateOutput();
 }
 
-BitSetParam GrammarCode::getBitSetParam(BitSetType type) const {
-  switch(type) {
-  case SYMBOL_BITSET    : return BitSetParam(type, m_grammar.getSymbolCount()    );
-  case TERM_BITSET      : return BitSetParam(type, m_grammar.getTermCount()      );
-  case NTINDEX_BITSET   : return BitSetParam(type, m_grammar.getNTermCount()     );
-  case PRODUCTION_BITSET: return BitSetParam(type, m_grammar.getProductionCount());
-  case STATE_BITSET     : return BitSetParam(type, m_grammar.getStateCount()     );
-  default               : throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), type);
+ByteArray bitSetToByteArray(const BitSet &bitSet, UINT capacity) {
+  const size_t byteCount = getSizeofBitSet(capacity ? capacity : (UINT)bitSet.getCapacity());
+  if(capacity && (capacity < bitSet.getCapacity())) {
+    BitSet tmp(bitSet.getCapacity());
+    tmp.add(capacity, bitSet.getCapacity() - 1);
+    if(!(bitSet & tmp).isEmpty()) {
+      throwInvalidArgumentException(__TFUNCTION__, _T("BitSet:%s, capacity=%u"), bitSet.toRangeString().cstr(), capacity);
+    }
   }
-  return BitSetParam(type, 0);
-}
-
-ByteArray bitSetToByteArray(const BitSet &set) {
-  const size_t byteCount = (set.getCapacity() - 1) / 8 + 1;
   ByteArray    result(byteCount);
   result.addZeroes(byteCount);
   BYTE *b = (BYTE*)result.getData();
-  for(auto it = set.getIterator(); it.hasNext();) {
+  for(auto it = bitSet.getIterator(); it.hasNext();) {
     const UINT v = (UINT)it.next();
     b[v >> 3] |= (1 << (v & 7));
   }
   return result;
-}
-
-const TCHAR *BitSetParam::s_elementName[][2] = {
-  _T("symbol "    ), _T("symbols"    )
- ,_T("terminal "  ), _T("terminals"  )
- ,_T("NTindex  "  ), _T("NTindices"  )
- ,_T("production "), _T("productions")
- ,_T("state "     ), _T("states"     )
-};
-
-String UsedByBitSet::toString() const {
-  const size_t n = size();
-  return format(_T("Used by %s %s")
-               ,BitSetParam::getElementName(m_type,n > 1)
-               ,toRangeString(SizeTStringifier(),_T(","), BT_BRACKETS).cstr());
 }
 
 void      outputBeginArrayDefinition(MarginFile &output, const TCHAR *tableName, IntegerType elementType, UINT size) {

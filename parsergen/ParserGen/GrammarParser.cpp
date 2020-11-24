@@ -280,11 +280,11 @@ void GrammarParser::parseActionBody(const SourcePosition &sourcePos, CompactShor
           const int fromTop = prodLength - symbolIndex;
           if(symbolIndex < 1 || symbolIndex > prodLength) {
             m_lex.warning(m_lex.getSourcePos(), _T("$%d is not in range [1..%d]."), symbolIndex, prodLength);
-            m_grammar.m_warningCount++;
+            m_grammar.m_result.m_warningCount++;
           } else {
             if(m_grammar.isTerminal(prod.m_rightSide[symbolIndex-1])) {
               m_lex.warning(m_lex.getSourcePos(), _T("$%d is a terminal."), symbolIndex);
-              m_grammar.m_warningCount++;
+              m_grammar.m_result.m_warningCount++;
             }
           }
           next();
@@ -389,7 +389,7 @@ void GrammarParser::checkTerminal(UINT t) { // check, that terminal-symbol is us
     const GrammarSymbol &terminal = m_grammar.getSymbol(t);
     m_lex.warning(terminal.m_pos, _T("Terminal %s is not used."), terminal.m_name.cstr());
   }
-  m_grammar.m_warningCount++;
+  m_grammar.m_result.m_warningCount++;
 }
 
 void GrammarParser::checkDuplicateProd() {

@@ -6,17 +6,25 @@
 
 namespace TransSuccMatrixCompression {
 
-CompressedTransSuccMatrix::CompressedTransSuccMatrix(const GrammarTables &tables)
-  : MacroMap(              tables                                                )
-  , m_tables(              tables                                                )
-  , m_usedByParam(         tables.getGrammarCode().getBitSetParam(NTINDEX_BITSET))
-  , m_stateSetSizeInBytes((tables.getStateCount() - 1) / 8 + 1                   )
-  , m_maxNTermNameLength(  tables.getMaxNTermNameLength()                        )
-  , m_NTindexType(         tables.getNTindexType()                               )
-  , m_stateType(           tables.getStateType()                                 )
-  , m_NTindexNodeArray(    tables                                                )
+CompressedTransSuccMatrix::CompressedTransSuccMatrix(const Grammar &grammar)
+  : MacroMap(            grammar                                            )
+  , m_grammar(           grammar                                            )
+  , m_grammarResult(     grammar.getResult()                                )
+  , m_templateTypes(     grammar                                            )
+  , m_usedByParam(       grammar.getBitSetParam(NTINDEX_BITSET)             )
+  , m_sizeofStateBitSet( getSizeofBitSet(grammar.getStateBitSetCapacity())  )
+  , m_maxNTermNameLength(grammar.getMaxNTermNameLength()                    )
+  , m_NTindexNodeArray(  grammar                                            )
 {
   generateCompressedForm();
+  if(!m_grammar.getStateReorderingDone()) {
+    StateSet totalStateBitSet(getStateCount());
+    for(auto it = m_stateBitSetMap.getIterator(); it.hasNext();) {
+      totalStateBitSet += it.next().getKey();
+    }
+    totalStateBitSet.add(0); // make sure, that state 0 remains state 0
+    m_stateBitSetPermutation = OptimizedBitSetPermutation(totalStateBitSet);
+  }
 }
 
 void CompressedTransSuccMatrix::generateCompressedForm() {
@@ -150,7 +158,7 @@ Macro CompressedTransSuccMatrix::doBitSetNode(const NTindexNode &node) {
     vp->addUsedByValue(NTindex);
   } else {
     stateSetCount = m_stateBitSetMap.getCount();
-    byteIndex     = stateSetCount * m_stateSetSizeInBytes;
+    byteIndex     = stateSetCount * m_sizeofStateBitSet;
     m_stateBitSetMap.put(stateSet, IndexMapValue(m_usedByParam, NTindex, byteIndex));
   }
   const UINT            newState      = sps.getNewState();
@@ -205,7 +213,6 @@ ByteCount CompressedTransSuccMatrix::printMacroesAndSuccessorCodeArray(MarginFil
       }
     }
   }
-
   return outputEndArrayDefinition(output, TYPE_UINT, macroCount, true);
 }
 
@@ -216,10 +223,11 @@ ByteCount CompressedTransSuccMatrix::printStatePairArrayTables(MarginFile &outpu
     output.printf(_T("#define newStateArrayTable nullptr\n\n"));
     return byteCount;
   }
+    const IntegerType                     stateType          = m_templateTypes.getStateType();
   { const StateSetIndexArray              stateListArray     = m_fromStateArrayMap.getEntryArray();
     UINT                                  tableSize          = 0;
     TCHAR                                 delim              = ' ';
-    outputBeginArrayDefinition(output, _T("stateArrayTable"   ), m_stateType, stateListArray.getElementCount(true));
+    outputBeginArrayDefinition(output, _T("stateArrayTable"   ), stateType, stateListArray.getElementCount(true));
     for(auto it = stateListArray.getIterator();   it.hasNext();) {
       const IndexArrayEntry<TermSet>     &e                 = it.next();
       String                              comment           = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment().cstr());
@@ -237,12 +245,12 @@ ByteCount CompressedTransSuccMatrix::printStatePairArrayTables(MarginFile &outpu
       newLine(output, comment, 108);
       tableSize += n + 1;
     }
-    byteCount += outputEndArrayDefinition(output, m_stateType, tableSize);
+    byteCount += outputEndArrayDefinition(output, stateType, tableSize);
   }
   { const StateArrayIndexArray            newStateListArray = m_newStateArrayMap.getEntryArray();
     UINT                                  tableSize         = 0;
     TCHAR                                 delim             = ' ';
-    outputBeginArrayDefinition(output, _T("newStateArrayTable") , m_stateType, newStateListArray.getElementCount(false));
+    outputBeginArrayDefinition(output, _T("newStateArrayTable") , stateType, newStateListArray.getElementCount(false));
     for(auto it = newStateListArray.getIterator(); it.hasNext();) {
       const IndexArrayEntry<StateArray>  &e                 = it.next();
       String                              comment           = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment().cstr());
@@ -257,7 +265,7 @@ ByteCount CompressedTransSuccMatrix::printStatePairArrayTables(MarginFile &outpu
       newLine(output, comment, 108);
       tableSize += n;
     }
-    byteCount += outputEndArrayDefinition(output, m_stateType, tableSize);
+    byteCount += outputEndArrayDefinition(output, stateType, tableSize);
   }
   return byteCount;
 }
@@ -269,12 +277,12 @@ ByteCount CompressedTransSuccMatrix::printStateBitSetTable(MarginFile &output) c
   } else {
     const StateSetIndexArray              stateSetArray     = m_stateBitSetMap.getEntryArray();
     TCHAR                                 delim             = ' ';
-    const UINT                            arraySize         = (UINT)m_stateBitSetMap.size() * m_stateSetSizeInBytes;
+    const UINT                            arraySize         = (UINT)m_stateBitSetMap.size() * m_sizeofStateBitSet;
     outputBeginArrayDefinition(output, _T("stateBitSetTable"), TYPE_UCHAR, arraySize);
     for(auto it = stateSetArray.getIterator(); it.hasNext();) {
       const IndexArrayEntry<StateSet>    &e                 = it.next();
       String                              comment           = format(_T("%3u %3u states %s"), e.m_commentIndex, (UINT)e.m_key.size(), e.getUsedByComment().cstr());
-      const ByteArray                     ba                = bitSetToByteArray(e.m_key);
+      const ByteArray                     ba                = bitSetToByteArray(e.m_key, m_grammar.getStateBitSetCapacity());
       for(BYTE b : ba) {
         output.printf(_T("%c0x%02x"), delim, b);
         delim = ',';

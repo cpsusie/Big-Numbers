@@ -18,15 +18,16 @@ void Grammar::dump(const LR1Item &item, int flags, MarginFile *f) const {
 
 void Grammar::dump(const LR1State &state, int flags, MarginFile *f) const {
   f->printf(_T("%s\n"), stateToString(state, flags).cstr());
+  const StateResult &sr = m_result.m_stateResult[state.m_index];
   if(flags & DUMP_ERRORS) {
-    const StringArray &errors = m_result[state.m_index].m_errors;
+    const StringArray &errors = sr.m_errors;
     for(size_t i = 0; i < errors.size(); i++) {
       _tprintf(_T("%s(%d) : error --- %s\n"), f->getAbsolutName().cstr(), f->getLineNumber(), errors[i].cstr());
       f->printf(_T("error --- %s\n"), errors[i].cstr());
     }
   }
   if(flags & DUMP_WARNINGS) {
-    const StringArray &warnings = m_result[state.m_index].m_warnings;
+    const StringArray &warnings = sr.m_warnings;
     for(size_t i = 0; i < warnings.size(); i++) {
       verbose(2, _T("%s(%d) : warning --- %s\n"), f->getAbsolutName().cstr(), f->getLineNumber(), warnings[i].cstr());
       f->printf(_T("warning --- %s\n"), warnings[i].cstr());

@@ -6,9 +6,9 @@ namespace ActionMatrixCompression {
 
 class StateActionNodeArray : public CompactArray<const StateActionNode*> {
 private:
-  const GrammarTables &m_tables;
+  const Grammar &m_grammar;
 public:
-  StateActionNodeArray(const GrammarTables &tables);
+  StateActionNodeArray(const Grammar &grammar);
   ~StateActionNodeArray() override;
   void clear() override;
   String toString() const;

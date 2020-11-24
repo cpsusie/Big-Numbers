@@ -158,7 +158,6 @@ _T("/***************************************************************************
 void GrammarTables::printCpp(MarginFile &output) const {
   const Options &options = Options::getInstance();
   m_countTableBytes.clear();
-  findTemplateTypes();
 
   if(!options.m_useTableCompression) {
     m_compressibleStateSet.clear();
@@ -174,16 +173,6 @@ void GrammarTables::printCpp(MarginFile &output) const {
                );
 }
 
-void GrammarTables::findTemplateTypes() const {
-  m_termType     = findIntType(0,getTermCount()   - 1);
-  m_NTindexType  = findIntType(0,getNTermCount()  - 1);
-  m_symbolType   = findIntType(0,getSymbolCount() - 1);
-  m_stateType    = findIntType(0,getStateCount()  - 1);
-  m_actionType   = ((getStateCount() < 128) && (getProductionCount() < 128))
-                 ? TYPE_CHAR
-                 : TYPE_SHORT;
-}
-
 ByteCount GrammarTables::printCppParserTablesTemplate(MarginFile &output) const {
   ByteCount byteCount;
   byteCount += printCompressedActionMatrixCpp(   output);
@@ -195,7 +184,6 @@ ByteCount GrammarTables::printCppParserTablesTemplate(MarginFile &output) const 
 //  printf("sizeof parserTableTemplate:%zu bytes", sizeof(ParserTablesTemplate<2,2,2,2,char,char,char,char,char>));
   const int sizeofTableTemlatex86  =  68; // sizeof(ParserTablesTemplate) x86
   const int sizeofTableTemplatex64 = 128; // sizeof(ParserTablesTemplate) x64
-
   const ByteCount tableClassSize(sizeofTableTemlatex86, sizeofTableTemplatex64);
   byteCount += tableClassSize;
   byteCount += ByteCount::s_pointerSize;
@@ -206,13 +194,13 @@ ByteCount GrammarTables::printCppParserTablesTemplate(MarginFile &output) const 
   output.printf(_T("static const ParserTablesTemplate<"));
   int column = output.getCurrentLineLength();
   output.setLeftMargin(column - 1);
-  output.printf(_T("%u,%u,%u,%u\n,%s\n,%s\n,%s\n,%s\n,%s> %s_s(")
-               ,getSymbolCount(), getTermCount(), getProductionCount(), getStateCount()
-               ,getTypeName(getSymbolType() )
-               ,getTypeName(getTermType()   )
-               ,getTypeName(getNTindexType())
-               ,getTypeName(getActionType() )
-               ,getTypeName(m_stateType     )
+  output.printf(_T("%u,%u,%u,%u,%u\n,%s\n,%s\n,%s\n,%s\n,%s> %s_s(")
+               ,getSymbolCount(), getTermCount(), getProductionCount(), getStateCount(), m_grammar.getTermBitSetCapacity()
+               ,getTypeName(m_types.getSymbolType() )
+               ,getTypeName(m_types.getTermType()   )
+               ,getTypeName(m_types.getNTindexType())
+               ,getTypeName(m_types.getActionType() )
+               ,getTypeName(m_types.getStateType()  )
                ,tablesClassName.cstr()
                );
 
@@ -262,13 +250,13 @@ ByteCount GrammarTables::printCppParserTablesTemplateTransSucc(MarginFile &outpu
   output.printf(_T("static const ParserTablesTemplateTransSucc<"));
   int column = output.getCurrentLineLength();
   output.setLeftMargin(column - 1);
-  output.printf(_T("%u,%u,%u,%u\n,%s\n,%s\n,%s\n,%s\n,%s> %s_s(")
-               ,getSymbolCount(), getTermCount(), getProductionCount(), getStateCount()
-               ,getTypeName(getSymbolType() )
-               ,getTypeName(getTermType()   )
-               ,getTypeName(getNTindexType())
-               ,getTypeName(getActionType() )
-               ,getTypeName(m_stateType     )
+  output.printf(_T("%u,%u,%u,%u,%u,%u\n,%s\n,%s\n,%s\n,%s\n,%s> %s_s(")
+               ,getSymbolCount(), getTermCount(), getProductionCount(), getStateCount(), m_grammar.getTermBitSetCapacity(), m_grammar.getStateBitSetCapacity()
+               ,getTypeName(m_types.getSymbolType() )
+               ,getTypeName(m_types.getTermType()   )
+               ,getTypeName(m_types.getNTindexType())
+               ,getTypeName(m_types.getActionType() )
+               ,getTypeName(m_types.getStateType()  )
                ,tablesClassName.cstr()
                );
 
@@ -299,16 +287,16 @@ ByteCount GrammarTables::printCppParserTablesTemplateTransSucc(MarginFile &outpu
 // Return size in bytes
 ByteCount GrammarTables::printCompressedActionMatrixCpp(MarginFile &output) const {
   output.printf(_T("%s"), comment1);
-  return ActionMatrixCompression::CompressedActionMatrix(*this).print(output);
+  return ActionMatrixCompression::CompressedActionMatrix(m_grammar).print(output);
 }
 
 ByteCount GrammarTables::printCompressedSuccessorMatrixCpp(MarginFile &output) const {
   output.printf(_T("%s"), comment2);
-  return SuccessorMatrixCompression::CompressedSuccessorMatrix(*this).print(output);
+  return SuccessorMatrixCompression::CompressedSuccessorMatrix(m_grammar).print(output);
 }
 
 ByteCount GrammarTables::printCompressedTransSuccMatrixCpp(MarginFile &output) const {
-  return TransSuccMatrixCompression::CompressedTransSuccMatrix(*this).print(output);
+  return TransSuccMatrixCompression::CompressedTransSuccMatrix(m_grammar).print(output);
 }
 
 ByteCount GrammarTables::printProductionLengthTableCpp(MarginFile &output) const {
@@ -317,7 +305,7 @@ ByteCount GrammarTables::printProductionLengthTableCpp(MarginFile &output) const
   outputBeginArrayDefinition(output, _T("prodLengthArray"), TYPE_UCHAR, productionCount);
   TCHAR delim = ' ';
   for(UINT p = 0; p < productionCount; p++, delim = ',') {
-    const UINT l = m_productionLength[p];
+    const UINT l = getProductionLength(p);
     if(p % 10 == 0) {
       output.printf(_T("/* %3u */ "), p);
     }
@@ -332,10 +320,10 @@ ByteCount GrammarTables::printProductionLengthTableCpp(MarginFile &output) const
 ByteCount GrammarTables::printLeftSideTableCpp(MarginFile &output) const {
   output.printf(_T("%s"), comment4);
   const UINT productionCount = getProductionCount();
-  outputBeginArrayDefinition(output, _T("leftSideArray"), m_NTindexType, productionCount);
+  outputBeginArrayDefinition(output, _T("leftSideArray"), m_types.getNTindexType(), productionCount);
   TCHAR delim = ' ';
   for(UINT p = 0; p < productionCount; p++, delim = ',') {
-    const int l = m_left[p] - getTermCount();
+    const int l = getLeftSymbol(p) - getTermCount();
     if(p % 10 == 0) {
       output.printf(_T("/* %3u */ "), p);
     }
@@ -344,31 +332,30 @@ ByteCount GrammarTables::printLeftSideTableCpp(MarginFile &output) const {
       output.printf(_T("\n"));
     }
   }
-  return outputEndArrayDefinition(output, m_NTindexType, productionCount, true);
+  return outputEndArrayDefinition(output, m_types.getNTindexType(), productionCount, true);
 }
 
 ByteCount GrammarTables::printRightSideTableCpp(MarginFile &output) const {
   output.printf(_T("%s"), comment5);
   const UINT productionCount = getProductionCount();
   UINT       itemCount       = 0;
-
   for(UINT p = 0; p < productionCount; p++) {
-    itemCount += (UINT)m_rightSide[p].size();
+    itemCount += m_grammar.getProduction(p).getLength();
   }
-  outputBeginArrayDefinition(output, _T("rightSideTable"), m_symbolType, itemCount);
+  outputBeginArrayDefinition(output, _T("rightSideTable"), m_types.getSymbolType(), itemCount);
   TCHAR delim = ' ';
   for(UINT p = 0; p < productionCount; p++) {
-    const CompactUIntArray &r = m_rightSide[p];
-    if(r.size() == 0) {
+    const CompactArray<RightSideSymbol> &rs = m_grammar.getProduction(p).m_rightSide;
+    if(rs.size() == 0) {
       continue;
     }
     output.printf(_T("/* %3u */ "), p);
-    for(size_t i = 0; i < r.size(); i++, delim = ',') {
-      output.printf(_T("%c%3u"), delim, r[i]);
+    for(auto s : rs) {
+      output.printf(_T("%c%3u"), delim, s.m_index); delim = ',';
     }
     output.printf(_T("\n"));
   }
-  return outputEndArrayDefinition(output, m_symbolType, itemCount);
+  return outputEndArrayDefinition(output, m_types.getSymbolType(), itemCount);
 }
 
 ByteCount GrammarTables::printSymbolNameTableCpp(MarginFile &output) const {
@@ -380,7 +367,7 @@ ByteCount GrammarTables::printSymbolNameTableCpp(MarginFile &output) const {
   output.printf(_T("static const char *symbolNames = {\n"));
   output.setLeftMargin(2);
   for(UINT s = 0; s < symbolCount; s++) {
-    const String &name = m_symbolNameArray[s];
+    const String &name = getSymbolName(s);
     output.printf(s ? _T("\" ") : _T("\""));
     const int    l       = (int)name.length()+(s?1:0), fillerLen = minMax(50 - l, 0, 50);
     const String comment = (s < termCount)

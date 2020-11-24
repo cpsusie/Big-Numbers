@@ -96,12 +96,15 @@ protected:
 
   // ---------------------------------------- helper functions for bitsets -----------------------------------------
 
-  #define _GETBITSETBYTECOUNT(capacity) (((UINT)(capacity) - 1) / 8 + 1)
+  static inline UINT getSizeofBitSet(UINT capacity) {
+    return (capacity - 1) / 8 + 1;
+  }
 
-  // bitset is a pointer to first BYTE in bitset, bytes = total number of bytes in bitset
+  // bitset is a pointer to first BYTE in bitset, capacity = max value in bitset + 1. values in bitset=[0..capacity-1]
   // Return number of 1-bits in bitset
-  static inline UINT getBitSetSize(const BYTE *bitset, UINT bytes) {
-    UINT sum = 0;
+  static inline UINT getBitSetSize(const BYTE *bitset, UINT capacity) {
+    const UINT bytes = getSizeofBitSet(capacity);
+    UINT       sum   = 0;
     for(const BYTE *endp = bitset + bytes; bitset < endp;) {
       for(BYTE b = *(bitset++); b; b &= (b-1)) {
         sum++;
@@ -109,11 +112,12 @@ protected:
     }
     return sum;
   }
-  // bitset is a pointer to the first BYTE in bitset, bytes = total number of bytes in bitset
+  // bitset is a pointer to first BYTE in bitset, capacity = max value in bitset + 1. values in bitset=[0..capacity-1]
   // Copy all integer-values with a 1-bit to dst[0..n-1], where n=getBitSetSize(bitset,bytes)
   // Return n
-  template<typename T> static UINT getAllBitSetElements(const BYTE *bitset, UINT bytes, T *dst) {
-    T *dstp = dst;
+  template<typename T> static UINT getAllBitSetElements(const BYTE *bitset, UINT capacity, T *dst) {
+    const UINT bytes = getSizeofBitSet(capacity);
+    T         *dstp  = dst;
     for(const BYTE *bp = bitset, *endp = bp + bytes; bp < endp; bp++) {
       if(*bp) {
         UINT bitIndex = ((UINT)(bp - bitset)) << 3;
@@ -124,9 +128,10 @@ protected:
     }
     return (UINT)(dstp - dst);
   }
+  // bitset is a pointer to first BYTE in bitset, capacity = max value in bitset + 1. values in bitset=[0..capacity-1]
   // Return true, if v is present in bitset, ie, has a 1-bit at position indexed by v
-  static inline bool bitsetContains(const BYTE *bitset, UINT v) {
-    return (bitset[v>>3]&(1<<(v&7))) != 0;
+  static inline bool bitsetContains(const BYTE *bitset, UINT capacity, UINT v) {
+    return (v < capacity) && (bitset[v>>3]&(1<<(v&7))) != 0;
   }
 
   static inline CompressionMethod getCompressionCode(UINT code) {
@@ -179,6 +184,7 @@ template<UINT     symbolCount
         ,UINT     terminalCount
         ,UINT     productionCount
         ,UINT     stateCount
+        ,UINT     termBitSetCapacity
         ,typename SymbolType       /* unsigned, values:[0..symbolCount             [ */
         ,typename TerminalType     /* unsigned, values:[0..terminalCount           [ */
         ,typename NTIndexType      /* unsigned, values:[0..nonterminalCount        [ */
@@ -200,8 +206,6 @@ private:
   const UINT                *m_successorCodeArray;
   const NTIndexType         *m_NTindexArrayTable;
   const StateType           *m_newStateArrayTable;
-
-  static constexpr UINT termBitSetByteCount = _GETBITSETBYTECOUNT(terminalCount);
 
 // ----------------------------- successor functions ---------------------------------------
   inline const NTIndexType *getNTindexArray(UINT code) const {
@@ -254,7 +258,7 @@ private:
   }
 
 // ----------------------------------- action functions ---------------------------------
-  inline const TerminalType *getTermArray(UINT code) const {
+  inline const TerminalType *getTermArray(  UINT code) const {
     return m_termArrayTable  + (code & 0x7fff);
   }
   inline const  BYTE        *getTermBitSet( UINT code) const {
@@ -272,7 +276,7 @@ private:
     return 1;
   }
   inline        UINT getLegalInputCountBitSet(    UINT code) const {
-    return getBitSetSize(getTermBitSet(code), termBitSetByteCount);
+    return getBitSetSize(getTermBitSet(code), termBitSetCapacity);
   }
   inline        UINT getLegalInputCountFromCode(  UINT code) const {
     switch(getCompressionCode(code)) {
@@ -297,7 +301,7 @@ private:
     return 1;
   }
   inline        UINT getLegalInputsBitSet(    UINT code, UINT *symbols) const {
-    return getAllBitSetElements(getTermBitSet(code), termBitSetByteCount, symbols);
+    return getAllBitSetElements(getTermBitSet(code), termBitSetCapacity, symbols);
   }
   inline        UINT getLegalInputsFromCode(  UINT code, UINT *symbols) const {
     switch(getCompressionCode(code)) {
@@ -322,7 +326,7 @@ private:
     return ((code & 0x7fff) == term)        ? ((signed int)code >> 17) : _ParserError;
   }
   inline        int getActionBitSet(    UINT code, UINT term) const {
-    return bitsetContains(getTermBitSet(code), term) ? ((signed int)code >> 17) : _ParserError;
+    return bitsetContains(getTermBitSet(code), termBitSetCapacity, term) ? ((signed int)code >> 17) : _ParserError;
   }
   inline        int getActionFromCode(  UINT code, UINT term) const {
     switch(getCompressionCode(code)) {
@@ -411,6 +415,8 @@ template<UINT     symbolCount
         ,UINT     terminalCount
         ,UINT     productionCount
         ,UINT     stateCount
+        ,UINT     termBitSetCapacity
+        ,UINT     stateBitSetCapacity
         ,typename SymbolType       /* unsigned, values:[0..symbolCount             [ */
         ,typename TerminalType     /* unsigned, values:[0..terminalCount           [ */
         ,typename NTIndexType      /* unsigned, values:[0..nonterminalCount        [ */
@@ -434,9 +440,6 @@ private:
   const StateType           *m_newStateArrayTable;
   const BYTE                *m_stateBitSetTable;
 
-  static constexpr UINT termBitSetByteCount  = _GETBITSETBYTECOUNT(terminalCount);
-  static constexpr UINT stateBitSetByteCount = _GETBITSETBYTECOUNT(stateCount   );
-
 // ----------------------------- successor functions ---------------------------------------
   inline const  StateType   *getStateArray(  UINT code) const {
     return m_stateArrayTable + (code & 0x7fff);
@@ -457,7 +460,7 @@ private:
     return ((fromState == 0x7fff) || (state == fromState)) ? (code >> 17) : _ParserError;
   }
   inline        UINT getSuccessorBitSet(     UINT code, UINT state) const {
-    return bitsetContains(getStateBitSet(code), state) ? (code >> 17) : _ParserError;
+    return bitsetContains(getStateBitSet(code), stateBitSetCapacity, state) ? (code >> 17) : _ParserError;
   }
 
   inline        UINT getSuccessorFromCode(   UINT code, UINT state) const {
@@ -490,7 +493,7 @@ private:
     return 1;
   }
   inline        UINT getLegalInputCountBitSet(    UINT code) const {
-    return getBitSetSize(getTermBitSet(code), termBitSetByteCount);
+    return getBitSetSize(getTermBitSet(code), termBitSetCapacity);
   }
   inline        UINT getLegalInputCountFromCode(  UINT code) const {
     switch(getCompressionCode(code)) {
@@ -515,7 +518,7 @@ private:
     return 1;
   }
   inline        UINT getLegalInputsBitSet(    UINT code, UINT *symbols) const {
-    return getAllBitSetElements(getTermBitSet(code), termBitSetByteCount, symbols);
+    return getAllBitSetElements(getTermBitSet(code), termBitSetCapacity, symbols);
   }
   inline        UINT getLegalInputsFromCode(  UINT code, UINT *symbols) const {
     switch(getCompressionCode(code)) {
@@ -540,7 +543,7 @@ private:
     return ((code & 0x7fff) == term)        ? ((signed int)code >> 17) : _ParserError;
   }
   inline        int getActionBitSet(    UINT code, UINT term) const {
-    return bitsetContains(getTermBitSet(code), term) ? ((signed int)code >> 17) : _ParserError;
+    return bitsetContains(getTermBitSet(code), termBitSetCapacity, term) ? ((signed int)code >> 17) : _ParserError;
   }
   inline        int getActionFromCode(  UINT code, UINT term) const {
     switch(getCompressionCode(code)) {

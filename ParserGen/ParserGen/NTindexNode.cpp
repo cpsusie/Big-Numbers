@@ -46,7 +46,7 @@ MixedSuccessorTable::MixedSuccessorTable(const NTindexNodeCommonData &cd, const 
       m_statePairBitSetArray[*indexp].addFromState(sp.m_fromState);
     } else {
       const UINT index = (UINT)m_statePairBitSetArray.size();
-      m_statePairBitSetArray.add(StatePairBitSet(newState, sp.m_fromState, m_tables.getStateCount()));
+      m_statePairBitSetArray.add(StatePairBitSet(newState, sp.m_fromState, m_grammar));
       sameNewStateMap.put(newState, index);
     }
   }
@@ -76,9 +76,9 @@ NTindexNode::NTindexNode(const NTindexNode *parent, const NTindexNodeCommonData 
 {
 }
 
-NTindexNode *NTindexNode::allocateNTindexNode(UINT NTindex, const AbstractParserTables &tables, const StatePairArray &statePairArray) {
+NTindexNode *NTindexNode::allocateNTindexNode(UINT NTindex, const Grammar &grammar, const StatePairArray &statePairArray) {
   const Options              &options = Options::getInstance();
-  const NTindexNodeCommonData commonData(NTindex, tables);
+  const NTindexNodeCommonData commonData(NTindex, grammar);
   if(!options.m_useTableCompression) {
     return new BinSearchNode(nullptr, commonData, statePairArray);
   } else {
@@ -89,8 +89,8 @@ NTindexNode *NTindexNode::allocateNTindexNode(UINT NTindex, const AbstractParser
 NTindexNode *NTindexNode::allocateNode(const NTindexNode *parent, const MixedSuccessorTable &mst) {
   const UINT     newStateCountArray  = mst.m_statePairArray.getNewStateCount();
   const UINT     newStateCountBitSet = mst.m_statePairBitSetArray.getNewStateCount();
-  const UINT     newStateCount      = newStateCountArray + newStateCountBitSet;
-  const Options &options = Options::getInstance();
+  const UINT     newStateCount       = newStateCountArray + newStateCountBitSet;
+  const Options &options             = Options::getInstance();
 
   assert(newStateCount >= 1);
 

@@ -63,9 +63,6 @@
     <ClInclude Include="Wizard.h">
       <Filter>Source Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CompressEncoding.h">
-      <Filter>Source Files\GrammarOutput\ActionCompression\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CompressedActionMatrixCpp.h">
       <Filter>Source Files\GrammarOutput\ActionCompression\Header Files</Filter>
     </ClInclude>
@@ -129,6 +126,9 @@
     <ClInclude Include="StateActionNodeArray.h">
       <Filter>Source Files\GrammarOutput\ActionCompression\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CompressEncoding.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -156,9 +156,6 @@
       <Filter>Source Files\GrammarOutput\KeyWordHandlers</Filter>
     </ClCompile>
     <ClCompile Include="CompressedActionMatrixCpp.cpp">
-      <Filter>Source Files\GrammarOutput\ActionCompression</Filter>
-    </ClCompile>
-    <ClCompile Include="CompressEncoding.cpp">
       <Filter>Source Files\GrammarOutput\ActionCompression</Filter>
     </ClCompile>
     <ClCompile Include="GrammarParser.cpp">
@@ -226,6 +223,12 @@
     </ClCompile>
     <ClCompile Include="StateActionNodeArray.cpp">
       <Filter>Source Files\GrammarOutput\ActionCompression</Filter>
+    </ClCompile>
+    <ClCompile Include="OptimizedBitSetPermutation.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="CompressEncoding.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

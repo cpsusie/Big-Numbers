@@ -84,3 +84,20 @@ public:
     return a.sortByIndex();
   }
 };
+
+class OptimizedBitSetPermutation : public CompactUIntArray {
+private:
+  UINT m_newCapacity;
+public:
+  OptimizedBitSetPermutation() : m_newCapacity(0) {
+  }
+  OptimizedBitSetPermutation(const BitSet &bitSet);
+  inline UINT getOldCapacity() const {
+    return (UINT)size();
+  }
+  inline UINT getNewCapacity() const {
+    return m_newCapacity;
+  }
+  ByteCount getSavedBytesByOptimizedBitSets(UINT bitSetCount) const;
+
+};

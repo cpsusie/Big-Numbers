@@ -27,7 +27,7 @@ ShiftAndReduceActions::ShiftAndReduceActions(const ActionNodeCommonData &cd, con
         m_termSetReductionArray[*indexp].addTerminal(pa.m_term);
       } else {
         const UINT index = (UINT)m_termSetReductionArray.size();
-        m_termSetReductionArray.add(TermSetReduction(prod, pa.m_term, m_nameContainer));
+        m_termSetReductionArray.add(TermSetReduction(prod, pa.m_term, m_grammar));
         termSetReductionMap.put(prod, index);
       }
     }
@@ -49,8 +49,8 @@ ParserActionArray ShiftAndReduceActions::mergeAll() const {
   return result;
 }
 
-StateActionNode *StateActionNode::allocateStateActionNode(UINT state, const AbstractSymbolNameContainer &nameContainer, const ParserActionArray &actionArray) {
-  const ActionNodeCommonData commonData(state, nameContainer);
+StateActionNode *StateActionNode::allocateStateActionNode(UINT state, const Grammar &grammar, const ParserActionArray &actionArray) {
+  const ActionNodeCommonData commonData(state, grammar);
   const Options             &options = Options::getInstance();
   if(!options.m_useTableCompression) {
     return new BinSearchNode(nullptr, commonData, actionArray);
@@ -131,7 +131,7 @@ String StateActionNode::toString() const {
 }
 
 String BinSearchNode::toString() const {
-  const String result = __super::toString()  + indentString(m_termListActionArray.toString(m_nameContainer),3);
+  const String result = __super::toString()  + indentString(m_termListActionArray.toString(m_grammar),3);
   return indentString(result, m_recurseLevel * 2);
 }
 
@@ -143,7 +143,7 @@ String SplitNode::toString() const {
 }
 
 String ImmediateNode::toString() const {
-  const String result = __super::toString() + indentString(m_action.toString(m_nameContainer),3);
+  const String result = __super::toString() + indentString(m_action.toString(m_grammar),3);
   return indentString(result, m_recurseLevel * 2);
 }
 

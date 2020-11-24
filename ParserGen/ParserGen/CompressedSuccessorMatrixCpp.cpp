@@ -5,13 +5,12 @@
 
 namespace SuccessorMatrixCompression {
 
-CompressedSuccessorMatrix::CompressedSuccessorMatrix(const GrammarTables &tables)
-  : MacroMap(          tables                                              )
-  , m_tables(          tables                                              )
-  , m_usedByParam(     tables.getGrammarCode().getBitSetParam(STATE_BITSET))
-  , m_NTindexType(     tables.getNTindexType()                             )
-  , m_stateType(       tables.getStateType()                               )
-  , m_definedStateSet( tables.getStateCount()                              )
+CompressedSuccessorMatrix::CompressedSuccessorMatrix(const Grammar &grammar)
+  : MacroMap(          grammar                             )
+  , m_grammar(         grammar                             )
+  , m_templateTypes(   grammar                             )
+  , m_usedByParam(     grammar.getBitSetParam(STATE_BITSET))
+  , m_definedStateSet( grammar.getStateCount()             )
 {
   generateCompressedForm();
 }
@@ -20,31 +19,32 @@ void CompressedSuccessorMatrix::generateCompressedForm() {
   m_NTindexArraySize  = 0;
   m_newStateArraySize = 0;
 
-  const SuccessorMatrix &sm = m_tables.getSuccessorMatrix();
+  SuccessorMatrix sm;
+  m_grammar.getResult().getSuccessorMatrix(sm);
 
   for(UINT state = 0; state < getStateCount(); state++) {
-    const SuccessorStateArray &succList  = sm[state];
-    const UINT                 succCount = (UINT)succList.size();
+    const SuccessorStateArray &succArray = sm[state];
+    const UINT                 succCount = succArray.getLegalNTermCount();
     if(succCount == 0) {
       continue;
     }
-    Macro macro = doSuccList(state, succList);
+    Macro macro = doSuccessorArray(state, succArray);
     addMacro(macro.setIndex(state).setName(format(_T("_su%04u"), state)));
   }
 }
 
-Macro CompressedSuccessorMatrix::doSuccList(UINT state, const SuccessorStateArray &succList) {
+Macro CompressedSuccessorMatrix::doSuccessorArray(UINT state, const SuccessorStateArray &succArray) {
   m_definedStateSet.add(state);
-  const UINT succCount = (UINT)succList.size();
+  const UINT succCount = succArray.getLegalNTermCount();
   if(succCount == 1) {
-    return doOneSuccessorState(state, succList[0]);
+    return doOneSuccessorState(state, succArray.first());
   } else {
-    return doNTindexListState(state, succList);
+    return doNTindexArrayState(state, succArray);
   }
 }
 
-Macro CompressedSuccessorMatrix::doNTindexListState(UINT state, const SuccessorStateArray &succList) {
-  const NTindexSet    ntIndexSet = succList.getNTindexSet(getTermCount(), getSymbolCount());
+Macro CompressedSuccessorMatrix::doNTindexArrayState(UINT state, const SuccessorStateArray &succArray) {
+  const NTindexSet    ntIndexSet = succArray.getNTindexSet(getTermCount(), getSymbolCount());
   IndexMapValue      *imvp       = m_NTindexArrayMap.get(ntIndexSet);
   UINT                ntArrayIndex, ntArrayCount;
 
@@ -59,7 +59,7 @@ Macro CompressedSuccessorMatrix::doNTindexListState(UINT state, const SuccessorS
     m_NTindexArraySize += (UINT)ntIndexSet.size() + 1;
   }
 
-  const StateArray sa   = succList.getStateArray();
+  const StateArray sa   = succArray.getStateArray();
   imvp                  = m_newStateArrayMap.get(sa);
   UINT                 newStateArrayIndex, newStateArrayCount;
   if(imvp != nullptr) {
@@ -131,7 +131,7 @@ ByteCount CompressedSuccessorMatrix::printNTindexAndNewStateArray(MarginFile &ou
   { const NTindexSetIndexArray            ntSetArray        = m_NTindexArrayMap.getEntryArray();
     UINT                                  tableSize         = 0;
     TCHAR                                 delim             = ' ';
-    outputBeginArrayDefinition(output, _T("NTindexArrayTable"), m_NTindexType , ntSetArray.getElementCount(true));
+    outputBeginArrayDefinition(output, _T("NTindexArrayTable"), m_templateTypes.getNTindexType(), ntSetArray.getElementCount(true));
     for(auto it = ntSetArray.getIterator();      it.hasNext();) {
       const IndexArrayEntry<NTindexSet>  &e                 = it.next();
       String                              comment           = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment().cstr());
@@ -149,13 +149,13 @@ ByteCount CompressedSuccessorMatrix::printNTindexAndNewStateArray(MarginFile &ou
       newLine(output, comment, 108);
       tableSize += n + 1;
     }
-    byteCount += outputEndArrayDefinition(output, m_NTindexType , tableSize);
+    byteCount += outputEndArrayDefinition(output, m_templateTypes.getNTindexType(), tableSize);
   }
-  { const StateArrayIndexArray            stateListArray    = m_newStateArrayMap.getEntryArray();
+  { const StateArrayIndexArray            stateArrayTable   = m_newStateArrayMap.getEntryArray();
     UINT                                  tableSize         = 0;
     TCHAR                                 delim             = ' ';
-    outputBeginArrayDefinition(output, _T("newStateArrayTable"), m_stateType , stateListArray.getElementCount(false));
-    for(auto it = stateListArray.getIterator();  it.hasNext();) {
+    outputBeginArrayDefinition(output, _T("newStateArrayTable"), m_templateTypes.getStateType(), stateArrayTable.getElementCount(false));
+    for(auto it = stateArrayTable.getIterator();  it.hasNext();) {
       const IndexArrayEntry<StateArray>  &e                 = it.next();
       String                              comment           = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment().cstr());
       const UINT                          n                 = (UINT)e.m_key.size();
@@ -169,7 +169,7 @@ ByteCount CompressedSuccessorMatrix::printNTindexAndNewStateArray(MarginFile &ou
       newLine(output, comment, 108);
       tableSize += n;
     }
-    byteCount += outputEndArrayDefinition(output, m_stateType , tableSize);
+    byteCount += outputEndArrayDefinition(output, m_templateTypes.getStateType(), tableSize);
   }
   return byteCount;
 }

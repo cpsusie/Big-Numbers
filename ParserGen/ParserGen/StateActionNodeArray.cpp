@@ -3,16 +3,16 @@
 
 namespace ActionMatrixCompression {
 
-StateActionNodeArray::StateActionNodeArray(const GrammarTables &tables)
-: m_tables(tables)
+StateActionNodeArray::StateActionNodeArray(const Grammar &grammar)
+: m_grammar(grammar)
 {
-  const UINT           stateCount = tables.getStateCount();
-  const UINT           termCount  = tables.getTermCount();
-  const ActionMatrix  &am         = tables.getActionMatrix();
+  const UINT           stateCount = grammar.getStateCount();
+  ActionMatrix         actionMatrix;
+  grammar.getResult().getActionMatrix(actionMatrix);
   setCapacity(stateCount);
 //  redirectDebugLog();
   for(UINT state = 0; state < stateCount; state++) {
-    add(StateActionNode::allocateStateActionNode(state, tables, am[state]));
+    add(StateActionNode::allocateStateActionNode(state, grammar, actionMatrix[state]));
 //    debugLog(_T("%s"), last()->toString().cstr());
   }
 }

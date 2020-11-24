@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GrammarTables.h"
 #include "CompressEncoding.h"
 
 namespace TransSuccMatrixCompression {
@@ -63,26 +64,21 @@ public:
 
 class StatePairBitSet {
 private:
-  const UINT m_newState;
-  StateSet   m_fromStateSet;     // set of states having newState as successor
-  UINT       m_fromStateCount;
+  const Grammar &m_grammar;
+  StateSet       m_fromStateSet;     // set of states having newState as successor
+  UINT           m_fromStateCount;
+  const UINT     m_newState;
 public:
-  StatePairBitSet(UINT newState, UINT fromState0, UINT stateCount)
-    : m_newState(      newState   )
-    , m_fromStateSet(  stateCount )
-    , m_fromStateCount(0          )
+  StatePairBitSet(UINT newState, UINT fromState0, const Grammar &grammar)
+    : m_grammar(grammar                       )
+    , m_fromStateSet(  grammar.getStateCount())
+    , m_fromStateCount(0                      )
+    , m_newState(      newState               )
   {
     addFromState(fromState0);
   }
-  inline UINT getNewState() const {
-    return m_newState;
-  }
   inline const StateSet &getFromStateSet() const {
     return m_fromStateSet;
-  }
-  inline void addFromState(UINT fromState) {
-    m_fromStateSet.add(fromState);
-    m_fromStateCount++;
   }
   inline UINT getFromStateCount()   const {
     return m_fromStateCount;
@@ -90,6 +86,13 @@ public:
   // = 1
   inline UINT    getNewStateCount() const {
     return 1;
+  }
+  inline UINT getNewState() const {
+    return m_newState;
+  }
+  inline void addFromState(UINT fromState) {
+    m_fromStateSet.add(fromState);
+    m_fromStateCount++;
   }
   operator StatePairArray() const;
   String toString() const {
@@ -137,9 +140,9 @@ public:
 
 class NTindexNodeCommonData {
 public:
-  const UINT                  m_NTindex;
-  const AbstractParserTables &m_tables;
-  NTindexNodeCommonData(UINT NTindex, const AbstractParserTables &tables) : m_NTindex(NTindex), m_tables(tables) {
+  const UINT     m_NTindex;
+  const Grammar &m_grammar;
+  NTindexNodeCommonData(UINT NTindex, const Grammar &grammar) : m_NTindex(NTindex), m_grammar(grammar) {
   }
   inline UINT getNTindex() const {
     return m_NTindex;
@@ -180,7 +183,7 @@ protected:
   static NTindexNode *allocateStatePairBitSetNode(  const NTindexNode *parent, const NTindexNodeCommonData &cd , const StatePairBitSet &statePairBitSet);
   static NTindexNode *allocateImmediateDontCareNode(const NTindexNode *parent, const MixedSuccessorTable  &mst);
 public:
-  static NTindexNode *allocateNTindexNode(UINT NTindex, const AbstractParserTables &tables, const StatePairArray &statePairArray);
+  static NTindexNode *allocateNTindexNode(UINT NTindex, const Grammar &grammar, const StatePairArray &statePairArray);
   virtual            ~NTindexNode() {
   }
 
@@ -221,7 +224,7 @@ public:
   virtual const StatePairBitSet         &getStatePairBitSet()      const {
     throwUnsupportedOperationException(__TFUNCTION__);
     __assume(0);
-    return *new StatePairBitSet(0,0,0);
+    return *new StatePairBitSet(0,0,m_grammar);
   }
   virtual String toString() const;
 };

@@ -271,7 +271,7 @@ int _tmain(int argc, TCHAR **argv) {
           fclose(f);
         }
 
-        if(!grammar.allStatesConsistent()) {
+        if(!grammar.getResult().allStatesConsistent()) {
           ok = false;
           code.generateDocFile();
           verbose(1, _T("Time:%.3lf\n"), (getProcessTime() - starttime)/1000000);

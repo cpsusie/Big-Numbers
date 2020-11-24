@@ -46,6 +46,9 @@ public:
     m_countx64 += rhs.m_countx64;
     return *this;
   }
+  inline ByteCount operator-(const ByteCount &rhs) const {
+    return ByteCount(m_countx86 - rhs.m_countx86, m_countx64 - rhs.m_countx64);
+  }
 
   friend inline ByteCount operator*(UINT n, const ByteCount &c) {
     return ByteCount(n*c.m_countx86,n*c.m_countx64);
@@ -55,7 +58,7 @@ public:
   }
 
   static inline ByteCount wordAlignedSize(const ByteCount &c, UINT n) { // static
-    return (n *c).getAlignedSize();
+    return (n * c).getAlignedSize();
   }
 
   static inline ByteCount wordAlignedSize(UINT size) {
@@ -65,4 +68,19 @@ public:
   static const ByteCount s_pointerSize;
 
   String toString() const;
+};
+
+class Grammar;
+class AllTemplateTypes {
+private:
+  const IntegerType m_symbolType, m_termType, m_NTindexType, m_actionType, m_stateType;
+public:
+  AllTemplateTypes(const Grammar              &grammar);
+  AllTemplateTypes(const AbstractParserTables &tables );
+
+  inline IntegerType getSymbolType()  const { return m_symbolType;  }
+  inline IntegerType getTermType()    const { return m_termType;    }
+  inline IntegerType getNTindexType() const { return m_NTindexType; }
+  inline IntegerType getActionType()  const { return m_actionType;  }
+  inline IntegerType getStateType()   const { return m_stateType;   }
 };

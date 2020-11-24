@@ -1,41 +1,41 @@
 #pragma once
 
-#include "GrammarTables.h"
+#include "Grammar.h"
 #include "CompressEncoding.h"
 
 namespace ActionMatrixCompression {
 
 class TermSetReduction {
 private:
-  const UINT                         m_prod;
-  const AbstractSymbolNameContainer &m_nameContainer;
-  SymbolSet                          m_termSet;     // set of terminals which should give reduce by production m_prod
-  UINT                               m_setSize;
+  const Grammar &m_grammar;
+  SymbolSet      m_termSet;     // set of terminals which should give reduce by production m_prod
+  UINT           m_setSize;
+  const UINT     m_prod;
 public:
-  TermSetReduction(UINT prod, UINT term0, const AbstractSymbolNameContainer &nameContainer)
-    : m_prod(         prod                        )
-    , m_nameContainer(nameContainer               )
-    , m_termSet(      nameContainer.getTermCount())
-    , m_setSize(      0                           )
+  TermSetReduction(UINT prod, UINT term0, const Grammar &grammar)
+    : m_grammar(grammar                )
+    , m_termSet(grammar.getTermCount() )
+    , m_prod(   prod                   )
+    , m_setSize(0                      )
   {
     addTerminal(term0);
   }
-  inline UINT getProduction() const {
-    return m_prod;
-  }
   inline const SymbolSet &getTermSet() const {
     return m_termSet;
+  }
+  inline UINT getLegalTermCount() const {
+    return m_setSize;
+  }
+  inline UINT getProduction() const {
+    return m_prod;
   }
   inline void addTerminal(UINT term) {
     m_termSet.add(term);
     m_setSize++;
   }
-  inline UINT getLegalTermCount() const {
-    return m_setSize;
-  }
   operator ParserActionArray() const;
   String toString() const {
-    return format(_T("Reduce by %u on %s (%u terminals)"), m_prod, m_nameContainer.symbolSetToString(m_termSet).cstr(), m_setSize);
+    return format(_T("Reduce by %u on %s (%u terminals)"), m_prod, m_grammar.symbolSetToString(m_termSet).cstr(), m_setSize);
   }
 };
 
@@ -74,11 +74,11 @@ public:
 
 class ActionNodeCommonData {
 public:
-  const UINT                         m_state;
-  const AbstractSymbolNameContainer &m_nameContainer;
-  ActionNodeCommonData(UINT state, const AbstractSymbolNameContainer &nameContainer)
+  const UINT     m_state;
+  const Grammar &m_grammar;
+  ActionNodeCommonData(UINT state, const Grammar &grammar)
    : m_state(state)
-   , m_nameContainer(nameContainer)
+   , m_grammar(grammar)
   {
   }
   inline UINT                getState() const {
@@ -118,47 +118,47 @@ protected:
     , m_compressMethod( compressMethod )
   {
   }
-  static StateActionNode *allocateNode(         const StateActionNode *parent, const ShiftAndReduceActions &sra);
-  static StateActionNode *allocateBinSearchNode(const StateActionNode *parent, const ActionNodeCommonData    &cd , const ParserActionArray &actionArray     );
-  static StateActionNode *allocateSplitNode(    const StateActionNode *parent, const ShiftAndReduceActions &sra);
-  static StateActionNode *allocateBitSetNode(   const StateActionNode *parent, const ActionNodeCommonData    &cd , const TermSetReduction  &termSetReduction);
+  static StateActionNode          *allocateNode(           const StateActionNode *parent, const ShiftAndReduceActions &sra);
+  static StateActionNode          *allocateBinSearchNode(  const StateActionNode *parent, const ActionNodeCommonData  &cd , const ParserActionArray &actionArray     );
+  static StateActionNode          *allocateSplitNode(      const StateActionNode *parent, const ShiftAndReduceActions &sra);
+  static StateActionNode          *allocateBitSetNode(     const StateActionNode *parent, const ActionNodeCommonData  &cd , const TermSetReduction  &termSetReduction);
 public:
-  static StateActionNode             *allocateStateActionNode(UINT state, const AbstractSymbolNameContainer &nameContainer, const ParserActionArray &actionArray);
-  virtual                            ~StateActionNode() {
+  static StateActionNode          *allocateStateActionNode(UINT state, const Grammar &grammar, const ParserActionArray &actionArray);
+  virtual                         ~StateActionNode() {
   }
 
-  inline UINT                         getLegalTermCount()    const {
+  inline UINT                      getLegalTermCount()    const {
     return m_legalTermCount;
   }
-  inline BYTE                         getRecurseLevel()      const {
+  inline BYTE                      getRecurseLevel()      const {
     return m_recurseLevel;
   }
-  inline CompressionMethod            getCompressionMethod() const {
+  inline CompressionMethod         getCompressionMethod() const {
     return m_compressMethod;
   }
   // Call only if getCompressionMethod() == CompCodeBinSearch
-  virtual const ParserActionArray    &getTermList()          const {
+  virtual const ParserActionArray &getTermList()          const {
     throwUnsupportedOperationException(__TFUNCTION__);
     __assume(0);
     return *new ParserActionArray();
   }
   // Call only if getCompressionMethod() == CompCodeSplitNode
-  virtual const StateActionNode      &getChild(BYTE index)   const {
+  virtual const StateActionNode   &getChild(BYTE index)   const {
     throwUnsupportedOperationException(__TFUNCTION__);
     __assume(0);
     return *this;
   }
   // Call only if getCompressionMethod() == CompCodeImmediate
-  virtual ParserAction                getOneItemAction()     const {
+  virtual ParserAction             getOneItemAction()     const {
     throwUnsupportedOperationException(__TFUNCTION__);
     __assume(0);
     return ParserAction();
   }
   // Call only if getCompressionMethod() == CompCodeBitSet
-  virtual const TermSetReduction     &getTermSetReduction()  const {
+  virtual const TermSetReduction  &getTermSetReduction()  const {
     throwUnsupportedOperationException(__TFUNCTION__);
     __assume(0);
-    return *new TermSetReduction(0,0,m_nameContainer);
+    return *new TermSetReduction(0,0,m_grammar);
   }
   virtual String toString() const;
 };

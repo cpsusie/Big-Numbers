@@ -6,9 +6,9 @@ namespace TransSuccMatrixCompression {
 
 class NTindexNodeArray : public CompactArray<const NTindexNode*> {
 private:
-  const AbstractParserTables &m_tables;
+  const Grammar &m_grammar;
 public:
-  NTindexNodeArray(const AbstractParserTables &tables);
+  NTindexNodeArray(const Grammar &grammar);
   ~NTindexNodeArray() override;
   void clear() override;
   String toString() const;
@@ -18,7 +18,7 @@ public:
 // ordered by m_newState, inc
 class TransposeSuccessorMatrix : public Array<StatePairArray> {
 public:
-  TransposeSuccessorMatrix(const AbstractParserTables &tables);
+  TransposeSuccessorMatrix(const Grammar &grammar);
   String toString() const;
 };
 
