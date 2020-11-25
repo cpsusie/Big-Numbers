@@ -46,4 +46,6 @@ public:
 
   // Return value from getAction, on invalid input => parser will not accept
   static constexpr INT               _ParserError      = 0xffff;
+  // special value for fromState, indicating always goto newState, no matter which state we come from
+  static constexpr UINT              _NoFromStateCheck = 0x7fff;
 };

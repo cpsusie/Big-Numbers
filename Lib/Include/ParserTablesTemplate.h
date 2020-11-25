@@ -7,6 +7,8 @@ template<UINT     symbolCount
         ,UINT     terminalCount
         ,UINT     productionCount
         ,UINT     stateCount
+        ,UINT     tableByteCountx86
+        ,UINT     tableByteCountx64
         ,typename SymbolType        /* unsigned, values:[0..symbolCount             [ */
         ,typename NTIndexType>      /* unsigned, values:[0..nonterminalCount        [ */
 class GenereratedTablesCommon : public AbstractParserTables {
@@ -15,7 +17,6 @@ private:
   const NTIndexType         *m_leftSideArray;
   const SymbolType          *m_rightSideTable;
   const char                *m_nameString;
-  const UINT                 m_tableByteCountx86, m_tableByteCountx64;
   mutable const SymbolType **m_rightSides;
   mutable StringArray        m_symbolNameTable;
 
@@ -43,15 +44,11 @@ protected:
                          ,const NTIndexType   *leftSideArray
                          ,const SymbolType    *rightSideTable
                          ,const char          *nameString
-                         ,UINT                 tableByteCountx86
-                         ,UINT                 tableByteCountx64
                          )
    :m_prodLengthArray        ( prodLengthArray        )
    ,m_leftSideArray          ( leftSideArray          )
    ,m_rightSideTable         ( rightSideTable         )
    ,m_nameString             ( nameString             )
-   ,m_tableByteCountx86      ( tableByteCountx86      )
-   ,m_tableByteCountx64      ( tableByteCountx64      )
   {
     m_rightSides = nullptr;
   }
@@ -173,7 +170,7 @@ public:
   UINT getProductionCount()                          const final { return productionCount; }
   UINT getStateCount()                               const final { return stateCount;      }
   UINT getTableByteCount(Platform platform)          const final {
-    return (platform==PLATFORM_X86) ? m_tableByteCountx86 : m_tableByteCountx64;
+    return (platform==PLATFORM_X86) ? tableByteCountx86 : tableByteCountx64;
   }
 };
 
@@ -184,6 +181,8 @@ template<UINT     symbolCount
         ,UINT     terminalCount
         ,UINT     productionCount
         ,UINT     stateCount
+        ,UINT     tableByteCountx86
+        ,UINT     tableByteCountx64
         ,UINT     termBitSetCapacity
         ,typename SymbolType       /* unsigned, values:[0..symbolCount             [ */
         ,typename TerminalType     /* unsigned, values:[0..terminalCount           [ */
@@ -195,6 +194,8 @@ class ParserTablesTemplate
                                 ,terminalCount
                                 ,productionCount
                                 ,stateCount
+                                ,tableByteCountx86
+                                ,tableByteCountx64
                                 ,SymbolType
                                 ,NTIndexType>
 {
@@ -381,8 +382,6 @@ public:
                       ,const NTIndexType   *leftSideArray
                       ,const SymbolType    *rightSideTable
                       ,const char          *nameString
-                      ,UINT                 tableByteCountx86
-                      ,UINT                 tableByteCountx64
                       ,const UINT          *actionCodeArray
                       ,const TerminalType  *termArrayTable
                       ,const ActionType    *actionArrayTable
@@ -393,7 +392,6 @@ public:
                       )
     :GenereratedTablesCommon(prodLengthArray  , leftSideArray
                             ,rightSideTable   , nameString
-                            ,tableByteCountx86, tableByteCountx64
                             )
     ,m_actionCodeArray    (actionCodeArray    )
     ,m_termArrayTable     (termArrayTable     )
@@ -415,6 +413,8 @@ template<UINT     symbolCount
         ,UINT     terminalCount
         ,UINT     productionCount
         ,UINT     stateCount
+        ,UINT     tableByteCountx86
+        ,UINT     tableByteCountx64
         ,UINT     termBitSetCapacity
         ,UINT     stateBitSetCapacity
         ,typename SymbolType       /* unsigned, values:[0..symbolCount             [ */
@@ -427,6 +427,8 @@ class ParserTablesTemplateTransSucc
                                 ,terminalCount
                                 ,productionCount
                                 ,stateCount
+                                ,tableByteCountx86
+                                ,tableByteCountx64
                                 ,SymbolType
                                 ,NTIndexType>
 {
@@ -457,7 +459,7 @@ private:
   }
   static inline UINT getSuccessorImmediate(  UINT code, UINT state) {
     const UINT fromState = code & 0x7fff;
-    return ((fromState == 0x7fff) || (state == fromState)) ? (code >> 17) : _ParserError;
+    return ((fromState == _NoFromStateCheck) || (state == fromState)) ? (code >> 17) : _ParserError;
   }
   inline        UINT getSuccessorBitSet(     UINT code, UINT state) const {
     return bitsetContains(getStateBitSet(code), stateBitSetCapacity, state) ? (code >> 17) : _ParserError;
@@ -599,8 +601,6 @@ public:
                       ,const NTIndexType   *leftSideArray
                       ,const SymbolType    *rightSideTable
                       ,const char          *nameString
-                      ,UINT                 tableByteCountx86
-                      ,UINT                 tableByteCountx64
                       ,const UINT          *actionCodeArray
                       ,const TerminalType  *termArrayTable
                       ,const ActionType    *actionArrayTable
@@ -612,7 +612,6 @@ public:
                       )
     :GenereratedTablesCommon(prodLengthArray  , leftSideArray
                             ,rightSideTable   , nameString
-                            ,tableByteCountx86, tableByteCountx64
                             )
     ,m_actionCodeArray    (actionCodeArray    )
     ,m_termArrayTable     (termArrayTable     )

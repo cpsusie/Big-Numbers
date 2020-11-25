@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "NTindexNode.h"
 
-namespace TransSuccMatrixCompression {
+namespace TransposedSuccessorMatrixCompression {
 
 StateSet StatePairArray::getFromStateSet(UINT stateCount) const {
   StateSet result(stateCount);
@@ -196,4 +196,4 @@ String BitSetNode::toString() const {
   return indentString(result, m_recurseLevel * 2);
 }
 
-}; // namespace TransSuccMatrixCompression
+}; // namespace TransposedSuccessorMatrixCompression

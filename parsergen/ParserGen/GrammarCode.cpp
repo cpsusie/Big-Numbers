@@ -26,7 +26,7 @@ GrammarCode::GrammarCode(Grammar &grammar)
     }
 
     if(options.m_compressSuccTransposed) {
-      TransSuccMatrixCompression::CompressedTransSuccMatrix sm(m_grammar);
+      TransposedSuccessorMatrixCompression::CompressedTransSuccMatrix sm(m_grammar);
       const ByteCount savedBytes = sm.getSavedBytesByOptimizedStateBitSets();
       if(savedBytes.getByteCount(PLATFORM_X64) > 20) {
         const OptimizedBitSetPermutation &stateBitSetPermutation = sm.getStateBitSetPermutation();
@@ -130,6 +130,20 @@ ByteCount outputEndArrayDefinition(  MarginFile &output,                        
   output.setLeftMargin(0);
   output.printf(_T("%s}; // Size of table:%s.\n\n"), addNewLine?_T("\n"):_T(""), byteCount.toString().cstr());
   return byteCount;
+}
+
+UINT outputBeginBitSetTableDefinition(MarginFile &output, const TCHAR *tableName, UINT capacity, UINT count) {
+  output.setLeftMargin(0);
+  const UINT bytesPerBitSet = getSizeofBitSet(capacity);
+  const UINT totalSize   = count * bytesPerBitSet;
+  output.printf(_T("static const %s %s[%u] = { /* capacity(bitset)=%u, bytes in bitset=%u */\n")
+               ,getTypeName(TYPE_UCHAR), tableName, totalSize, capacity, bytesPerBitSet);
+  output.setLeftMargin(2);
+  return totalSize;
+}
+
+ByteCount outputEndBitSetTableDefinition(MarginFile &output, UINT size, bool addNewLine) {
+  return outputEndArrayDefinition(output, TYPE_UCHAR, size, addNewLine);
 }
 
 void newLine(MarginFile &output, String &comment, int minColumn) { // static

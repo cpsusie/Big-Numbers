@@ -3,11 +3,10 @@
 #include "GrammarTables.h"
 #include "CompressEncoding.h"
 
-namespace TransSuccMatrixCompression {
+namespace TransposedSuccessorMatrixCompression {
 
 class StatePair {
 public:
-  static constexpr UINT NoFromStateCheck = 0x7fff; // special value for fromState, indicating always goto newState, no matter which state we come from
   UINT m_fromState;
   UINT m_newState;
   inline StatePair() : m_fromState(0), m_newState(0) {
@@ -16,7 +15,7 @@ public:
     assert(m_newState != NoFromStateCheck);
   }
   inline bool isNoFromStateCheck() const {
-    return m_fromState == NoFromStateCheck;
+    return m_fromState == AbstractParserTables::_NoFromStateCheck;
   }
   String toString() const {
     return isNoFromStateCheck()
@@ -25,12 +24,19 @@ public:
   }
 };
 
+inline std::wostream &operator<<(std::wostream &out, const StatePair &p) {
+  out << p.toString();
+  return out;
+}
+
 inline int statePairCompareFromState(const StatePair &p1, const StatePair &p2) {
   return (int)p1.m_fromState - (int)p2.m_fromState;
 }
 
 inline int statePairCmpByNewState(const StatePair &p1, const StatePair &p2) {
-  return (int)p1.m_newState - (int)p2.m_newState;
+  int c = (int)p1.m_newState - (int)p2.m_newState;
+  if(c) return c;
+  return (int)p1.m_fromState - (int)p2.m_fromState;
 }
 
 class StatePairArray : public CompactArray<StatePair> {
@@ -61,6 +67,7 @@ public:
   }
   String         toString() const;
 };
+
 
 class StatePairBitSet {
 private:
@@ -278,7 +285,7 @@ public:
   }
   ImmediateNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, UINT newState, UINT fromStateCount)
     : NTindexNode(parent, cd, fromStateCount, AbstractParserTables::CompCodeImmediate)
-    , m_statePair(StatePair(StatePair::NoFromStateCheck, newState))
+    , m_statePair(StatePair(AbstractParserTables::_NoFromStateCheck, newState))
   {
   }
   bool isDontCareNode() const override {
@@ -305,4 +312,4 @@ public:
   String toString() const override;
 };
 
-}; // namespace TransSuccMatrixCompression
+}; // namespace TransposedSuccessorMatrixCompression

@@ -5,7 +5,7 @@
 #include "IndexMap.h"
 #include "MacroMap.h"
 
-namespace TransSuccMatrixCompression {
+namespace TransposedSuccessorMatrixCompression {
 
 inline int stateSetCmp(const StateSet &s1, const StateSet &s2) {
   assert(s1.getCapacity() == s2.getCapacity());
@@ -72,4 +72,4 @@ public:
   ByteCount print(MarginFile &output) const;
 };
 
-}; // namespace TransSuccMatrixCompression
+}; // namespace TransposedSuccessorMatrixCompression

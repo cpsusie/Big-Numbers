@@ -268,21 +268,22 @@ ByteCount CompressedActionMatrix::printTermBitSetTable(MarginFile &output) const
   if(m_termBitSetMap.size() == 0) {
     output.printf(_T("#define termBitSetTable nullptr\n\n"));
   } else {
-    const TermSetIndexArray               termBitSetArray   = m_termBitSetMap.getEntryArray();
-    TCHAR                                 delim             = ' ';
-    const UINT                            arraySize         = (UINT)m_termBitSetMap.size() * m_sizeofTermBitSet;
-    outputBeginArrayDefinition(output, _T("termBitSetTable"), TYPE_UCHAR, arraySize);
-    for(auto it = termBitSetArray.getIterator(); it.hasNext();) {
+    const TermSetIndexArray               bitSetArray = m_termBitSetMap.getEntryArray();
+    const UINT                            bitSetCount = (UINT)m_termBitSetMap.size();
+    const UINT                            capacity    = m_grammar.getTermBitSetCapacity();
+    TCHAR                                 delim       = ' ';
+    const UINT arraySize = outputBeginBitSetTableDefinition(output, _T("termBitSetTable"), capacity, bitSetCount);
+    for(auto it = bitSetArray.getIterator(); it.hasNext();) {
       const IndexArrayEntry<TermSet>     &e                 = it.next();
       String                              comment           = format(_T("%3u %3u tokens %s"), e.m_commentIndex, (UINT)e.m_key.size(), e.getUsedByComment().cstr());
-      const ByteArray                     ba                = bitSetToByteArray(e.m_key, m_grammar.getTermBitSetCapacity());
+      const ByteArray                     ba                = bitSetToByteArray(e.m_key, capacity);
       for(BYTE b : ba) {
         output.printf(_T("%c0x%02x"), delim, b);
         delim = ',';
       }
       newLine(output, comment);
     }
-    byteCount = outputEndArrayDefinition(output, TYPE_UCHAR, arraySize);
+    byteCount = outputEndBitSetTableDefinition(output, arraySize);
   }
   return byteCount;
 }

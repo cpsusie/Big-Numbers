@@ -25,10 +25,10 @@ private:
   ByteCount printCompressedActionMatrixCpp(       MarginFile &output) const; // return size in bytes
   ByteCount printCompressedSuccessorMatrixCpp(    MarginFile &output) const; // return size in bytes
   ByteCount printCompressedTransSuccMatrixCpp(    MarginFile &output) const; // return size in bytes
-  ByteCount printProductionLengthTableCpp(        MarginFile &output) const; // return size in bytes
-  ByteCount printLeftSideTableCpp(                MarginFile &output) const; // return size in bytes
+  ByteCount printProdLengthArrayCpp(              MarginFile &output) const; // return size in bytes
+  ByteCount printLeftSideArrayCpp(                MarginFile &output) const; // return size in bytes
   ByteCount printRightSideTableCpp(               MarginFile &output) const; // return size in bytes
-  ByteCount printSymbolNameTableCpp(              MarginFile &output) const; // return size in bytes
+  ByteCount printSymbolNamesCpp(                  MarginFile &output) const; // return size in bytes
 public:
   GrammarTables(const GrammarCode &grammarCode);
   inline const GrammarCode   &getGrammarCode()                      const {

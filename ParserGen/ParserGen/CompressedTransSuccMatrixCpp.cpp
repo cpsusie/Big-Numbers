@@ -4,7 +4,7 @@
 #include "CompressEncoding.h"
 #include "CompressedTransSuccMatrixCpp.h"
 
-namespace TransSuccMatrixCompression {
+namespace TransposedSuccessorMatrixCompression {
 
 CompressedTransSuccMatrix::CompressedTransSuccMatrix(const Grammar &grammar)
   : MacroMap(            grammar                                            )
@@ -282,23 +282,24 @@ ByteCount CompressedTransSuccMatrix::printStateBitSetTable(MarginFile &output) c
   if(m_stateBitSetMap.size() == 0) {
     output.printf(_T("#define stateBitSetTable nullptr\n\n"));
   } else {
-    const StateSetIndexArray              stateSetArray     = m_stateBitSetMap.getEntryArray();
-    TCHAR                                 delim             = ' ';
-    const UINT                            arraySize         = (UINT)m_stateBitSetMap.size() * m_sizeofStateBitSet;
-    outputBeginArrayDefinition(output, _T("stateBitSetTable"), TYPE_UCHAR, arraySize);
-    for(auto it = stateSetArray.getIterator(); it.hasNext();) {
+    const StateSetIndexArray bitSetArray = m_stateBitSetMap.getEntryArray();
+    const UINT               bitSetCount = (UINT)m_stateBitSetMap.size();
+    const UINT               capacity    = m_grammar.getStateBitSetCapacity();
+    TCHAR                    delim       = ' ';
+    const UINT arraySize = outputBeginBitSetTableDefinition(output, _T("stateBitSetTable"), capacity, bitSetCount);
+    for(auto it = bitSetArray.getIterator(); it.hasNext();) {
       const IndexArrayEntry<StateSet>    &e                 = it.next();
       String                              comment           = format(_T("%3u %3u states %s"), e.m_commentIndex, (UINT)e.m_key.size(), e.getUsedByComment().cstr());
-      const ByteArray                     ba                = bitSetToByteArray(e.m_key, m_grammar.getStateBitSetCapacity());
+      const ByteArray                     ba                = bitSetToByteArray(e.m_key, capacity);
       for(BYTE b : ba) {
         output.printf(_T("%c0x%02x"), delim, b);
         delim = ',';
       }
       newLine(output, comment);
     }
-    byteCount = outputEndArrayDefinition(output, TYPE_UCHAR, arraySize);
+    byteCount = outputEndBitSetTableDefinition(output, arraySize);
   }
   return byteCount;
 }
 
-}; // namespace TransSuccMatrixCompression
+}; // namespace TransposedSuccessorMatrixCompression

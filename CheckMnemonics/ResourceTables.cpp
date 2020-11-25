@@ -6,7 +6,7 @@
 #line 36 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
 #include <ParserTablesTemplate.h>
 /************************************************************************************\
-* The 4 arrays actionCode, termListTable, actionListTable and termSetTable           *
+* The 4 arrays actionCodeArray, termArrayTable, actionArrayTable and termBitSetTable *
 * holds a compressed action-matrix, used by LRParser to find                         *
 * action = getAction(S,T), where S is current state, T is next terminal on input     *
 *                                                                                    *
@@ -35,47 +35,50 @@
 * a        : Bit[17-31] : signed short                                               *
 * CC       : Bit[15-16] : Indicates how to interpret t and a:                        *
 *                                                                                    *
-* CC == 0: CompCodeTermList (uncompressed)                                           *
-*       t: Index into array termListTable, pointing at the first element of          *
-*          termList                                                                  *
-*       a: Index into array actionListTable, pointing at the first element of        *
-*          actionList                                                                *
+* CC==0: CompCodeBinSearch                                                           *
+*     t: Index into array termArrayTable, pointing at the first element of           *
+*        termArray                                                                   *
+*     a: Index into array actionArrayTable, pointing at the first element of         *
+*        actionArray                                                                 *
 *                                                                                    *
-*       n                  : termListTable[t] = number of elements in termList.      *
-*       termList[0..n-1]   : termListTable[t+1..t+n]                                 *
-*                            Ordered list of legal terminals                         *
-*       actionList[0..n-1] : actionListTable[a..a+n-1] (same length as termList).    *
+*     n                  : termArrayTable[t] = number of elements in termArray.      *
+*     termArray[0..n-1]  : termArrayTable[t+1..t+n]                                  *
+*                          Ordered list of legal terminal symbols                    *
+*     actionArray[0..n-1]: actionArrayTable[a..a+n-1] (same length as termArray).    *
 *                                                                                    *
-*       To get action, find index k in termList, so termList[k] == T,k=[0..n-1]      *
-*       and set action = actionList[k].                                              *
-*       If T is not found, set action = _ParseError.                                 *
-*       Note that both termList and actionList may be shared by several states.      *
+*     To get action, find index k in termArray, so termArray[k] == T,k=[0..n-1]      *
+*     and set action = actionArray[k].                                               *
+*     If T is not found, set action = _ParseError.                                   *
+*     Note that both termArray and actionArray may be shared by several states.      *
 *                                                                                    *
-* CC == 1: CompCodeSplitNode                                                         *
-*       t and a are both indices to 2 child entries in actionCode, which can be      *
-*       another _acNNNN or an extra node, _snNNNN, whichever is needed (values are   *
-*       reused as much as possible, ie. if _snNNNN equals some _acNNNN then no       *
-*       _snNNNN is added, but parent entry will point to _acNNNN instead.            *
-*       Recursive tree search, with max-recursion level specified in                 *
-*       parsegen +c options                                                          *
+* CC==1: CompCodeSplitNode                                                           *
+*     t and a are both indices to 2 child entries in actionCodeArray, which can be   *
+*     another _acNNNN or an extra node, _asNNNN, whichever is needed (values are     *
+*     reused as much as possible, ie. if _asNNNN equals some _acNNNN then no         *
+*     _asNNNN is added, but parent entry will point to _acNNNN instead.              *
+*     Recursive tree search, with max-recursion level specified in                   *
+*     parsergen +c<level> option. Search childnodes until an action != _ParseError   *
+*     is returned, or no more nodes to search.                                       *
 *                                                                                    *
-* CC == 2: CompCodeOneItem (Only 1 legal terminal in the state)                      *
-*       t: Legal terminal.                                                           *
-*       a: Action.                                                                   *
+* CC==2: CompCodeImmediate, used if there is only 1 legal terminal in the state      *
+*     t: Legal terminal.                                                             *
+*     a: Action.                                                                     *
+*     If terminal T != t, set action = _ParseError, else use a as action             *
 *                                                                                    *
-* CC == 3: CompCodeTermSet (always reduce by same reduce production P = -a)          *
-*       t: Index into termSetTable, pointing at the first element of termSet         *
-*       a: Action.                                                                   *
+* CC==3: CompCodeBitSet (always reduce by same reduce production P = -a)             *
+*     t: Index into termBitSetTable, pointing at the first element of termBitSet     *
+*     a: Action.                                                                     *
 *                                                                                    *
-*       termSetTable is a list of termSet, bitsets, each with terminalCount bits     *
-*       1-bits for legal terminals, 0-bits for illegal terminals.                    *
+*     termBitSetTable is an array of termBitSet, each with same number of bits,      *
+*     capacity, 1-bits for legal terminals, 0-bits for illegal terminals.            *
 *                                                                                    *
-*       b                  : Number of bytes in each termSet=(terminalCount-1)/8+1   *
-*       termSet[0..b-1]    : termSetTable[t..t+b-1]                                  *
+*     b                  : Number of bytes in each termBitSet=(capacity-1)/8+1       *
+*     termBitSet[0..b-1] : termBitSetTable[t..t+b-1]                                 *
 *                                                                                    *
-*       As for uncompressed states, the same check for existence is done.            *
-*       If terminal T is not present in termSet, set action = _ParseError.           *
-*       Note that each termSet may be shared by several states.                      *
+*     The value of capacity is minimized, capacity <= terminalCount                  *
+*     As for other node types, the same check for existence is done. If terminal T   *
+*     is not present in termBitSet, or T >= capacity, set action = _ParseError.      *
+*     Note that each termBitSet may be shared by several states.                     *
 \************************************************************************************/
 
 #define _ac0000 0x00000000 /* termArray    0, actionArray    0                      */
@@ -106,7 +109,7 @@
 #define _ac0025 0x0010000a /* termArray    2, actionArray    2                      */
 #define _ac0026 0x04f68002 /* Split(_as0000,_ac0002)                                */
 #define _ac0027 0x02b10004 /* Shift  to  344 on COMMA                               */
-#define _ac0028 0x00010000 /* Reduce by    0 on EOI                                 */
+#define _ac0028 0x00010000 /* Reduce by    0 (Accept) on EOI                        */
 #define _ac0029 0x002a001a /* termArray    5, actionArray    5                      */
 #define _ac0030 0xfffb8009 /* Reduce by    3 on tokens in termBitSet[1]             */
 #define _ac0031 0xfff98009 /* Reduce by    4 on tokens in termBitSet[1]             */
@@ -994,7 +997,7 @@ static const short actionArrayTable[927] = {
   , 587, 588, 589
 }; // Size of table:1.856(x86)/1.856(x64) bytes.
 
-static const unsigned char termBitSetTable[378] = {
+static const unsigned char termBitSetTable[378] = { /* capacity(bitset)=68, bytes in bitset=9 */
    0x00,0x00,0x00,0x00,0x40,0x00,0x00,0x80,0x00 /*   0   2 tokens Used by states [26,602,615]            */
   ,0x27,0x00,0x08,0x01,0x00,0x00,0x00,0x00,0x00 /*   1   6 tokens Used by states [30-47,56,102-104,106-108,120,125,137,223,238,245,298,301,306,309,315,328,334,338]*/
   ,0x00,0x00,0x00,0x00,0x00,0xe0,0x07,0x40,0x00 /*   2   7 tokens Used by states [50,63,65,69-71,73]     */
@@ -1039,124 +1042,197 @@ static const unsigned char termBitSetTable[378] = {
   ,0x1e,0x00,0x00,0x00,0x00,0x00,0x00,0x80,0x00 /*  41   5 tokens Used by states [592-598,629]           */
 }; // Size of table:380(x86)/384(x64) bytes.
 
+/************************************************************************************\
+* The 4 arrays successorCodeArray, stateArrayTable, newStateArrayTable and           *
+* stateBitSetTable holds a compressed succesor-matrix, used by LRParser to find      *
+* newstate = successor(S,A) as last part of a reduction with production P, A -> alfa *
+* A reduction by production P goes as follows:                                       *
+*   Pop L elements from stack, where L = length of alfa;                             *
+*   S = state on stacktop;                                                           *
+*   A = leftside of the reduce production P;                                         *
+*   newstate = successor(S,A);                                                       *
+*   push(newstate), and set current state = newstate.                                *
+* Because the values of all non-terminals A = [terminalCount..symbolCount-1], the    *
+* value NTindex = A' = A - terminalCount is used as index into successorCodeArray.   *
+* NTindex = [0..NTermCount-1]                                                        *
+*                                                                                    *
+* For each non-terminal A, a #define is generated and used as element A' in array    *
+* successorCodeArray. Each define has the format:                                    *
+*                                                                                    *
+* #define _scDDDD Code                                                               *
+*                                                                                    *
+* where DDDD is NTindex A' and Code is an unsigned int with the following format     *
+*                                                                                    *
+*            0         1         2         3                                         *
+* Bit index: 01234567890123456789012345678901                                        *
+* Code       sssssssssssssssCCrrrrrrrrrrrrrrr                                        *
+*                                                                                    *
+* s          : Bit[ 0-14]  : unsigned short                                          *
+* r          : Bit[17-31]  : unsigned short                                          *
+* CC         : Bit[15-16]  : Indicates how to interpret s and r.                     *
+*                                                                                    *
+* CC has the same meaning as for actionCodeArray                                     *
+* CC==0: CompCodeBinSearch                                                           *
+*     s: Index into stateArrayTable, pointing at the first element of stateArray     *
+*     r: Index into newStateArrayTable, pointing at the first element of             *
+*        newStateArray                                                               *
+*                                                                                    *
+*     n                    : stateArrayTable[s] = number of elements in stateArray   *
+*     stateArray[0..n-1]   : stateArrayTable[s+1..s+n]                               *
+*                            Ordered list of n possible states S                     *
+*     newStateArray[0..n-1]: newStateArrayTable[r..r+n-1], length = n                *
+*                                                                                    *
+*     To find returnvalue, find index k so stateArray[k]==S, k=[0..n-1]              *
+*     and return newStateArray[k]. If not found, return _ParseError (= 0xffff).      *
+*     Note that both stateArray and newStateArray may be shared by several NTindices *
+*                                                                                    *
+* CC==1: CompCodeSplitNode                                                           *
+*     s and r are both indices to 2 child entries in successorCodeArray, which can   *
+*     be another _scNNNN or an extra node, _ssNNNN, whichever is needed (see         *
+*     actionCodeArray). Recursive tree search, with max-recursion level specified in *
+*     parsergen -T,r<level> option. Search childnodes until the returned value       *
+*     != _ParseError. Note, that the search will always succeed.                     *
+*                                                                                    *
+* CC==2: CompCodeImmediate, used if there is only 1 possible newstate.               *
+*     s: State to come from. If s==0x7fff, the check S==s is skipped                 *
+*     r: New state.                                                                  *
+*                                                                                    *
+* CC==3: CompCodeBitSet (Same newState for all states present in stateBitSet)        *
+*     s: Index into stateBitSetTable, pointing at the first element of stateBitSet   *
+*     r: New state.                                                                  *
+*                                                                                    *
+*     stateBitSetTable is an array of stateBitSet, each with same number of bits,    *
+*     capacity, 1-bits for possible from-states, 0-bits for irrelevant states        *
+*                                                                                    *
+*     b                  : Number of bytes in each stateBitSet=(capacity-1)/8+1      *
+*     stateBitSet[0..b-1]: stateBitSetTable[r..r+b-1]                                *
+*                                                                                    *
+*     The value of capacity is minimized, capacity <= stateCount.                    *
+*     If state S is present in stateBitSet, return r, else return _ParseError.       *
+*     Contrary to action, the value _ParseError will never propagate all the way     *
+*     back to LRParser (unless something is completely wrong). The search for a new  *
+*     state should ALWAYS succeed in the end.                                        *
+*     Note that each stateBitSet may be shared by several NTindices.                 *
+\**********************************************************************************/
+
 #define _sc0000 0x00000000 /*                                                               */
-#define _sc0001 0x00397fff /* resourceFile              Goto  28                            */
-#define _sc0002 0x003b7fff /* resourceDefinitionList    Goto  29                            */
+#define _sc0001 0x00397fff /* resourceFile              Goto  28 No check (  1 state )      */
+#define _sc0002 0x003b7fff /* resourceDefinitionList    Goto  29 No check (  1 state )      */
 #define _sc0003 0x00000000 /* resourceDefinition        stateArray    0, newStateArray    0 */
-#define _sc0004 0x003f7fff /* bitmapDefinition          Goto  31                            */
-#define _sc0005 0x00417fff /* iconDefinition            Goto  32                            */
-#define _sc0006 0x00437fff /* customTypeDefinition      Goto  33                            */
-#define _sc0007 0x00457fff /* dialogDefinition          Goto  34                            */
-#define _sc0008 0x00477fff /* extendedDialogDefinition  Goto  35                            */
-#define _sc0009 0x00497fff /* guideLinesDefinition      Goto  36                            */
-#define _sc0010 0x004b7fff /* toolbarDefnition          Goto  37                            */
-#define _sc0011 0x004d7fff /* menuDefinition            Goto  38                            */
-#define _sc0012 0x004f7fff /* dialogInitDefinition      Goto  39                            */
-#define _sc0013 0x00517fff /* acceleratorsDefinition    Goto  40                            */
-#define _sc0014 0x00537fff /* rcdataDefinition          Goto  41                            */
-#define _sc0015 0x00557fff /* stringTableDefinition     Goto  42                            */
-#define _sc0016 0x00577fff /* textIncludeDirective      Goto  43                            */
-#define _sc0017 0x00597fff /* languageDirective         Goto  44                            */
-#define _sc0018 0x005b7fff /* versionDefinition         Goto  45                            */
-#define _sc0019 0x005d7fff /* typelibDefinition         Goto  46                            */
-#define _sc0020 0x005f7fff /* afxDialogLayout           Goto  47                            */
-#define _sc0021 0x00617fff /* resourceId                Goto  48                            */
+#define _sc0004 0x003f7fff /* bitmapDefinition          Goto  31 No check (  2 states)      */
+#define _sc0005 0x00417fff /* iconDefinition            Goto  32 No check (  2 states)      */
+#define _sc0006 0x00437fff /* customTypeDefinition      Goto  33 No check (  2 states)      */
+#define _sc0007 0x00457fff /* dialogDefinition          Goto  34 No check (  2 states)      */
+#define _sc0008 0x00477fff /* extendedDialogDefinition  Goto  35 No check (  2 states)      */
+#define _sc0009 0x00497fff /* guideLinesDefinition      Goto  36 No check (  2 states)      */
+#define _sc0010 0x004b7fff /* toolbarDefnition          Goto  37 No check (  2 states)      */
+#define _sc0011 0x004d7fff /* menuDefinition            Goto  38 No check (  2 states)      */
+#define _sc0012 0x004f7fff /* dialogInitDefinition      Goto  39 No check (  2 states)      */
+#define _sc0013 0x00517fff /* acceleratorsDefinition    Goto  40 No check (  2 states)      */
+#define _sc0014 0x00537fff /* rcdataDefinition          Goto  41 No check (  2 states)      */
+#define _sc0015 0x00557fff /* stringTableDefinition     Goto  42 No check (  2 states)      */
+#define _sc0016 0x00577fff /* textIncludeDirective      Goto  43 No check (  2 states)      */
+#define _sc0017 0x00597fff /* languageDirective         Goto  44 No check (  2 states)      */
+#define _sc0018 0x005b7fff /* versionDefinition         Goto  45 No check (  2 states)      */
+#define _sc0019 0x005d7fff /* typelibDefinition         Goto  46 No check (  2 states)      */
+#define _sc0020 0x005f7fff /* afxDialogLayout           Goto  47 No check (  2 states)      */
+#define _sc0021 0x00617fff /* resourceId                Goto  48 No check (  2 states)      */
 #define _sc0022 0x00040003 /* resourceAttributeList     stateArray    1, newStateArray    1 */
 #define _sc0023 0x00ec8077 /* string                    Split(_ss0000,_ss0001)              */
 #define _sc0024 0x00f08079 /* identifier                Split(_ss0002,_ss0003)              */
 #define _sc0025 0x007a0041 /* rectangleSpec             stateArray    4, newStateArray    4 */
-#define _sc0026 0x011b7fff /* dialogSpecList            Goto 141                            */
+#define _sc0026 0x011b7fff /* dialogSpecList            Goto 141 No check (  1 state )      */
 #define _sc0027 0x007e0044 /* opt_dialogControlSpecList stateArray    5, newStateArray    5 */
-#define _sc0028 0x00dd7fff /* extendedDialogSpecList    Goto 110                            */
+#define _sc0028 0x00dd7fff /* extendedDialogSpecList    Goto 110 No check (  1 state )      */
 #define _sc0029 0x00820047 /* dialogSpec                stateArray    6, newStateArray    6 */
 #define _sc0030 0x0086004a /* dialogStyleExpr           stateArray    7, newStateArray    7 */
 #define _sc0031 0x008a004d /* fontSpec                  stateArray    8, newStateArray    8 */
 #define _sc0032 0x008e0050 /* extendedDialogSpec        stateArray    9, newStateArray    9 */
-#define _sc0033 0x01777fff /* extendedDialogStyleExpr   Goto 187                            */
-#define _sc0034 0x01a77fff /* extendedFontSpec          Goto 211                            */
+#define _sc0033 0x01777fff /* extendedDialogStyleExpr   Goto 187 No check (  1 state )      */
+#define _sc0034 0x01a77fff /* extendedFontSpec          Goto 211 No check (  1 state )      */
 #define _sc0035 0x00920053 /* extendedDialogStyle       stateArray   10, newStateArray   10 */
 #define _sc0036 0x00960056 /* ws_ex_style               stateArray   11, newStateArray   11 */
 #define _sc0037 0x00f4807b /* number                    Split(_ss0004,_ss0005)              */
 #define _sc0038 0x00ca0072 /* dialogStyle               stateArray   13, newStateArray   13 */
-#define _sc0039 0x012f7fff /* ds_style                  Goto 151                            */
+#define _sc0039 0x012f7fff /* ds_style                  Goto 151 No check (  3 states)      */
 #define _sc0040 0x00d00076 /* ws_style                  stateArray   14, newStateArray   14 */
-#define _sc0041 0x02097fff /* dialogControlSpecList     Goto 260                            */
+#define _sc0041 0x02097fff /* dialogControlSpecList     Goto 260 No check (  2 states)      */
 #define _sc0042 0x00dc007d /* dialogControlSpec         stateArray   15, newStateArray   15 */
-#define _sc0043 0x020d7fff /* pushButtonSpec            Goto 262                            */
-#define _sc0044 0x020f7fff /* lrcTextSpec               Goto 263                            */
-#define _sc0045 0x02117fff /* editSpec                  Goto 264                            */
-#define _sc0046 0x02137fff /* comboBoxSpec              Goto 265                            */
-#define _sc0047 0x02157fff /* listBoxSpec               Goto 266                            */
-#define _sc0048 0x02177fff /* iconSpec                  Goto 267                            */
-#define _sc0049 0x02197fff /* scrollBarSpec             Goto 268                            */
-#define _sc0050 0x021b7fff /* controlSpec               Goto 269                            */
-#define _sc0051 0x021d7fff /* buttonType                Goto 270                            */
+#define _sc0043 0x020d7fff /* pushButtonSpec            Goto 262 No check (  3 states)      */
+#define _sc0044 0x020f7fff /* lrcTextSpec               Goto 263 No check (  3 states)      */
+#define _sc0045 0x02117fff /* editSpec                  Goto 264 No check (  3 states)      */
+#define _sc0046 0x02137fff /* comboBoxSpec              Goto 265 No check (  3 states)      */
+#define _sc0047 0x02157fff /* listBoxSpec               Goto 266 No check (  3 states)      */
+#define _sc0048 0x02177fff /* iconSpec                  Goto 267 No check (  3 states)      */
+#define _sc0049 0x02197fff /* scrollBarSpec             Goto 268 No check (  3 states)      */
+#define _sc0050 0x021b7fff /* controlSpec               Goto 269 No check (  3 states)      */
+#define _sc0051 0x021d7fff /* buttonType                Goto 270 No check (  3 states)      */
 #define _sc0052 0x00e20081 /* controlAttributeList      stateArray   16, newStateArray   16 */
-#define _sc0053 0x02257fff /* lrcText                   Goto 274                            */
+#define _sc0053 0x02257fff /* lrcText                   Goto 274 No check (  3 states)      */
 #define _sc0054 0x00f2008a /* identifierOrString        stateArray   17, newStateArray   17 */
-#define _sc0055 0x02817fff /* controlId                 Goto 320                            */
+#define _sc0055 0x02817fff /* controlId                 Goto 320 No check (  1 state )      */
 #define _sc0056 0x00f8807d /* controlAttribute          Split(_ss0006,_ss0007)              */
-#define _sc0057 0x02d37fff /* ctrlAttribute             Goto 361                            */
-#define _sc0058 0x02d97fff /* controlStyleExpr          Goto 364                            */
-#define _sc0059 0x02db7fff /* extendedWindowStyleExpr   Goto 365                            */
+#define _sc0057 0x02d37fff /* ctrlAttribute             Goto 361 No check (  1 state )      */
+#define _sc0058 0x02d97fff /* controlStyleExpr          Goto 364 No check (  1 state )      */
+#define _sc0059 0x02db7fff /* extendedWindowStyleExpr   Goto 365 No check (  1 state )      */
 #define _sc0060 0x00f8008e /* ctrl_style                stateArray   18, newStateArray   18 */
 #define _sc0061 0x00fc0091 /* add_ctrl_style            stateArray   19, newStateArray   19 */
-#define _sc0062 0x02e77fff /* ss_style                  Goto 371                            */
-#define _sc0063 0x02e97fff /* es_style                  Goto 372                            */
-#define _sc0064 0x02eb7fff /* bs_style                  Goto 373                            */
-#define _sc0065 0x02ed7fff /* cbs_style                 Goto 374                            */
-#define _sc0066 0x02ef7fff /* sbs_style                 Goto 375                            */
-#define _sc0067 0x02f17fff /* lbs_style                 Goto 376                            */
-#define _sc0068 0x02f37fff /* tbs_style                 Goto 377                            */
-#define _sc0069 0x02f57fff /* tvs_style                 Goto 378                            */
-#define _sc0070 0x02f77fff /* lvs_style                 Goto 379                            */
-#define _sc0071 0x02f97fff /* uds_style                 Goto 380                            */
-#define _sc0072 0x02fb7fff /* pbs_style                 Goto 381                            */
-#define _sc0073 0x02fd7fff /* mcs_style                 Goto 382                            */
-#define _sc0074 0x00bb7fff /* resourceAttribute         Goto  93                            */
-#define _sc0075 0x01e17fff /* designInfoList            Goto 240                            */
+#define _sc0062 0x02e77fff /* ss_style                  Goto 371 No check (  3 states)      */
+#define _sc0063 0x02e97fff /* es_style                  Goto 372 No check (  3 states)      */
+#define _sc0064 0x02eb7fff /* bs_style                  Goto 373 No check (  3 states)      */
+#define _sc0065 0x02ed7fff /* cbs_style                 Goto 374 No check (  3 states)      */
+#define _sc0066 0x02ef7fff /* sbs_style                 Goto 375 No check (  3 states)      */
+#define _sc0067 0x02f17fff /* lbs_style                 Goto 376 No check (  3 states)      */
+#define _sc0068 0x02f37fff /* tbs_style                 Goto 377 No check (  3 states)      */
+#define _sc0069 0x02f57fff /* tvs_style                 Goto 378 No check (  3 states)      */
+#define _sc0070 0x02f77fff /* lvs_style                 Goto 379 No check (  3 states)      */
+#define _sc0071 0x02f97fff /* uds_style                 Goto 380 No check (  3 states)      */
+#define _sc0072 0x02fb7fff /* pbs_style                 Goto 381 No check (  3 states)      */
+#define _sc0073 0x02fd7fff /* mcs_style                 Goto 382 No check (  3 states)      */
+#define _sc0074 0x00bb7fff /* resourceAttribute         Goto  93 No check ( 12 states)      */
+#define _sc0075 0x01e17fff /* designInfoList            Goto 240 No check (  1 state )      */
 #define _sc0076 0x01020095 /* designInfo                stateArray   20, newStateArray   20 */
-#define _sc0077 0x04b77fff /* designSpecList            Goto 603                            */
-#define _sc0078 0x04d37fff /* designSpec                Goto 617                            */
-#define _sc0079 0x04d57fff /* marginSpec                Goto 618                            */
-#define _sc0080 0x00ed7fff /* sizeSpec                  Goto 118                            */
-#define _sc0081 0x02417fff /* buttonSpecList            Goto 288                            */
+#define _sc0077 0x04b77fff /* designSpecList            Goto 603 No check (  1 state )      */
+#define _sc0078 0x04d37fff /* designSpec                Goto 617 No check (  1 state )      */
+#define _sc0079 0x04d57fff /* marginSpec                Goto 618 No check (  1 state )      */
+#define _sc0080 0x00ed7fff /* sizeSpec                  Goto 118 No check (  1 state )      */
+#define _sc0081 0x02417fff /* buttonSpecList            Goto 288 No check (  1 state )      */
 #define _sc0082 0x01060098 /* buttonSpec                stateArray   21, newStateArray   21 */
-#define _sc0083 0x007f7fff /* menuType                  Goto  63                            */
+#define _sc0083 0x007f7fff /* menuType                  Goto  63 No check (  1 state )      */
 #define _sc0084 0x010a009b /* menuBody                  stateArray   22, newStateArray   22 */
-#define _sc0085 0x01b37fff /* menuSpecList              Goto 217                            */
+#define _sc0085 0x01b37fff /* menuSpecList              Goto 217 No check (  1 state )      */
 #define _sc0086 0x010e009e /* menuSpec                  stateArray   23, newStateArray   23 */
-#define _sc0087 0x01b77fff /* popupMenu                 Goto 219                            */
-#define _sc0088 0x01b97fff /* menuItem                  Goto 220                            */
+#define _sc0087 0x01b77fff /* popupMenu                 Goto 219 No check (  2 states)      */
+#define _sc0088 0x01b97fff /* menuItem                  Goto 220 No check (  2 states)      */
 #define _sc0089 0x011200a1 /* menuItemModifierList      stateArray   24, newStateArray   24 */
 #define _sc0090 0x011600a4 /* identifierOrNumber        stateArray   25, newStateArray   25 */
-#define _sc0091 0x04617fff /* menuItemModifier          Goto 560                            */
-#define _sc0092 0x046b7fff /* menuItemFlagExpr          Goto 565                            */
+#define _sc0091 0x04617fff /* menuItemModifier          Goto 560 No check (  1 state )      */
+#define _sc0092 0x046b7fff /* menuItemFlagExpr          Goto 565 No check (  1 state )      */
 #define _sc0093 0x011c00a8 /* menuItemFlag              stateArray   26, newStateArray   26 */
 #define _sc0094 0x012000ab /* constantElementList       stateArray   27, newStateArray   27 */
 #define _sc0095 0x012400ae /* constantElement           stateArray   28, newStateArray   28 */
 #define _sc0096 0x00fc807f /* constant                  Split(_ss0008,_ss0009)              */
-#define _sc0097 0x001f7fff /* acceleratorList           Goto  15                            */
+#define _sc0097 0x001f7fff /* acceleratorList           Goto  15 No check (  1 state )      */
 #define _sc0098 0x014000be /* accelerator               stateArray   30, newStateArray   30 */
-#define _sc0099 0x02c97fff /* opt_acceleratorSpecList   Goto 356                            */
-#define _sc0100 0x049f7fff /* acceleratorSpecList       Goto 591                            */
+#define _sc0099 0x02c97fff /* opt_acceleratorSpecList   Goto 356 No check (  1 state )      */
+#define _sc0100 0x049f7fff /* acceleratorSpecList       Goto 591 No check (  1 state )      */
 #define _sc0101 0x014400c1 /* acceleratorModifier       stateArray   31, newStateArray   31 */
 #define _sc0102 0x014800c4 /* numberList                stateArray   32, newStateArray   32 */
-#define _sc0103 0x01097fff /* stringSpecList            Goto 132                            */
+#define _sc0103 0x01097fff /* stringSpecList            Goto 132 No check (  1 state )      */
 #define _sc0104 0x014c00c7 /* stringSpec                stateArray   33, newStateArray   33 */
-#define _sc0105 0x01f17fff /* stringList                Goto 248                            */
-#define _sc0106 0x00fd7fff /* versionSpecList           Goto 126                            */
+#define _sc0105 0x01f17fff /* stringList                Goto 248 No check (  1 state )      */
+#define _sc0106 0x00fd7fff /* versionSpecList           Goto 126 No check (  1 state )      */
 #define _sc0107 0x015000ca /* blockList                 stateArray   34, newStateArray   34 */
 #define _sc0108 0x015400cd /* versionSpec               stateArray   35, newStateArray   35 */
 #define _sc0109 0x015800d0 /* exprList                  stateArray   36, newStateArray   36 */
 #define _sc0110 0x015e00d4 /* expr                      stateArray   37, newStateArray   37 */
 #define _sc0111 0x017000de /* block                     stateArray   38, newStateArray   38 */
-#define _sc0112 0x04af7fff /* blockBody                 Goto 599                            */
-#define _sc0113 0x04b37fff /* valueList                 Goto 601                            */
+#define _sc0112 0x04af7fff /* blockBody                 Goto 599 No check (  1 state )      */
+#define _sc0113 0x04b37fff /* valueList                 Goto 601 No check (  1 state )      */
 #define _sc0114 0x017800e3 /* value                     stateArray   39, newStateArray   39 */
-#define _sc0115 0x00cd7fff /* fileName                  Goto 102                            */
-#define _sc0116 0x01017fff /* layoutInfo                Goto 128                            */
-#define _sc0117 0x00d17fff /* name                      Goto 104                            */
+#define _sc0115 0x00cd7fff /* fileName                  Goto 102 No check (  1 state )      */
+#define _sc0116 0x01017fff /* layoutInfo                Goto 128 No check (  1 state )      */
+#define _sc0117 0x00d17fff /* name                      Goto 104 No check (  1 state )      */
 #define _ss0000 0x009d8000 /* Goto 78 on states in stateBitSet[0]                            Used by NTindex   [23]*/
 #define _ss0001 0x001c0010 /* stateArray    2, newStateArray    2                            Used by NTindex   [23]*/
 #define _ss0002 0x009b8000 /* Goto 77 on states in stateBitSet[0]                            Used by NTindex   [24]*/
@@ -1164,7 +1240,7 @@ static const unsigned char termBitSetTable[378] = {
 #define _ss0004 0x00998000 /* Goto 76 on states in stateBitSet[0]                            Used by NTindex   [37]*/
 #define _ss0005 0x009e005b /* stateArray   12, newStateArray   12                            Used by NTindex   [37]*/
 #define _ss0006 0x02af8004 /* Goto 343 on states in stateBitSet[1]                           Used by NTindex   [56]*/
-#define _ss0007 0x02d17fff /* Goto 360                                                       Used by NTindex   [56]*/
+#define _ss0007 0x02d17fff /* Goto 360 No check (  8 states)                                 Used by NTindex   [56]*/
 #define _ss0008 0x01198008 /* Goto 140 on states in stateBitSet[2]                           Used by NTindex   [96]*/
 #define _ss0009 0x012c00b3 /* stateArray   29, newStateArray   29                            Used by NTindex   [96]*/
 
@@ -1276,14 +1352,14 @@ static const unsigned short newStateArrayTable[190] = {
   , 602, 615                                                                                                 /*  39 Used by NTindex   [114]                           */
 }; // Size of table:380(x86)/384(x64) bytes.
 
-static const unsigned char stateBitSetTable[12] = {
+static const unsigned char stateBitSetTable[12] = { /* capacity(bitset)=28, bytes in bitset=4 */
    0xfe,0xff,0x03,0x06 /*   0  19 states Used by NTindices [23-24,37]           */
   ,0x00,0x00,0xfc,0x09 /*   1   8 states Used by NTindex   [56]                 */
   ,0x10,0x7f,0x01,0x00 /*   2   9 states Used by NTindex   [96]                 */
 }; // Size of table:12(x86)/16(x64) bytes.
 
 /************************************************************************************\
-* The productionLength[] is indexed by production number and holds the number of     *
+* The prodLengthArray[] is indexed by production number and holds the number of      *
 * symbols on the right side of each production.                                      *
 \************************************************************************************/
 static const unsigned char prodLengthArray[475] = {
@@ -1338,11 +1414,11 @@ static const unsigned char prodLengthArray[475] = {
 }; // Size of table:476(x86)/480(x64) bytes.
 
 /************************************************************************************\
-* leftSideTable[] is indexed by production number.                                   *
-* leftSideTable[p] = A', A' = (A - terminalCount)                                    *
+* leftSideArray[] is indexed by production number.                                   *
+* leftSideArray[p] = A', A' = (A - terminalCount)                                    *
 *                        where A is the left side of production p.                   *
-* A' = 0..nonterminalCount-1.                                                        *
-* p  = 0..productionCount-1                                                          *
+* A' = [0..nonterminalCount-1]                                                       *
+* p  = [0..productionCount-1]                                                        *
 \************************************************************************************/
 static const unsigned char leftSideArray[475] = {
   /*   0 */    0,  1,  2,  2,  3,  3,  3,  3,  3,  3
@@ -1396,8 +1472,8 @@ static const unsigned char leftSideArray[475] = {
 }; // Size of table:476(x86)/480(x64) bytes.
 
 /************************************************************************************\
-* rightSideTable[] holds a compressed form of the rightsides of all                  *
-* productions in the grammar. Only used for debugging.                               *
+* rightSideTable[] holds a compressed form of the rightsides of all productions in   *
+* the grammar. Only used for debugging.                                              *
 \************************************************************************************/
 static const unsigned short rightSideTable[679] = {
   /*   0 */  329
@@ -1872,7 +1948,7 @@ static const unsigned short rightSideTable[679] = {
 }; // Size of table:1.360(x86)/1.360(x64) bytes.
 
 /************************************************************************************\
-* symbolNames is a space separated string with the names of all symbols used in      *
+* symbolNames is a space separated string with the names of all symbols used in the  *
 * grammar, terminals and nonTerminals. Only used for debugging.                      *
 \************************************************************************************/
 static const char *symbolNames = {
@@ -2324,14 +2400,13 @@ static const char *symbolNames = {
   " name"                                             /* NT  445 NTindex=117   */
 }; // Size of string:6.028(x86)/6.032(x64) bytes
 
-static const ParserTablesTemplateTransSucc<446,328,475,635,68,28
+static const ParserTablesTemplateTransSucc<446,328,475,635,16584,16680,68,28
                                           ,unsigned short
                                           ,unsigned short
                                           ,unsigned char
                                           ,short
                                           ,unsigned short> ResourceTables_s(prodLengthArray   , leftSideArray
                                                                            ,rightSideTable    , symbolNames
-                                                                           ,16584, 16680
                                                                            ,actionCodeArray   , termArrayTable , actionArrayTable  , termBitSetTable
                                                                            ,successorCodeArray, stateArrayTable, newStateArrayTable, stateBitSetTable
                                                                            );

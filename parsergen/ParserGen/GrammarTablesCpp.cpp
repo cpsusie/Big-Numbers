@@ -7,7 +7,7 @@
 
 static const TCHAR *comment1 =
 _T("/************************************************************************************\\\n"
-   "* The 4 arrays actionCode, termListTable, actionListTable and termSetTable           *\n"
+   "* The 4 arrays actionCodeArray, termArrayTable, actionArrayTable and termBitSetTable *\n"
    "* holds a compressed action-matrix, used by LRParser to find                         *\n"
    "* action = getAction(S,T), where S is current state, T is next terminal on input     *\n"
    "*                                                                                    *\n"
@@ -36,52 +36,55 @@ _T("/***************************************************************************
    "* a        : Bit[17-31] : signed short                                               *\n"
    "* CC       : Bit[15-16] : Indicates how to interpret t and a:                        *\n"
    "*                                                                                    *\n"
-   "* CC == 0: CompCodeTermList (uncompressed)                                           *\n"
-   "*       t: Index into array termListTable, pointing at the first element of          *\n"
-   "*          termList                                                                  *\n"
-   "*       a: Index into array actionListTable, pointing at the first element of        *\n"
-   "*          actionList                                                                *\n"
+   "* CC==0: CompCodeBinSearch                                                           *\n"
+   "*     t: Index into array termArrayTable, pointing at the first element of           *\n"
+   "*        termArray                                                                   *\n"
+   "*     a: Index into array actionArrayTable, pointing at the first element of         *\n"
+   "*        actionArray                                                                 *\n"
    "*                                                                                    *\n"
-   "*       n                  : termListTable[t] = number of elements in termList.      *\n"
-   "*       termList[0..n-1]   : termListTable[t+1..t+n]                                 *\n"
-   "*                            Ordered list of legal terminals                         *\n"
-   "*       actionList[0..n-1] : actionListTable[a..a+n-1] (same length as termList).    *\n"
+   "*     n                  : termArrayTable[t] = number of elements in termArray.      *\n"
+   "*     termArray[0..n-1]  : termArrayTable[t+1..t+n]                                  *\n"
+   "*                          Ordered list of legal terminal symbols                    *\n"
+   "*     actionArray[0..n-1]: actionArrayTable[a..a+n-1] (same length as termArray).    *\n"
    "*                                                                                    *\n"
-   "*       To get action, find index k in termList, so termList[k] == T,k=[0..n-1]      *\n"
-   "*       and set action = actionList[k].                                              *\n"
-   "*       If T is not found, set action = _ParseError.                                 *\n"
-   "*       Note that both termList and actionList may be shared by several states.      *\n"
+   "*     To get action, find index k in termArray, so termArray[k] == T,k=[0..n-1]      *\n"
+   "*     and set action = actionArray[k].                                               *\n"
+   "*     If T is not found, set action = _ParseError.                                   *\n"
+   "*     Note that both termArray and actionArray may be shared by several states.      *\n"
    "*                                                                                    *\n"
-   "* CC == 1: CompCodeSplitNode                                                         *\n"
-   "*       t and a are both indices to 2 child entries in actionCode, which can be      *\n"
-   "*       another _acNNNN or an extra node, _snNNNN, whichever is needed (values are   *\n"
-   "*       reused as much as possible, ie. if _snNNNN equals some _acNNNN then no       *\n"
-   "*       _snNNNN is added, but parent entry will point to _acNNNN instead.            *\n"
-   "*       Recursive tree search, with max-recursion level specified in                 *\n"
-   "*       parsegen +c options                                                          *\n"
+   "* CC==1: CompCodeSplitNode                                                           *\n"
+   "*     t and a are both indices to 2 child entries in actionCodeArray, which can be   *\n"
+   "*     another _acNNNN or an extra node, _asNNNN, whichever is needed (values are     *\n"
+   "*     reused as much as possible, ie. if _asNNNN equals some _acNNNN then no         *\n"
+   "*     _asNNNN is added, but parent entry will point to _acNNNN instead.              *\n"
+   "*     Recursive tree search, with max-recursion level specified in                   *\n"
+   "*     parsergen +c<level> option. Search childnodes until an action != _ParseError   *\n"
+   "*     is returned, or no more nodes to search.                                       *\n"
    "*                                                                                    *\n"
-   "* CC == 2: CompCodeOneItem (Only 1 legal terminal in the state)                      *\n"
-   "*       t: Legal terminal.                                                           *\n"
-   "*       a: Action.                                                                   *\n"
+   "* CC==2: CompCodeImmediate, used if there is only 1 legal terminal in the state      *\n"
+   "*     t: Legal terminal.                                                             *\n"
+   "*     a: Action.                                                                     *\n"
+   "*     If terminal T != t, set action = _ParseError, else use a as action             *\n"
    "*                                                                                    *\n"
-   "* CC == 3: CompCodeTermSet (always reduce by same reduce production P = -a)          *\n"
-   "*       t: Index into termSetTable, pointing at the first element of termSet         *\n"
-   "*       a: Action.                                                                   *\n"
+   "* CC==3: CompCodeBitSet (always reduce by same reduce production P = -a)             *\n"
+   "*     t: Index into termBitSetTable, pointing at the first element of termBitSet     *\n"
+   "*     a: Action.                                                                     *\n"
    "*                                                                                    *\n"
-   "*       termSetTable is a list of termSet, bitsets, each with terminalCount bits     *\n"
-   "*       1-bits for legal terminals, 0-bits for illegal terminals.                    *\n"
+   "*     termBitSetTable is an array of termBitSet, each with same number of bits,      *\n"
+   "*     capacity, 1-bits for legal terminals, 0-bits for illegal terminals.            *\n"
    "*                                                                                    *\n"
-   "*       b                  : Number of bytes in each termSet=(terminalCount-1)/8+1   *\n"
-   "*       termSet[0..b-1]    : termSetTable[t..t+b-1]                                  *\n"
+   "*     b                  : Number of bytes in each termBitSet=(capacity-1)/8+1       *\n"
+   "*     termBitSet[0..b-1] : termBitSetTable[t..t+b-1]                                 *\n"
    "*                                                                                    *\n"
-   "*       As for uncompressed states, the same check for existence is done.            *\n"
-   "*       If terminal T is not present in termSet, set action = _ParseError.           *\n"
-   "*       Note that each termSet may be shared by several states.                      *\n"
+   "*     The value of capacity is minimized, capacity <= terminalCount                  *\n"
+   "*     As for other node types, the same check for existence is done. If terminal T   *\n"
+   "*     is not present in termBitSet, or T >= capacity, set action = _ParseError.      *\n"
+   "*     Note that each termBitSet may be shared by several states.                     *\n"
    "\\************************************************************************************/\n\n");
 
 static const TCHAR *comment2 =
 _T("/************************************************************************************\\\n"
-   "* The 3 arrays successorCode, NTindexListTable and stateListTable holds a            *\n"
+   "* The 3 arrays successorCodeArray, NTindexArrayTable , newStateArrayTable            *\n"
    "* compressed succesor-matrix, used by LRParser to find newstate = successor(S,A)     *\n"
    "* as last part of a reduction with production P, A -> alfa.                          *\n"
    "* A reduction by production P goes as follows:                                       *\n"
@@ -92,9 +95,9 @@ _T("/***************************************************************************
    "*   push(newstate), and set current state = newstate.                                *\n"
    "*                                                                                    *\n"
    "* For each relevant state S, a #define is generated and used as element S in array   *\n"
-   "* successorCode. Each define has the format:                                         *\n"
+   "* successorCodeArray. Each define has the format:                                    *\n"
    "*                                                                                    *\n"
-   "* #define _suDDDD Code                                                               *\n"
+   "* #define _scDDDD Code                                                               *\n"
    "*                                                                                    *\n"
    "* where DDDD is the statenumber S and Code is an unsigned int with the following     *\n"
    "* format:                                                                            *\n"
@@ -102,56 +105,132 @@ _T("/***************************************************************************
    "* Bit index: 01234567890123456789012345678901                                        *\n"
    "* Code       iiiiiiiiiiiiiiiCCsssssssssssssss                                        *\n"
    "*                                                                                    *\n"
-   "* i          : Bit[ 0-14]: unsigned short                                            *\n"
-   "* s          : Bit[17-31]: unsigned short                                            *\n"
-   "* CC         : Bit[15-16]: Indicates how to interpret i and s.                       *\n"
+   "* i          : Bit[ 0-14]  : unsigned short                                          *\n"
+   "* s          : Bit[17-31]  : unsigned short                                          *\n"
+   "* CC         : Bit[15-16]  : Indicates how to interpret i and s.                     *\n"
    "*                                                                                    *\n"
-   "* CC has the same meaning as for actionCode, but only CC={0,2} are used.             *\n"
-   "* CC == 0: Uncompressed Format.                                                      *\n"
-   "*       i: Index into array NTindexListTable, pointing at the first element of       *\n"
-   "*          NTIndexList                                                               *\n"
-   "*       s: Index into array stateListTable, pointing at the first element of         *\n"
-   "*          stateList                                                                 *\n"
+   "* CC has the same meaning as for actionCodeArray, but only CC={0,2} are used.        *\n"
+   "* CC==0: CompCodeBinSearch                                                           *\n"
+   "*     i: Index into array NTindexArrayTable, pointing at the first element of        *\n"
+   "*        NTIndexArray                                                                *\n"
+   "*     s: Index into array newStateArrayTable, pointing at the first element of       *\n"
+   "*        newStateArray                                                               *\n"
    "*                                                                                    *\n"
-   "*       n                  : NTIndexListTable[i] = number of elements in NTIndexList *\n"
-   "*       NTIndexList[0..n-1]: NTIndexListTable[i+1..i+n]                              *\n"
+   "*     n                    : NTIndexArrayTable[i]=number of elements in NTIndexArray *\n"
+   "*     NTIndexArray[0..n-1] : NTIndexArrayTable[i+1..i+n]                             *\n"
    "*                            Ordered list of possible nonterminal-indices.           *\n"
-   "*       stateList[0..n-1]  : stateListTable[s..s+n-1], same length as NTIndexList    *\n"
+   "*     newStateArray[0..n-1]: newStateArrayTable[s..s+n-1], length = n                *\n"
    "*                                                                                    *\n"
-   "*       To get newstate, find index k in NTIndexList, so NTIndexList[k] == A',       *\n"
-   "*       and set newstate = stateList[k].                                             *\n"
-   "*       A' = (A - terminalCount) will always exist.                                  *\n"
-   "*       Note that both NTIndexList and stateList may be shared by several states.    *\n"
-   "* CC == 2: Compressed Format, used if there is only 1 possible newstate.             *\n"
-   "*       i: Index A' of nonterminal A, A' = (A - terminalCount).                      *\n"
-   "*       s: New state.                                                                *\n"
+   "*     To get newstate, find k so NTIndexArray[k] == A', k=[0..n-1] and set           *\n"
+   "*     newstate = newStateArray[k].                                                   *\n"
+   "*     A' = (A - terminalCount) will always exist.                                    *\n"
+   "*     Note that both NTIndexArray and newStateArray may be shared by several states. *\n"
+   "* CC==2: CompCodeImmediate, used if there is only 1 possible newstate.               *\n"
+   "*     i: Index A' of nonterminal A, A' = (A - terminalCount).                        *\n"
+   "*     s: New state.                                                                  *\n"
    "*                                                                                    *\n"
-   "\\************************************************************************************/\n\n");
+   "\\**********************************************************************************/\n\n");
+
+
+static const TCHAR *comment2Transposed =
+_T("/************************************************************************************\\\n"
+   "* The 4 arrays successorCodeArray, stateArrayTable, newStateArrayTable and           *\n"
+   "* stateBitSetTable holds a compressed succesor-matrix, used by LRParser to find      *\n"
+   "* newstate = successor(S,A) as last part of a reduction with production P, A -> alfa *\n"
+   "* A reduction by production P goes as follows:                                       *\n"
+   "*   Pop L elements from stack, where L = length of alfa;                             *\n"
+   "*   S = state on stacktop;                                                           *\n"
+   "*   A = leftside of the reduce production P;                                         *\n"
+   "*   newstate = successor(S,A);                                                       *\n"
+   "*   push(newstate), and set current state = newstate.                                *\n"
+   "* Because the values of all non-terminals A = [terminalCount..symbolCount-1], the    *\n"
+   "* value NTindex = A' = A - terminalCount is used as index into successorCodeArray.   *\n"
+   "* NTindex = [0..NTermCount-1]                                                        *\n"
+   "*                                                                                    *\n"
+   "* For each non-terminal A, a #define is generated and used as element A' in array    *\n"
+   "* successorCodeArray. Each define has the format:                                    *\n"
+   "*                                                                                    *\n"
+   "* #define _scDDDD Code                                                               *\n"
+   "*                                                                                    *\n"
+   "* where DDDD is NTindex A' and Code is an unsigned int with the following format     *\n"
+   "*                                                                                    *\n"
+   "*            0         1         2         3                                         *\n"
+   "* Bit index: 01234567890123456789012345678901                                        *\n"
+   "* Code       sssssssssssssssCCrrrrrrrrrrrrrrr                                        *\n"
+   "*                                                                                    *\n"
+   "* s          : Bit[ 0-14]  : unsigned short                                          *\n"
+   "* r          : Bit[17-31]  : unsigned short                                          *\n"
+   "* CC         : Bit[15-16]  : Indicates how to interpret s and r.                     *\n"
+   "*                                                                                    *\n"
+   "* CC has the same meaning as for actionCodeArray                                     *\n"
+   "* CC==0: CompCodeBinSearch                                                           *\n"
+   "*     s: Index into stateArrayTable, pointing at the first element of stateArray     *\n"
+   "*     r: Index into newStateArrayTable, pointing at the first element of             *\n"
+   "*        newStateArray                                                               *\n"
+   "*                                                                                    *\n"
+   "*     n                    : stateArrayTable[s] = number of elements in stateArray   *\n"
+   "*     stateArray[0..n-1]   : stateArrayTable[s+1..s+n]                               *\n"
+   "*                            Ordered list of n possible states S                     *\n"
+   "*     newStateArray[0..n-1]: newStateArrayTable[r..r+n-1], length = n                *\n"
+   "*                                                                                    *\n"
+   "*     To find returnvalue, find index k so stateArray[k]==S, k=[0..n-1]              *\n"
+   "*     and return newStateArray[k]. If not found, return _ParseError (= 0xffff).      *\n"
+   "*     Note that both stateArray and newStateArray may be shared by several NTindices *\n"
+   "*                                                                                    *\n"
+   "* CC==1: CompCodeSplitNode                                                           *\n"
+   "*     s and r are both indices to 2 child entries in successorCodeArray, which can   *\n"
+   "*     be another _scNNNN or an extra node, _ssNNNN, whichever is needed (see         *\n"
+   "*     actionCodeArray). Recursive tree search, with max-recursion level specified in *\n"
+   "*     parsergen -T,r<level> option. Search childnodes until the returned value       *\n"
+   "*     != _ParseError. Note, that the search will always succeed.                     *\n"
+   "*                                                                                    *\n"
+   "* CC==2: CompCodeImmediate, used if there is only 1 possible newstate.               *\n"
+   "*     s: State to come from. If s==0x7fff, the check S==s is skipped                 *\n"
+   "*     r: New state.                                                                  *\n"
+   "*                                                                                    *\n"
+   "* CC==3: CompCodeBitSet (Same newState for all states present in stateBitSet)        *\n"
+   "*     s: Index into stateBitSetTable, pointing at the first element of stateBitSet   *\n"
+   "*     r: New state.                                                                  *\n"
+   "*                                                                                    *\n"
+   "*     stateBitSetTable is an array of stateBitSet, each with same number of bits,    *\n"
+   "*     capacity, 1-bits for possible from-states, 0-bits for irrelevant states        *\n"
+   "*                                                                                    *\n"
+   "*     b                  : Number of bytes in each stateBitSet=(capacity-1)/8+1      *\n"
+   "*     stateBitSet[0..b-1]: stateBitSetTable[r..r+b-1]                                *\n"
+   "*                                                                                    *\n"
+   "*     The value of capacity is minimized, capacity <= stateCount.                    *\n"
+   "*     If state S is present in stateBitSet, return r, else return _ParseError.       *\n"
+   "*     Contrary to action, the value _ParseError will never propagate all the way     *\n"
+   "*     back to LRParser (unless something is completely wrong). The search for a new  *\n"
+   "*     state should ALWAYS succeed in the end.                                        *\n"
+   "*     Note that each stateBitSet may be shared by several NTindices.                 *\n"
+   "\\**********************************************************************************/\n\n");
+
 
 static const TCHAR *comment3 =
 _T("/************************************************************************************\\\n"
-   "* The productionLength[] is indexed by production number and holds the number of     *\n"
+   "* The prodLengthArray[] is indexed by production number and holds the number of      *\n"
    "* symbols on the right side of each production.                                      *\n"
    "\\************************************************************************************/\n");
 
 static const TCHAR *comment4 =
 _T("/************************************************************************************\\\n"
-   "* leftSideTable[] is indexed by production number.                                   *\n"
-   "* leftSideTable[p] = A', A' = (A - terminalCount)                                    *\n"
+   "* leftSideArray[] is indexed by production number.                                   *\n"
+   "* leftSideArray[p] = A', A' = (A - terminalCount)                                    *\n"
    "*                        where A is the left side of production p.                   *\n"
-   "* A' = 0..nonterminalCount-1.                                                        *\n"
-   "* p  = 0..productionCount-1                                                          *\n"
+   "* A' = [0..nonterminalCount-1]                                                       *\n"
+   "* p  = [0..productionCount-1]                                                        *\n"
    "\\************************************************************************************/\n");
 
 static const TCHAR *comment5 =
 _T("/************************************************************************************\\\n"
-   "* rightSideTable[] holds a compressed form of the rightsides of all                  *\n"
-   "* productions in the grammar. Only used for debugging.                               *\n"
+   "* rightSideTable[] holds a compressed form of the rightsides of all productions in   *\n"
+   "* the grammar. Only used for debugging.                                              *\n"
    "\\************************************************************************************/\n");
 
 static const TCHAR *comment6 =
 _T("/************************************************************************************\\\n"
-   "* symbolNames is a space separated string with the names of all symbols used in      *\n"
+   "* symbolNames is a space separated string with the names of all symbols used in the  *\n"
    "* grammar, terminals and nonTerminals. Only used for debugging.                      *\n"
    "\\************************************************************************************/\n");
 
@@ -177,10 +256,10 @@ ByteCount GrammarTables::printCppParserTablesTemplate(MarginFile &output) const 
   ByteCount byteCount;
   byteCount += printCompressedActionMatrixCpp(   output);
   byteCount += printCompressedSuccessorMatrixCpp(output);
-  byteCount += printProductionLengthTableCpp(    output);
-  byteCount += printLeftSideTableCpp(            output);
+  byteCount += printProdLengthArrayCpp(          output);
+  byteCount += printLeftSideArrayCpp(            output);
   byteCount += printRightSideTableCpp(           output);
-  byteCount += printSymbolNameTableCpp(          output);
+  byteCount += printSymbolNamesCpp(              output);
 //  printf("sizeof parserTableTemplate:%zu bytes", sizeof(ParserTablesTemplate<2,2,2,2,char,char,char,char,char>));
   const int sizeofTableTemlatex86  =  68; // sizeof(ParserTablesTemplate) x86
   const int sizeofTableTemplatex64 = 128; // sizeof(ParserTablesTemplate) x64
@@ -194,8 +273,10 @@ ByteCount GrammarTables::printCppParserTablesTemplate(MarginFile &output) const 
   output.printf(_T("static const ParserTablesTemplate<"));
   int column = output.getCurrentLineLength();
   output.setLeftMargin(column - 1);
-  output.printf(_T("%u,%u,%u,%u,%u\n,%s\n,%s\n,%s\n,%s\n,%s> %s_s(")
-               ,getSymbolCount(), getTermCount(), getProductionCount(), getStateCount(), m_grammar.getTermBitSetCapacity()
+  output.printf(_T("%u,%u,%u,%u,%u,%u,%u\n,%s\n,%s\n,%s\n,%s\n,%s> %s_s(")
+               ,getSymbolCount(), getTermCount(), getProductionCount(), getStateCount()
+               ,byteCount.getByteCount(PLATFORM_X86),byteCount.getByteCount(PLATFORM_X64)
+               ,m_grammar.getTermBitSetCapacity()
                ,getTypeName(m_types.getSymbolType() )
                ,getTypeName(m_types.getTermType()   )
                ,getTypeName(m_types.getNTindexType())
@@ -208,11 +289,8 @@ ByteCount GrammarTables::printCppParserTablesTemplate(MarginFile &output) const 
   output.setLeftMargin(column - 1);
   output.printf(_T("prodLengthArray   , leftSideArray\n"
                    ",rightSideTable    , symbolNames\n"
-                   ",%u, %u\n"
                    ",actionCodeArray   , termArrayTable    , actionArrayTable, termBitSetTable\n"
                    ",successorCodeArray, NTindexArrayTable , newStateArrayTable\n);\n\n")
-               ,byteCount.getByteCount(PLATFORM_X86)
-               ,byteCount.getByteCount(PLATFORM_X64)
                );
   output.setLeftMargin(0);
 
@@ -232,10 +310,10 @@ ByteCount GrammarTables::printCppParserTablesTemplateTransSucc(MarginFile &outpu
   ByteCount byteCount;
   byteCount += printCompressedActionMatrixCpp(   output);
   byteCount += printCompressedTransSuccMatrixCpp(output);
-  byteCount += printProductionLengthTableCpp(    output);
-  byteCount += printLeftSideTableCpp(            output);
+  byteCount += printProdLengthArrayCpp(          output);
+  byteCount += printLeftSideArrayCpp(            output);
   byteCount += printRightSideTableCpp(           output);
-  byteCount += printSymbolNameTableCpp(          output);
+  byteCount += printSymbolNamesCpp(              output);
 //  printf("sizeof parserTableTemplate:%zu bytes", sizeof(ParserTablesTemplate<2,2,2,2,char,char,char,char,char>));
   const int sizeofTableTemlatex86  =  68; // sizeof(ParserTablesTemplate) x86
   const int sizeofTableTemplatex64 = 128; // sizeof(ParserTablesTemplate) x64
@@ -250,8 +328,10 @@ ByteCount GrammarTables::printCppParserTablesTemplateTransSucc(MarginFile &outpu
   output.printf(_T("static const ParserTablesTemplateTransSucc<"));
   int column = output.getCurrentLineLength();
   output.setLeftMargin(column - 1);
-  output.printf(_T("%u,%u,%u,%u,%u,%u\n,%s\n,%s\n,%s\n,%s\n,%s> %s_s(")
-               ,getSymbolCount(), getTermCount(), getProductionCount(), getStateCount(), m_grammar.getTermBitSetCapacity(), m_grammar.getStateBitSetCapacity()
+  output.printf(_T("%u,%u,%u,%u,%u,%u,%u,%u\n,%s\n,%s\n,%s\n,%s\n,%s> %s_s(")
+               ,getSymbolCount(), getTermCount(), getProductionCount(), getStateCount()
+               ,byteCount.getByteCount(PLATFORM_X86),byteCount.getByteCount(PLATFORM_X64)
+               ,m_grammar.getTermBitSetCapacity(), m_grammar.getStateBitSetCapacity()
                ,getTypeName(m_types.getSymbolType() )
                ,getTypeName(m_types.getTermType()   )
                ,getTypeName(m_types.getNTindexType())
@@ -264,11 +344,8 @@ ByteCount GrammarTables::printCppParserTablesTemplateTransSucc(MarginFile &outpu
   output.setLeftMargin(column - 1);
   output.printf(_T("prodLengthArray   , leftSideArray\n"
                    ",rightSideTable    , symbolNames\n"
-                   ",%u, %u\n"
                    ",actionCodeArray   , termArrayTable , actionArrayTable  , termBitSetTable\n"
                    ",successorCodeArray, stateArrayTable, newStateArrayTable, stateBitSetTable\n);\n\n")
-               ,byteCount.getByteCount(PLATFORM_X86)
-               ,byteCount.getByteCount(PLATFORM_X64)
                );
   output.setLeftMargin(0);
 
@@ -296,10 +373,11 @@ ByteCount GrammarTables::printCompressedSuccessorMatrixCpp(MarginFile &output) c
 }
 
 ByteCount GrammarTables::printCompressedTransSuccMatrixCpp(MarginFile &output) const {
-  return TransSuccMatrixCompression::CompressedTransSuccMatrix(m_grammar).print(output);
+  output.printf(_T("%s"), comment2Transposed);
+  return TransposedSuccessorMatrixCompression::CompressedTransSuccMatrix(m_grammar).print(output);
 }
 
-ByteCount GrammarTables::printProductionLengthTableCpp(MarginFile &output) const {
+ByteCount GrammarTables::printProdLengthArrayCpp(MarginFile &output) const {
   output.printf(_T("%s"), comment3);
   const UINT productionCount = getProductionCount();
   outputBeginArrayDefinition(output, _T("prodLengthArray"), TYPE_UCHAR, productionCount);
@@ -317,7 +395,7 @@ ByteCount GrammarTables::printProductionLengthTableCpp(MarginFile &output) const
   return outputEndArrayDefinition(output, TYPE_UCHAR, productionCount, true);
 }
 
-ByteCount GrammarTables::printLeftSideTableCpp(MarginFile &output) const {
+ByteCount GrammarTables::printLeftSideArrayCpp(MarginFile &output) const {
   output.printf(_T("%s"), comment4);
   const UINT productionCount = getProductionCount();
   outputBeginArrayDefinition(output, _T("leftSideArray"), m_types.getNTindexType(), productionCount);
@@ -358,7 +436,7 @@ ByteCount GrammarTables::printRightSideTableCpp(MarginFile &output) const {
   return outputEndArrayDefinition(output, m_types.getSymbolType(), itemCount);
 }
 
-ByteCount GrammarTables::printSymbolNameTableCpp(MarginFile &output) const {
+ByteCount GrammarTables::printSymbolNamesCpp(MarginFile &output) const {
   output.printf(_T("%s"), comment6);
 
   const UINT termCount   = getTermCount();

@@ -25,26 +25,29 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Source Files\GrammarOutput\ActionCompression">
-      <UniqueIdentifier>{bb2cdfb1-7a42-43ab-a103-98a77aef5d00}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\GrammarOutput\ActionCompression\Header Files">
-      <UniqueIdentifier>{6f46e068-0527-4acd-bf3f-cb4d0d65bf3d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\GrammarOutput\SuccessorCompression">
-      <UniqueIdentifier>{6ffb4198-29f2-4cde-a1f2-b4e8fccb23f4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\GrammarOutput\SuccessorCompression\Header Files">
-      <UniqueIdentifier>{33ec9186-2c5a-4b53-b050-a84d86b8f0b2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\GrammarOutput\KeyWordHandlers">
       <UniqueIdentifier>{6993516d-2c03-4b5a-9e11-a9cb1198826a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\GrammarOutput\TransSuccCompression">
+    <Filter Include="Source Files\GrammarOutput\MatrixCompression">
+      <UniqueIdentifier>{fda75662-1da2-4251-b824-8b0da7554fdd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GrammarOutput\MatrixCompression\SuccessorMatrix">
+      <UniqueIdentifier>{6ffb4198-29f2-4cde-a1f2-b4e8fccb23f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GrammarOutput\MatrixCompression\SuccessorMatrix\Header Files">
+      <UniqueIdentifier>{33ec9186-2c5a-4b53-b050-a84d86b8f0b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GrammarOutput\MatrixCompression\TransposedSuccessorMatrix">
       <UniqueIdentifier>{e6cc144b-0c82-4f2f-9a23-eef4829f5e23}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\GrammarOutput\TransSuccCompression\Header Files">
+    <Filter Include="Source Files\GrammarOutput\MatrixCompression\TransposedSuccessorMatrix\Header Files">
       <UniqueIdentifier>{e2bd17c3-483e-4563-b193-7bcbd21a48b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GrammarOutput\MatrixCompression\ActionMatrix">
+      <UniqueIdentifier>{bb2cdfb1-7a42-43ab-a103-98a77aef5d00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GrammarOutput\MatrixCompression\ActionMatrix\Header Files">
+      <UniqueIdentifier>{6f46e068-0527-4acd-bf3f-cb4d0d65bf3d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -64,7 +67,7 @@
       <Filter>Source Files\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CompressedActionMatrixCpp.h">
-      <Filter>Source Files\GrammarOutput\ActionCompression\Header Files</Filter>
+      <Filter>Source Files\GrammarOutput\MatrixCompression\ActionMatrix\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GrammarParser.h">
       <Filter>Source Files\GrammarParsing\Header Files</Filter>
@@ -97,7 +100,7 @@
       <Filter>Source Files\GrammarOutput\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CompressedSuccessorMatrixCpp.h">
-      <Filter>Source Files\GrammarOutput\SuccessorCompression\Header Files</Filter>
+      <Filter>Source Files\GrammarOutput\MatrixCompression\SuccessorMatrix\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IndexMap.h">
       <Filter>Source Files\GrammarOutput\Header Files</Filter>
@@ -112,19 +115,19 @@
       <Filter>Source Files\GrammarOutput\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CompressedTransSuccMatrixCpp.h">
-      <Filter>Source Files\GrammarOutput\TransSuccCompression\Header Files</Filter>
+      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedSuccessorMatrix\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NTindexNode.h">
-      <Filter>Source Files\GrammarOutput\TransSuccCompression\Header Files</Filter>
+      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedSuccessorMatrix\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NTindexNodeArray.h">
-      <Filter>Source Files\GrammarOutput\TransSuccCompression\Header Files</Filter>
+      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedSuccessorMatrix\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StateActionNode.h">
-      <Filter>Source Files\GrammarOutput\ActionCompression\Header Files</Filter>
+      <Filter>Source Files\GrammarOutput\MatrixCompression\ActionMatrix\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StateActionNodeArray.h">
-      <Filter>Source Files\GrammarOutput\ActionCompression\Header Files</Filter>
+      <Filter>Source Files\GrammarOutput\MatrixCompression\ActionMatrix\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CompressEncoding.h">
       <Filter>Source Files\GrammarOutput\Header Files</Filter>
@@ -156,7 +159,7 @@
       <Filter>Source Files\GrammarOutput\KeyWordHandlers</Filter>
     </ClCompile>
     <ClCompile Include="CompressedActionMatrixCpp.cpp">
-      <Filter>Source Files\GrammarOutput\ActionCompression</Filter>
+      <Filter>Source Files\GrammarOutput\MatrixCompression\ActionMatrix</Filter>
     </ClCompile>
     <ClCompile Include="GrammarParser.cpp">
       <Filter>Source Files\GrammarParsing</Filter>
@@ -192,7 +195,7 @@
       <Filter>Source Files\GrammarOutput</Filter>
     </ClCompile>
     <ClCompile Include="CompressedSuccessorMatrixCpp.cpp">
-      <Filter>Source Files\GrammarOutput\SuccessorCompression</Filter>
+      <Filter>Source Files\GrammarOutput\MatrixCompression\SuccessorMatrix</Filter>
     </ClCompile>
     <ClCompile Include="Macro.cpp">
       <Filter>Source Files\GrammarOutput</Filter>
@@ -210,19 +213,19 @@
       <Filter>Source Files\GrammarOutput</Filter>
     </ClCompile>
     <ClCompile Include="CompressedTransSuccMatrixCpp.cpp">
-      <Filter>Source Files\GrammarOutput\TransSuccCompression</Filter>
+      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedSuccessorMatrix</Filter>
     </ClCompile>
     <ClCompile Include="NTindexNode.cpp">
-      <Filter>Source Files\GrammarOutput\TransSuccCompression</Filter>
+      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedSuccessorMatrix</Filter>
     </ClCompile>
     <ClCompile Include="NTindexNodeArray.cpp">
-      <Filter>Source Files\GrammarOutput\TransSuccCompression</Filter>
+      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedSuccessorMatrix</Filter>
     </ClCompile>
     <ClCompile Include="StateActionNode.cpp">
-      <Filter>Source Files\GrammarOutput\ActionCompression</Filter>
+      <Filter>Source Files\GrammarOutput\MatrixCompression\ActionMatrix</Filter>
     </ClCompile>
     <ClCompile Include="StateActionNodeArray.cpp">
-      <Filter>Source Files\GrammarOutput\ActionCompression</Filter>
+      <Filter>Source Files\GrammarOutput\MatrixCompression\ActionMatrix</Filter>
     </ClCompile>
     <ClCompile Include="OptimizedBitSetPermutation.cpp">
       <Filter>Source Files\GrammarOutput</Filter>

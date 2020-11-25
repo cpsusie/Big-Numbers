@@ -36,9 +36,14 @@ public:
 // it is checked, that bitSet doesn't contain any 1-bits at positions >= capacity, and then only the bytes needed to is added to byteArray
 // (using function getSizeofBitSet(capacity) to calculate the size)
 // if this check fails, an exception is thrown
+
 ByteArray    bitSetToByteArray(         const BitSet &bitSet, UINT capacity = 0);
-void         outputBeginArrayDefinition(MarginFile &output, const TCHAR *tableName, IntegerType elementType, UINT size); // size = #elements in array
-ByteCount    outputEndArrayDefinition(  MarginFile &output,                         IntegerType elementType, UINT size, bool addNewLine=false);
+// size = #elements in array
+void         outputBeginArrayDefinition(      MarginFile &output, const TCHAR *tableName, IntegerType elementType, UINT size);
+ByteCount    outputEndArrayDefinition(        MarginFile &output,                         IntegerType elementType, UINT size, bool addNewLine=false);
+// capacity = capacity of each bitSet, count = #bitsets in table, elements always unsigned char
+UINT         outputBeginBitSetTableDefinition(MarginFile &output, const TCHAR *tableName, UINT capacity, UINT count);
+ByteCount    outputEndBitSetTableDefinition(  MarginFile &output, UINT size, bool addNewLine=false);
 void         newLine(MarginFile &output, String &comment = String(_T("")), int minColumn=0);
 
 static constexpr UINT commentWidth = 54;
