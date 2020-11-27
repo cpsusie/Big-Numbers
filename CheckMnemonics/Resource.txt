@@ -44,536 +44,37 @@ State 0:
  (472)  number          -> .NUMBER
  (473)  identifier      -> .IDENTIFIER
 
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 49 on GUIDELINES
-   shift to 50 on STRINGTABLE
-   shift to 1 on LANGUAGE
-   goto 28 on resourceFile
-   goto 29 on resourceDefinitionList
-   goto 30 on resourceDefinition
-   goto 31 on bitmapDefinition
-   goto 32 on iconDefinition
-   goto 33 on customTypeDefinition
-   goto 34 on dialogDefinition
-   goto 35 on extendedDialogDefinition
-   goto 36 on guideLinesDefinition
-   goto 37 on toolbarDefnition
-   goto 38 on menuDefinition
-   goto 39 on dialogInitDefinition
-   goto 40 on acceleratorsDefinition
-   goto 41 on rcdataDefinition
-   goto 42 on stringTableDefinition
-   goto 43 on textIncludeDirective
-   goto 44 on languageDirective
-   goto 45 on versionDefinition
-   goto 46 on typelibDefinition
-   goto 47 on afxDialogLayout
-   goto 48 on resourceId
-   goto 53 on identifier
-   goto 51 on number
-   goto 52 on identifierOrNumber
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 56 on GUIDELINES
+   shift to 57 on STRINGTABLE
+   shift to 2 on LANGUAGE
+   goto 36 on resourceFile
+   goto 1 on resourceDefinitionList
+   goto 37 on resourceDefinition
+   goto 38 on bitmapDefinition
+   goto 39 on iconDefinition
+   goto 40 on customTypeDefinition
+   goto 41 on dialogDefinition
+   goto 42 on extendedDialogDefinition
+   goto 43 on guideLinesDefinition
+   goto 44 on toolbarDefnition
+   goto 45 on menuDefinition
+   goto 46 on dialogInitDefinition
+   goto 47 on acceleratorsDefinition
+   goto 48 on rcdataDefinition
+   goto 49 on stringTableDefinition
+   goto 50 on textIncludeDirective
+   goto 51 on languageDirective
+   goto 52 on versionDefinition
+   goto 53 on typelibDefinition
+   goto 54 on afxDialogLayout
+   goto 55 on resourceId
+   goto 60 on identifier
+   goto 58 on number
+   goto 59 on identifierOrNumber
 
 State 1:
- (433)K languageDirective -> LANGUAGE .constant COMMA constant
- (463)  constant        -> .number
- (464)  constant        -> .identifier
- (465)  constant        -> .string
- (466)  constant        -> .identifier LPAR exprList RPAR
- (472)  number          -> .NUMBER
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   goto 78 on string
-   goto 77 on identifier
-   goto 76 on number
-   goto 75 on constant
-
-State 2:
- (403)K dialogInitDefinition -> resourceId DLGINIT BEGIN .constantElementList END
- (404)  constantElementList -> .constantElementList constantElement
- (405)  constantElementList -> .constantElement
- (406)  constantElement -> .constant
- (407)  constantElement -> .COMMA constant
- (463)  constant        -> .number
- (464)  constant        -> .identifier
- (465)  constant        -> .string
- (466)  constant        -> .identifier LPAR exprList RPAR
- (472)  number          -> .NUMBER
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   shift to 6 on COMMA
-   goto 78 on string
-   goto 77 on identifier
-   goto 76 on number
-   goto 5 on constantElementList
-   goto 122 on constantElement
-   goto 123 on constant
-
-State 3:
- (433)K languageDirective -> LANGUAGE constant COMMA .constant
- (463)  constant        -> .number
- (464)  constant        -> .identifier
- (465)  constant        -> .string
- (466)  constant        -> .identifier LPAR exprList RPAR
- (472)  number          -> .NUMBER
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   goto 78 on string
-   goto 77 on identifier
-   goto 76 on number
-   goto 137 on constant
-
-State 4:
- (466)K constant        -> identifier LPAR .exprList RPAR
- (459)  exprList        -> .exprList COMMA expr
- (460)  exprList        -> .expr
- (461)  expr            -> .expr OR constant
- (462)  expr            -> .constant
- (463)  constant        -> .number
- (464)  constant        -> .identifier
- (465)  constant        -> .string
- (466)  constant        -> .identifier LPAR exprList RPAR
- (472)  number          -> .NUMBER
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   goto 78 on string
-   goto 77 on identifier
-   goto 76 on number
-   goto 140 on constant
-   goto 138 on exprList
-   goto 139 on expr
-
-State 5:
- (403)K dialogInitDefinition -> resourceId DLGINIT BEGIN constantElementList .END
- (404)K constantElementList -> constantElementList .constantElement
- (406)  constantElement -> .constant
- (407)  constantElement -> .COMMA constant
- (463)  constant        -> .number
- (464)  constant        -> .identifier
- (465)  constant        -> .string
- (466)  constant        -> .identifier LPAR exprList RPAR
- (472)  number          -> .NUMBER
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   shift to 6 on COMMA
-   shift to 223 on END
-   goto 78 on string
-   goto 77 on identifier
-   goto 76 on number
-   goto 224 on constantElement
-   goto 123 on constant
-
-State 6:
- (407)K constantElement -> COMMA .constant
- (463)  constant        -> .number
- (464)  constant        -> .identifier
- (465)  constant        -> .string
- (466)  constant        -> .identifier LPAR exprList RPAR
- (472)  number          -> .NUMBER
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   goto 78 on string
-   goto 77 on identifier
-   goto 76 on number
-   goto 225 on constant
-
-State 7:
- (408)K acceleratorsDefinition -> resourceId ACCELERATORS resourceAttributeList BEGIN .acceleratorList END
- (409)  acceleratorList -> .acceleratorList accelerator
- (410)  acceleratorList -> .accelerator
- (411)  accelerator     -> .constant COMMA identifier opt_acceleratorSpecList
- (463)  constant        -> .number
- (464)  constant        -> .identifier
- (465)  constant        -> .string
- (466)  constant        -> .identifier LPAR exprList RPAR
- (472)  number          -> .NUMBER
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   goto 78 on string
-   goto 77 on identifier
-   goto 76 on number
-   goto 227 on constant
-   goto 15 on acceleratorList
-   goto 226 on accelerator
-
-State 8:
- (437)K versionSpec     -> FILEVERSION .exprList
- (459)  exprList        -> .exprList COMMA expr
- (460)  exprList        -> .expr
- (461)  expr            -> .expr OR constant
- (462)  expr            -> .constant
- (463)  constant        -> .number
- (464)  constant        -> .identifier
- (465)  constant        -> .string
- (466)  constant        -> .identifier LPAR exprList RPAR
- (472)  number          -> .NUMBER
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   goto 78 on string
-   goto 77 on identifier
-   goto 76 on number
-   goto 140 on constant
-   goto 231 on exprList
-   goto 139 on expr
-
-State 9:
- (438)K versionSpec     -> PRODUCTVERSION .exprList
- (459)  exprList        -> .exprList COMMA expr
- (460)  exprList        -> .expr
- (461)  expr            -> .expr OR constant
- (462)  expr            -> .constant
- (463)  constant        -> .number
- (464)  constant        -> .identifier
- (465)  constant        -> .string
- (466)  constant        -> .identifier LPAR exprList RPAR
- (472)  number          -> .NUMBER
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   goto 78 on string
-   goto 77 on identifier
-   goto 76 on number
-   goto 140 on constant
-   goto 232 on exprList
-   goto 139 on expr
-
-State 10:
- (439)K versionSpec     -> FILEFLAGSMASK .expr
- (461)  expr            -> .expr OR constant
- (462)  expr            -> .constant
- (463)  constant        -> .number
- (464)  constant        -> .identifier
- (465)  constant        -> .string
- (466)  constant        -> .identifier LPAR exprList RPAR
- (472)  number          -> .NUMBER
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   goto 78 on string
-   goto 77 on identifier
-   goto 76 on number
-   goto 140 on constant
-   goto 233 on expr
-
-State 11:
- (440)K versionSpec     -> FILEFLAGS .expr
- (461)  expr            -> .expr OR constant
- (462)  expr            -> .constant
- (463)  constant        -> .number
- (464)  constant        -> .identifier
- (465)  constant        -> .string
- (466)  constant        -> .identifier LPAR exprList RPAR
- (472)  number          -> .NUMBER
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   goto 78 on string
-   goto 77 on identifier
-   goto 76 on number
-   goto 140 on constant
-   goto 234 on expr
-
-State 12:
- (441)K versionSpec     -> FILEOS .expr
- (461)  expr            -> .expr OR constant
- (462)  expr            -> .constant
- (463)  constant        -> .number
- (464)  constant        -> .identifier
- (465)  constant        -> .string
- (466)  constant        -> .identifier LPAR exprList RPAR
- (472)  number          -> .NUMBER
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   goto 78 on string
-   goto 77 on identifier
-   goto 76 on number
-   goto 140 on constant
-   goto 235 on expr
-
-State 13:
- (442)K versionSpec     -> FILETYPE .expr
- (461)  expr            -> .expr OR constant
- (462)  expr            -> .constant
- (463)  constant        -> .number
- (464)  constant        -> .identifier
- (465)  constant        -> .string
- (466)  constant        -> .identifier LPAR exprList RPAR
- (472)  number          -> .NUMBER
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   goto 78 on string
-   goto 77 on identifier
-   goto 76 on number
-   goto 140 on constant
-   goto 236 on expr
-
-State 14:
- (443)K versionSpec     -> FILESUBTYPE .expr
- (461)  expr            -> .expr OR constant
- (462)  expr            -> .constant
- (463)  constant        -> .number
- (464)  constant        -> .identifier
- (465)  constant        -> .string
- (466)  constant        -> .identifier LPAR exprList RPAR
- (472)  number          -> .NUMBER
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   goto 78 on string
-   goto 77 on identifier
-   goto 76 on number
-   goto 140 on constant
-   goto 237 on expr
-
-State 15:
- (408)K acceleratorsDefinition -> resourceId ACCELERATORS resourceAttributeList BEGIN acceleratorList .END
- (409)K acceleratorList -> acceleratorList .accelerator
- (411)  accelerator     -> .constant COMMA identifier opt_acceleratorSpecList
- (463)  constant        -> .number
- (464)  constant        -> .identifier
- (465)  constant        -> .string
- (466)  constant        -> .identifier LPAR exprList RPAR
- (472)  number          -> .NUMBER
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   shift to 298 on END
-   goto 78 on string
-   goto 77 on identifier
-   goto 76 on number
-   goto 227 on constant
-   goto 299 on accelerator
-
-State 16:
- (459)K exprList        -> exprList COMMA .expr
- (461)  expr            -> .expr OR constant
- (462)  expr            -> .constant
- (463)  constant        -> .number
- (464)  constant        -> .identifier
- (465)  constant        -> .string
- (466)  constant        -> .identifier LPAR exprList RPAR
- (472)  number          -> .NUMBER
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   goto 78 on string
-   goto 77 on identifier
-   goto 76 on number
-   goto 140 on constant
-   goto 311 on expr
-
-State 17:
- (461)K expr            -> expr OR .constant
- (463)  constant        -> .number
- (464)  constant        -> .identifier
- (465)  constant        -> .string
- (466)  constant        -> .identifier LPAR exprList RPAR
- (472)  number          -> .NUMBER
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   goto 78 on string
-   goto 77 on identifier
-   goto 76 on number
-   goto 312 on constant
-
-State 18:
- ( 69)K editSpec        -> EDITTEXT identifier .controlAttributeList
- ( 78)  controlAttributeList -> .controlAttributeList controlAttribute
- ( 79)  controlAttributeList -> .controlAttribute
- ( 80)  controlAttribute -> .COMMA ctrlAttribute
-
-   shift to 344 on COMMA
-   goto 342 on controlAttributeList
-   goto 343 on controlAttribute
-
-State 19:
- ( 70)K comboBoxSpec    -> COMBOBOX identifier .controlAttributeList
- ( 78)  controlAttributeList -> .controlAttributeList controlAttribute
- ( 79)  controlAttributeList -> .controlAttribute
- ( 80)  controlAttribute -> .COMMA ctrlAttribute
-
-   shift to 344 on COMMA
-   goto 345 on controlAttributeList
-   goto 343 on controlAttribute
-
-State 20:
- ( 71)K listBoxSpec     -> LISTBOX identifier .controlAttributeList
- ( 78)  controlAttributeList -> .controlAttributeList controlAttribute
- ( 79)  controlAttributeList -> .controlAttribute
- ( 80)  controlAttribute -> .COMMA ctrlAttribute
-
-   shift to 344 on COMMA
-   goto 346 on controlAttributeList
-   goto 343 on controlAttribute
-
-State 21:
- ( 73)K scrollBarSpec   -> SCROLLBAR identifier .controlAttributeList
- ( 78)  controlAttributeList -> .controlAttributeList controlAttribute
- ( 79)  controlAttributeList -> .controlAttribute
- ( 80)  controlAttribute -> .COMMA ctrlAttribute
-
-   shift to 344 on COMMA
-   goto 348 on controlAttributeList
-   goto 343 on controlAttribute
-
-State 22:
- ( 61)K pushButtonSpec  -> buttonType string COMMA identifier .controlAttributeList
- ( 78)  controlAttributeList -> .controlAttributeList controlAttribute
- ( 79)  controlAttributeList -> .controlAttribute
- ( 80)  controlAttribute -> .COMMA ctrlAttribute
-
-   shift to 344 on COMMA
-   goto 604 on controlAttributeList
-   goto 343 on controlAttribute
-
-State 23:
- ( 65)K lrcTextSpec     -> lrcText string COMMA identifier .controlAttributeList
- ( 78)  controlAttributeList -> .controlAttributeList controlAttribute
- ( 79)  controlAttributeList -> .controlAttribute
- ( 80)  controlAttribute -> .COMMA ctrlAttribute
-
-   shift to 344 on COMMA
-   goto 605 on controlAttributeList
-   goto 343 on controlAttribute
-
-State 24:
- ( 72)K iconSpec        -> _ICON identifierOrString COMMA identifier .controlAttributeList
- ( 78)  controlAttributeList -> .controlAttributeList controlAttribute
- ( 79)  controlAttributeList -> .controlAttribute
- ( 80)  controlAttribute -> .COMMA ctrlAttribute
-
-   shift to 344 on COMMA
-   goto 609 on controlAttributeList
-   goto 343 on controlAttribute
-
-State 25:
- (451)K value           -> VALUE .constantElementList
- (404)  constantElementList -> .constantElementList constantElement
- (405)  constantElementList -> .constantElement
- (406)  constantElement -> .constant
- (407)  constantElement -> .COMMA constant
- (463)  constant        -> .number
- (464)  constant        -> .identifier
- (465)  constant        -> .string
- (466)  constant        -> .identifier LPAR exprList RPAR
- (472)  number          -> .NUMBER
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   shift to 6 on COMMA
-   goto 78 on string
-   goto 77 on identifier
-   goto 76 on number
-   goto 26 on constantElementList
-   goto 122 on constantElement
-   goto 123 on constant
-
-State 26:
- (404)K constantElementList -> constantElementList .constantElement
- (451)K value           -> VALUE constantElementList .
- (406)  constantElement -> .constant
- (407)  constantElement -> .COMMA constant
- (463)  constant        -> .number
- (464)  constant        -> .identifier
- (465)  constant        -> .string
- (466)  constant        -> .identifier LPAR exprList RPAR
- (472)  number          -> .NUMBER
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   shift to 6 on COMMA
-   reduce by 451 on VALUE
-   reduce by 451 on END
-   goto 78 on string
-   goto 77 on identifier
-   goto 76 on number
-   goto 224 on constantElement
-   goto 123 on constant
-
-State 27:
- ( 74)K controlSpec     -> CONTROL controlId COMMA identifier COMMA string .controlAttributeList
- ( 78)  controlAttributeList -> .controlAttributeList controlAttribute
- ( 79)  controlAttributeList -> .controlAttribute
- ( 80)  controlAttribute -> .COMMA ctrlAttribute
-
-   shift to 344 on COMMA
-   goto 631 on controlAttributeList
-   goto 343 on controlAttribute
-
-State 28:
- (  0)K start           -> resourceFile .
-
-   accept on EOI
-
-State 29:
  (  1)K resourceFile    -> resourceDefinitionList .
  (  2)K resourceDefinitionList -> resourceDefinitionList .resourceDefinition
  (  4)  resourceDefinition -> .bitmapDefinition
@@ -618,35 +119,832 @@ State 29:
  (473)  identifier      -> .IDENTIFIER
 
    reduce by 1 on EOI
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 49 on GUIDELINES
-   shift to 50 on STRINGTABLE
-   shift to 1 on LANGUAGE
-   goto 56 on resourceDefinition
-   goto 31 on bitmapDefinition
-   goto 32 on iconDefinition
-   goto 33 on customTypeDefinition
-   goto 34 on dialogDefinition
-   goto 35 on extendedDialogDefinition
-   goto 36 on guideLinesDefinition
-   goto 37 on toolbarDefnition
-   goto 38 on menuDefinition
-   goto 39 on dialogInitDefinition
-   goto 40 on acceleratorsDefinition
-   goto 41 on rcdataDefinition
-   goto 42 on stringTableDefinition
-   goto 43 on textIncludeDirective
-   goto 44 on languageDirective
-   goto 45 on versionDefinition
-   goto 46 on typelibDefinition
-   goto 47 on afxDialogLayout
-   goto 48 on resourceId
-   goto 53 on identifier
-   goto 51 on number
-   goto 52 on identifierOrNumber
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 56 on GUIDELINES
+   shift to 57 on STRINGTABLE
+   shift to 2 on LANGUAGE
+   goto 63 on resourceDefinition
+   goto 38 on bitmapDefinition
+   goto 39 on iconDefinition
+   goto 40 on customTypeDefinition
+   goto 41 on dialogDefinition
+   goto 42 on extendedDialogDefinition
+   goto 43 on guideLinesDefinition
+   goto 44 on toolbarDefnition
+   goto 45 on menuDefinition
+   goto 46 on dialogInitDefinition
+   goto 47 on acceleratorsDefinition
+   goto 48 on rcdataDefinition
+   goto 49 on stringTableDefinition
+   goto 50 on textIncludeDirective
+   goto 51 on languageDirective
+   goto 52 on versionDefinition
+   goto 53 on typelibDefinition
+   goto 54 on afxDialogLayout
+   goto 55 on resourceId
+   goto 60 on identifier
+   goto 58 on number
+   goto 59 on identifierOrNumber
+
+State 2:
+ (433)K languageDirective -> LANGUAGE .constant COMMA constant
+ (463)  constant        -> .number
+ (464)  constant        -> .identifier
+ (465)  constant        -> .string
+ (466)  constant        -> .identifier LPAR exprList RPAR
+ (472)  number          -> .NUMBER
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   goto 85 on string
+   goto 84 on identifier
+   goto 83 on number
+   goto 82 on constant
+
+State 3:
+ (403)K dialogInitDefinition -> resourceId DLGINIT BEGIN .constantElementList END
+ (404)  constantElementList -> .constantElementList constantElement
+ (405)  constantElementList -> .constantElement
+ (406)  constantElement -> .constant
+ (407)  constantElement -> .COMMA constant
+ (463)  constant        -> .number
+ (464)  constant        -> .identifier
+ (465)  constant        -> .string
+ (466)  constant        -> .identifier LPAR exprList RPAR
+ (472)  number          -> .NUMBER
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   shift to 8 on COMMA
+   goto 85 on string
+   goto 84 on identifier
+   goto 83 on number
+   goto 7 on constantElementList
+   goto 128 on constantElement
+   goto 129 on constant
+
+State 4:
+ (433)K languageDirective -> LANGUAGE constant COMMA .constant
+ (463)  constant        -> .number
+ (464)  constant        -> .identifier
+ (465)  constant        -> .string
+ (466)  constant        -> .identifier LPAR exprList RPAR
+ (472)  number          -> .NUMBER
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   goto 85 on string
+   goto 84 on identifier
+   goto 83 on number
+   goto 142 on constant
+
+State 5:
+ (466)K constant        -> identifier LPAR .exprList RPAR
+ (459)  exprList        -> .exprList COMMA expr
+ (460)  exprList        -> .expr
+ (461)  expr            -> .expr OR constant
+ (462)  expr            -> .constant
+ (463)  constant        -> .number
+ (464)  constant        -> .identifier
+ (465)  constant        -> .string
+ (466)  constant        -> .identifier LPAR exprList RPAR
+ (472)  number          -> .NUMBER
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   goto 85 on string
+   goto 84 on identifier
+   goto 83 on number
+   goto 145 on constant
+   goto 143 on exprList
+   goto 144 on expr
+
+State 6:
+ ( 34)K extendedDialogSpec -> STYLE .dialogStyleExpr
+ ( 45)  dialogStyleExpr -> .dialogStyleExpr OR dialogStyle
+ ( 46)  dialogStyleExpr -> .dialogStyle
+ ( 47)  dialogStyle     -> .ds_style
+ ( 48)  dialogStyle     -> .ws_style
+ (112)  ds_style        -> ._DS_ABSALIGN
+ (113)  ds_style        -> ._DS_SYSMODAL
+ (114)  ds_style        -> ._DS_LOCALEDIT
+ (115)  ds_style        -> ._DS_SETFONT
+ (116)  ds_style        -> ._DS_MODALFRAME
+ (117)  ds_style        -> ._DS_NOIDLEMSG
+ (118)  ds_style        -> ._DS_SETFOREGROUND
+ (119)  ds_style        -> ._DS_3DLOOK
+ (120)  ds_style        -> ._DS_FIXEDSYS
+ (121)  ds_style        -> ._DS_NOFAILCREATE
+ (122)  ds_style        -> ._DS_CONTROL
+ (123)  ds_style        -> ._DS_CENTER
+ (124)  ds_style        -> ._DS_CENTERMOUSE
+ (125)  ds_style        -> ._DS_CONTEXTHELP
+ (126)  ws_style        -> ._WS_OVERLAPPED
+ (127)  ws_style        -> ._WS_POPUP
+ (128)  ws_style        -> ._WS_CHILD
+ (129)  ws_style        -> ._WS_MINIMIZE
+ (130)  ws_style        -> ._WS_VISIBLE
+ (131)  ws_style        -> ._WS_DISABLED
+ (132)  ws_style        -> ._WS_CLIPSIBLINGS
+ (133)  ws_style        -> ._WS_CLIPCHILDREN
+ (134)  ws_style        -> ._WS_MAXIMIZE
+ (135)  ws_style        -> ._WS_CAPTION
+ (136)  ws_style        -> ._WS_BORDER
+ (137)  ws_style        -> ._WS_DLGFRAME
+ (138)  ws_style        -> ._WS_VSCROLL
+ (139)  ws_style        -> ._WS_HSCROLL
+ (140)  ws_style        -> ._WS_SYSMENU
+ (141)  ws_style        -> ._WS_THICKFRAME
+ (142)  ws_style        -> ._WS_GROUP
+ (143)  ws_style        -> ._WS_TABSTOP
+ (144)  ws_style        -> ._WS_MINIMIZEBOX
+ (145)  ws_style        -> ._WS_MAXIMIZEBOX
+
+   shift to 171 on _WS_OVERLAPPED
+   shift to 172 on _WS_POPUP
+   shift to 173 on _WS_CHILD
+   shift to 174 on _WS_MINIMIZE
+   shift to 175 on _WS_VISIBLE
+   shift to 176 on _WS_DISABLED
+   shift to 177 on _WS_CLIPSIBLINGS
+   shift to 178 on _WS_CLIPCHILDREN
+   shift to 179 on _WS_MAXIMIZE
+   shift to 180 on _WS_CAPTION
+   shift to 181 on _WS_BORDER
+   shift to 182 on _WS_DLGFRAME
+   shift to 183 on _WS_VSCROLL
+   shift to 184 on _WS_HSCROLL
+   shift to 185 on _WS_SYSMENU
+   shift to 186 on _WS_THICKFRAME
+   shift to 187 on _WS_GROUP
+   shift to 188 on _WS_TABSTOP
+   shift to 189 on _WS_MINIMIZEBOX
+   shift to 190 on _WS_MAXIMIZEBOX
+   shift to 157 on _DS_ABSALIGN
+   shift to 158 on _DS_SYSMODAL
+   shift to 159 on _DS_LOCALEDIT
+   shift to 160 on _DS_SETFONT
+   shift to 161 on _DS_MODALFRAME
+   shift to 162 on _DS_NOIDLEMSG
+   shift to 163 on _DS_SETFOREGROUND
+   shift to 164 on _DS_3DLOOK
+   shift to 165 on _DS_FIXEDSYS
+   shift to 166 on _DS_NOFAILCREATE
+   shift to 167 on _DS_CONTROL
+   shift to 168 on _DS_CENTER
+   shift to 169 on _DS_CENTERMOUSE
+   shift to 170 on _DS_CONTEXTHELP
+   goto 153 on dialogStyleExpr
+   goto 154 on dialogStyle
+   goto 155 on ds_style
+   goto 156 on ws_style
+
+State 7:
+ (403)K dialogInitDefinition -> resourceId DLGINIT BEGIN constantElementList .END
+ (404)K constantElementList -> constantElementList .constantElement
+ (406)  constantElement -> .constant
+ (407)  constantElement -> .COMMA constant
+ (463)  constant        -> .number
+ (464)  constant        -> .identifier
+ (465)  constant        -> .string
+ (466)  constant        -> .identifier LPAR exprList RPAR
+ (472)  number          -> .NUMBER
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   shift to 8 on COMMA
+   shift to 227 on END
+   goto 85 on string
+   goto 84 on identifier
+   goto 83 on number
+   goto 228 on constantElement
+   goto 129 on constant
+
+State 8:
+ (407)K constantElement -> COMMA .constant
+ (463)  constant        -> .number
+ (464)  constant        -> .identifier
+ (465)  constant        -> .string
+ (466)  constant        -> .identifier LPAR exprList RPAR
+ (472)  number          -> .NUMBER
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   goto 85 on string
+   goto 84 on identifier
+   goto 83 on number
+   goto 229 on constant
+
+State 9:
+ (408)K acceleratorsDefinition -> resourceId ACCELERATORS resourceAttributeList BEGIN .acceleratorList END
+ (409)  acceleratorList -> .acceleratorList accelerator
+ (410)  acceleratorList -> .accelerator
+ (411)  accelerator     -> .constant COMMA identifier opt_acceleratorSpecList
+ (463)  constant        -> .number
+ (464)  constant        -> .identifier
+ (465)  constant        -> .string
+ (466)  constant        -> .identifier LPAR exprList RPAR
+ (472)  number          -> .NUMBER
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   goto 85 on string
+   goto 84 on identifier
+   goto 83 on number
+   goto 231 on constant
+   goto 19 on acceleratorList
+   goto 230 on accelerator
+
+State 10:
+ (437)K versionSpec     -> FILEVERSION .exprList
+ (459)  exprList        -> .exprList COMMA expr
+ (460)  exprList        -> .expr
+ (461)  expr            -> .expr OR constant
+ (462)  expr            -> .constant
+ (463)  constant        -> .number
+ (464)  constant        -> .identifier
+ (465)  constant        -> .string
+ (466)  constant        -> .identifier LPAR exprList RPAR
+ (472)  number          -> .NUMBER
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   goto 85 on string
+   goto 84 on identifier
+   goto 83 on number
+   goto 145 on constant
+   goto 235 on exprList
+   goto 144 on expr
+
+State 11:
+ (438)K versionSpec     -> PRODUCTVERSION .exprList
+ (459)  exprList        -> .exprList COMMA expr
+ (460)  exprList        -> .expr
+ (461)  expr            -> .expr OR constant
+ (462)  expr            -> .constant
+ (463)  constant        -> .number
+ (464)  constant        -> .identifier
+ (465)  constant        -> .string
+ (466)  constant        -> .identifier LPAR exprList RPAR
+ (472)  number          -> .NUMBER
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   goto 85 on string
+   goto 84 on identifier
+   goto 83 on number
+   goto 145 on constant
+   goto 236 on exprList
+   goto 144 on expr
+
+State 12:
+ (439)K versionSpec     -> FILEFLAGSMASK .expr
+ (461)  expr            -> .expr OR constant
+ (462)  expr            -> .constant
+ (463)  constant        -> .number
+ (464)  constant        -> .identifier
+ (465)  constant        -> .string
+ (466)  constant        -> .identifier LPAR exprList RPAR
+ (472)  number          -> .NUMBER
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   goto 85 on string
+   goto 84 on identifier
+   goto 83 on number
+   goto 145 on constant
+   goto 237 on expr
+
+State 13:
+ (440)K versionSpec     -> FILEFLAGS .expr
+ (461)  expr            -> .expr OR constant
+ (462)  expr            -> .constant
+ (463)  constant        -> .number
+ (464)  constant        -> .identifier
+ (465)  constant        -> .string
+ (466)  constant        -> .identifier LPAR exprList RPAR
+ (472)  number          -> .NUMBER
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   goto 85 on string
+   goto 84 on identifier
+   goto 83 on number
+   goto 145 on constant
+   goto 238 on expr
+
+State 14:
+ (441)K versionSpec     -> FILEOS .expr
+ (461)  expr            -> .expr OR constant
+ (462)  expr            -> .constant
+ (463)  constant        -> .number
+ (464)  constant        -> .identifier
+ (465)  constant        -> .string
+ (466)  constant        -> .identifier LPAR exprList RPAR
+ (472)  number          -> .NUMBER
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   goto 85 on string
+   goto 84 on identifier
+   goto 83 on number
+   goto 145 on constant
+   goto 239 on expr
+
+State 15:
+ (442)K versionSpec     -> FILETYPE .expr
+ (461)  expr            -> .expr OR constant
+ (462)  expr            -> .constant
+ (463)  constant        -> .number
+ (464)  constant        -> .identifier
+ (465)  constant        -> .string
+ (466)  constant        -> .identifier LPAR exprList RPAR
+ (472)  number          -> .NUMBER
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   goto 85 on string
+   goto 84 on identifier
+   goto 83 on number
+   goto 145 on constant
+   goto 240 on expr
+
+State 16:
+ (443)K versionSpec     -> FILESUBTYPE .expr
+ (461)  expr            -> .expr OR constant
+ (462)  expr            -> .constant
+ (463)  constant        -> .number
+ (464)  constant        -> .identifier
+ (465)  constant        -> .string
+ (466)  constant        -> .identifier LPAR exprList RPAR
+ (472)  number          -> .NUMBER
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   goto 85 on string
+   goto 84 on identifier
+   goto 83 on number
+   goto 145 on constant
+   goto 241 on expr
+
+State 17:
+ (339)K guideLinesDefinition -> GUIDELINES DESIGNINFO resourceAttributeList BEGIN .designInfoList END
+ (340)  designInfoList  -> .designInfoList designInfo
+ (341)  designInfoList  -> .designInfo
+ (342)  designInfo      -> .identifierOrString COMMA DIALOG BEGIN designSpecList END
+ (343)  identifierOrString -> .identifier
+ (344)  identifierOrString -> .string
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   goto 247 on string
+   goto 246 on identifier
+   goto 245 on identifierOrString
+   goto 20 on designInfoList
+   goto 244 on designInfo
+
+State 18:
+ ( 28)K dialogSpec      -> STYLE .dialogStyleExpr
+ ( 45)  dialogStyleExpr -> .dialogStyleExpr OR dialogStyle
+ ( 46)  dialogStyleExpr -> .dialogStyle
+ ( 47)  dialogStyle     -> .ds_style
+ ( 48)  dialogStyle     -> .ws_style
+ (112)  ds_style        -> ._DS_ABSALIGN
+ (113)  ds_style        -> ._DS_SYSMODAL
+ (114)  ds_style        -> ._DS_LOCALEDIT
+ (115)  ds_style        -> ._DS_SETFONT
+ (116)  ds_style        -> ._DS_MODALFRAME
+ (117)  ds_style        -> ._DS_NOIDLEMSG
+ (118)  ds_style        -> ._DS_SETFOREGROUND
+ (119)  ds_style        -> ._DS_3DLOOK
+ (120)  ds_style        -> ._DS_FIXEDSYS
+ (121)  ds_style        -> ._DS_NOFAILCREATE
+ (122)  ds_style        -> ._DS_CONTROL
+ (123)  ds_style        -> ._DS_CENTER
+ (124)  ds_style        -> ._DS_CENTERMOUSE
+ (125)  ds_style        -> ._DS_CONTEXTHELP
+ (126)  ws_style        -> ._WS_OVERLAPPED
+ (127)  ws_style        -> ._WS_POPUP
+ (128)  ws_style        -> ._WS_CHILD
+ (129)  ws_style        -> ._WS_MINIMIZE
+ (130)  ws_style        -> ._WS_VISIBLE
+ (131)  ws_style        -> ._WS_DISABLED
+ (132)  ws_style        -> ._WS_CLIPSIBLINGS
+ (133)  ws_style        -> ._WS_CLIPCHILDREN
+ (134)  ws_style        -> ._WS_MAXIMIZE
+ (135)  ws_style        -> ._WS_CAPTION
+ (136)  ws_style        -> ._WS_BORDER
+ (137)  ws_style        -> ._WS_DLGFRAME
+ (138)  ws_style        -> ._WS_VSCROLL
+ (139)  ws_style        -> ._WS_HSCROLL
+ (140)  ws_style        -> ._WS_SYSMENU
+ (141)  ws_style        -> ._WS_THICKFRAME
+ (142)  ws_style        -> ._WS_GROUP
+ (143)  ws_style        -> ._WS_TABSTOP
+ (144)  ws_style        -> ._WS_MINIMIZEBOX
+ (145)  ws_style        -> ._WS_MAXIMIZEBOX
+
+   shift to 171 on _WS_OVERLAPPED
+   shift to 172 on _WS_POPUP
+   shift to 173 on _WS_CHILD
+   shift to 174 on _WS_MINIMIZE
+   shift to 175 on _WS_VISIBLE
+   shift to 176 on _WS_DISABLED
+   shift to 177 on _WS_CLIPSIBLINGS
+   shift to 178 on _WS_CLIPCHILDREN
+   shift to 179 on _WS_MAXIMIZE
+   shift to 180 on _WS_CAPTION
+   shift to 181 on _WS_BORDER
+   shift to 182 on _WS_DLGFRAME
+   shift to 183 on _WS_VSCROLL
+   shift to 184 on _WS_HSCROLL
+   shift to 185 on _WS_SYSMENU
+   shift to 186 on _WS_THICKFRAME
+   shift to 187 on _WS_GROUP
+   shift to 188 on _WS_TABSTOP
+   shift to 189 on _WS_MINIMIZEBOX
+   shift to 190 on _WS_MAXIMIZEBOX
+   shift to 157 on _DS_ABSALIGN
+   shift to 158 on _DS_SYSMODAL
+   shift to 159 on _DS_LOCALEDIT
+   shift to 160 on _DS_SETFONT
+   shift to 161 on _DS_MODALFRAME
+   shift to 162 on _DS_NOIDLEMSG
+   shift to 163 on _DS_SETFOREGROUND
+   shift to 164 on _DS_3DLOOK
+   shift to 165 on _DS_FIXEDSYS
+   shift to 166 on _DS_NOFAILCREATE
+   shift to 167 on _DS_CONTROL
+   shift to 168 on _DS_CENTER
+   shift to 169 on _DS_CENTERMOUSE
+   shift to 170 on _DS_CONTEXTHELP
+   goto 257 on dialogStyleExpr
+   goto 154 on dialogStyle
+   goto 155 on ds_style
+   goto 156 on ws_style
+
+State 19:
+ (408)K acceleratorsDefinition -> resourceId ACCELERATORS resourceAttributeList BEGIN acceleratorList .END
+ (409)K acceleratorList -> acceleratorList .accelerator
+ (411)  accelerator     -> .constant COMMA identifier opt_acceleratorSpecList
+ (463)  constant        -> .number
+ (464)  constant        -> .identifier
+ (465)  constant        -> .string
+ (466)  constant        -> .identifier LPAR exprList RPAR
+ (472)  number          -> .NUMBER
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   shift to 299 on END
+   goto 85 on string
+   goto 84 on identifier
+   goto 83 on number
+   goto 231 on constant
+   goto 300 on accelerator
+
+State 20:
+ (339)K guideLinesDefinition -> GUIDELINES DESIGNINFO resourceAttributeList BEGIN designInfoList .END
+ (340)K designInfoList  -> designInfoList .designInfo
+ (342)  designInfo      -> .identifierOrString COMMA DIALOG BEGIN designSpecList END
+ (343)  identifierOrString -> .identifier
+ (344)  identifierOrString -> .string
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   shift to 307 on END
+   goto 247 on string
+   goto 246 on identifier
+   goto 245 on identifierOrString
+   goto 308 on designInfo
+
+State 21:
+ (459)K exprList        -> exprList COMMA .expr
+ (461)  expr            -> .expr OR constant
+ (462)  expr            -> .constant
+ (463)  constant        -> .number
+ (464)  constant        -> .identifier
+ (465)  constant        -> .string
+ (466)  constant        -> .identifier LPAR exprList RPAR
+ (472)  number          -> .NUMBER
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   goto 85 on string
+   goto 84 on identifier
+   goto 83 on number
+   goto 145 on constant
+   goto 312 on expr
+
+State 22:
+ (461)K expr            -> expr OR .constant
+ (463)  constant        -> .number
+ (464)  constant        -> .identifier
+ (465)  constant        -> .string
+ (466)  constant        -> .identifier LPAR exprList RPAR
+ (472)  number          -> .NUMBER
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   goto 85 on string
+   goto 84 on identifier
+   goto 83 on number
+   goto 313 on constant
+
+State 23:
+ ( 72)K iconSpec        -> _ICON .identifierOrString COMMA identifier controlAttributeList
+ (343)  identifierOrString -> .identifier
+ (344)  identifierOrString -> .string
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   goto 247 on string
+   goto 246 on identifier
+   goto 320 on identifierOrString
+
+State 24:
+ ( 45)K dialogStyleExpr -> dialogStyleExpr OR .dialogStyle
+ ( 47)  dialogStyle     -> .ds_style
+ ( 48)  dialogStyle     -> .ws_style
+ (112)  ds_style        -> ._DS_ABSALIGN
+ (113)  ds_style        -> ._DS_SYSMODAL
+ (114)  ds_style        -> ._DS_LOCALEDIT
+ (115)  ds_style        -> ._DS_SETFONT
+ (116)  ds_style        -> ._DS_MODALFRAME
+ (117)  ds_style        -> ._DS_NOIDLEMSG
+ (118)  ds_style        -> ._DS_SETFOREGROUND
+ (119)  ds_style        -> ._DS_3DLOOK
+ (120)  ds_style        -> ._DS_FIXEDSYS
+ (121)  ds_style        -> ._DS_NOFAILCREATE
+ (122)  ds_style        -> ._DS_CONTROL
+ (123)  ds_style        -> ._DS_CENTER
+ (124)  ds_style        -> ._DS_CENTERMOUSE
+ (125)  ds_style        -> ._DS_CONTEXTHELP
+ (126)  ws_style        -> ._WS_OVERLAPPED
+ (127)  ws_style        -> ._WS_POPUP
+ (128)  ws_style        -> ._WS_CHILD
+ (129)  ws_style        -> ._WS_MINIMIZE
+ (130)  ws_style        -> ._WS_VISIBLE
+ (131)  ws_style        -> ._WS_DISABLED
+ (132)  ws_style        -> ._WS_CLIPSIBLINGS
+ (133)  ws_style        -> ._WS_CLIPCHILDREN
+ (134)  ws_style        -> ._WS_MAXIMIZE
+ (135)  ws_style        -> ._WS_CAPTION
+ (136)  ws_style        -> ._WS_BORDER
+ (137)  ws_style        -> ._WS_DLGFRAME
+ (138)  ws_style        -> ._WS_VSCROLL
+ (139)  ws_style        -> ._WS_HSCROLL
+ (140)  ws_style        -> ._WS_SYSMENU
+ (141)  ws_style        -> ._WS_THICKFRAME
+ (142)  ws_style        -> ._WS_GROUP
+ (143)  ws_style        -> ._WS_TABSTOP
+ (144)  ws_style        -> ._WS_MINIMIZEBOX
+ (145)  ws_style        -> ._WS_MAXIMIZEBOX
+
+   shift to 171 on _WS_OVERLAPPED
+   shift to 172 on _WS_POPUP
+   shift to 173 on _WS_CHILD
+   shift to 174 on _WS_MINIMIZE
+   shift to 175 on _WS_VISIBLE
+   shift to 176 on _WS_DISABLED
+   shift to 177 on _WS_CLIPSIBLINGS
+   shift to 178 on _WS_CLIPCHILDREN
+   shift to 179 on _WS_MAXIMIZE
+   shift to 180 on _WS_CAPTION
+   shift to 181 on _WS_BORDER
+   shift to 182 on _WS_DLGFRAME
+   shift to 183 on _WS_VSCROLL
+   shift to 184 on _WS_HSCROLL
+   shift to 185 on _WS_SYSMENU
+   shift to 186 on _WS_THICKFRAME
+   shift to 187 on _WS_GROUP
+   shift to 188 on _WS_TABSTOP
+   shift to 189 on _WS_MINIMIZEBOX
+   shift to 190 on _WS_MAXIMIZEBOX
+   shift to 157 on _DS_ABSALIGN
+   shift to 158 on _DS_SYSMODAL
+   shift to 159 on _DS_LOCALEDIT
+   shift to 160 on _DS_SETFONT
+   shift to 161 on _DS_MODALFRAME
+   shift to 162 on _DS_NOIDLEMSG
+   shift to 163 on _DS_SETFOREGROUND
+   shift to 164 on _DS_3DLOOK
+   shift to 165 on _DS_FIXEDSYS
+   shift to 166 on _DS_NOFAILCREATE
+   shift to 167 on _DS_CONTROL
+   shift to 168 on _DS_CENTER
+   shift to 169 on _DS_CENTERMOUSE
+   shift to 170 on _DS_CONTEXTHELP
+   goto 325 on dialogStyle
+   goto 155 on ds_style
+   goto 156 on ws_style
+
+State 25:
+ ( 69)K editSpec        -> EDITTEXT identifier .controlAttributeList
+ ( 78)  controlAttributeList -> .controlAttributeList controlAttribute
+ ( 79)  controlAttributeList -> .controlAttribute
+ ( 80)  controlAttribute -> .COMMA ctrlAttribute
+
+   shift to 344 on COMMA
+   goto 342 on controlAttributeList
+   goto 343 on controlAttribute
+
+State 26:
+ ( 70)K comboBoxSpec    -> COMBOBOX identifier .controlAttributeList
+ ( 78)  controlAttributeList -> .controlAttributeList controlAttribute
+ ( 79)  controlAttributeList -> .controlAttribute
+ ( 80)  controlAttribute -> .COMMA ctrlAttribute
+
+   shift to 344 on COMMA
+   goto 345 on controlAttributeList
+   goto 343 on controlAttribute
+
+State 27:
+ ( 71)K listBoxSpec     -> LISTBOX identifier .controlAttributeList
+ ( 78)  controlAttributeList -> .controlAttributeList controlAttribute
+ ( 79)  controlAttributeList -> .controlAttribute
+ ( 80)  controlAttribute -> .COMMA ctrlAttribute
+
+   shift to 344 on COMMA
+   goto 346 on controlAttributeList
+   goto 343 on controlAttribute
+
+State 28:
+ ( 73)K scrollBarSpec   -> SCROLLBAR identifier .controlAttributeList
+ ( 78)  controlAttributeList -> .controlAttributeList controlAttribute
+ ( 79)  controlAttributeList -> .controlAttribute
+ ( 80)  controlAttribute -> .COMMA ctrlAttribute
+
+   shift to 344 on COMMA
+   goto 348 on controlAttributeList
+   goto 343 on controlAttribute
+
+State 29:
+ (369)K menuItem        -> _MENUITEM string COMMA .identifierOrNumber menuItemModifierList
+ (470)  identifierOrNumber -> .identifier
+ (471)  identifierOrNumber -> .number
+ (472)  number          -> .NUMBER
+ (473)  identifier      -> .IDENTIFIER
+
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   goto 60 on identifier
+   goto 355 on number
+   goto 354 on identifierOrNumber
 
 State 30:
+ ( 61)K pushButtonSpec  -> buttonType string COMMA identifier .controlAttributeList
+ ( 78)  controlAttributeList -> .controlAttributeList controlAttribute
+ ( 79)  controlAttributeList -> .controlAttribute
+ ( 80)  controlAttribute -> .COMMA ctrlAttribute
+
+   shift to 344 on COMMA
+   goto 604 on controlAttributeList
+   goto 343 on controlAttribute
+
+State 31:
+ ( 65)K lrcTextSpec     -> lrcText string COMMA identifier .controlAttributeList
+ ( 78)  controlAttributeList -> .controlAttributeList controlAttribute
+ ( 79)  controlAttributeList -> .controlAttribute
+ ( 80)  controlAttribute -> .COMMA ctrlAttribute
+
+   shift to 344 on COMMA
+   goto 605 on controlAttributeList
+   goto 343 on controlAttribute
+
+State 32:
+ ( 72)K iconSpec        -> _ICON identifierOrString COMMA identifier .controlAttributeList
+ ( 78)  controlAttributeList -> .controlAttributeList controlAttribute
+ ( 79)  controlAttributeList -> .controlAttribute
+ ( 80)  controlAttribute -> .COMMA ctrlAttribute
+
+   shift to 344 on COMMA
+   goto 609 on controlAttributeList
+   goto 343 on controlAttribute
+
+State 33:
+ (451)K value           -> VALUE .constantElementList
+ (404)  constantElementList -> .constantElementList constantElement
+ (405)  constantElementList -> .constantElement
+ (406)  constantElement -> .constant
+ (407)  constantElement -> .COMMA constant
+ (463)  constant        -> .number
+ (464)  constant        -> .identifier
+ (465)  constant        -> .string
+ (466)  constant        -> .identifier LPAR exprList RPAR
+ (472)  number          -> .NUMBER
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   shift to 8 on COMMA
+   goto 85 on string
+   goto 84 on identifier
+   goto 83 on number
+   goto 34 on constantElementList
+   goto 128 on constantElement
+   goto 129 on constant
+
+State 34:
+ (404)K constantElementList -> constantElementList .constantElement
+ (451)K value           -> VALUE constantElementList .
+ (406)  constantElement -> .constant
+ (407)  constantElement -> .COMMA constant
+ (463)  constant        -> .number
+ (464)  constant        -> .identifier
+ (465)  constant        -> .string
+ (466)  constant        -> .identifier LPAR exprList RPAR
+ (472)  number          -> .NUMBER
+ (473)  identifier      -> .IDENTIFIER
+ (474)  string          -> .STRING
+
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   shift to 8 on COMMA
+   reduce by 451 on VALUE
+   reduce by 451 on END
+   goto 85 on string
+   goto 84 on identifier
+   goto 83 on number
+   goto 228 on constantElement
+   goto 129 on constant
+
+State 35:
+ ( 74)K controlSpec     -> CONTROL controlId COMMA identifier COMMA string .controlAttributeList
+ ( 78)  controlAttributeList -> .controlAttributeList controlAttribute
+ ( 79)  controlAttributeList -> .controlAttribute
+ ( 80)  controlAttribute -> .COMMA ctrlAttribute
+
+   shift to 344 on COMMA
+   goto 631 on controlAttributeList
+   goto 343 on controlAttribute
+
+State 36:
+ (  0)K start           -> resourceFile .
+
+   accept on EOI
+
+State 37:
  (  3)K resourceDefinitionList -> resourceDefinition .
 
    reduce by 3 on EOI
@@ -656,7 +954,7 @@ State 30:
    reduce by 3 on STRINGTABLE
    reduce by 3 on LANGUAGE
 
-State 31:
+State 38:
  (  4)K resourceDefinition -> bitmapDefinition .
 
    reduce by 4 on EOI
@@ -666,7 +964,7 @@ State 31:
    reduce by 4 on STRINGTABLE
    reduce by 4 on LANGUAGE
 
-State 32:
+State 39:
  (  5)K resourceDefinition -> iconDefinition .
 
    reduce by 5 on EOI
@@ -676,7 +974,7 @@ State 32:
    reduce by 5 on STRINGTABLE
    reduce by 5 on LANGUAGE
 
-State 33:
+State 40:
  (  6)K resourceDefinition -> customTypeDefinition .
 
    reduce by 6 on EOI
@@ -686,7 +984,7 @@ State 33:
    reduce by 6 on STRINGTABLE
    reduce by 6 on LANGUAGE
 
-State 34:
+State 41:
  (  7)K resourceDefinition -> dialogDefinition .
 
    reduce by 7 on EOI
@@ -696,7 +994,7 @@ State 34:
    reduce by 7 on STRINGTABLE
    reduce by 7 on LANGUAGE
 
-State 35:
+State 42:
  (  8)K resourceDefinition -> extendedDialogDefinition .
 
    reduce by 8 on EOI
@@ -706,7 +1004,7 @@ State 35:
    reduce by 8 on STRINGTABLE
    reduce by 8 on LANGUAGE
 
-State 36:
+State 43:
  (  9)K resourceDefinition -> guideLinesDefinition .
 
    reduce by 9 on EOI
@@ -716,7 +1014,7 @@ State 36:
    reduce by 9 on STRINGTABLE
    reduce by 9 on LANGUAGE
 
-State 37:
+State 44:
  ( 10)K resourceDefinition -> toolbarDefnition .
 
    reduce by 10 on EOI
@@ -726,7 +1024,7 @@ State 37:
    reduce by 10 on STRINGTABLE
    reduce by 10 on LANGUAGE
 
-State 38:
+State 45:
  ( 11)K resourceDefinition -> menuDefinition .
 
    reduce by 11 on EOI
@@ -736,7 +1034,7 @@ State 38:
    reduce by 11 on STRINGTABLE
    reduce by 11 on LANGUAGE
 
-State 39:
+State 46:
  ( 12)K resourceDefinition -> dialogInitDefinition .
 
    reduce by 12 on EOI
@@ -746,7 +1044,7 @@ State 39:
    reduce by 12 on STRINGTABLE
    reduce by 12 on LANGUAGE
 
-State 40:
+State 47:
  ( 13)K resourceDefinition -> acceleratorsDefinition .
 
    reduce by 13 on EOI
@@ -756,7 +1054,7 @@ State 40:
    reduce by 13 on STRINGTABLE
    reduce by 13 on LANGUAGE
 
-State 41:
+State 48:
  ( 14)K resourceDefinition -> rcdataDefinition .
 
    reduce by 14 on EOI
@@ -766,7 +1064,7 @@ State 41:
    reduce by 14 on STRINGTABLE
    reduce by 14 on LANGUAGE
 
-State 42:
+State 49:
  ( 15)K resourceDefinition -> stringTableDefinition .
 
    reduce by 15 on EOI
@@ -776,7 +1074,7 @@ State 42:
    reduce by 15 on STRINGTABLE
    reduce by 15 on LANGUAGE
 
-State 43:
+State 50:
  ( 16)K resourceDefinition -> textIncludeDirective .
 
    reduce by 16 on EOI
@@ -786,7 +1084,7 @@ State 43:
    reduce by 16 on STRINGTABLE
    reduce by 16 on LANGUAGE
 
-State 44:
+State 51:
  ( 17)K resourceDefinition -> languageDirective .
 
    reduce by 17 on EOI
@@ -796,7 +1094,7 @@ State 44:
    reduce by 17 on STRINGTABLE
    reduce by 17 on LANGUAGE
 
-State 45:
+State 52:
  ( 18)K resourceDefinition -> versionDefinition .
 
    reduce by 18 on EOI
@@ -806,7 +1104,7 @@ State 45:
    reduce by 18 on STRINGTABLE
    reduce by 18 on LANGUAGE
 
-State 46:
+State 53:
  ( 19)K resourceDefinition -> typelibDefinition .
 
    reduce by 19 on EOI
@@ -816,7 +1114,7 @@ State 46:
    reduce by 19 on STRINGTABLE
    reduce by 19 on LANGUAGE
 
-State 47:
+State 54:
  ( 20)K resourceDefinition -> afxDialogLayout .
 
    reduce by 20 on EOI
@@ -826,7 +1124,7 @@ State 47:
    reduce by 20 on STRINGTABLE
    reduce by 20 on LANGUAGE
 
-State 48:
+State 55:
  ( 21)K bitmapDefinition -> resourceId ._BITMAP resourceAttributeList string
  ( 22)K iconDefinition  -> resourceId ._ICON resourceAttributeList string
  ( 23)K customTypeDefinition -> resourceId .identifier resourceAttributeList string
@@ -844,28 +1142,28 @@ State 48:
  (362)  menuType        -> .MENUEX
  (473)  identifier      -> .IDENTIFIER
 
-   shift to 55 on IDENTIFIER
-   shift to 62 on TOOLBAR
-   shift to 57 on _BITMAP
-   shift to 58 on _ICON
-   shift to 69 on _MENU
-   shift to 65 on ACCELERATORS
-   shift to 66 on RCDATA
-   shift to 64 on DLGINIT
-   shift to 70 on MENUEX
-   shift to 67 on VERSIONINFO
-   shift to 60 on DIALOG
-   shift to 61 on DIALOGEX
-   shift to 68 on AFX_DIALOG_LAYOUT
-   goto 59 on identifier
-   goto 63 on menuType
+   shift to 62 on IDENTIFIER
+   shift to 69 on TOOLBAR
+   shift to 64 on _BITMAP
+   shift to 65 on _ICON
+   shift to 76 on _MENU
+   shift to 72 on ACCELERATORS
+   shift to 73 on RCDATA
+   shift to 71 on DLGINIT
+   shift to 77 on MENUEX
+   shift to 74 on VERSIONINFO
+   shift to 67 on DIALOG
+   shift to 68 on DIALOGEX
+   shift to 75 on AFX_DIALOG_LAYOUT
+   goto 66 on identifier
+   goto 70 on menuType
 
-State 49:
+State 56:
  (339)K guideLinesDefinition -> GUIDELINES .DESIGNINFO resourceAttributeList BEGIN designInfoList END
 
-   shift to 71 on DESIGNINFO
+   shift to 78 on DESIGNINFO
 
-State 50:
+State 57:
  (426)K stringTableDefinition -> STRINGTABLE .resourceAttributeList BEGIN stringSpecList END
  (104)  resourceAttributeList -> .
  (105)  resourceAttributeList -> .resourceAttributeList resourceAttribute
@@ -877,9 +1175,9 @@ State 50:
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
    reduce by 104 on BEGIN
-   goto 72 on resourceAttributeList
+   goto 79 on resourceAttributeList
 
-State 51:
+State 58:
  (430)K textIncludeDirective -> number .TEXTINCLUDE resourceAttributeList BEGIN stringList END
  (452)K typelibDefinition -> number .TYPELIB fileName
  (471)K identifierOrNumber -> number .
@@ -892,15 +1190,15 @@ State 51:
    reduce by 471 on ACCELERATORS
    reduce by 471 on RCDATA
    reduce by 471 on DLGINIT
-   shift to 73 on TEXTINCLUDE
-   shift to 74 on TYPELIB
+   shift to 80 on TEXTINCLUDE
+   shift to 81 on TYPELIB
    reduce by 471 on MENUEX
    reduce by 471 on VERSIONINFO
    reduce by 471 on DIALOG
    reduce by 471 on DIALOGEX
    reduce by 471 on AFX_DIALOG_LAYOUT
 
-State 52:
+State 59:
  (469)K resourceId      -> identifierOrNumber .
 
    reduce by 469 on IDENTIFIER
@@ -917,7 +1215,7 @@ State 52:
    reduce by 469 on DIALOGEX
    reduce by 469 on AFX_DIALOG_LAYOUT
 
-State 53:
+State 60:
  (470)K identifierOrNumber -> identifier .
 
    reduce by 470 on IDENTIFIER
@@ -938,7 +1236,7 @@ State 53:
    reduce by 470 on AFX_DIALOG_LAYOUT
    reduce by 470 on END
 
-State 54:
+State 61:
  (472)K number          -> NUMBER .
 
    reduce by 472 on EOI
@@ -999,7 +1297,7 @@ State 54:
    reduce by 472 on OR
    reduce by 472 on RPAR
 
-State 55:
+State 62:
  (473)K identifier      -> IDENTIFIER .
 
    reduce by 473 on EOI
@@ -1062,7 +1360,7 @@ State 55:
    reduce by 473 on LPAR
    reduce by 473 on RPAR
 
-State 56:
+State 63:
  (  2)K resourceDefinitionList -> resourceDefinitionList resourceDefinition .
 
    reduce by 2 on EOI
@@ -1072,7 +1370,7 @@ State 56:
    reduce by 2 on STRINGTABLE
    reduce by 2 on LANGUAGE
 
-State 57:
+State 64:
  ( 21)K bitmapDefinition -> resourceId _BITMAP .resourceAttributeList string
  (104)  resourceAttributeList -> .
  (105)  resourceAttributeList -> .resourceAttributeList resourceAttribute
@@ -1084,9 +1382,9 @@ State 57:
    reduce by 104 on IMPURE
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
-   goto 80 on resourceAttributeList
+   goto 87 on resourceAttributeList
 
-State 58:
+State 65:
  ( 22)K iconDefinition  -> resourceId _ICON .resourceAttributeList string
  (104)  resourceAttributeList -> .
  (105)  resourceAttributeList -> .resourceAttributeList resourceAttribute
@@ -1098,9 +1396,9 @@ State 58:
    reduce by 104 on IMPURE
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
-   goto 81 on resourceAttributeList
+   goto 88 on resourceAttributeList
 
-State 59:
+State 66:
  ( 23)K customTypeDefinition -> resourceId identifier .resourceAttributeList string
  (104)  resourceAttributeList -> .
  (105)  resourceAttributeList -> .resourceAttributeList resourceAttribute
@@ -1112,9 +1410,9 @@ State 59:
    reduce by 104 on IMPURE
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
-   goto 82 on resourceAttributeList
+   goto 89 on resourceAttributeList
 
-State 60:
+State 67:
  ( 24)K dialogDefinition -> resourceId DIALOG .resourceAttributeList rectangleSpec dialogSpecList BEGIN opt_dialogControlSpecList END
  (104)  resourceAttributeList -> .
  (105)  resourceAttributeList -> .resourceAttributeList resourceAttribute
@@ -1126,18 +1424,18 @@ State 60:
    reduce by 104 on IMPURE
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
-   goto 83 on resourceAttributeList
+   goto 90 on resourceAttributeList
 
-State 61:
+State 68:
  ( 25)K extendedDialogDefinition -> resourceId DIALOGEX .rectangleSpec extendedDialogSpecList BEGIN opt_dialogControlSpecList END
  (467)  rectangleSpec   -> .number COMMA number COMMA number COMMA number
  (472)  number          -> .NUMBER
 
-   shift to 54 on NUMBER
-   goto 84 on rectangleSpec
-   goto 85 on number
+   shift to 61 on NUMBER
+   goto 91 on rectangleSpec
+   goto 92 on number
 
-State 62:
+State 69:
  (355)K toolbarDefnition -> resourceId TOOLBAR .resourceAttributeList sizeSpec BEGIN buttonSpecList END
  (104)  resourceAttributeList -> .
  (105)  resourceAttributeList -> .resourceAttributeList resourceAttribute
@@ -1149,9 +1447,9 @@ State 62:
    reduce by 104 on IMPURE
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
-   goto 86 on resourceAttributeList
+   goto 93 on resourceAttributeList
 
-State 63:
+State 70:
  (360)K menuDefinition  -> resourceId menuType .resourceAttributeList menuBody
  (104)  resourceAttributeList -> .
  (105)  resourceAttributeList -> .resourceAttributeList resourceAttribute
@@ -1163,14 +1461,14 @@ State 63:
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
    reduce by 104 on BEGIN
-   goto 87 on resourceAttributeList
+   goto 94 on resourceAttributeList
 
-State 64:
+State 71:
  (403)K dialogInitDefinition -> resourceId DLGINIT .BEGIN constantElementList END
 
-   shift to 2 on BEGIN
+   shift to 3 on BEGIN
 
-State 65:
+State 72:
  (408)K acceleratorsDefinition -> resourceId ACCELERATORS .resourceAttributeList BEGIN acceleratorList END
  (104)  resourceAttributeList -> .
  (105)  resourceAttributeList -> .resourceAttributeList resourceAttribute
@@ -1182,9 +1480,9 @@ State 65:
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
    reduce by 104 on BEGIN
-   goto 88 on resourceAttributeList
+   goto 95 on resourceAttributeList
 
-State 66:
+State 73:
  (422)K rcdataDefinition -> resourceId RCDATA .resourceAttributeList BEGIN numberList END
  (423)K rcdataDefinition -> resourceId RCDATA .resourceAttributeList string
  (104)  resourceAttributeList -> .
@@ -1198,9 +1496,9 @@ State 66:
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
    reduce by 104 on BEGIN
-   goto 89 on resourceAttributeList
+   goto 96 on resourceAttributeList
 
-State 67:
+State 74:
  (434)K versionDefinition -> resourceId VERSIONINFO .resourceAttributeList versionSpecList BEGIN blockList END
  (104)  resourceAttributeList -> .
  (105)  resourceAttributeList -> .resourceAttributeList resourceAttribute
@@ -1218,14 +1516,14 @@ State 67:
    reduce by 104 on IMPURE
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
-   goto 90 on resourceAttributeList
+   goto 97 on resourceAttributeList
 
-State 68:
+State 75:
  (453)K afxDialogLayout -> resourceId AFX_DIALOG_LAYOUT .BEGIN layoutInfo END
 
-   shift to 91 on BEGIN
+   shift to 98 on BEGIN
 
-State 69:
+State 76:
  (361)K menuType        -> _MENU .
 
    reduce by 361 on DISCARDABLE
@@ -1236,7 +1534,7 @@ State 69:
    reduce by 361 on LOADONCALL
    reduce by 361 on BEGIN
 
-State 70:
+State 77:
  (362)K menuType        -> MENUEX .
 
    reduce by 362 on DISCARDABLE
@@ -1247,7 +1545,7 @@ State 70:
    reduce by 362 on LOADONCALL
    reduce by 362 on BEGIN
 
-State 71:
+State 78:
  (339)K guideLinesDefinition -> GUIDELINES DESIGNINFO .resourceAttributeList BEGIN designInfoList END
  (104)  resourceAttributeList -> .
  (105)  resourceAttributeList -> .resourceAttributeList resourceAttribute
@@ -1259,9 +1557,9 @@ State 71:
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
    reduce by 104 on BEGIN
-   goto 92 on resourceAttributeList
+   goto 99 on resourceAttributeList
 
-State 72:
+State 79:
  (105)K resourceAttributeList -> resourceAttributeList .resourceAttribute
  (426)K stringTableDefinition -> STRINGTABLE resourceAttributeList .BEGIN stringSpecList END
  (106)  resourceAttribute -> .DISCARDABLE
@@ -1271,16 +1569,16 @@ State 72:
  (110)  resourceAttribute -> .PRELOAD
  (111)  resourceAttribute -> .LOADONCALL
 
-   shift to 95 on DISCARDABLE
-   shift to 96 on MOVEABLE
-   shift to 97 on _PURE
-   shift to 98 on IMPURE
-   shift to 99 on PRELOAD
-   shift to 100 on LOADONCALL
-   shift to 94 on BEGIN
-   goto 93 on resourceAttribute
+   shift to 102 on DISCARDABLE
+   shift to 103 on MOVEABLE
+   shift to 104 on _PURE
+   shift to 105 on IMPURE
+   shift to 106 on PRELOAD
+   shift to 107 on LOADONCALL
+   shift to 101 on BEGIN
+   goto 100 on resourceAttribute
 
-State 73:
+State 80:
  (430)K textIncludeDirective -> number TEXTINCLUDE .resourceAttributeList BEGIN stringList END
  (104)  resourceAttributeList -> .
  (105)  resourceAttributeList -> .resourceAttributeList resourceAttribute
@@ -1292,9 +1590,9 @@ State 73:
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
    reduce by 104 on BEGIN
-   goto 101 on resourceAttributeList
+   goto 108 on resourceAttributeList
 
-State 74:
+State 81:
  (452)K typelibDefinition -> number TYPELIB .fileName
  (455)  fileName        -> .string
  (456)  fileName        -> .name
@@ -1303,19 +1601,19 @@ State 74:
  (473)  identifier      -> .IDENTIFIER
  (474)  string          -> .STRING
 
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   goto 103 on string
-   goto 105 on identifier
-   goto 102 on fileName
-   goto 104 on name
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   goto 110 on string
+   goto 112 on identifier
+   goto 109 on fileName
+   goto 111 on name
 
-State 75:
+State 82:
  (433)K languageDirective -> LANGUAGE constant .COMMA constant
 
-   shift to 3 on COMMA
+   shift to 4 on COMMA
 
-State 76:
+State 83:
  (463)K constant        -> number .
 
    reduce by 463 on EOI
@@ -1339,7 +1637,7 @@ State 76:
    reduce by 463 on OR
    reduce by 463 on RPAR
 
-State 77:
+State 84:
  (464)K constant        -> identifier .
  (466)K constant        -> identifier .LPAR exprList RPAR
 
@@ -1362,10 +1660,10 @@ State 77:
    reduce by 464 on BEGIN
    reduce by 464 on END
    reduce by 464 on OR
-   shift to 4 on LPAR
+   shift to 5 on LPAR
    reduce by 464 on RPAR
 
-State 78:
+State 85:
  (465)K constant        -> string .
 
    reduce by 465 on EOI
@@ -1389,7 +1687,7 @@ State 78:
    reduce by 465 on OR
    reduce by 465 on RPAR
 
-State 79:
+State 86:
  (474)K string          -> STRING .
 
    reduce by 474 on EOI
@@ -1418,7 +1716,7 @@ State 79:
    reduce by 474 on OR
    reduce by 474 on RPAR
 
-State 80:
+State 87:
  ( 21)K bitmapDefinition -> resourceId _BITMAP resourceAttributeList .string
  (105)K resourceAttributeList -> resourceAttributeList .resourceAttribute
  (106)  resourceAttribute -> .DISCARDABLE
@@ -1429,17 +1727,17 @@ State 80:
  (111)  resourceAttribute -> .LOADONCALL
  (474)  string          -> .STRING
 
-   shift to 79 on STRING
-   shift to 95 on DISCARDABLE
-   shift to 96 on MOVEABLE
-   shift to 97 on _PURE
-   shift to 98 on IMPURE
-   shift to 99 on PRELOAD
-   shift to 100 on LOADONCALL
-   goto 106 on string
-   goto 93 on resourceAttribute
+   shift to 86 on STRING
+   shift to 102 on DISCARDABLE
+   shift to 103 on MOVEABLE
+   shift to 104 on _PURE
+   shift to 105 on IMPURE
+   shift to 106 on PRELOAD
+   shift to 107 on LOADONCALL
+   goto 113 on string
+   goto 100 on resourceAttribute
 
-State 81:
+State 88:
  ( 22)K iconDefinition  -> resourceId _ICON resourceAttributeList .string
  (105)K resourceAttributeList -> resourceAttributeList .resourceAttribute
  (106)  resourceAttribute -> .DISCARDABLE
@@ -1450,17 +1748,17 @@ State 81:
  (111)  resourceAttribute -> .LOADONCALL
  (474)  string          -> .STRING
 
-   shift to 79 on STRING
-   shift to 95 on DISCARDABLE
-   shift to 96 on MOVEABLE
-   shift to 97 on _PURE
-   shift to 98 on IMPURE
-   shift to 99 on PRELOAD
-   shift to 100 on LOADONCALL
-   goto 107 on string
-   goto 93 on resourceAttribute
+   shift to 86 on STRING
+   shift to 102 on DISCARDABLE
+   shift to 103 on MOVEABLE
+   shift to 104 on _PURE
+   shift to 105 on IMPURE
+   shift to 106 on PRELOAD
+   shift to 107 on LOADONCALL
+   goto 114 on string
+   goto 100 on resourceAttribute
 
-State 82:
+State 89:
  ( 23)K customTypeDefinition -> resourceId identifier resourceAttributeList .string
  (105)K resourceAttributeList -> resourceAttributeList .resourceAttribute
  (106)  resourceAttribute -> .DISCARDABLE
@@ -1471,17 +1769,17 @@ State 82:
  (111)  resourceAttribute -> .LOADONCALL
  (474)  string          -> .STRING
 
-   shift to 79 on STRING
-   shift to 95 on DISCARDABLE
-   shift to 96 on MOVEABLE
-   shift to 97 on _PURE
-   shift to 98 on IMPURE
-   shift to 99 on PRELOAD
-   shift to 100 on LOADONCALL
-   goto 108 on string
-   goto 93 on resourceAttribute
+   shift to 86 on STRING
+   shift to 102 on DISCARDABLE
+   shift to 103 on MOVEABLE
+   shift to 104 on _PURE
+   shift to 105 on IMPURE
+   shift to 106 on PRELOAD
+   shift to 107 on LOADONCALL
+   goto 115 on string
+   goto 100 on resourceAttribute
 
-State 83:
+State 90:
  ( 24)K dialogDefinition -> resourceId DIALOG resourceAttributeList .rectangleSpec dialogSpecList BEGIN opt_dialogControlSpecList END
  (105)K resourceAttributeList -> resourceAttributeList .resourceAttribute
  (106)  resourceAttribute -> .DISCARDABLE
@@ -1493,18 +1791,18 @@ State 83:
  (467)  rectangleSpec   -> .number COMMA number COMMA number COMMA number
  (472)  number          -> .NUMBER
 
-   shift to 54 on NUMBER
-   shift to 95 on DISCARDABLE
-   shift to 96 on MOVEABLE
-   shift to 97 on _PURE
-   shift to 98 on IMPURE
-   shift to 99 on PRELOAD
-   shift to 100 on LOADONCALL
-   goto 109 on rectangleSpec
-   goto 85 on number
-   goto 93 on resourceAttribute
+   shift to 61 on NUMBER
+   shift to 102 on DISCARDABLE
+   shift to 103 on MOVEABLE
+   shift to 104 on _PURE
+   shift to 105 on IMPURE
+   shift to 106 on PRELOAD
+   shift to 107 on LOADONCALL
+   goto 116 on rectangleSpec
+   goto 92 on number
+   goto 100 on resourceAttribute
 
-State 84:
+State 91:
  ( 25)K extendedDialogDefinition -> resourceId DIALOGEX rectangleSpec .extendedDialogSpecList BEGIN opt_dialogControlSpecList END
  ( 32)  extendedDialogSpecList -> .extendedDialogSpecList extendedDialogSpec
  ( 33)  extendedDialogSpecList -> .extendedDialogSpec
@@ -1514,20 +1812,20 @@ State 84:
  ( 37)  extendedDialogSpec -> ._MENU identifier
  ( 38)  extendedDialogSpec -> ._FONT extendedFontSpec
 
-   shift to 116 on _FONT
-   shift to 115 on _MENU
-   shift to 112 on STYLE
-   shift to 113 on EXSTYLE
-   shift to 114 on CAPTION
-   goto 110 on extendedDialogSpecList
-   goto 111 on extendedDialogSpec
+   shift to 122 on _FONT
+   shift to 121 on _MENU
+   shift to 6 on STYLE
+   shift to 119 on EXSTYLE
+   shift to 120 on CAPTION
+   goto 117 on extendedDialogSpecList
+   goto 118 on extendedDialogSpec
 
-State 85:
+State 92:
  (467)K rectangleSpec   -> number .COMMA number COMMA number COMMA number
 
-   shift to 117 on COMMA
+   shift to 123 on COMMA
 
-State 86:
+State 93:
  (105)K resourceAttributeList -> resourceAttributeList .resourceAttribute
  (355)K toolbarDefnition -> resourceId TOOLBAR resourceAttributeList .sizeSpec BEGIN buttonSpecList END
  (106)  resourceAttribute -> .DISCARDABLE
@@ -1539,18 +1837,18 @@ State 86:
  (468)  sizeSpec        -> .number COMMA number
  (472)  number          -> .NUMBER
 
-   shift to 54 on NUMBER
-   shift to 95 on DISCARDABLE
-   shift to 96 on MOVEABLE
-   shift to 97 on _PURE
-   shift to 98 on IMPURE
-   shift to 99 on PRELOAD
-   shift to 100 on LOADONCALL
-   goto 119 on number
-   goto 93 on resourceAttribute
-   goto 118 on sizeSpec
+   shift to 61 on NUMBER
+   shift to 102 on DISCARDABLE
+   shift to 103 on MOVEABLE
+   shift to 104 on _PURE
+   shift to 105 on IMPURE
+   shift to 106 on PRELOAD
+   shift to 107 on LOADONCALL
+   goto 125 on number
+   goto 100 on resourceAttribute
+   goto 124 on sizeSpec
 
-State 87:
+State 94:
  (105)K resourceAttributeList -> resourceAttributeList .resourceAttribute
  (360)K menuDefinition  -> resourceId menuType resourceAttributeList .menuBody
  (106)  resourceAttribute -> .DISCARDABLE
@@ -1561,17 +1859,17 @@ State 87:
  (111)  resourceAttribute -> .LOADONCALL
  (363)  menuBody        -> .BEGIN menuSpecList END
 
-   shift to 95 on DISCARDABLE
-   shift to 96 on MOVEABLE
-   shift to 97 on _PURE
-   shift to 98 on IMPURE
-   shift to 99 on PRELOAD
-   shift to 100 on LOADONCALL
-   shift to 121 on BEGIN
-   goto 93 on resourceAttribute
-   goto 120 on menuBody
+   shift to 102 on DISCARDABLE
+   shift to 103 on MOVEABLE
+   shift to 104 on _PURE
+   shift to 105 on IMPURE
+   shift to 106 on PRELOAD
+   shift to 107 on LOADONCALL
+   shift to 127 on BEGIN
+   goto 100 on resourceAttribute
+   goto 126 on menuBody
 
-State 88:
+State 95:
  (105)K resourceAttributeList -> resourceAttributeList .resourceAttribute
  (408)K acceleratorsDefinition -> resourceId ACCELERATORS resourceAttributeList .BEGIN acceleratorList END
  (106)  resourceAttribute -> .DISCARDABLE
@@ -1581,16 +1879,16 @@ State 88:
  (110)  resourceAttribute -> .PRELOAD
  (111)  resourceAttribute -> .LOADONCALL
 
-   shift to 95 on DISCARDABLE
-   shift to 96 on MOVEABLE
-   shift to 97 on _PURE
-   shift to 98 on IMPURE
-   shift to 99 on PRELOAD
-   shift to 100 on LOADONCALL
-   shift to 7 on BEGIN
-   goto 93 on resourceAttribute
+   shift to 102 on DISCARDABLE
+   shift to 103 on MOVEABLE
+   shift to 104 on _PURE
+   shift to 105 on IMPURE
+   shift to 106 on PRELOAD
+   shift to 107 on LOADONCALL
+   shift to 9 on BEGIN
+   goto 100 on resourceAttribute
 
-State 89:
+State 96:
  (105)K resourceAttributeList -> resourceAttributeList .resourceAttribute
  (422)K rcdataDefinition -> resourceId RCDATA resourceAttributeList .BEGIN numberList END
  (423)K rcdataDefinition -> resourceId RCDATA resourceAttributeList .string
@@ -1602,18 +1900,18 @@ State 89:
  (111)  resourceAttribute -> .LOADONCALL
  (474)  string          -> .STRING
 
-   shift to 79 on STRING
-   shift to 95 on DISCARDABLE
-   shift to 96 on MOVEABLE
-   shift to 97 on _PURE
-   shift to 98 on IMPURE
-   shift to 99 on PRELOAD
-   shift to 100 on LOADONCALL
-   shift to 124 on BEGIN
-   goto 125 on string
-   goto 93 on resourceAttribute
+   shift to 86 on STRING
+   shift to 102 on DISCARDABLE
+   shift to 103 on MOVEABLE
+   shift to 104 on _PURE
+   shift to 105 on IMPURE
+   shift to 106 on PRELOAD
+   shift to 107 on LOADONCALL
+   shift to 130 on BEGIN
+   goto 131 on string
+   goto 100 on resourceAttribute
 
-State 90:
+State 97:
  (105)K resourceAttributeList -> resourceAttributeList .resourceAttribute
  (434)K versionDefinition -> resourceId VERSIONINFO resourceAttributeList .versionSpecList BEGIN blockList END
  (106)  resourceAttribute -> .DISCARDABLE
@@ -1632,36 +1930,36 @@ State 90:
  (442)  versionSpec     -> .FILETYPE expr
  (443)  versionSpec     -> .FILESUBTYPE expr
 
-   shift to 8 on FILEVERSION
-   shift to 9 on PRODUCTVERSION
-   shift to 10 on FILEFLAGSMASK
-   shift to 11 on FILEFLAGS
-   shift to 12 on FILEOS
-   shift to 13 on FILETYPE
-   shift to 14 on FILESUBTYPE
-   shift to 95 on DISCARDABLE
-   shift to 96 on MOVEABLE
-   shift to 97 on _PURE
-   shift to 98 on IMPURE
-   shift to 99 on PRELOAD
-   shift to 100 on LOADONCALL
-   goto 93 on resourceAttribute
-   goto 126 on versionSpecList
-   goto 127 on versionSpec
+   shift to 10 on FILEVERSION
+   shift to 11 on PRODUCTVERSION
+   shift to 12 on FILEFLAGSMASK
+   shift to 13 on FILEFLAGS
+   shift to 14 on FILEOS
+   shift to 15 on FILETYPE
+   shift to 16 on FILESUBTYPE
+   shift to 102 on DISCARDABLE
+   shift to 103 on MOVEABLE
+   shift to 104 on _PURE
+   shift to 105 on IMPURE
+   shift to 106 on PRELOAD
+   shift to 107 on LOADONCALL
+   goto 100 on resourceAttribute
+   goto 132 on versionSpecList
+   goto 133 on versionSpec
 
-State 91:
+State 98:
  (453)K afxDialogLayout -> resourceId AFX_DIALOG_LAYOUT BEGIN .layoutInfo END
  (424)  numberList      -> .numberList COMMA number
  (425)  numberList      -> .number
  (454)  layoutInfo      -> .numberList
  (472)  number          -> .NUMBER
 
-   shift to 54 on NUMBER
-   goto 130 on number
-   goto 129 on numberList
-   goto 128 on layoutInfo
+   shift to 61 on NUMBER
+   goto 136 on number
+   goto 135 on numberList
+   goto 134 on layoutInfo
 
-State 92:
+State 99:
  (105)K resourceAttributeList -> resourceAttributeList .resourceAttribute
  (339)K guideLinesDefinition -> GUIDELINES DESIGNINFO resourceAttributeList .BEGIN designInfoList END
  (106)  resourceAttribute -> .DISCARDABLE
@@ -1671,16 +1969,16 @@ State 92:
  (110)  resourceAttribute -> .PRELOAD
  (111)  resourceAttribute -> .LOADONCALL
 
-   shift to 95 on DISCARDABLE
-   shift to 96 on MOVEABLE
-   shift to 97 on _PURE
-   shift to 98 on IMPURE
-   shift to 99 on PRELOAD
-   shift to 100 on LOADONCALL
-   shift to 131 on BEGIN
-   goto 93 on resourceAttribute
+   shift to 102 on DISCARDABLE
+   shift to 103 on MOVEABLE
+   shift to 104 on _PURE
+   shift to 105 on IMPURE
+   shift to 106 on PRELOAD
+   shift to 107 on LOADONCALL
+   shift to 17 on BEGIN
+   goto 100 on resourceAttribute
 
-State 93:
+State 100:
  (105)K resourceAttributeList -> resourceAttributeList resourceAttribute .
 
    reduce by 105 on NUMBER
@@ -1700,19 +1998,19 @@ State 93:
    reduce by 105 on LOADONCALL
    reduce by 105 on BEGIN
 
-State 94:
+State 101:
  (426)K stringTableDefinition -> STRINGTABLE resourceAttributeList BEGIN .stringSpecList END
  (427)  stringSpecList  -> .stringSpecList stringSpec
  (428)  stringSpecList  -> .stringSpec
  (429)  stringSpec      -> .identifier string
  (473)  identifier      -> .IDENTIFIER
 
-   shift to 55 on IDENTIFIER
-   goto 134 on identifier
-   goto 132 on stringSpecList
-   goto 133 on stringSpec
+   shift to 62 on IDENTIFIER
+   goto 139 on identifier
+   goto 137 on stringSpecList
+   goto 138 on stringSpec
 
-State 95:
+State 102:
  (106)K resourceAttribute -> DISCARDABLE .
 
    reduce by 106 on NUMBER
@@ -1732,7 +2030,7 @@ State 95:
    reduce by 106 on LOADONCALL
    reduce by 106 on BEGIN
 
-State 96:
+State 103:
  (107)K resourceAttribute -> MOVEABLE .
 
    reduce by 107 on NUMBER
@@ -1752,7 +2050,7 @@ State 96:
    reduce by 107 on LOADONCALL
    reduce by 107 on BEGIN
 
-State 97:
+State 104:
  (108)K resourceAttribute -> _PURE .
 
    reduce by 108 on NUMBER
@@ -1772,7 +2070,7 @@ State 97:
    reduce by 108 on LOADONCALL
    reduce by 108 on BEGIN
 
-State 98:
+State 105:
  (109)K resourceAttribute -> IMPURE .
 
    reduce by 109 on NUMBER
@@ -1792,7 +2090,7 @@ State 98:
    reduce by 109 on LOADONCALL
    reduce by 109 on BEGIN
 
-State 99:
+State 106:
  (110)K resourceAttribute -> PRELOAD .
 
    reduce by 110 on NUMBER
@@ -1812,7 +2110,7 @@ State 99:
    reduce by 110 on LOADONCALL
    reduce by 110 on BEGIN
 
-State 100:
+State 107:
  (111)K resourceAttribute -> LOADONCALL .
 
    reduce by 111 on NUMBER
@@ -1832,7 +2130,7 @@ State 100:
    reduce by 111 on LOADONCALL
    reduce by 111 on BEGIN
 
-State 101:
+State 108:
  (105)K resourceAttributeList -> resourceAttributeList .resourceAttribute
  (430)K textIncludeDirective -> number TEXTINCLUDE resourceAttributeList .BEGIN stringList END
  (106)  resourceAttribute -> .DISCARDABLE
@@ -1842,16 +2140,16 @@ State 101:
  (110)  resourceAttribute -> .PRELOAD
  (111)  resourceAttribute -> .LOADONCALL
 
-   shift to 95 on DISCARDABLE
-   shift to 96 on MOVEABLE
-   shift to 97 on _PURE
-   shift to 98 on IMPURE
-   shift to 99 on PRELOAD
-   shift to 100 on LOADONCALL
-   shift to 135 on BEGIN
-   goto 93 on resourceAttribute
+   shift to 102 on DISCARDABLE
+   shift to 103 on MOVEABLE
+   shift to 104 on _PURE
+   shift to 105 on IMPURE
+   shift to 106 on PRELOAD
+   shift to 107 on LOADONCALL
+   shift to 140 on BEGIN
+   goto 100 on resourceAttribute
 
-State 102:
+State 109:
  (452)K typelibDefinition -> number TYPELIB fileName .
 
    reduce by 452 on EOI
@@ -1861,7 +2159,7 @@ State 102:
    reduce by 452 on STRINGTABLE
    reduce by 452 on LANGUAGE
 
-State 103:
+State 110:
  (455)K fileName        -> string .
 
    reduce by 455 on EOI
@@ -1871,7 +2169,7 @@ State 103:
    reduce by 455 on STRINGTABLE
    reduce by 455 on LANGUAGE
 
-State 104:
+State 111:
  (456)K fileName        -> name .
  (458)K name            -> name .DOT identifier
 
@@ -1881,9 +2179,9 @@ State 104:
    reduce by 456 on GUIDELINES
    reduce by 456 on STRINGTABLE
    reduce by 456 on LANGUAGE
-   shift to 136 on DOT
+   shift to 141 on DOT
 
-State 105:
+State 112:
  (457)K name            -> identifier .
 
    reduce by 457 on EOI
@@ -1894,7 +2192,7 @@ State 105:
    reduce by 457 on LANGUAGE
    reduce by 457 on DOT
 
-State 106:
+State 113:
  ( 21)K bitmapDefinition -> resourceId _BITMAP resourceAttributeList string .
 
    reduce by 21 on EOI
@@ -1904,7 +2202,7 @@ State 106:
    reduce by 21 on STRINGTABLE
    reduce by 21 on LANGUAGE
 
-State 107:
+State 114:
  ( 22)K iconDefinition  -> resourceId _ICON resourceAttributeList string .
 
    reduce by 22 on EOI
@@ -1914,7 +2212,7 @@ State 107:
    reduce by 22 on STRINGTABLE
    reduce by 22 on LANGUAGE
 
-State 108:
+State 115:
  ( 23)K customTypeDefinition -> resourceId identifier resourceAttributeList string .
 
    reduce by 23 on EOI
@@ -1924,7 +2222,7 @@ State 108:
    reduce by 23 on STRINGTABLE
    reduce by 23 on LANGUAGE
 
-State 109:
+State 116:
  ( 24)K dialogDefinition -> resourceId DIALOG resourceAttributeList rectangleSpec .dialogSpecList BEGIN opt_dialogControlSpecList END
  ( 26)  dialogSpecList  -> .dialogSpecList dialogSpec
  ( 27)  dialogSpecList  -> .dialogSpec
@@ -1933,14 +2231,14 @@ State 109:
  ( 30)  dialogSpec      -> ._MENU identifier
  ( 31)  dialogSpec      -> ._FONT fontSpec
 
-   shift to 146 on _FONT
-   shift to 145 on _MENU
-   shift to 143 on STYLE
-   shift to 144 on CAPTION
-   goto 141 on dialogSpecList
-   goto 142 on dialogSpec
+   shift to 150 on _FONT
+   shift to 149 on _MENU
+   shift to 18 on STYLE
+   shift to 148 on CAPTION
+   goto 146 on dialogSpecList
+   goto 147 on dialogSpec
 
-State 110:
+State 117:
  ( 25)K extendedDialogDefinition -> resourceId DIALOGEX rectangleSpec extendedDialogSpecList .BEGIN opt_dialogControlSpecList END
  ( 32)K extendedDialogSpecList -> extendedDialogSpecList .extendedDialogSpec
  ( 34)  extendedDialogSpec -> .STYLE dialogStyleExpr
@@ -1949,15 +2247,15 @@ State 110:
  ( 37)  extendedDialogSpec -> ._MENU identifier
  ( 38)  extendedDialogSpec -> ._FONT extendedFontSpec
 
-   shift to 116 on _FONT
-   shift to 115 on _MENU
-   shift to 112 on STYLE
-   shift to 113 on EXSTYLE
-   shift to 114 on CAPTION
-   shift to 147 on BEGIN
-   goto 148 on extendedDialogSpec
+   shift to 122 on _FONT
+   shift to 121 on _MENU
+   shift to 6 on STYLE
+   shift to 119 on EXSTYLE
+   shift to 120 on CAPTION
+   shift to 151 on BEGIN
+   goto 152 on extendedDialogSpec
 
-State 111:
+State 118:
  ( 33)K extendedDialogSpecList -> extendedDialogSpec .
 
    reduce by 33 on _FONT
@@ -1967,87 +2265,7 @@ State 111:
    reduce by 33 on CAPTION
    reduce by 33 on BEGIN
 
-State 112:
- ( 34)K extendedDialogSpec -> STYLE .dialogStyleExpr
- ( 45)  dialogStyleExpr -> .dialogStyleExpr OR dialogStyle
- ( 46)  dialogStyleExpr -> .dialogStyle
- ( 47)  dialogStyle     -> .ds_style
- ( 48)  dialogStyle     -> .ws_style
- (112)  ds_style        -> ._DS_ABSALIGN
- (113)  ds_style        -> ._DS_SYSMODAL
- (114)  ds_style        -> ._DS_LOCALEDIT
- (115)  ds_style        -> ._DS_SETFONT
- (116)  ds_style        -> ._DS_MODALFRAME
- (117)  ds_style        -> ._DS_NOIDLEMSG
- (118)  ds_style        -> ._DS_SETFOREGROUND
- (119)  ds_style        -> ._DS_3DLOOK
- (120)  ds_style        -> ._DS_FIXEDSYS
- (121)  ds_style        -> ._DS_NOFAILCREATE
- (122)  ds_style        -> ._DS_CONTROL
- (123)  ds_style        -> ._DS_CENTER
- (124)  ds_style        -> ._DS_CENTERMOUSE
- (125)  ds_style        -> ._DS_CONTEXTHELP
- (126)  ws_style        -> ._WS_OVERLAPPED
- (127)  ws_style        -> ._WS_POPUP
- (128)  ws_style        -> ._WS_CHILD
- (129)  ws_style        -> ._WS_MINIMIZE
- (130)  ws_style        -> ._WS_VISIBLE
- (131)  ws_style        -> ._WS_DISABLED
- (132)  ws_style        -> ._WS_CLIPSIBLINGS
- (133)  ws_style        -> ._WS_CLIPCHILDREN
- (134)  ws_style        -> ._WS_MAXIMIZE
- (135)  ws_style        -> ._WS_CAPTION
- (136)  ws_style        -> ._WS_BORDER
- (137)  ws_style        -> ._WS_DLGFRAME
- (138)  ws_style        -> ._WS_VSCROLL
- (139)  ws_style        -> ._WS_HSCROLL
- (140)  ws_style        -> ._WS_SYSMENU
- (141)  ws_style        -> ._WS_THICKFRAME
- (142)  ws_style        -> ._WS_GROUP
- (143)  ws_style        -> ._WS_TABSTOP
- (144)  ws_style        -> ._WS_MINIMIZEBOX
- (145)  ws_style        -> ._WS_MAXIMIZEBOX
-
-   shift to 167 on _WS_OVERLAPPED
-   shift to 168 on _WS_POPUP
-   shift to 169 on _WS_CHILD
-   shift to 170 on _WS_MINIMIZE
-   shift to 171 on _WS_VISIBLE
-   shift to 172 on _WS_DISABLED
-   shift to 173 on _WS_CLIPSIBLINGS
-   shift to 174 on _WS_CLIPCHILDREN
-   shift to 175 on _WS_MAXIMIZE
-   shift to 176 on _WS_CAPTION
-   shift to 177 on _WS_BORDER
-   shift to 178 on _WS_DLGFRAME
-   shift to 179 on _WS_VSCROLL
-   shift to 180 on _WS_HSCROLL
-   shift to 181 on _WS_SYSMENU
-   shift to 182 on _WS_THICKFRAME
-   shift to 183 on _WS_GROUP
-   shift to 184 on _WS_TABSTOP
-   shift to 185 on _WS_MINIMIZEBOX
-   shift to 186 on _WS_MAXIMIZEBOX
-   shift to 153 on _DS_ABSALIGN
-   shift to 154 on _DS_SYSMODAL
-   shift to 155 on _DS_LOCALEDIT
-   shift to 156 on _DS_SETFONT
-   shift to 157 on _DS_MODALFRAME
-   shift to 158 on _DS_NOIDLEMSG
-   shift to 159 on _DS_SETFOREGROUND
-   shift to 160 on _DS_3DLOOK
-   shift to 161 on _DS_FIXEDSYS
-   shift to 162 on _DS_NOFAILCREATE
-   shift to 163 on _DS_CONTROL
-   shift to 164 on _DS_CENTER
-   shift to 165 on _DS_CENTERMOUSE
-   shift to 166 on _DS_CONTEXTHELP
-   goto 149 on dialogStyleExpr
-   goto 150 on dialogStyle
-   goto 151 on ds_style
-   goto 152 on ws_style
-
-State 113:
+State 119:
  ( 35)K extendedDialogSpec -> EXSTYLE .extendedDialogStyleExpr
  ( 39)  extendedDialogStyleExpr -> .extendedDialogStyleExpr OR extendedDialogStyle
  ( 40)  extendedDialogStyleExpr -> .extendedDialogStyle
@@ -2072,73 +2290,73 @@ State 113:
  (163)  ws_ex_style     -> ._WS_EX_STATICEDGE
  (164)  ws_ex_style     -> ._WS_EX_APPWINDOW
 
-   shift to 190 on _WS_EX_DLGMODALFRAME
-   shift to 191 on _WS_EX_NOPARENTNOTIFY
-   shift to 192 on _WS_EX_TOPMOST
-   shift to 193 on _WS_EX_ACCEPTFILES
-   shift to 194 on _WS_EX_TRANSPARENT
-   shift to 195 on _WS_EX_MDICHILD
-   shift to 196 on _WS_EX_TOOLWINDOW
-   shift to 197 on _WS_EX_WINDOWEDGE
-   shift to 198 on _WS_EX_CLIENTEDGE
-   shift to 199 on _WS_EX_CONTEXTHELP
-   shift to 200 on _WS_EX_RIGHT
-   shift to 201 on _WS_EX_LEFT
-   shift to 202 on _WS_EX_RTLREADING
-   shift to 203 on _WS_EX_LTRREADING
-   shift to 204 on _WS_EX_LEFTSCROLLBAR
-   shift to 205 on _WS_EX_RIGHTSCROLLBAR
-   shift to 206 on _WS_EX_CONTROLPARENT
-   shift to 207 on _WS_EX_STATICEDGE
-   shift to 208 on _WS_EX_APPWINDOW
-   goto 187 on extendedDialogStyleExpr
-   goto 188 on extendedDialogStyle
-   goto 189 on ws_ex_style
+   shift to 194 on _WS_EX_DLGMODALFRAME
+   shift to 195 on _WS_EX_NOPARENTNOTIFY
+   shift to 196 on _WS_EX_TOPMOST
+   shift to 197 on _WS_EX_ACCEPTFILES
+   shift to 198 on _WS_EX_TRANSPARENT
+   shift to 199 on _WS_EX_MDICHILD
+   shift to 200 on _WS_EX_TOOLWINDOW
+   shift to 201 on _WS_EX_WINDOWEDGE
+   shift to 202 on _WS_EX_CLIENTEDGE
+   shift to 203 on _WS_EX_CONTEXTHELP
+   shift to 204 on _WS_EX_RIGHT
+   shift to 205 on _WS_EX_LEFT
+   shift to 206 on _WS_EX_RTLREADING
+   shift to 207 on _WS_EX_LTRREADING
+   shift to 208 on _WS_EX_LEFTSCROLLBAR
+   shift to 209 on _WS_EX_RIGHTSCROLLBAR
+   shift to 210 on _WS_EX_CONTROLPARENT
+   shift to 211 on _WS_EX_STATICEDGE
+   shift to 212 on _WS_EX_APPWINDOW
+   goto 191 on extendedDialogStyleExpr
+   goto 192 on extendedDialogStyle
+   goto 193 on ws_ex_style
 
-State 114:
+State 120:
  ( 36)K extendedDialogSpec -> CAPTION .string
  (474)  string          -> .STRING
 
-   shift to 79 on STRING
-   goto 209 on string
+   shift to 86 on STRING
+   goto 213 on string
 
-State 115:
+State 121:
  ( 37)K extendedDialogSpec -> _MENU .identifier
  (473)  identifier      -> .IDENTIFIER
 
-   shift to 55 on IDENTIFIER
-   goto 210 on identifier
+   shift to 62 on IDENTIFIER
+   goto 214 on identifier
 
-State 116:
+State 122:
  ( 38)K extendedDialogSpec -> _FONT .extendedFontSpec
  ( 42)  fontSpec        -> .number COMMA string
  ( 43)  extendedFontSpec -> .number COMMA string COMMA number COMMA number COMMA number
  ( 44)  extendedFontSpec -> .fontSpec
  (472)  number          -> .NUMBER
 
-   shift to 54 on NUMBER
-   goto 213 on fontSpec
-   goto 211 on extendedFontSpec
-   goto 212 on number
+   shift to 61 on NUMBER
+   goto 217 on fontSpec
+   goto 215 on extendedFontSpec
+   goto 216 on number
 
-State 117:
+State 123:
  (467)K rectangleSpec   -> number COMMA .number COMMA number COMMA number
  (472)  number          -> .NUMBER
 
-   shift to 54 on NUMBER
-   goto 214 on number
+   shift to 61 on NUMBER
+   goto 218 on number
 
-State 118:
+State 124:
  (355)K toolbarDefnition -> resourceId TOOLBAR resourceAttributeList sizeSpec .BEGIN buttonSpecList END
 
-   shift to 215 on BEGIN
+   shift to 219 on BEGIN
 
-State 119:
+State 125:
  (468)K sizeSpec        -> number .COMMA number
 
-   shift to 216 on COMMA
+   shift to 220 on COMMA
 
-State 120:
+State 126:
  (360)K menuDefinition  -> resourceId menuType resourceAttributeList menuBody .
 
    reduce by 360 on EOI
@@ -2148,7 +2366,7 @@ State 120:
    reduce by 360 on STRINGTABLE
    reduce by 360 on LANGUAGE
 
-State 121:
+State 127:
  (363)K menuBody        -> BEGIN .menuSpecList END
  (364)  menuSpecList    -> .menuSpecList menuSpec
  (365)  menuSpecList    -> .menuSpec
@@ -2158,14 +2376,14 @@ State 121:
  (369)  menuItem        -> ._MENUITEM string COMMA identifierOrNumber menuItemModifierList
  (370)  menuItem        -> ._MENUITEM SEPARATOR
 
-   shift to 222 on _MENUITEM
-   shift to 221 on POPUP
-   goto 217 on menuSpecList
-   goto 218 on menuSpec
-   goto 219 on popupMenu
-   goto 220 on menuItem
+   shift to 226 on _MENUITEM
+   shift to 225 on POPUP
+   goto 221 on menuSpecList
+   goto 222 on menuSpec
+   goto 223 on popupMenu
+   goto 224 on menuItem
 
-State 122:
+State 128:
  (405)K constantElementList -> constantElement .
 
    reduce by 405 on NUMBER
@@ -2175,7 +2393,7 @@ State 122:
    reduce by 405 on VALUE
    reduce by 405 on END
 
-State 123:
+State 129:
  (406)K constantElement -> constant .
 
    reduce by 406 on NUMBER
@@ -2185,17 +2403,17 @@ State 123:
    reduce by 406 on VALUE
    reduce by 406 on END
 
-State 124:
+State 130:
  (422)K rcdataDefinition -> resourceId RCDATA resourceAttributeList BEGIN .numberList END
  (424)  numberList      -> .numberList COMMA number
  (425)  numberList      -> .number
  (472)  number          -> .NUMBER
 
-   shift to 54 on NUMBER
-   goto 130 on number
-   goto 228 on numberList
+   shift to 61 on NUMBER
+   goto 136 on number
+   goto 232 on numberList
 
-State 125:
+State 131:
  (423)K rcdataDefinition -> resourceId RCDATA resourceAttributeList string .
 
    reduce by 423 on EOI
@@ -2205,7 +2423,7 @@ State 125:
    reduce by 423 on STRINGTABLE
    reduce by 423 on LANGUAGE
 
-State 126:
+State 132:
  (434)K versionDefinition -> resourceId VERSIONINFO resourceAttributeList versionSpecList .BEGIN blockList END
  (435)K versionSpecList -> versionSpecList .versionSpec
  (437)  versionSpec     -> .FILEVERSION exprList
@@ -2216,17 +2434,17 @@ State 126:
  (442)  versionSpec     -> .FILETYPE expr
  (443)  versionSpec     -> .FILESUBTYPE expr
 
-   shift to 8 on FILEVERSION
-   shift to 9 on PRODUCTVERSION
-   shift to 10 on FILEFLAGSMASK
-   shift to 11 on FILEFLAGS
-   shift to 12 on FILEOS
-   shift to 13 on FILETYPE
-   shift to 14 on FILESUBTYPE
-   shift to 229 on BEGIN
-   goto 230 on versionSpec
+   shift to 10 on FILEVERSION
+   shift to 11 on PRODUCTVERSION
+   shift to 12 on FILEFLAGSMASK
+   shift to 13 on FILEFLAGS
+   shift to 14 on FILEOS
+   shift to 15 on FILETYPE
+   shift to 16 on FILESUBTYPE
+   shift to 233 on BEGIN
+   goto 234 on versionSpec
 
-State 127:
+State 133:
  (436)K versionSpecList -> versionSpec .
 
    reduce by 436 on FILEVERSION
@@ -2238,84 +2456,66 @@ State 127:
    reduce by 436 on FILESUBTYPE
    reduce by 436 on BEGIN
 
-State 128:
+State 134:
  (453)K afxDialogLayout -> resourceId AFX_DIALOG_LAYOUT BEGIN layoutInfo .END
 
-   shift to 238 on END
+   shift to 242 on END
 
-State 129:
+State 135:
  (424)K numberList      -> numberList .COMMA number
  (454)K layoutInfo      -> numberList .
 
-   shift to 239 on COMMA
+   shift to 243 on COMMA
    reduce by 454 on END
 
-State 130:
+State 136:
  (425)K numberList      -> number .
 
    reduce by 425 on COMMA
    reduce by 425 on END
 
-State 131:
- (339)K guideLinesDefinition -> GUIDELINES DESIGNINFO resourceAttributeList BEGIN .designInfoList END
- (340)  designInfoList  -> .designInfoList designInfo
- (341)  designInfoList  -> .designInfo
- (342)  designInfo      -> .identifierOrString COMMA DIALOG BEGIN designSpecList END
- (343)  identifierOrString -> .identifier
- (344)  identifierOrString -> .string
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   goto 244 on string
-   goto 243 on identifier
-   goto 242 on identifierOrString
-   goto 240 on designInfoList
-   goto 241 on designInfo
-
-State 132:
+State 137:
  (426)K stringTableDefinition -> STRINGTABLE resourceAttributeList BEGIN stringSpecList .END
  (427)K stringSpecList  -> stringSpecList .stringSpec
  (429)  stringSpec      -> .identifier string
  (473)  identifier      -> .IDENTIFIER
 
-   shift to 55 on IDENTIFIER
-   shift to 245 on END
-   goto 134 on identifier
-   goto 246 on stringSpec
+   shift to 62 on IDENTIFIER
+   shift to 248 on END
+   goto 139 on identifier
+   goto 249 on stringSpec
 
-State 133:
+State 138:
  (428)K stringSpecList  -> stringSpec .
 
    reduce by 428 on IDENTIFIER
    reduce by 428 on END
 
-State 134:
+State 139:
  (429)K stringSpec      -> identifier .string
  (474)  string          -> .STRING
 
-   shift to 79 on STRING
-   goto 247 on string
+   shift to 86 on STRING
+   goto 250 on string
 
-State 135:
+State 140:
  (430)K textIncludeDirective -> number TEXTINCLUDE resourceAttributeList BEGIN .stringList END
  (431)  stringList      -> .stringList string
  (432)  stringList      -> .string
  (474)  string          -> .STRING
 
-   shift to 79 on STRING
-   goto 249 on string
-   goto 248 on stringList
+   shift to 86 on STRING
+   goto 252 on string
+   goto 251 on stringList
 
-State 136:
+State 141:
  (458)K name            -> name DOT .identifier
  (473)  identifier      -> .IDENTIFIER
 
-   shift to 55 on IDENTIFIER
-   goto 250 on identifier
+   shift to 62 on IDENTIFIER
+   goto 253 on identifier
 
-State 137:
+State 142:
  (433)K languageDirective -> LANGUAGE constant COMMA constant .
 
    reduce by 433 on EOI
@@ -2325,14 +2525,14 @@ State 137:
    reduce by 433 on STRINGTABLE
    reduce by 433 on LANGUAGE
 
-State 138:
+State 143:
  (459)K exprList        -> exprList .COMMA expr
  (466)K constant        -> identifier LPAR exprList .RPAR
 
-   shift to 16 on COMMA
-   shift to 251 on RPAR
+   shift to 21 on COMMA
+   shift to 254 on RPAR
 
-State 139:
+State 144:
  (460)K exprList        -> expr .
  (461)K expr            -> expr .OR constant
 
@@ -2345,10 +2545,10 @@ State 139:
    reduce by 460 on FILETYPE
    reduce by 460 on FILESUBTYPE
    reduce by 460 on BEGIN
-   shift to 17 on OR
+   shift to 22 on OR
    reduce by 460 on RPAR
 
-State 140:
+State 145:
  (462)K expr            -> constant .
 
    reduce by 462 on COMMA
@@ -2363,7 +2563,7 @@ State 140:
    reduce by 462 on OR
    reduce by 462 on RPAR
 
-State 141:
+State 146:
  ( 24)K dialogDefinition -> resourceId DIALOG resourceAttributeList rectangleSpec dialogSpecList .BEGIN opt_dialogControlSpecList END
  ( 26)K dialogSpecList  -> dialogSpecList .dialogSpec
  ( 28)  dialogSpec      -> .STYLE dialogStyleExpr
@@ -2371,14 +2571,14 @@ State 141:
  ( 30)  dialogSpec      -> ._MENU identifier
  ( 31)  dialogSpec      -> ._FONT fontSpec
 
-   shift to 146 on _FONT
-   shift to 145 on _MENU
-   shift to 143 on STYLE
-   shift to 144 on CAPTION
-   shift to 252 on BEGIN
-   goto 253 on dialogSpec
+   shift to 150 on _FONT
+   shift to 149 on _MENU
+   shift to 18 on STYLE
+   shift to 148 on CAPTION
+   shift to 255 on BEGIN
+   goto 256 on dialogSpec
 
-State 142:
+State 147:
  ( 27)K dialogSpecList  -> dialogSpec .
 
    reduce by 27 on _FONT
@@ -2387,110 +2587,30 @@ State 142:
    reduce by 27 on CAPTION
    reduce by 27 on BEGIN
 
-State 143:
- ( 28)K dialogSpec      -> STYLE .dialogStyleExpr
- ( 45)  dialogStyleExpr -> .dialogStyleExpr OR dialogStyle
- ( 46)  dialogStyleExpr -> .dialogStyle
- ( 47)  dialogStyle     -> .ds_style
- ( 48)  dialogStyle     -> .ws_style
- (112)  ds_style        -> ._DS_ABSALIGN
- (113)  ds_style        -> ._DS_SYSMODAL
- (114)  ds_style        -> ._DS_LOCALEDIT
- (115)  ds_style        -> ._DS_SETFONT
- (116)  ds_style        -> ._DS_MODALFRAME
- (117)  ds_style        -> ._DS_NOIDLEMSG
- (118)  ds_style        -> ._DS_SETFOREGROUND
- (119)  ds_style        -> ._DS_3DLOOK
- (120)  ds_style        -> ._DS_FIXEDSYS
- (121)  ds_style        -> ._DS_NOFAILCREATE
- (122)  ds_style        -> ._DS_CONTROL
- (123)  ds_style        -> ._DS_CENTER
- (124)  ds_style        -> ._DS_CENTERMOUSE
- (125)  ds_style        -> ._DS_CONTEXTHELP
- (126)  ws_style        -> ._WS_OVERLAPPED
- (127)  ws_style        -> ._WS_POPUP
- (128)  ws_style        -> ._WS_CHILD
- (129)  ws_style        -> ._WS_MINIMIZE
- (130)  ws_style        -> ._WS_VISIBLE
- (131)  ws_style        -> ._WS_DISABLED
- (132)  ws_style        -> ._WS_CLIPSIBLINGS
- (133)  ws_style        -> ._WS_CLIPCHILDREN
- (134)  ws_style        -> ._WS_MAXIMIZE
- (135)  ws_style        -> ._WS_CAPTION
- (136)  ws_style        -> ._WS_BORDER
- (137)  ws_style        -> ._WS_DLGFRAME
- (138)  ws_style        -> ._WS_VSCROLL
- (139)  ws_style        -> ._WS_HSCROLL
- (140)  ws_style        -> ._WS_SYSMENU
- (141)  ws_style        -> ._WS_THICKFRAME
- (142)  ws_style        -> ._WS_GROUP
- (143)  ws_style        -> ._WS_TABSTOP
- (144)  ws_style        -> ._WS_MINIMIZEBOX
- (145)  ws_style        -> ._WS_MAXIMIZEBOX
-
-   shift to 167 on _WS_OVERLAPPED
-   shift to 168 on _WS_POPUP
-   shift to 169 on _WS_CHILD
-   shift to 170 on _WS_MINIMIZE
-   shift to 171 on _WS_VISIBLE
-   shift to 172 on _WS_DISABLED
-   shift to 173 on _WS_CLIPSIBLINGS
-   shift to 174 on _WS_CLIPCHILDREN
-   shift to 175 on _WS_MAXIMIZE
-   shift to 176 on _WS_CAPTION
-   shift to 177 on _WS_BORDER
-   shift to 178 on _WS_DLGFRAME
-   shift to 179 on _WS_VSCROLL
-   shift to 180 on _WS_HSCROLL
-   shift to 181 on _WS_SYSMENU
-   shift to 182 on _WS_THICKFRAME
-   shift to 183 on _WS_GROUP
-   shift to 184 on _WS_TABSTOP
-   shift to 185 on _WS_MINIMIZEBOX
-   shift to 186 on _WS_MAXIMIZEBOX
-   shift to 153 on _DS_ABSALIGN
-   shift to 154 on _DS_SYSMODAL
-   shift to 155 on _DS_LOCALEDIT
-   shift to 156 on _DS_SETFONT
-   shift to 157 on _DS_MODALFRAME
-   shift to 158 on _DS_NOIDLEMSG
-   shift to 159 on _DS_SETFOREGROUND
-   shift to 160 on _DS_3DLOOK
-   shift to 161 on _DS_FIXEDSYS
-   shift to 162 on _DS_NOFAILCREATE
-   shift to 163 on _DS_CONTROL
-   shift to 164 on _DS_CENTER
-   shift to 165 on _DS_CENTERMOUSE
-   shift to 166 on _DS_CONTEXTHELP
-   goto 254 on dialogStyleExpr
-   goto 150 on dialogStyle
-   goto 151 on ds_style
-   goto 152 on ws_style
-
-State 144:
+State 148:
  ( 29)K dialogSpec      -> CAPTION .string
  (474)  string          -> .STRING
 
-   shift to 79 on STRING
-   goto 255 on string
+   shift to 86 on STRING
+   goto 258 on string
 
-State 145:
+State 149:
  ( 30)K dialogSpec      -> _MENU .identifier
  (473)  identifier      -> .IDENTIFIER
 
-   shift to 55 on IDENTIFIER
-   goto 256 on identifier
+   shift to 62 on IDENTIFIER
+   goto 259 on identifier
 
-State 146:
+State 150:
  ( 31)K dialogSpec      -> _FONT .fontSpec
  ( 42)  fontSpec        -> .number COMMA string
  (472)  number          -> .NUMBER
 
-   shift to 54 on NUMBER
-   goto 257 on fontSpec
-   goto 258 on number
+   shift to 61 on NUMBER
+   goto 260 on fontSpec
+   goto 261 on number
 
-State 147:
+State 151:
  ( 25)K extendedDialogDefinition -> resourceId DIALOGEX rectangleSpec extendedDialogSpecList BEGIN .opt_dialogControlSpecList END
  ( 49)  opt_dialogControlSpecList -> .
  ( 50)  opt_dialogControlSpecList -> .dialogControlSpecList
@@ -2519,34 +2639,34 @@ State 147:
  ( 73)  scrollBarSpec   -> .SCROLLBAR identifier controlAttributeList
  ( 74)  controlSpec     -> .CONTROL controlId COMMA identifier COMMA string controlAttributeList
 
-   shift to 281 on _ICON
-   shift to 271 on PUSHBUTTON
-   shift to 272 on DEFPUSHBUTTON
-   shift to 278 on EDITTEXT
-   shift to 282 on SCROLLBAR
-   shift to 279 on COMBOBOX
-   shift to 280 on LISTBOX
-   shift to 273 on GROUPBOX
-   shift to 275 on LTEXT
-   shift to 276 on RTEXT
-   shift to 277 on CTEXT
-   shift to 283 on CONTROL
+   shift to 23 on _ICON
+   shift to 274 on PUSHBUTTON
+   shift to 275 on DEFPUSHBUTTON
+   shift to 281 on EDITTEXT
+   shift to 284 on SCROLLBAR
+   shift to 282 on COMBOBOX
+   shift to 283 on LISTBOX
+   shift to 276 on GROUPBOX
+   shift to 278 on LTEXT
+   shift to 279 on RTEXT
+   shift to 280 on CTEXT
+   shift to 285 on CONTROL
    reduce by 49 on END
-   goto 259 on opt_dialogControlSpecList
-   goto 260 on dialogControlSpecList
-   goto 261 on dialogControlSpec
-   goto 262 on pushButtonSpec
-   goto 263 on lrcTextSpec
-   goto 264 on editSpec
-   goto 265 on comboBoxSpec
-   goto 266 on listBoxSpec
-   goto 267 on iconSpec
-   goto 268 on scrollBarSpec
-   goto 269 on controlSpec
-   goto 270 on buttonType
-   goto 274 on lrcText
+   goto 262 on opt_dialogControlSpecList
+   goto 263 on dialogControlSpecList
+   goto 264 on dialogControlSpec
+   goto 265 on pushButtonSpec
+   goto 266 on lrcTextSpec
+   goto 267 on editSpec
+   goto 268 on comboBoxSpec
+   goto 269 on listBoxSpec
+   goto 270 on iconSpec
+   goto 271 on scrollBarSpec
+   goto 272 on controlSpec
+   goto 273 on buttonType
+   goto 277 on lrcText
 
-State 148:
+State 152:
  ( 32)K extendedDialogSpecList -> extendedDialogSpecList extendedDialogSpec .
 
    reduce by 32 on _FONT
@@ -2556,7 +2676,7 @@ State 148:
    reduce by 32 on CAPTION
    reduce by 32 on BEGIN
 
-State 149:
+State 153:
  ( 34)K extendedDialogSpec -> STYLE dialogStyleExpr .
  ( 45)K dialogStyleExpr -> dialogStyleExpr .OR dialogStyle
 
@@ -2566,9 +2686,9 @@ State 149:
    reduce by 34 on EXSTYLE
    reduce by 34 on CAPTION
    reduce by 34 on BEGIN
-   shift to 284 on OR
+   shift to 24 on OR
 
-State 150:
+State 154:
  ( 46)K dialogStyleExpr -> dialogStyle .
 
    reduce by 46 on _FONT
@@ -2579,7 +2699,7 @@ State 150:
    reduce by 46 on BEGIN
    reduce by 46 on OR
 
-State 151:
+State 155:
  ( 47)K dialogStyle     -> ds_style .
 
    reduce by 47 on _FONT
@@ -2590,7 +2710,7 @@ State 151:
    reduce by 47 on BEGIN
    reduce by 47 on OR
 
-State 152:
+State 156:
  ( 48)K dialogStyle     -> ws_style .
 
    reduce by 48 on _FONT
@@ -2601,7 +2721,7 @@ State 152:
    reduce by 48 on BEGIN
    reduce by 48 on OR
 
-State 153:
+State 157:
  (112)K ds_style        -> _DS_ABSALIGN .
 
    reduce by 112 on _FONT
@@ -2612,7 +2732,7 @@ State 153:
    reduce by 112 on BEGIN
    reduce by 112 on OR
 
-State 154:
+State 158:
  (113)K ds_style        -> _DS_SYSMODAL .
 
    reduce by 113 on _FONT
@@ -2623,7 +2743,7 @@ State 154:
    reduce by 113 on BEGIN
    reduce by 113 on OR
 
-State 155:
+State 159:
  (114)K ds_style        -> _DS_LOCALEDIT .
 
    reduce by 114 on _FONT
@@ -2634,7 +2754,7 @@ State 155:
    reduce by 114 on BEGIN
    reduce by 114 on OR
 
-State 156:
+State 160:
  (115)K ds_style        -> _DS_SETFONT .
 
    reduce by 115 on _FONT
@@ -2645,7 +2765,7 @@ State 156:
    reduce by 115 on BEGIN
    reduce by 115 on OR
 
-State 157:
+State 161:
  (116)K ds_style        -> _DS_MODALFRAME .
 
    reduce by 116 on _FONT
@@ -2656,7 +2776,7 @@ State 157:
    reduce by 116 on BEGIN
    reduce by 116 on OR
 
-State 158:
+State 162:
  (117)K ds_style        -> _DS_NOIDLEMSG .
 
    reduce by 117 on _FONT
@@ -2667,7 +2787,7 @@ State 158:
    reduce by 117 on BEGIN
    reduce by 117 on OR
 
-State 159:
+State 163:
  (118)K ds_style        -> _DS_SETFOREGROUND .
 
    reduce by 118 on _FONT
@@ -2678,7 +2798,7 @@ State 159:
    reduce by 118 on BEGIN
    reduce by 118 on OR
 
-State 160:
+State 164:
  (119)K ds_style        -> _DS_3DLOOK .
 
    reduce by 119 on _FONT
@@ -2689,7 +2809,7 @@ State 160:
    reduce by 119 on BEGIN
    reduce by 119 on OR
 
-State 161:
+State 165:
  (120)K ds_style        -> _DS_FIXEDSYS .
 
    reduce by 120 on _FONT
@@ -2700,7 +2820,7 @@ State 161:
    reduce by 120 on BEGIN
    reduce by 120 on OR
 
-State 162:
+State 166:
  (121)K ds_style        -> _DS_NOFAILCREATE .
 
    reduce by 121 on _FONT
@@ -2711,7 +2831,7 @@ State 162:
    reduce by 121 on BEGIN
    reduce by 121 on OR
 
-State 163:
+State 167:
  (122)K ds_style        -> _DS_CONTROL .
 
    reduce by 122 on _FONT
@@ -2722,7 +2842,7 @@ State 163:
    reduce by 122 on BEGIN
    reduce by 122 on OR
 
-State 164:
+State 168:
  (123)K ds_style        -> _DS_CENTER .
 
    reduce by 123 on _FONT
@@ -2733,7 +2853,7 @@ State 164:
    reduce by 123 on BEGIN
    reduce by 123 on OR
 
-State 165:
+State 169:
  (124)K ds_style        -> _DS_CENTERMOUSE .
 
    reduce by 124 on _FONT
@@ -2744,7 +2864,7 @@ State 165:
    reduce by 124 on BEGIN
    reduce by 124 on OR
 
-State 166:
+State 170:
  (125)K ds_style        -> _DS_CONTEXTHELP .
 
    reduce by 125 on _FONT
@@ -2755,7 +2875,7 @@ State 166:
    reduce by 125 on BEGIN
    reduce by 125 on OR
 
-State 167:
+State 171:
  (126)K ws_style        -> _WS_OVERLAPPED .
 
    reduce by 126 on COMMA
@@ -2780,7 +2900,7 @@ State 167:
    reduce by 126 on END
    reduce by 126 on OR
 
-State 168:
+State 172:
  (127)K ws_style        -> _WS_POPUP .
 
    reduce by 127 on COMMA
@@ -2805,7 +2925,7 @@ State 168:
    reduce by 127 on END
    reduce by 127 on OR
 
-State 169:
+State 173:
  (128)K ws_style        -> _WS_CHILD .
 
    reduce by 128 on COMMA
@@ -2830,7 +2950,7 @@ State 169:
    reduce by 128 on END
    reduce by 128 on OR
 
-State 170:
+State 174:
  (129)K ws_style        -> _WS_MINIMIZE .
 
    reduce by 129 on COMMA
@@ -2855,7 +2975,7 @@ State 170:
    reduce by 129 on END
    reduce by 129 on OR
 
-State 171:
+State 175:
  (130)K ws_style        -> _WS_VISIBLE .
 
    reduce by 130 on COMMA
@@ -2880,7 +3000,7 @@ State 171:
    reduce by 130 on END
    reduce by 130 on OR
 
-State 172:
+State 176:
  (131)K ws_style        -> _WS_DISABLED .
 
    reduce by 131 on COMMA
@@ -2905,7 +3025,7 @@ State 172:
    reduce by 131 on END
    reduce by 131 on OR
 
-State 173:
+State 177:
  (132)K ws_style        -> _WS_CLIPSIBLINGS .
 
    reduce by 132 on COMMA
@@ -2930,7 +3050,7 @@ State 173:
    reduce by 132 on END
    reduce by 132 on OR
 
-State 174:
+State 178:
  (133)K ws_style        -> _WS_CLIPCHILDREN .
 
    reduce by 133 on COMMA
@@ -2955,7 +3075,7 @@ State 174:
    reduce by 133 on END
    reduce by 133 on OR
 
-State 175:
+State 179:
  (134)K ws_style        -> _WS_MAXIMIZE .
 
    reduce by 134 on COMMA
@@ -2980,7 +3100,7 @@ State 175:
    reduce by 134 on END
    reduce by 134 on OR
 
-State 176:
+State 180:
  (135)K ws_style        -> _WS_CAPTION .
 
    reduce by 135 on COMMA
@@ -3005,7 +3125,7 @@ State 176:
    reduce by 135 on END
    reduce by 135 on OR
 
-State 177:
+State 181:
  (136)K ws_style        -> _WS_BORDER .
 
    reduce by 136 on COMMA
@@ -3030,7 +3150,7 @@ State 177:
    reduce by 136 on END
    reduce by 136 on OR
 
-State 178:
+State 182:
  (137)K ws_style        -> _WS_DLGFRAME .
 
    reduce by 137 on COMMA
@@ -3055,7 +3175,7 @@ State 178:
    reduce by 137 on END
    reduce by 137 on OR
 
-State 179:
+State 183:
  (138)K ws_style        -> _WS_VSCROLL .
 
    reduce by 138 on COMMA
@@ -3080,7 +3200,7 @@ State 179:
    reduce by 138 on END
    reduce by 138 on OR
 
-State 180:
+State 184:
  (139)K ws_style        -> _WS_HSCROLL .
 
    reduce by 139 on COMMA
@@ -3105,7 +3225,7 @@ State 180:
    reduce by 139 on END
    reduce by 139 on OR
 
-State 181:
+State 185:
  (140)K ws_style        -> _WS_SYSMENU .
 
    reduce by 140 on COMMA
@@ -3130,7 +3250,7 @@ State 181:
    reduce by 140 on END
    reduce by 140 on OR
 
-State 182:
+State 186:
  (141)K ws_style        -> _WS_THICKFRAME .
 
    reduce by 141 on COMMA
@@ -3155,7 +3275,7 @@ State 182:
    reduce by 141 on END
    reduce by 141 on OR
 
-State 183:
+State 187:
  (142)K ws_style        -> _WS_GROUP .
 
    reduce by 142 on COMMA
@@ -3180,7 +3300,7 @@ State 183:
    reduce by 142 on END
    reduce by 142 on OR
 
-State 184:
+State 188:
  (143)K ws_style        -> _WS_TABSTOP .
 
    reduce by 143 on COMMA
@@ -3205,7 +3325,7 @@ State 184:
    reduce by 143 on END
    reduce by 143 on OR
 
-State 185:
+State 189:
  (144)K ws_style        -> _WS_MINIMIZEBOX .
 
    reduce by 144 on COMMA
@@ -3230,7 +3350,7 @@ State 185:
    reduce by 144 on END
    reduce by 144 on OR
 
-State 186:
+State 190:
  (145)K ws_style        -> _WS_MAXIMIZEBOX .
 
    reduce by 145 on COMMA
@@ -3255,7 +3375,7 @@ State 186:
    reduce by 145 on END
    reduce by 145 on OR
 
-State 187:
+State 191:
  ( 35)K extendedDialogSpec -> EXSTYLE extendedDialogStyleExpr .
  ( 39)K extendedDialogStyleExpr -> extendedDialogStyleExpr .OR extendedDialogStyle
 
@@ -3265,9 +3385,9 @@ State 187:
    reduce by 35 on EXSTYLE
    reduce by 35 on CAPTION
    reduce by 35 on BEGIN
-   shift to 285 on OR
+   shift to 286 on OR
 
-State 188:
+State 192:
  ( 40)K extendedDialogStyleExpr -> extendedDialogStyle .
 
    reduce by 40 on _FONT
@@ -3278,7 +3398,7 @@ State 188:
    reduce by 40 on BEGIN
    reduce by 40 on OR
 
-State 189:
+State 193:
  ( 41)K extendedDialogStyle -> ws_ex_style .
 
    reduce by 41 on _FONT
@@ -3289,7 +3409,7 @@ State 189:
    reduce by 41 on BEGIN
    reduce by 41 on OR
 
-State 190:
+State 194:
  (146)K ws_ex_style     -> _WS_EX_DLGMODALFRAME .
 
    reduce by 146 on COMMA
@@ -3314,7 +3434,7 @@ State 190:
    reduce by 146 on END
    reduce by 146 on OR
 
-State 191:
+State 195:
  (147)K ws_ex_style     -> _WS_EX_NOPARENTNOTIFY .
 
    reduce by 147 on COMMA
@@ -3339,7 +3459,7 @@ State 191:
    reduce by 147 on END
    reduce by 147 on OR
 
-State 192:
+State 196:
  (148)K ws_ex_style     -> _WS_EX_TOPMOST .
 
    reduce by 148 on COMMA
@@ -3364,7 +3484,7 @@ State 192:
    reduce by 148 on END
    reduce by 148 on OR
 
-State 193:
+State 197:
  (149)K ws_ex_style     -> _WS_EX_ACCEPTFILES .
 
    reduce by 149 on COMMA
@@ -3389,7 +3509,7 @@ State 193:
    reduce by 149 on END
    reduce by 149 on OR
 
-State 194:
+State 198:
  (150)K ws_ex_style     -> _WS_EX_TRANSPARENT .
 
    reduce by 150 on COMMA
@@ -3414,7 +3534,7 @@ State 194:
    reduce by 150 on END
    reduce by 150 on OR
 
-State 195:
+State 199:
  (151)K ws_ex_style     -> _WS_EX_MDICHILD .
 
    reduce by 151 on COMMA
@@ -3439,7 +3559,7 @@ State 195:
    reduce by 151 on END
    reduce by 151 on OR
 
-State 196:
+State 200:
  (152)K ws_ex_style     -> _WS_EX_TOOLWINDOW .
 
    reduce by 152 on COMMA
@@ -3464,7 +3584,7 @@ State 196:
    reduce by 152 on END
    reduce by 152 on OR
 
-State 197:
+State 201:
  (153)K ws_ex_style     -> _WS_EX_WINDOWEDGE .
 
    reduce by 153 on COMMA
@@ -3489,7 +3609,7 @@ State 197:
    reduce by 153 on END
    reduce by 153 on OR
 
-State 198:
+State 202:
  (154)K ws_ex_style     -> _WS_EX_CLIENTEDGE .
 
    reduce by 154 on COMMA
@@ -3514,7 +3634,7 @@ State 198:
    reduce by 154 on END
    reduce by 154 on OR
 
-State 199:
+State 203:
  (155)K ws_ex_style     -> _WS_EX_CONTEXTHELP .
 
    reduce by 155 on COMMA
@@ -3539,7 +3659,7 @@ State 199:
    reduce by 155 on END
    reduce by 155 on OR
 
-State 200:
+State 204:
  (156)K ws_ex_style     -> _WS_EX_RIGHT .
 
    reduce by 156 on COMMA
@@ -3564,7 +3684,7 @@ State 200:
    reduce by 156 on END
    reduce by 156 on OR
 
-State 201:
+State 205:
  (157)K ws_ex_style     -> _WS_EX_LEFT .
 
    reduce by 157 on COMMA
@@ -3589,7 +3709,7 @@ State 201:
    reduce by 157 on END
    reduce by 157 on OR
 
-State 202:
+State 206:
  (158)K ws_ex_style     -> _WS_EX_RTLREADING .
 
    reduce by 158 on COMMA
@@ -3614,7 +3734,7 @@ State 202:
    reduce by 158 on END
    reduce by 158 on OR
 
-State 203:
+State 207:
  (159)K ws_ex_style     -> _WS_EX_LTRREADING .
 
    reduce by 159 on COMMA
@@ -3639,7 +3759,7 @@ State 203:
    reduce by 159 on END
    reduce by 159 on OR
 
-State 204:
+State 208:
  (160)K ws_ex_style     -> _WS_EX_LEFTSCROLLBAR .
 
    reduce by 160 on COMMA
@@ -3664,7 +3784,7 @@ State 204:
    reduce by 160 on END
    reduce by 160 on OR
 
-State 205:
+State 209:
  (161)K ws_ex_style     -> _WS_EX_RIGHTSCROLLBAR .
 
    reduce by 161 on COMMA
@@ -3689,7 +3809,7 @@ State 205:
    reduce by 161 on END
    reduce by 161 on OR
 
-State 206:
+State 210:
  (162)K ws_ex_style     -> _WS_EX_CONTROLPARENT .
 
    reduce by 162 on COMMA
@@ -3714,7 +3834,7 @@ State 206:
    reduce by 162 on END
    reduce by 162 on OR
 
-State 207:
+State 211:
  (163)K ws_ex_style     -> _WS_EX_STATICEDGE .
 
    reduce by 163 on COMMA
@@ -3739,7 +3859,7 @@ State 207:
    reduce by 163 on END
    reduce by 163 on OR
 
-State 208:
+State 212:
  (164)K ws_ex_style     -> _WS_EX_APPWINDOW .
 
    reduce by 164 on COMMA
@@ -3764,7 +3884,7 @@ State 208:
    reduce by 164 on END
    reduce by 164 on OR
 
-State 209:
+State 213:
  ( 36)K extendedDialogSpec -> CAPTION string .
 
    reduce by 36 on _FONT
@@ -3774,7 +3894,7 @@ State 209:
    reduce by 36 on CAPTION
    reduce by 36 on BEGIN
 
-State 210:
+State 214:
  ( 37)K extendedDialogSpec -> _MENU identifier .
 
    reduce by 37 on _FONT
@@ -3784,7 +3904,7 @@ State 210:
    reduce by 37 on CAPTION
    reduce by 37 on BEGIN
 
-State 211:
+State 215:
  ( 38)K extendedDialogSpec -> _FONT extendedFontSpec .
 
    reduce by 38 on _FONT
@@ -3794,13 +3914,13 @@ State 211:
    reduce by 38 on CAPTION
    reduce by 38 on BEGIN
 
-State 212:
+State 216:
  ( 42)K fontSpec        -> number .COMMA string
  ( 43)K extendedFontSpec -> number .COMMA string COMMA number COMMA number COMMA number
 
-   shift to 286 on COMMA
+   shift to 287 on COMMA
 
-State 213:
+State 217:
  ( 44)K extendedFontSpec -> fontSpec .
 
    reduce by 44 on _FONT
@@ -3810,31 +3930,31 @@ State 213:
    reduce by 44 on CAPTION
    reduce by 44 on BEGIN
 
-State 214:
+State 218:
  (467)K rectangleSpec   -> number COMMA number .COMMA number COMMA number
 
-   shift to 287 on COMMA
+   shift to 288 on COMMA
 
-State 215:
+State 219:
  (355)K toolbarDefnition -> resourceId TOOLBAR resourceAttributeList sizeSpec BEGIN .buttonSpecList END
  (356)  buttonSpecList  -> .buttonSpecList buttonSpec
  (357)  buttonSpecList  -> .buttonSpec
  (358)  buttonSpec      -> .BUTTON identifier
  (359)  buttonSpec      -> .SEPARATOR
 
-   shift to 290 on BUTTON
-   shift to 291 on SEPARATOR
-   goto 288 on buttonSpecList
-   goto 289 on buttonSpec
+   shift to 291 on BUTTON
+   shift to 292 on SEPARATOR
+   goto 289 on buttonSpecList
+   goto 290 on buttonSpec
 
-State 216:
+State 220:
  (468)K sizeSpec        -> number COMMA .number
  (472)  number          -> .NUMBER
 
-   shift to 54 on NUMBER
-   goto 292 on number
+   shift to 61 on NUMBER
+   goto 293 on number
 
-State 217:
+State 221:
  (363)K menuBody        -> BEGIN menuSpecList .END
  (364)K menuSpecList    -> menuSpecList .menuSpec
  (366)  menuSpec        -> .popupMenu
@@ -3843,51 +3963,51 @@ State 217:
  (369)  menuItem        -> ._MENUITEM string COMMA identifierOrNumber menuItemModifierList
  (370)  menuItem        -> ._MENUITEM SEPARATOR
 
-   shift to 222 on _MENUITEM
-   shift to 221 on POPUP
-   shift to 293 on END
-   goto 294 on menuSpec
-   goto 219 on popupMenu
-   goto 220 on menuItem
+   shift to 226 on _MENUITEM
+   shift to 225 on POPUP
+   shift to 294 on END
+   goto 295 on menuSpec
+   goto 223 on popupMenu
+   goto 224 on menuItem
 
-State 218:
+State 222:
  (365)K menuSpecList    -> menuSpec .
 
    reduce by 365 on _MENUITEM
    reduce by 365 on POPUP
    reduce by 365 on END
 
-State 219:
+State 223:
  (366)K menuSpec        -> popupMenu .
 
    reduce by 366 on _MENUITEM
    reduce by 366 on POPUP
    reduce by 366 on END
 
-State 220:
+State 224:
  (367)K menuSpec        -> menuItem .
 
    reduce by 367 on _MENUITEM
    reduce by 367 on POPUP
    reduce by 367 on END
 
-State 221:
+State 225:
  (368)K popupMenu       -> POPUP .string menuItemModifierList menuBody
  (474)  string          -> .STRING
 
-   shift to 79 on STRING
-   goto 295 on string
+   shift to 86 on STRING
+   goto 296 on string
 
-State 222:
+State 226:
  (369)K menuItem        -> _MENUITEM .string COMMA identifierOrNumber menuItemModifierList
  (370)K menuItem        -> _MENUITEM .SEPARATOR
  (474)  string          -> .STRING
 
-   shift to 79 on STRING
-   shift to 297 on SEPARATOR
-   goto 296 on string
+   shift to 86 on STRING
+   shift to 298 on SEPARATOR
+   goto 297 on string
 
-State 223:
+State 227:
  (403)K dialogInitDefinition -> resourceId DLGINIT BEGIN constantElementList END .
 
    reduce by 403 on EOI
@@ -3897,7 +4017,7 @@ State 223:
    reduce by 403 on STRINGTABLE
    reduce by 403 on LANGUAGE
 
-State 224:
+State 228:
  (404)K constantElementList -> constantElementList constantElement .
 
    reduce by 404 on NUMBER
@@ -3907,7 +4027,7 @@ State 224:
    reduce by 404 on VALUE
    reduce by 404 on END
 
-State 225:
+State 229:
  (407)K constantElement -> COMMA constant .
 
    reduce by 407 on NUMBER
@@ -3917,7 +4037,7 @@ State 225:
    reduce by 407 on VALUE
    reduce by 407 on END
 
-State 226:
+State 230:
  (410)K acceleratorList -> accelerator .
 
    reduce by 410 on NUMBER
@@ -3925,29 +4045,29 @@ State 226:
    reduce by 410 on STRING
    reduce by 410 on END
 
-State 227:
+State 231:
  (411)K accelerator     -> constant .COMMA identifier opt_acceleratorSpecList
 
-   shift to 300 on COMMA
+   shift to 301 on COMMA
 
-State 228:
+State 232:
  (422)K rcdataDefinition -> resourceId RCDATA resourceAttributeList BEGIN numberList .END
  (424)K numberList      -> numberList .COMMA number
 
-   shift to 239 on COMMA
-   shift to 301 on END
+   shift to 243 on COMMA
+   shift to 302 on END
 
-State 229:
+State 233:
  (434)K versionDefinition -> resourceId VERSIONINFO resourceAttributeList versionSpecList BEGIN .blockList END
  (444)  blockList       -> .blockList block
  (445)  blockList       -> .block
  (446)  block           -> .BLOCK string BEGIN blockBody END
 
-   shift to 304 on BLOCK
-   goto 302 on blockList
-   goto 303 on block
+   shift to 305 on BLOCK
+   goto 303 on blockList
+   goto 304 on block
 
-State 230:
+State 234:
  (435)K versionSpecList -> versionSpecList versionSpec .
 
    reduce by 435 on FILEVERSION
@@ -3959,11 +4079,11 @@ State 230:
    reduce by 435 on FILESUBTYPE
    reduce by 435 on BEGIN
 
-State 231:
+State 235:
  (437)K versionSpec     -> FILEVERSION exprList .
  (459)K exprList        -> exprList .COMMA expr
 
-   shift to 16 on COMMA
+   shift to 21 on COMMA
    reduce by 437 on FILEVERSION
    reduce by 437 on PRODUCTVERSION
    reduce by 437 on FILEFLAGSMASK
@@ -3973,11 +4093,11 @@ State 231:
    reduce by 437 on FILESUBTYPE
    reduce by 437 on BEGIN
 
-State 232:
+State 236:
  (438)K versionSpec     -> PRODUCTVERSION exprList .
  (459)K exprList        -> exprList .COMMA expr
 
-   shift to 16 on COMMA
+   shift to 21 on COMMA
    reduce by 438 on FILEVERSION
    reduce by 438 on PRODUCTVERSION
    reduce by 438 on FILEFLAGSMASK
@@ -3987,7 +4107,7 @@ State 232:
    reduce by 438 on FILESUBTYPE
    reduce by 438 on BEGIN
 
-State 233:
+State 237:
  (439)K versionSpec     -> FILEFLAGSMASK expr .
  (461)K expr            -> expr .OR constant
 
@@ -3999,9 +4119,9 @@ State 233:
    reduce by 439 on FILETYPE
    reduce by 439 on FILESUBTYPE
    reduce by 439 on BEGIN
-   shift to 17 on OR
+   shift to 22 on OR
 
-State 234:
+State 238:
  (440)K versionSpec     -> FILEFLAGS expr .
  (461)K expr            -> expr .OR constant
 
@@ -4013,9 +4133,9 @@ State 234:
    reduce by 440 on FILETYPE
    reduce by 440 on FILESUBTYPE
    reduce by 440 on BEGIN
-   shift to 17 on OR
+   shift to 22 on OR
 
-State 235:
+State 239:
  (441)K versionSpec     -> FILEOS expr .
  (461)K expr            -> expr .OR constant
 
@@ -4027,9 +4147,9 @@ State 235:
    reduce by 441 on FILETYPE
    reduce by 441 on FILESUBTYPE
    reduce by 441 on BEGIN
-   shift to 17 on OR
+   shift to 22 on OR
 
-State 236:
+State 240:
  (442)K versionSpec     -> FILETYPE expr .
  (461)K expr            -> expr .OR constant
 
@@ -4041,9 +4161,9 @@ State 236:
    reduce by 442 on FILETYPE
    reduce by 442 on FILESUBTYPE
    reduce by 442 on BEGIN
-   shift to 17 on OR
+   shift to 22 on OR
 
-State 237:
+State 241:
  (443)K versionSpec     -> FILESUBTYPE expr .
  (461)K expr            -> expr .OR constant
 
@@ -4055,9 +4175,9 @@ State 237:
    reduce by 443 on FILETYPE
    reduce by 443 on FILESUBTYPE
    reduce by 443 on BEGIN
-   shift to 17 on OR
+   shift to 22 on OR
 
-State 238:
+State 242:
  (453)K afxDialogLayout -> resourceId AFX_DIALOG_LAYOUT BEGIN layoutInfo END .
 
    reduce by 453 on EOI
@@ -4067,53 +4187,36 @@ State 238:
    reduce by 453 on STRINGTABLE
    reduce by 453 on LANGUAGE
 
-State 239:
+State 243:
  (424)K numberList      -> numberList COMMA .number
  (472)  number          -> .NUMBER
 
-   shift to 54 on NUMBER
-   goto 305 on number
+   shift to 61 on NUMBER
+   goto 306 on number
 
-State 240:
- (339)K guideLinesDefinition -> GUIDELINES DESIGNINFO resourceAttributeList BEGIN designInfoList .END
- (340)K designInfoList  -> designInfoList .designInfo
- (342)  designInfo      -> .identifierOrString COMMA DIALOG BEGIN designSpecList END
- (343)  identifierOrString -> .identifier
- (344)  identifierOrString -> .string
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   shift to 306 on END
-   goto 244 on string
-   goto 243 on identifier
-   goto 242 on identifierOrString
-   goto 307 on designInfo
-
-State 241:
+State 244:
  (341)K designInfoList  -> designInfo .
 
    reduce by 341 on IDENTIFIER
    reduce by 341 on STRING
    reduce by 341 on END
 
-State 242:
+State 245:
  (342)K designInfo      -> identifierOrString .COMMA DIALOG BEGIN designSpecList END
 
-   shift to 308 on COMMA
+   shift to 309 on COMMA
 
-State 243:
+State 246:
  (343)K identifierOrString -> identifier .
 
    reduce by 343 on COMMA
 
-State 244:
+State 247:
  (344)K identifierOrString -> string .
 
    reduce by 344 on COMMA
 
-State 245:
+State 248:
  (426)K stringTableDefinition -> STRINGTABLE resourceAttributeList BEGIN stringSpecList END .
 
    reduce by 426 on EOI
@@ -4123,34 +4226,34 @@ State 245:
    reduce by 426 on STRINGTABLE
    reduce by 426 on LANGUAGE
 
-State 246:
+State 249:
  (427)K stringSpecList  -> stringSpecList stringSpec .
 
    reduce by 427 on IDENTIFIER
    reduce by 427 on END
 
-State 247:
+State 250:
  (429)K stringSpec      -> identifier string .
 
    reduce by 429 on IDENTIFIER
    reduce by 429 on END
 
-State 248:
+State 251:
  (430)K textIncludeDirective -> number TEXTINCLUDE resourceAttributeList BEGIN stringList .END
  (431)K stringList      -> stringList .string
  (474)  string          -> .STRING
 
-   shift to 79 on STRING
-   shift to 309 on END
-   goto 310 on string
+   shift to 86 on STRING
+   shift to 310 on END
+   goto 311 on string
 
-State 249:
+State 252:
  (432)K stringList      -> string .
 
    reduce by 432 on STRING
    reduce by 432 on END
 
-State 250:
+State 253:
  (458)K name            -> name DOT identifier .
 
    reduce by 458 on EOI
@@ -4161,7 +4264,7 @@ State 250:
    reduce by 458 on LANGUAGE
    reduce by 458 on DOT
 
-State 251:
+State 254:
  (466)K constant        -> identifier LPAR exprList RPAR .
 
    reduce by 466 on EOI
@@ -4185,7 +4288,7 @@ State 251:
    reduce by 466 on OR
    reduce by 466 on RPAR
 
-State 252:
+State 255:
  ( 24)K dialogDefinition -> resourceId DIALOG resourceAttributeList rectangleSpec dialogSpecList BEGIN .opt_dialogControlSpecList END
  ( 49)  opt_dialogControlSpecList -> .
  ( 50)  opt_dialogControlSpecList -> .dialogControlSpecList
@@ -4214,34 +4317,34 @@ State 252:
  ( 73)  scrollBarSpec   -> .SCROLLBAR identifier controlAttributeList
  ( 74)  controlSpec     -> .CONTROL controlId COMMA identifier COMMA string controlAttributeList
 
-   shift to 281 on _ICON
-   shift to 271 on PUSHBUTTON
-   shift to 272 on DEFPUSHBUTTON
-   shift to 278 on EDITTEXT
-   shift to 282 on SCROLLBAR
-   shift to 279 on COMBOBOX
-   shift to 280 on LISTBOX
-   shift to 273 on GROUPBOX
-   shift to 275 on LTEXT
-   shift to 276 on RTEXT
-   shift to 277 on CTEXT
-   shift to 283 on CONTROL
+   shift to 23 on _ICON
+   shift to 274 on PUSHBUTTON
+   shift to 275 on DEFPUSHBUTTON
+   shift to 281 on EDITTEXT
+   shift to 284 on SCROLLBAR
+   shift to 282 on COMBOBOX
+   shift to 283 on LISTBOX
+   shift to 276 on GROUPBOX
+   shift to 278 on LTEXT
+   shift to 279 on RTEXT
+   shift to 280 on CTEXT
+   shift to 285 on CONTROL
    reduce by 49 on END
-   goto 313 on opt_dialogControlSpecList
-   goto 260 on dialogControlSpecList
-   goto 261 on dialogControlSpec
-   goto 262 on pushButtonSpec
-   goto 263 on lrcTextSpec
-   goto 264 on editSpec
-   goto 265 on comboBoxSpec
-   goto 266 on listBoxSpec
-   goto 267 on iconSpec
-   goto 268 on scrollBarSpec
-   goto 269 on controlSpec
-   goto 270 on buttonType
-   goto 274 on lrcText
+   goto 314 on opt_dialogControlSpecList
+   goto 263 on dialogControlSpecList
+   goto 264 on dialogControlSpec
+   goto 265 on pushButtonSpec
+   goto 266 on lrcTextSpec
+   goto 267 on editSpec
+   goto 268 on comboBoxSpec
+   goto 269 on listBoxSpec
+   goto 270 on iconSpec
+   goto 271 on scrollBarSpec
+   goto 272 on controlSpec
+   goto 273 on buttonType
+   goto 277 on lrcText
 
-State 253:
+State 256:
  ( 26)K dialogSpecList  -> dialogSpecList dialogSpec .
 
    reduce by 26 on _FONT
@@ -4250,7 +4353,7 @@ State 253:
    reduce by 26 on CAPTION
    reduce by 26 on BEGIN
 
-State 254:
+State 257:
  ( 28)K dialogSpec      -> STYLE dialogStyleExpr .
  ( 45)K dialogStyleExpr -> dialogStyleExpr .OR dialogStyle
 
@@ -4259,9 +4362,9 @@ State 254:
    reduce by 28 on STYLE
    reduce by 28 on CAPTION
    reduce by 28 on BEGIN
-   shift to 284 on OR
+   shift to 24 on OR
 
-State 255:
+State 258:
  ( 29)K dialogSpec      -> CAPTION string .
 
    reduce by 29 on _FONT
@@ -4270,7 +4373,7 @@ State 255:
    reduce by 29 on CAPTION
    reduce by 29 on BEGIN
 
-State 256:
+State 259:
  ( 30)K dialogSpec      -> _MENU identifier .
 
    reduce by 30 on _FONT
@@ -4279,7 +4382,7 @@ State 256:
    reduce by 30 on CAPTION
    reduce by 30 on BEGIN
 
-State 257:
+State 260:
  ( 31)K dialogSpec      -> _FONT fontSpec .
 
    reduce by 31 on _FONT
@@ -4288,17 +4391,17 @@ State 257:
    reduce by 31 on CAPTION
    reduce by 31 on BEGIN
 
-State 258:
+State 261:
  ( 42)K fontSpec        -> number .COMMA string
 
-   shift to 314 on COMMA
+   shift to 315 on COMMA
 
-State 259:
+State 262:
  ( 25)K extendedDialogDefinition -> resourceId DIALOGEX rectangleSpec extendedDialogSpecList BEGIN opt_dialogControlSpecList .END
 
-   shift to 315 on END
+   shift to 316 on END
 
-State 260:
+State 263:
  ( 50)K opt_dialogControlSpecList -> dialogControlSpecList .
  ( 52)K dialogControlSpecList -> dialogControlSpecList .dialogControlSpec
  ( 53)  dialogControlSpec -> .pushButtonSpec
@@ -4324,32 +4427,32 @@ State 260:
  ( 73)  scrollBarSpec   -> .SCROLLBAR identifier controlAttributeList
  ( 74)  controlSpec     -> .CONTROL controlId COMMA identifier COMMA string controlAttributeList
 
-   shift to 281 on _ICON
-   shift to 271 on PUSHBUTTON
-   shift to 272 on DEFPUSHBUTTON
-   shift to 278 on EDITTEXT
-   shift to 282 on SCROLLBAR
-   shift to 279 on COMBOBOX
-   shift to 280 on LISTBOX
-   shift to 273 on GROUPBOX
-   shift to 275 on LTEXT
-   shift to 276 on RTEXT
-   shift to 277 on CTEXT
-   shift to 283 on CONTROL
+   shift to 23 on _ICON
+   shift to 274 on PUSHBUTTON
+   shift to 275 on DEFPUSHBUTTON
+   shift to 281 on EDITTEXT
+   shift to 284 on SCROLLBAR
+   shift to 282 on COMBOBOX
+   shift to 283 on LISTBOX
+   shift to 276 on GROUPBOX
+   shift to 278 on LTEXT
+   shift to 279 on RTEXT
+   shift to 280 on CTEXT
+   shift to 285 on CONTROL
    reduce by 50 on END
-   goto 316 on dialogControlSpec
-   goto 262 on pushButtonSpec
-   goto 263 on lrcTextSpec
-   goto 264 on editSpec
-   goto 265 on comboBoxSpec
-   goto 266 on listBoxSpec
-   goto 267 on iconSpec
-   goto 268 on scrollBarSpec
-   goto 269 on controlSpec
-   goto 270 on buttonType
-   goto 274 on lrcText
+   goto 317 on dialogControlSpec
+   goto 265 on pushButtonSpec
+   goto 266 on lrcTextSpec
+   goto 267 on editSpec
+   goto 268 on comboBoxSpec
+   goto 269 on listBoxSpec
+   goto 270 on iconSpec
+   goto 271 on scrollBarSpec
+   goto 272 on controlSpec
+   goto 273 on buttonType
+   goto 277 on lrcText
 
-State 261:
+State 264:
  ( 51)K dialogControlSpecList -> dialogControlSpec .
 
    reduce by 51 on _ICON
@@ -4366,7 +4469,7 @@ State 261:
    reduce by 51 on CONTROL
    reduce by 51 on END
 
-State 262:
+State 265:
  ( 53)K dialogControlSpec -> pushButtonSpec .
 
    reduce by 53 on _ICON
@@ -4383,7 +4486,7 @@ State 262:
    reduce by 53 on CONTROL
    reduce by 53 on END
 
-State 263:
+State 266:
  ( 54)K dialogControlSpec -> lrcTextSpec .
 
    reduce by 54 on _ICON
@@ -4400,7 +4503,7 @@ State 263:
    reduce by 54 on CONTROL
    reduce by 54 on END
 
-State 264:
+State 267:
  ( 55)K dialogControlSpec -> editSpec .
 
    reduce by 55 on _ICON
@@ -4417,7 +4520,7 @@ State 264:
    reduce by 55 on CONTROL
    reduce by 55 on END
 
-State 265:
+State 268:
  ( 56)K dialogControlSpec -> comboBoxSpec .
 
    reduce by 56 on _ICON
@@ -4434,7 +4537,7 @@ State 265:
    reduce by 56 on CONTROL
    reduce by 56 on END
 
-State 266:
+State 269:
  ( 57)K dialogControlSpec -> listBoxSpec .
 
    reduce by 57 on _ICON
@@ -4451,7 +4554,7 @@ State 266:
    reduce by 57 on CONTROL
    reduce by 57 on END
 
-State 267:
+State 270:
  ( 58)K dialogControlSpec -> iconSpec .
 
    reduce by 58 on _ICON
@@ -4468,7 +4571,7 @@ State 267:
    reduce by 58 on CONTROL
    reduce by 58 on END
 
-State 268:
+State 271:
  ( 59)K dialogControlSpec -> scrollBarSpec .
 
    reduce by 59 on _ICON
@@ -4485,7 +4588,7 @@ State 268:
    reduce by 59 on CONTROL
    reduce by 59 on END
 
-State 269:
+State 272:
  ( 60)K dialogControlSpec -> controlSpec .
 
    reduce by 60 on _ICON
@@ -4502,92 +4605,79 @@ State 269:
    reduce by 60 on CONTROL
    reduce by 60 on END
 
-State 270:
+State 273:
  ( 61)K pushButtonSpec  -> buttonType .string COMMA identifier controlAttributeList
  (474)  string          -> .STRING
 
-   shift to 79 on STRING
-   goto 317 on string
+   shift to 86 on STRING
+   goto 318 on string
 
-State 271:
+State 274:
  ( 62)K buttonType      -> PUSHBUTTON .
 
    reduce by 62 on STRING
 
-State 272:
+State 275:
  ( 63)K buttonType      -> DEFPUSHBUTTON .
 
    reduce by 63 on STRING
 
-State 273:
+State 276:
  ( 64)K buttonType      -> GROUPBOX .
 
    reduce by 64 on STRING
 
-State 274:
+State 277:
  ( 65)K lrcTextSpec     -> lrcText .string COMMA identifier controlAttributeList
  (474)  string          -> .STRING
 
-   shift to 79 on STRING
-   goto 318 on string
+   shift to 86 on STRING
+   goto 319 on string
 
-State 275:
+State 278:
  ( 66)K lrcText         -> LTEXT .
 
    reduce by 66 on STRING
 
-State 276:
+State 279:
  ( 67)K lrcText         -> RTEXT .
 
    reduce by 67 on STRING
 
-State 277:
+State 280:
  ( 68)K lrcText         -> CTEXT .
 
    reduce by 68 on STRING
 
-State 278:
+State 281:
  ( 69)K editSpec        -> EDITTEXT .identifier controlAttributeList
  (473)  identifier      -> .IDENTIFIER
 
-   shift to 55 on IDENTIFIER
-   goto 18 on identifier
+   shift to 62 on IDENTIFIER
+   goto 25 on identifier
 
-State 279:
+State 282:
  ( 70)K comboBoxSpec    -> COMBOBOX .identifier controlAttributeList
  (473)  identifier      -> .IDENTIFIER
 
-   shift to 55 on IDENTIFIER
-   goto 19 on identifier
+   shift to 62 on IDENTIFIER
+   goto 26 on identifier
 
-State 280:
+State 283:
  ( 71)K listBoxSpec     -> LISTBOX .identifier controlAttributeList
  (473)  identifier      -> .IDENTIFIER
 
-   shift to 55 on IDENTIFIER
-   goto 20 on identifier
+   shift to 62 on IDENTIFIER
+   goto 27 on identifier
 
-State 281:
- ( 72)K iconSpec        -> _ICON .identifierOrString COMMA identifier controlAttributeList
- (343)  identifierOrString -> .identifier
- (344)  identifierOrString -> .string
- (473)  identifier      -> .IDENTIFIER
- (474)  string          -> .STRING
-
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   goto 244 on string
-   goto 243 on identifier
-   goto 319 on identifierOrString
-
-State 282:
+State 284:
  ( 73)K scrollBarSpec   -> SCROLLBAR .identifier controlAttributeList
  (473)  identifier      -> .IDENTIFIER
 
-   shift to 55 on IDENTIFIER
-   goto 21 on identifier
+   shift to 62 on IDENTIFIER
+   goto 28 on identifier
 
-State 283:
+State 285:
  ( 74)K controlSpec     -> CONTROL .controlId COMMA identifier COMMA string controlAttributeList
  ( 75)  controlId       -> .string
  ( 76)  controlId       -> .identifier
@@ -4596,92 +4686,15 @@ State 283:
  (473)  identifier      -> .IDENTIFIER
  (474)  string          -> .STRING
 
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 79 on STRING
-   goto 321 on string
-   goto 322 on identifier
-   goto 323 on number
-   goto 320 on controlId
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 86 on STRING
+   goto 322 on string
+   goto 323 on identifier
+   goto 324 on number
+   goto 321 on controlId
 
-State 284:
- ( 45)K dialogStyleExpr -> dialogStyleExpr OR .dialogStyle
- ( 47)  dialogStyle     -> .ds_style
- ( 48)  dialogStyle     -> .ws_style
- (112)  ds_style        -> ._DS_ABSALIGN
- (113)  ds_style        -> ._DS_SYSMODAL
- (114)  ds_style        -> ._DS_LOCALEDIT
- (115)  ds_style        -> ._DS_SETFONT
- (116)  ds_style        -> ._DS_MODALFRAME
- (117)  ds_style        -> ._DS_NOIDLEMSG
- (118)  ds_style        -> ._DS_SETFOREGROUND
- (119)  ds_style        -> ._DS_3DLOOK
- (120)  ds_style        -> ._DS_FIXEDSYS
- (121)  ds_style        -> ._DS_NOFAILCREATE
- (122)  ds_style        -> ._DS_CONTROL
- (123)  ds_style        -> ._DS_CENTER
- (124)  ds_style        -> ._DS_CENTERMOUSE
- (125)  ds_style        -> ._DS_CONTEXTHELP
- (126)  ws_style        -> ._WS_OVERLAPPED
- (127)  ws_style        -> ._WS_POPUP
- (128)  ws_style        -> ._WS_CHILD
- (129)  ws_style        -> ._WS_MINIMIZE
- (130)  ws_style        -> ._WS_VISIBLE
- (131)  ws_style        -> ._WS_DISABLED
- (132)  ws_style        -> ._WS_CLIPSIBLINGS
- (133)  ws_style        -> ._WS_CLIPCHILDREN
- (134)  ws_style        -> ._WS_MAXIMIZE
- (135)  ws_style        -> ._WS_CAPTION
- (136)  ws_style        -> ._WS_BORDER
- (137)  ws_style        -> ._WS_DLGFRAME
- (138)  ws_style        -> ._WS_VSCROLL
- (139)  ws_style        -> ._WS_HSCROLL
- (140)  ws_style        -> ._WS_SYSMENU
- (141)  ws_style        -> ._WS_THICKFRAME
- (142)  ws_style        -> ._WS_GROUP
- (143)  ws_style        -> ._WS_TABSTOP
- (144)  ws_style        -> ._WS_MINIMIZEBOX
- (145)  ws_style        -> ._WS_MAXIMIZEBOX
-
-   shift to 167 on _WS_OVERLAPPED
-   shift to 168 on _WS_POPUP
-   shift to 169 on _WS_CHILD
-   shift to 170 on _WS_MINIMIZE
-   shift to 171 on _WS_VISIBLE
-   shift to 172 on _WS_DISABLED
-   shift to 173 on _WS_CLIPSIBLINGS
-   shift to 174 on _WS_CLIPCHILDREN
-   shift to 175 on _WS_MAXIMIZE
-   shift to 176 on _WS_CAPTION
-   shift to 177 on _WS_BORDER
-   shift to 178 on _WS_DLGFRAME
-   shift to 179 on _WS_VSCROLL
-   shift to 180 on _WS_HSCROLL
-   shift to 181 on _WS_SYSMENU
-   shift to 182 on _WS_THICKFRAME
-   shift to 183 on _WS_GROUP
-   shift to 184 on _WS_TABSTOP
-   shift to 185 on _WS_MINIMIZEBOX
-   shift to 186 on _WS_MAXIMIZEBOX
-   shift to 153 on _DS_ABSALIGN
-   shift to 154 on _DS_SYSMODAL
-   shift to 155 on _DS_LOCALEDIT
-   shift to 156 on _DS_SETFONT
-   shift to 157 on _DS_MODALFRAME
-   shift to 158 on _DS_NOIDLEMSG
-   shift to 159 on _DS_SETFOREGROUND
-   shift to 160 on _DS_3DLOOK
-   shift to 161 on _DS_FIXEDSYS
-   shift to 162 on _DS_NOFAILCREATE
-   shift to 163 on _DS_CONTROL
-   shift to 164 on _DS_CENTER
-   shift to 165 on _DS_CENTERMOUSE
-   shift to 166 on _DS_CONTEXTHELP
-   goto 324 on dialogStyle
-   goto 151 on ds_style
-   goto 152 on ws_style
-
-State 285:
+State 286:
  ( 39)K extendedDialogStyleExpr -> extendedDialogStyleExpr OR .extendedDialogStyle
  ( 41)  extendedDialogStyle -> .ws_ex_style
  (146)  ws_ex_style     -> ._WS_EX_DLGMODALFRAME
@@ -4704,81 +4717,81 @@ State 285:
  (163)  ws_ex_style     -> ._WS_EX_STATICEDGE
  (164)  ws_ex_style     -> ._WS_EX_APPWINDOW
 
-   shift to 190 on _WS_EX_DLGMODALFRAME
-   shift to 191 on _WS_EX_NOPARENTNOTIFY
-   shift to 192 on _WS_EX_TOPMOST
-   shift to 193 on _WS_EX_ACCEPTFILES
-   shift to 194 on _WS_EX_TRANSPARENT
-   shift to 195 on _WS_EX_MDICHILD
-   shift to 196 on _WS_EX_TOOLWINDOW
-   shift to 197 on _WS_EX_WINDOWEDGE
-   shift to 198 on _WS_EX_CLIENTEDGE
-   shift to 199 on _WS_EX_CONTEXTHELP
-   shift to 200 on _WS_EX_RIGHT
-   shift to 201 on _WS_EX_LEFT
-   shift to 202 on _WS_EX_RTLREADING
-   shift to 203 on _WS_EX_LTRREADING
-   shift to 204 on _WS_EX_LEFTSCROLLBAR
-   shift to 205 on _WS_EX_RIGHTSCROLLBAR
-   shift to 206 on _WS_EX_CONTROLPARENT
-   shift to 207 on _WS_EX_STATICEDGE
-   shift to 208 on _WS_EX_APPWINDOW
-   goto 325 on extendedDialogStyle
-   goto 189 on ws_ex_style
+   shift to 194 on _WS_EX_DLGMODALFRAME
+   shift to 195 on _WS_EX_NOPARENTNOTIFY
+   shift to 196 on _WS_EX_TOPMOST
+   shift to 197 on _WS_EX_ACCEPTFILES
+   shift to 198 on _WS_EX_TRANSPARENT
+   shift to 199 on _WS_EX_MDICHILD
+   shift to 200 on _WS_EX_TOOLWINDOW
+   shift to 201 on _WS_EX_WINDOWEDGE
+   shift to 202 on _WS_EX_CLIENTEDGE
+   shift to 203 on _WS_EX_CONTEXTHELP
+   shift to 204 on _WS_EX_RIGHT
+   shift to 205 on _WS_EX_LEFT
+   shift to 206 on _WS_EX_RTLREADING
+   shift to 207 on _WS_EX_LTRREADING
+   shift to 208 on _WS_EX_LEFTSCROLLBAR
+   shift to 209 on _WS_EX_RIGHTSCROLLBAR
+   shift to 210 on _WS_EX_CONTROLPARENT
+   shift to 211 on _WS_EX_STATICEDGE
+   shift to 212 on _WS_EX_APPWINDOW
+   goto 326 on extendedDialogStyle
+   goto 193 on ws_ex_style
 
-State 286:
+State 287:
  ( 42)K fontSpec        -> number COMMA .string
  ( 43)K extendedFontSpec -> number COMMA .string COMMA number COMMA number COMMA number
  (474)  string          -> .STRING
 
-   shift to 79 on STRING
-   goto 326 on string
+   shift to 86 on STRING
+   goto 327 on string
 
-State 287:
+State 288:
  (467)K rectangleSpec   -> number COMMA number COMMA .number COMMA number
  (472)  number          -> .NUMBER
 
-   shift to 54 on NUMBER
-   goto 327 on number
+   shift to 61 on NUMBER
+   goto 328 on number
 
-State 288:
+State 289:
  (355)K toolbarDefnition -> resourceId TOOLBAR resourceAttributeList sizeSpec BEGIN buttonSpecList .END
  (356)K buttonSpecList  -> buttonSpecList .buttonSpec
  (358)  buttonSpec      -> .BUTTON identifier
  (359)  buttonSpec      -> .SEPARATOR
 
-   shift to 290 on BUTTON
-   shift to 291 on SEPARATOR
-   shift to 328 on END
-   goto 329 on buttonSpec
+   shift to 291 on BUTTON
+   shift to 292 on SEPARATOR
+   shift to 329 on END
+   goto 330 on buttonSpec
 
-State 289:
+State 290:
  (357)K buttonSpecList  -> buttonSpec .
 
    reduce by 357 on BUTTON
    reduce by 357 on SEPARATOR
    reduce by 357 on END
 
-State 290:
+State 291:
  (358)K buttonSpec      -> BUTTON .identifier
  (473)  identifier      -> .IDENTIFIER
 
-   shift to 55 on IDENTIFIER
-   goto 330 on identifier
+   shift to 62 on IDENTIFIER
+   goto 331 on identifier
 
-State 291:
+State 292:
  (359)K buttonSpec      -> SEPARATOR .
 
    reduce by 359 on BUTTON
    reduce by 359 on SEPARATOR
    reduce by 359 on END
 
-State 292:
+State 293:
  (468)K sizeSpec        -> number COMMA number .
 
    reduce by 468 on BEGIN
 
-State 293:
+State 294:
  (363)K menuBody        -> BEGIN menuSpecList END .
 
    reduce by 363 on EOI
@@ -4791,35 +4804,35 @@ State 293:
    reduce by 363 on POPUP
    reduce by 363 on END
 
-State 294:
+State 295:
  (364)K menuSpecList    -> menuSpecList menuSpec .
 
    reduce by 364 on _MENUITEM
    reduce by 364 on POPUP
    reduce by 364 on END
 
-State 295:
+State 296:
  (368)K popupMenu       -> POPUP string .menuItemModifierList menuBody
  (371)  menuItemModifierList -> .
  (372)  menuItemModifierList -> .menuItemModifierList COMMA menuItemModifier
 
    reduce by 371 on COMMA
    reduce by 371 on BEGIN
-   goto 331 on menuItemModifierList
-
-State 296:
- (369)K menuItem        -> _MENUITEM string .COMMA identifierOrNumber menuItemModifierList
-
-   shift to 332 on COMMA
+   goto 332 on menuItemModifierList
 
 State 297:
+ (369)K menuItem        -> _MENUITEM string .COMMA identifierOrNumber menuItemModifierList
+
+   shift to 29 on COMMA
+
+State 298:
  (370)K menuItem        -> _MENUITEM SEPARATOR .
 
    reduce by 370 on _MENUITEM
    reduce by 370 on POPUP
    reduce by 370 on END
 
-State 298:
+State 299:
  (408)K acceleratorsDefinition -> resourceId ACCELERATORS resourceAttributeList BEGIN acceleratorList END .
 
    reduce by 408 on EOI
@@ -4829,7 +4842,7 @@ State 298:
    reduce by 408 on STRINGTABLE
    reduce by 408 on LANGUAGE
 
-State 299:
+State 300:
  (409)K acceleratorList -> acceleratorList accelerator .
 
    reduce by 409 on NUMBER
@@ -4837,14 +4850,14 @@ State 299:
    reduce by 409 on STRING
    reduce by 409 on END
 
-State 300:
+State 301:
  (411)K accelerator     -> constant COMMA .identifier opt_acceleratorSpecList
  (473)  identifier      -> .IDENTIFIER
 
-   shift to 55 on IDENTIFIER
+   shift to 62 on IDENTIFIER
    goto 333 on identifier
 
-State 301:
+State 302:
  (422)K rcdataDefinition -> resourceId RCDATA resourceAttributeList BEGIN numberList END .
 
    reduce by 422 on EOI
@@ -4854,35 +4867,35 @@ State 301:
    reduce by 422 on STRINGTABLE
    reduce by 422 on LANGUAGE
 
-State 302:
+State 303:
  (434)K versionDefinition -> resourceId VERSIONINFO resourceAttributeList versionSpecList BEGIN blockList .END
  (444)K blockList       -> blockList .block
  (446)  block           -> .BLOCK string BEGIN blockBody END
 
-   shift to 304 on BLOCK
+   shift to 305 on BLOCK
    shift to 334 on END
    goto 335 on block
 
-State 303:
+State 304:
  (445)K blockList       -> block .
 
    reduce by 445 on BLOCK
    reduce by 445 on END
 
-State 304:
+State 305:
  (446)K block           -> BLOCK .string BEGIN blockBody END
  (474)  string          -> .STRING
 
-   shift to 79 on STRING
+   shift to 86 on STRING
    goto 336 on string
 
-State 305:
+State 306:
  (424)K numberList      -> numberList COMMA number .
 
    reduce by 424 on COMMA
    reduce by 424 on END
 
-State 306:
+State 307:
  (339)K guideLinesDefinition -> GUIDELINES DESIGNINFO resourceAttributeList BEGIN designInfoList END .
 
    reduce by 339 on EOI
@@ -4892,19 +4905,19 @@ State 306:
    reduce by 339 on STRINGTABLE
    reduce by 339 on LANGUAGE
 
-State 307:
+State 308:
  (340)K designInfoList  -> designInfoList designInfo .
 
    reduce by 340 on IDENTIFIER
    reduce by 340 on STRING
    reduce by 340 on END
 
-State 308:
+State 309:
  (342)K designInfo      -> identifierOrString COMMA .DIALOG BEGIN designSpecList END
 
    shift to 337 on DIALOG
 
-State 309:
+State 310:
  (430)K textIncludeDirective -> number TEXTINCLUDE resourceAttributeList BEGIN stringList END .
 
    reduce by 430 on EOI
@@ -4914,13 +4927,13 @@ State 309:
    reduce by 430 on STRINGTABLE
    reduce by 430 on LANGUAGE
 
-State 310:
+State 311:
  (431)K stringList      -> stringList string .
 
    reduce by 431 on STRING
    reduce by 431 on END
 
-State 311:
+State 312:
  (459)K exprList        -> exprList COMMA expr .
  (461)K expr            -> expr .OR constant
 
@@ -4933,10 +4946,10 @@ State 311:
    reduce by 459 on FILETYPE
    reduce by 459 on FILESUBTYPE
    reduce by 459 on BEGIN
-   shift to 17 on OR
+   shift to 22 on OR
    reduce by 459 on RPAR
 
-State 312:
+State 313:
  (461)K expr            -> expr OR constant .
 
    reduce by 461 on COMMA
@@ -4951,19 +4964,19 @@ State 312:
    reduce by 461 on OR
    reduce by 461 on RPAR
 
-State 313:
+State 314:
  ( 24)K dialogDefinition -> resourceId DIALOG resourceAttributeList rectangleSpec dialogSpecList BEGIN opt_dialogControlSpecList .END
 
    shift to 338 on END
 
-State 314:
+State 315:
  ( 42)K fontSpec        -> number COMMA .string
  (474)  string          -> .STRING
 
-   shift to 79 on STRING
+   shift to 86 on STRING
    goto 339 on string
 
-State 315:
+State 316:
  ( 25)K extendedDialogDefinition -> resourceId DIALOGEX rectangleSpec extendedDialogSpecList BEGIN opt_dialogControlSpecList END .
 
    reduce by 25 on EOI
@@ -4973,7 +4986,7 @@ State 315:
    reduce by 25 on STRINGTABLE
    reduce by 25 on LANGUAGE
 
-State 316:
+State 317:
  ( 52)K dialogControlSpecList -> dialogControlSpecList dialogControlSpec .
 
    reduce by 52 on _ICON
@@ -4990,42 +5003,42 @@ State 316:
    reduce by 52 on CONTROL
    reduce by 52 on END
 
-State 317:
+State 318:
  ( 61)K pushButtonSpec  -> buttonType string .COMMA identifier controlAttributeList
 
    shift to 340 on COMMA
 
-State 318:
+State 319:
  ( 65)K lrcTextSpec     -> lrcText string .COMMA identifier controlAttributeList
 
    shift to 341 on COMMA
 
-State 319:
+State 320:
  ( 72)K iconSpec        -> _ICON identifierOrString .COMMA identifier controlAttributeList
 
    shift to 347 on COMMA
 
-State 320:
+State 321:
  ( 74)K controlSpec     -> CONTROL controlId .COMMA identifier COMMA string controlAttributeList
 
    shift to 349 on COMMA
 
-State 321:
+State 322:
  ( 75)K controlId       -> string .
 
    reduce by 75 on COMMA
 
-State 322:
+State 323:
  ( 76)K controlId       -> identifier .
 
    reduce by 76 on COMMA
 
-State 323:
+State 324:
  ( 77)K controlId       -> number .
 
    reduce by 77 on COMMA
 
-State 324:
+State 325:
  ( 45)K dialogStyleExpr -> dialogStyleExpr OR dialogStyle .
 
    reduce by 45 on _FONT
@@ -5036,7 +5049,7 @@ State 324:
    reduce by 45 on BEGIN
    reduce by 45 on OR
 
-State 325:
+State 326:
  ( 39)K extendedDialogStyleExpr -> extendedDialogStyleExpr OR extendedDialogStyle .
 
    reduce by 39 on _FONT
@@ -5047,7 +5060,7 @@ State 325:
    reduce by 39 on BEGIN
    reduce by 39 on OR
 
-State 326:
+State 327:
  ( 42)K fontSpec        -> number COMMA string .
  ( 43)K extendedFontSpec -> number COMMA string .COMMA number COMMA number COMMA number
 
@@ -5059,12 +5072,12 @@ State 326:
    reduce by 42 on CAPTION
    reduce by 42 on BEGIN
 
-State 327:
+State 328:
  (467)K rectangleSpec   -> number COMMA number COMMA number .COMMA number
 
    shift to 351 on COMMA
 
-State 328:
+State 329:
  (355)K toolbarDefnition -> resourceId TOOLBAR resourceAttributeList sizeSpec BEGIN buttonSpecList END .
 
    reduce by 355 on EOI
@@ -5074,41 +5087,28 @@ State 328:
    reduce by 355 on STRINGTABLE
    reduce by 355 on LANGUAGE
 
-State 329:
+State 330:
  (356)K buttonSpecList  -> buttonSpecList buttonSpec .
 
    reduce by 356 on BUTTON
    reduce by 356 on SEPARATOR
    reduce by 356 on END
 
-State 330:
+State 331:
  (358)K buttonSpec      -> BUTTON identifier .
 
    reduce by 358 on BUTTON
    reduce by 358 on SEPARATOR
    reduce by 358 on END
 
-State 331:
+State 332:
  (368)K popupMenu       -> POPUP string menuItemModifierList .menuBody
  (372)K menuItemModifierList -> menuItemModifierList .COMMA menuItemModifier
  (363)  menuBody        -> .BEGIN menuSpecList END
 
    shift to 353 on COMMA
-   shift to 121 on BEGIN
+   shift to 127 on BEGIN
    goto 352 on menuBody
-
-State 332:
- (369)K menuItem        -> _MENUITEM string COMMA .identifierOrNumber menuItemModifierList
- (470)  identifierOrNumber -> .identifier
- (471)  identifierOrNumber -> .number
- (472)  number          -> .NUMBER
- (473)  identifier      -> .IDENTIFIER
-
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   goto 53 on identifier
-   goto 355 on number
-   goto 354 on identifierOrNumber
 
 State 333:
  (411)K accelerator     -> constant COMMA identifier .opt_acceleratorSpecList
@@ -5171,15 +5171,15 @@ State 340:
  ( 61)K pushButtonSpec  -> buttonType string COMMA .identifier controlAttributeList
  (473)  identifier      -> .IDENTIFIER
 
-   shift to 55 on IDENTIFIER
-   goto 22 on identifier
+   shift to 62 on IDENTIFIER
+   goto 30 on identifier
 
 State 341:
  ( 65)K lrcTextSpec     -> lrcText string COMMA .identifier controlAttributeList
  (473)  identifier      -> .IDENTIFIER
 
-   shift to 55 on IDENTIFIER
-   goto 23 on identifier
+   shift to 62 on IDENTIFIER
+   goto 31 on identifier
 
 State 342:
  ( 69)K editSpec        -> EDITTEXT identifier controlAttributeList .
@@ -5461,47 +5461,47 @@ State 344:
  (472)  number          -> .NUMBER
  (473)  identifier      -> .IDENTIFIER
 
-   shift to 54 on NUMBER
-   shift to 55 on IDENTIFIER
-   shift to 167 on _WS_OVERLAPPED
-   shift to 168 on _WS_POPUP
-   shift to 169 on _WS_CHILD
-   shift to 170 on _WS_MINIMIZE
-   shift to 171 on _WS_VISIBLE
-   shift to 172 on _WS_DISABLED
-   shift to 173 on _WS_CLIPSIBLINGS
-   shift to 174 on _WS_CLIPCHILDREN
-   shift to 175 on _WS_MAXIMIZE
-   shift to 176 on _WS_CAPTION
-   shift to 177 on _WS_BORDER
-   shift to 178 on _WS_DLGFRAME
-   shift to 179 on _WS_VSCROLL
-   shift to 180 on _WS_HSCROLL
-   shift to 181 on _WS_SYSMENU
-   shift to 182 on _WS_THICKFRAME
-   shift to 183 on _WS_GROUP
-   shift to 184 on _WS_TABSTOP
-   shift to 185 on _WS_MINIMIZEBOX
-   shift to 186 on _WS_MAXIMIZEBOX
-   shift to 190 on _WS_EX_DLGMODALFRAME
-   shift to 191 on _WS_EX_NOPARENTNOTIFY
-   shift to 192 on _WS_EX_TOPMOST
-   shift to 193 on _WS_EX_ACCEPTFILES
-   shift to 194 on _WS_EX_TRANSPARENT
-   shift to 195 on _WS_EX_MDICHILD
-   shift to 196 on _WS_EX_TOOLWINDOW
-   shift to 197 on _WS_EX_WINDOWEDGE
-   shift to 198 on _WS_EX_CLIENTEDGE
-   shift to 199 on _WS_EX_CONTEXTHELP
-   shift to 200 on _WS_EX_RIGHT
-   shift to 201 on _WS_EX_LEFT
-   shift to 202 on _WS_EX_RTLREADING
-   shift to 203 on _WS_EX_LTRREADING
-   shift to 204 on _WS_EX_LEFTSCROLLBAR
-   shift to 205 on _WS_EX_RIGHTSCROLLBAR
-   shift to 206 on _WS_EX_CONTROLPARENT
-   shift to 207 on _WS_EX_STATICEDGE
-   shift to 208 on _WS_EX_APPWINDOW
+   shift to 61 on NUMBER
+   shift to 62 on IDENTIFIER
+   shift to 171 on _WS_OVERLAPPED
+   shift to 172 on _WS_POPUP
+   shift to 173 on _WS_CHILD
+   shift to 174 on _WS_MINIMIZE
+   shift to 175 on _WS_VISIBLE
+   shift to 176 on _WS_DISABLED
+   shift to 177 on _WS_CLIPSIBLINGS
+   shift to 178 on _WS_CLIPCHILDREN
+   shift to 179 on _WS_MAXIMIZE
+   shift to 180 on _WS_CAPTION
+   shift to 181 on _WS_BORDER
+   shift to 182 on _WS_DLGFRAME
+   shift to 183 on _WS_VSCROLL
+   shift to 184 on _WS_HSCROLL
+   shift to 185 on _WS_SYSMENU
+   shift to 186 on _WS_THICKFRAME
+   shift to 187 on _WS_GROUP
+   shift to 188 on _WS_TABSTOP
+   shift to 189 on _WS_MINIMIZEBOX
+   shift to 190 on _WS_MAXIMIZEBOX
+   shift to 194 on _WS_EX_DLGMODALFRAME
+   shift to 195 on _WS_EX_NOPARENTNOTIFY
+   shift to 196 on _WS_EX_TOPMOST
+   shift to 197 on _WS_EX_ACCEPTFILES
+   shift to 198 on _WS_EX_TRANSPARENT
+   shift to 199 on _WS_EX_MDICHILD
+   shift to 200 on _WS_EX_TOOLWINDOW
+   shift to 201 on _WS_EX_WINDOWEDGE
+   shift to 202 on _WS_EX_CLIENTEDGE
+   shift to 203 on _WS_EX_CONTEXTHELP
+   shift to 204 on _WS_EX_RIGHT
+   shift to 205 on _WS_EX_LEFT
+   shift to 206 on _WS_EX_RTLREADING
+   shift to 207 on _WS_EX_LTRREADING
+   shift to 208 on _WS_EX_LEFTSCROLLBAR
+   shift to 209 on _WS_EX_RIGHTSCROLLBAR
+   shift to 210 on _WS_EX_CONTROLPARENT
+   shift to 211 on _WS_EX_STATICEDGE
+   shift to 212 on _WS_EX_APPWINDOW
    shift to 383 on _SS_LEFT
    shift to 384 on _SS_CENTER
    shift to 385 on _SS_RIGHT
@@ -5745,8 +5745,8 @@ State 347:
  ( 72)K iconSpec        -> _ICON identifierOrString COMMA .identifier controlAttributeList
  (473)  identifier      -> .IDENTIFIER
 
-   shift to 55 on IDENTIFIER
-   goto 24 on identifier
+   shift to 62 on IDENTIFIER
+   goto 32 on identifier
 
 State 348:
  ( 73)K scrollBarSpec   -> SCROLLBAR identifier controlAttributeList .
@@ -5773,21 +5773,21 @@ State 349:
  ( 74)K controlSpec     -> CONTROL controlId COMMA .identifier COMMA string controlAttributeList
  (473)  identifier      -> .IDENTIFIER
 
-   shift to 55 on IDENTIFIER
+   shift to 62 on IDENTIFIER
    goto 557 on identifier
 
 State 350:
  ( 43)K extendedFontSpec -> number COMMA string COMMA .number COMMA number COMMA number
  (472)  number          -> .NUMBER
 
-   shift to 54 on NUMBER
+   shift to 61 on NUMBER
    goto 558 on number
 
 State 351:
  (467)K rectangleSpec   -> number COMMA number COMMA number COMMA .number
  (472)  number          -> .NUMBER
 
-   shift to 54 on NUMBER
+   shift to 61 on NUMBER
    goto 559 on number
 
 State 352:
@@ -5831,7 +5831,7 @@ State 353:
  (402)  menuItemFlag    -> ._MFS_GAPDROP
  (472)  number          -> .NUMBER
 
-   shift to 54 on NUMBER
+   shift to 61 on NUMBER
    shift to 562 on GRAYED
    shift to 563 on CHECKED
    shift to 564 on INACTIVE
@@ -5921,10 +5921,10 @@ State 358:
  (450)  valueList       -> .value
  (451)  value           -> .VALUE constantElementList
 
-   shift to 304 on BLOCK
-   shift to 25 on VALUE
+   shift to 305 on BLOCK
+   shift to 33 on VALUE
    goto 600 on blockList
-   goto 303 on block
+   goto 304 on block
    goto 599 on blockBody
    goto 601 on valueList
    goto 602 on value
@@ -6323,26 +6323,26 @@ State 369:
  (337)  mcs_style       -> ._MCS_NOTODAYCIRCLE
  (338)  mcs_style       -> ._MCS_NOTODAY
 
-   shift to 167 on _WS_OVERLAPPED
-   shift to 168 on _WS_POPUP
-   shift to 169 on _WS_CHILD
-   shift to 170 on _WS_MINIMIZE
-   shift to 171 on _WS_VISIBLE
-   shift to 172 on _WS_DISABLED
-   shift to 173 on _WS_CLIPSIBLINGS
-   shift to 174 on _WS_CLIPCHILDREN
-   shift to 175 on _WS_MAXIMIZE
-   shift to 176 on _WS_CAPTION
-   shift to 177 on _WS_BORDER
-   shift to 178 on _WS_DLGFRAME
-   shift to 179 on _WS_VSCROLL
-   shift to 180 on _WS_HSCROLL
-   shift to 181 on _WS_SYSMENU
-   shift to 182 on _WS_THICKFRAME
-   shift to 183 on _WS_GROUP
-   shift to 184 on _WS_TABSTOP
-   shift to 185 on _WS_MINIMIZEBOX
-   shift to 186 on _WS_MAXIMIZEBOX
+   shift to 171 on _WS_OVERLAPPED
+   shift to 172 on _WS_POPUP
+   shift to 173 on _WS_CHILD
+   shift to 174 on _WS_MINIMIZE
+   shift to 175 on _WS_VISIBLE
+   shift to 176 on _WS_DISABLED
+   shift to 177 on _WS_CLIPSIBLINGS
+   shift to 178 on _WS_CLIPCHILDREN
+   shift to 179 on _WS_MAXIMIZE
+   shift to 180 on _WS_CAPTION
+   shift to 181 on _WS_BORDER
+   shift to 182 on _WS_DLGFRAME
+   shift to 183 on _WS_VSCROLL
+   shift to 184 on _WS_HSCROLL
+   shift to 185 on _WS_SYSMENU
+   shift to 186 on _WS_THICKFRAME
+   shift to 187 on _WS_GROUP
+   shift to 188 on _WS_TABSTOP
+   shift to 189 on _WS_MINIMIZEBOX
+   shift to 190 on _WS_MAXIMIZEBOX
    shift to 383 on _SS_LEFT
    shift to 384 on _SS_CENTER
    shift to 385 on _SS_RIGHT
@@ -10492,7 +10492,7 @@ State 600:
  (447)K blockBody       -> blockList .
  (446)  block           -> .BLOCK string BEGIN blockBody END
 
-   shift to 304 on BLOCK
+   shift to 305 on BLOCK
    reduce by 447 on END
    goto 335 on block
 
@@ -10501,7 +10501,7 @@ State 601:
  (449)K valueList       -> valueList .value
  (451)  value           -> .VALUE constantElementList
 
-   shift to 25 on VALUE
+   shift to 33 on VALUE
    reduce by 448 on END
    goto 615 on value
 
@@ -10788,26 +10788,26 @@ State 606:
  (337)  mcs_style       -> ._MCS_NOTODAYCIRCLE
  (338)  mcs_style       -> ._MCS_NOTODAY
 
-   shift to 167 on _WS_OVERLAPPED
-   shift to 168 on _WS_POPUP
-   shift to 169 on _WS_CHILD
-   shift to 170 on _WS_MINIMIZE
-   shift to 171 on _WS_VISIBLE
-   shift to 172 on _WS_DISABLED
-   shift to 173 on _WS_CLIPSIBLINGS
-   shift to 174 on _WS_CLIPCHILDREN
-   shift to 175 on _WS_MAXIMIZE
-   shift to 176 on _WS_CAPTION
-   shift to 177 on _WS_BORDER
-   shift to 178 on _WS_DLGFRAME
-   shift to 179 on _WS_VSCROLL
-   shift to 180 on _WS_HSCROLL
-   shift to 181 on _WS_SYSMENU
-   shift to 182 on _WS_THICKFRAME
-   shift to 183 on _WS_GROUP
-   shift to 184 on _WS_TABSTOP
-   shift to 185 on _WS_MINIMIZEBOX
-   shift to 186 on _WS_MAXIMIZEBOX
+   shift to 171 on _WS_OVERLAPPED
+   shift to 172 on _WS_POPUP
+   shift to 173 on _WS_CHILD
+   shift to 174 on _WS_MINIMIZE
+   shift to 175 on _WS_VISIBLE
+   shift to 176 on _WS_DISABLED
+   shift to 177 on _WS_CLIPSIBLINGS
+   shift to 178 on _WS_CLIPCHILDREN
+   shift to 179 on _WS_MAXIMIZE
+   shift to 180 on _WS_CAPTION
+   shift to 181 on _WS_BORDER
+   shift to 182 on _WS_DLGFRAME
+   shift to 183 on _WS_VSCROLL
+   shift to 184 on _WS_HSCROLL
+   shift to 185 on _WS_SYSMENU
+   shift to 186 on _WS_THICKFRAME
+   shift to 187 on _WS_GROUP
+   shift to 188 on _WS_TABSTOP
+   shift to 189 on _WS_MINIMIZEBOX
+   shift to 190 on _WS_MAXIMIZEBOX
    shift to 383 on _SS_LEFT
    shift to 384 on _SS_CENTER
    shift to 385 on _SS_RIGHT
@@ -11021,25 +11021,25 @@ State 607:
  (163)  ws_ex_style     -> ._WS_EX_STATICEDGE
  (164)  ws_ex_style     -> ._WS_EX_APPWINDOW
 
-   shift to 190 on _WS_EX_DLGMODALFRAME
-   shift to 191 on _WS_EX_NOPARENTNOTIFY
-   shift to 192 on _WS_EX_TOPMOST
-   shift to 193 on _WS_EX_ACCEPTFILES
-   shift to 194 on _WS_EX_TRANSPARENT
-   shift to 195 on _WS_EX_MDICHILD
-   shift to 196 on _WS_EX_TOOLWINDOW
-   shift to 197 on _WS_EX_WINDOWEDGE
-   shift to 198 on _WS_EX_CLIENTEDGE
-   shift to 199 on _WS_EX_CONTEXTHELP
-   shift to 200 on _WS_EX_RIGHT
-   shift to 201 on _WS_EX_LEFT
-   shift to 202 on _WS_EX_RTLREADING
-   shift to 203 on _WS_EX_LTRREADING
-   shift to 204 on _WS_EX_LEFTSCROLLBAR
-   shift to 205 on _WS_EX_RIGHTSCROLLBAR
-   shift to 206 on _WS_EX_CONTROLPARENT
-   shift to 207 on _WS_EX_STATICEDGE
-   shift to 208 on _WS_EX_APPWINDOW
+   shift to 194 on _WS_EX_DLGMODALFRAME
+   shift to 195 on _WS_EX_NOPARENTNOTIFY
+   shift to 196 on _WS_EX_TOPMOST
+   shift to 197 on _WS_EX_ACCEPTFILES
+   shift to 198 on _WS_EX_TRANSPARENT
+   shift to 199 on _WS_EX_MDICHILD
+   shift to 200 on _WS_EX_TOOLWINDOW
+   shift to 201 on _WS_EX_WINDOWEDGE
+   shift to 202 on _WS_EX_CLIENTEDGE
+   shift to 203 on _WS_EX_CONTEXTHELP
+   shift to 204 on _WS_EX_RIGHT
+   shift to 205 on _WS_EX_LEFT
+   shift to 206 on _WS_EX_RTLREADING
+   shift to 207 on _WS_EX_LTRREADING
+   shift to 208 on _WS_EX_LEFTSCROLLBAR
+   shift to 209 on _WS_EX_RIGHTSCROLLBAR
+   shift to 210 on _WS_EX_CONTROLPARENT
+   shift to 211 on _WS_EX_STATICEDGE
+   shift to 212 on _WS_EX_APPWINDOW
    goto 626 on ws_ex_style
 
 State 608:
@@ -11086,14 +11086,14 @@ State 610:
  ( 74)K controlSpec     -> CONTROL controlId COMMA identifier COMMA .string controlAttributeList
  (474)  string          -> .STRING
 
-   shift to 79 on STRING
-   goto 27 on string
+   shift to 86 on STRING
+   goto 35 on string
 
 State 611:
  ( 43)K extendedFontSpec -> number COMMA string COMMA number COMMA .number COMMA number
  (472)  number          -> .NUMBER
 
-   shift to 54 on NUMBER
+   shift to 61 on NUMBER
    goto 627 on number
 
 State 612:
@@ -11296,7 +11296,7 @@ State 630:
  (347)K designSpec      -> marginSpec COMMA .number
  (472)  number          -> .NUMBER
 
-   shift to 54 on NUMBER
+   shift to 61 on NUMBER
    goto 633 on number
 
 State 631:
@@ -11324,7 +11324,7 @@ State 632:
  ( 43)K extendedFontSpec -> number COMMA string COMMA number COMMA number COMMA .number
  (472)  number          -> .NUMBER
 
-   shift to 54 on NUMBER
+   shift to 61 on NUMBER
    goto 634 on number
 
 State 633:
@@ -11355,7 +11355,7 @@ State 634:
  475	productions
  635	LALR(1) states
 2257	items
-16.584(x86)/16.680(x64) bytes	 required for parsertables
+16.572(x86)/16.656(x64) bytes	 required for parsertables
 
    0	shift/reduce  conflicts
    0	reduce/reduce conflicts

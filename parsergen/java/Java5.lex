@@ -25,12 +25,12 @@ static Java5InputSymbol nameOrKeyWord(const TCHAR *lexeme);
 
 %}
 
-letter                        [_a-zA-Z\x80-\xff]            /* Letter                                                                                 */
-letterordigit                 [_a-zA-Z\x80-\xff0-9]         /* Alphanumeric character                                             */
-white                         [\f\s\t\n\r]                  /* White space:                                                                           */
-d                             [0-9]                         /* Decimal digit                                                                */
-h                             [0-9a-fA-F]                   /* Hexadecimal digit                                                            */
-o                             [0-7]                         /* Octal digit                              */
+letter                        [_a-zA-Z\x80-\xff]         /* Letter                 */
+letterordigit                 [_a-zA-Z\x80-\xff0-9]      /* Alphanumeric character */
+white                         [\f\s\t\n\r]               /* White space:           */
+d                             [0-9]                      /* Decimal digit          */
+h                             [0-9a-fA-F]                /* Hexadecimal digit      */
+o                             [0-7]                      /* Octal digit            */
 
 %%
 

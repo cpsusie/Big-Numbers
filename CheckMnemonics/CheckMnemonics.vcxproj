@@ -362,12 +362,12 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generate lexer for parser</Message>
     </CustomBuild>
     <CustomBuild Include="Resource.y">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parsergen -n -T,p,r4,m8 Resource.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">parsergen -n -T,p,r4,m8 Resource.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parsergen -n -T,p,r3,m3 Resource.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">parsergen -n -T,p,r3,m3 Resource.y</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)ResourceSymbol.h;$(ProjectDir)ResourceParser.h;$(ProjectDir)ResourceTables.cpp;$(ProjectDir)ResourceAction.cpp</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)ResourceSymbol.h;$(ProjectDir)ResourceParser.h;$(ProjectDir)ResourceTables.cpp;$(ProjectDir)ResourceAction.cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parsergen -n -T,p,r4,m8 Resource.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">parsergen -n -T,p,r4,m8 Resource.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parsergen -n -T,p,r3,m3 Resource.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">parsergen -n -T,p,r3,m3 Resource.y</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)ResourceSymbol.h;$(ProjectDir)ResourceParser.h;$(ProjectDir)ResourceTables.cpp;$(ProjectDir)ResourceAction.cpp</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)ResourceSymbol.h;$(ProjectDir)ResourceParser.h;$(ProjectDir)ResourceTables.cpp;$(ProjectDir)ResourceAction.cpp</Outputs>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>

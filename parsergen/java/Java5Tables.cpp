@@ -2193,7 +2193,7 @@ static const unsigned char termBitSetTable[1131] = { /* capacity(bitset)=104, by
 *     back to LRParser (unless something is completely wrong). The search for a new  *
 *     state should ALWAYS succeed in the end.                                        *
 *     Note that each stateBitSet may be shared by several NTindices.                 *
-\**********************************************************************************/
+\************************************************************************************/
 
 #define _sc0000 0x00000000 /*                                                                           */
 #define _sc0001 0x02497fff /* CompilationUnit                       Goto 292 No check (  1 state )      */
