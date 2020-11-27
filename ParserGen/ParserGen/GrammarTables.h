@@ -1,5 +1,7 @@
 #pragma once
 
+#include "CompressEncoding.h"
+
 class GrammarCode;
 
 class GrammarTables : public AbstractParserTables {

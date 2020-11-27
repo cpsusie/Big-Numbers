@@ -57,3 +57,49 @@ const TCHAR *compressMethodToString(CompressionMethod method) {
   assert(method < ARRAYSIZE(methodNames));
   return methodNames[method];
 }
+
+
+TableTypeByteCountMap::TableTypeByteCountMap(const Grammar &g) {
+  m_termBitSetCapacity     = g.getTermBitSetCapacity();
+  m_stateBitSetCapacity    = g.getStateBitSetCapacity();
+  m_splitNodeCount         = 0;
+}
+
+String TableTypeByteCountMap::getTableString(ByteCountTableType type) const {
+  const ByteCount *bc = get(type);
+  if(bc) {
+    return bc->toStringTableForm().cstr();
+  } else {
+    return spaceString(ByteCount::tableformWidth);
+  }
+}
+
+ByteCount TableTypeByteCountMap::getSum() const {
+  ByteCount sum;
+  for(auto it = getIterator(); it.hasNext();) {
+    sum += it.next().getValue();
+  }
+  return sum;
+}
+
+AllTemplateTypes::AllTemplateTypes(const Grammar &grammar)
+  : m_symbolType( findIntType(0, grammar.getSymbolCount() - 1))
+  , m_termType(   findIntType(0, grammar.getTermCount()   - 1))
+  , m_NTindexType(findIntType(0, grammar.getNTermCount()  - 1))
+  , m_stateType(  findIntType(0, grammar.getStateCount()  - 1))
+  , m_actionType( ((grammar.getStateCount() < 128) && (grammar.getProductionCount() < 128))
+                  ? TYPE_CHAR
+                  : TYPE_SHORT)
+{
+}
+
+AllTemplateTypes::AllTemplateTypes(const AbstractParserTables &tables)
+  : m_symbolType( findIntType(0, tables.getSymbolCount() - 1))
+  , m_termType(   findIntType(0, tables.getTermCount()   - 1))
+  , m_NTindexType(findIntType(0, tables.getNTermCount()  - 1))
+  , m_stateType(  findIntType(0, tables.getStateCount()  - 1))
+  , m_actionType( ((tables.getStateCount() < 128) && (tables.getProductionCount() < 128))
+                  ? TYPE_CHAR
+                  : TYPE_SHORT)
+{
+}

@@ -1,25 +1,26 @@
 #include "stdafx.h"
 
 Options::Options() : Singleton(__TFUNCTION__) {
-  m_implOutputDir          = _T(".");
-  m_headerOutputDir        = m_implOutputDir;
-  m_tabSize                = defaultTabSize;
-  m_verboseLevel           = defaultVerboseLevel;
-  m_verbose                = false;
-  m_language               = CPP;
-  m_lineDirectives         = true;
-  m_generateBreaks         = true;
-  m_generateActions        = true;
-  m_generateLookahead      = false;
-  m_generateNonTerminals   = false;
-  m_skipIfEqual            = false;
-  m_callWizard             = false;
-  m_useTableCompression    = true;
-  m_compressSuccTransposed = false;
-  m_pruneSuccTransBitSet   = false;
-  m_maxRecursionAction     = defaultRecurseLevel;
-  m_maxRecursionTransSucc  = defaultRecurseLevel;
-  m_minStateBitSetSize     = 2;
+  m_implOutputDir               = _T(".");
+  m_headerOutputDir             = m_implOutputDir;
+  m_tabSize                     = defaultTabSize;
+  m_verboseLevel                = defaultVerboseLevel;
+  m_verbose                     = false;
+  m_language                    = CPP;
+  m_lineDirectives              = true;
+  m_generateBreaks              = true;
+  m_generateActions             = true;
+  m_generateLookahead           = false;
+  m_generateNonTerminals        = false;
+  m_skipIfEqual                 = false;
+  m_callWizard                  = false;
+  m_useTableCompression         = true;
+  m_findOptimalTableCompression = false;
+  m_compressSuccTransposed      = false;
+  m_pruneTransSuccBitSet        = false;
+  m_maxRecursionAction          = defaultRecurseLevel;
+  m_maxRecursionTransSucc       = defaultRecurseLevel;
+  m_minStateBitSetSize          = 2;
 }
 
 void Options::checkTemplateExist(const String &defaultTemplateName) {

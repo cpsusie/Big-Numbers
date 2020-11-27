@@ -35,7 +35,7 @@ StatePairBitSet::operator StatePairArray() const {
   return result;
 }
 
-MixedSuccessorTable::MixedSuccessorTable(const NTindexNodeCommonData &cd, const StatePairArray &statePairArray)
+MixedStatePairArray::MixedStatePairArray(const NTindexNodeCommonData &cd, const StatePairArray &statePairArray)
 : NTindexNodeCommonData(cd)
 {
   CompactUIntHashMap<UINT, 256>  sameNewStateMap(241); // map from newState -> index into m_statePairBitSetArray
@@ -53,7 +53,7 @@ MixedSuccessorTable::MixedSuccessorTable(const NTindexNodeCommonData &cd, const 
   m_statePairBitSetArray.sortBySetSize();
 }
 
-StatePairArray MixedSuccessorTable::mergeAll() const {
+StatePairArray MixedStatePairArray::mergeAll() const {
   StatePairArray result(getFromStateCount());
   result.addAll(m_statePairArray);
   if(!m_statePairBitSetArray.isEmpty()) {
@@ -82,51 +82,53 @@ NTindexNode *NTindexNode::allocateNTindexNode(UINT NTindex, const Grammar &gramm
   if(!options.m_useTableCompression) {
     return new BinSearchNode(nullptr, commonData, statePairArray);
   } else {
-    return allocateNode(nullptr, MixedSuccessorTable(commonData, statePairArray));
+    return allocateNode(nullptr, MixedStatePairArray(commonData, statePairArray));
   }
 }
 
-NTindexNode *NTindexNode::allocateNode(const NTindexNode *parent, const MixedSuccessorTable &mst) {
-  const UINT     newStateCountArray  = mst.m_statePairArray.getNewStateCount();
-  const UINT     newStateCountBitSet = mst.m_statePairBitSetArray.getNewStateCount();
+NTindexNode *NTindexNode::allocateNode(const NTindexNode *parent, const MixedStatePairArray &msp) {
+  const UINT     newStateCountArray  = msp.m_statePairArray.getNewStateCount();
+  const UINT     newStateCountBitSet = msp.m_statePairBitSetArray.getNewStateCount();
   const UINT     newStateCount       = newStateCountArray + newStateCountBitSet;
   const Options &options             = Options::getInstance();
 
   assert(newStateCount >= 1);
 
   if(newStateCount == 1) {
-    if(Options::getInstance().m_pruneSuccTransBitSet) {
-      return allocateImmediateDontCareNode(parent, mst);
+    if(Options::getInstance().m_pruneTransSuccBitSet) {
+      return allocateImmediateDontCareNode(parent, msp);
     }
     if(newStateCountArray == 1) {
-      return allocateStatePairArrayNode(parent, mst, mst.m_statePairArray);
+      return allocateStatePairArrayNode(parent, msp, msp.m_statePairArray);
+    } else { // newStateCountBitSet == 1
+      return allocateStatePairBitSetNode(parent, msp, msp.m_statePairBitSetArray.first());
     }
   }
 
   const BYTE recurseLevel = parent ? parent->getRecurseLevel() + 1 : 0;
-  if((newStateCountBitSet == 0) || (mst.m_statePairBitSetArray.first().getFromStateCount() < options.m_minStateBitSetSize) || (recurseLevel >= options.m_maxRecursionTransSucc)) {
-    return allocateStatePairArrayNode(parent, mst, mst.mergeAll());
+  if((newStateCountBitSet == 0) || (msp.m_statePairBitSetArray.first().getFromStateCount() < options.m_minStateBitSetSize) || (recurseLevel >= options.m_maxRecursionTransSucc)) {
+    return allocateStatePairArrayNode(parent, msp, msp.mergeAll());
   }
-  return allocateSplitNode(parent, mst);
+  return allocateSplitNode(parent, msp);
 }
 
 // assume (fromStateCount + statePairSetCount >= 1);
-NTindexNode *NTindexNode::allocateImmediateDontCareNode(const NTindexNode *parent, const MixedSuccessorTable &mst) {
-  const UINT   newStateCountArray  = mst.m_statePairArray.getNewStateCount();
-  const UINT   newStateCountBitSet = mst.m_statePairBitSetArray.getNewStateCount();
+NTindexNode *NTindexNode::allocateImmediateDontCareNode(const NTindexNode *parent, const MixedStatePairArray &msp) {
+  const UINT   newStateCountArray  = msp.m_statePairArray.getNewStateCount();
+  const UINT   newStateCountBitSet = msp.m_statePairBitSetArray.getNewStateCount();
   const UINT   newStateCount       = newStateCountArray + newStateCountBitSet;
   assert(newStateCount == 1);
-  const UINT   newState            = (newStateCountArray == 1) ? mst.m_statePairArray.first().m_newState : mst.m_statePairBitSetArray.first().getNewState();
-  NTindexNode *p                   = new ImmediateNode(parent, mst, newState, mst.getFromStateCount()); TRACE_NEW(p);
+  const UINT   newState            = (newStateCountArray == 1) ? msp.m_statePairArray.first().m_newState : msp.m_statePairBitSetArray.first().getNewState();
+  NTindexNode *p                   = new ImmediateNode(parent, msp, newState, msp.getFromStateCount()); TRACE_NEW(p);
   return p;
 }
 
-NTindexNode *NTindexNode::allocateSplitNode(const NTindexNode *parent, const MixedSuccessorTable &mst) {
-  const UINT   fromStateCount      = mst.getFromStateCount();
-  SplitNode   *p                   = new SplitNode(parent, mst, fromStateCount); TRACE_NEW(p);
+NTindexNode *NTindexNode::allocateSplitNode(const NTindexNode *parent, const MixedStatePairArray &msp) {
+  const UINT   fromStateCount      = msp.getFromStateCount();
+  SplitNode   *p                   = new SplitNode(parent, msp, fromStateCount); TRACE_NEW(p);
   // (newStateCount >= 2) && (newStateCountBitSet >= 1) && (m_statePairBitSetArray.first().getFromStateCount() >= options.m_minStateBitSetSize)
-  NTindexNode *child0 = allocateStatePairBitSetNode(p, mst, mst.m_statePairBitSetArray[0]);
-  NTindexNode *child1 = allocateNode(               p, MixedSuccessorTable(mst).removeFirstStatePairBitSet());
+  NTindexNode *child0 = allocateStatePairBitSetNode(p, msp, msp.m_statePairBitSetArray[0]);
+  NTindexNode *child1 = allocateNode(               p, MixedStatePairArray(msp).removeFirstBitSet());
   p->setChild(0, child0).setChild(1, child1);
   return p;
 }
@@ -134,9 +136,9 @@ NTindexNode *NTindexNode::allocateSplitNode(const NTindexNode *parent, const Mix
 NTindexNode *NTindexNode::allocateStatePairArrayNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, const StatePairArray &statePairArray) {
   NTindexNode *p;
   if(statePairArray.getFromStateCount() == 1) {
-    p = new ImmediateNode(parent, cd, statePairArray[0]); TRACE_NEW(p);
+    p = new ImmediateNode(parent, cd, statePairArray.first()); TRACE_NEW(p);
   } else {
-    p = new BinSearchNode(parent, cd, statePairArray   ); TRACE_NEW(p);
+    p = new BinSearchNode(parent, cd, statePairArray        ); TRACE_NEW(p);
   }
   return p;
 }
@@ -144,10 +146,9 @@ NTindexNode *NTindexNode::allocateStatePairArrayNode(const NTindexNode *parent, 
 NTindexNode *NTindexNode::allocateStatePairBitSetNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, const StatePairBitSet &statePairBitSet) {
   NTindexNode *p;
   if(statePairBitSet.getFromStateCount() == 1) {
-    const StatePairArray spa(statePairBitSet);
-    p = new ImmediateNode(parent, cd, spa[0]      ); TRACE_NEW(p);
+    p = new ImmediateNode(parent, cd, StatePairArray(statePairBitSet).first()); TRACE_NEW(p);
   } else {
-    p = new BitSetNode(   parent, cd, statePairBitSet); TRACE_NEW(p);
+    p = new BitSetNode(   parent, cd, statePairBitSet                        ); TRACE_NEW(p);
   }
   return p;
 }

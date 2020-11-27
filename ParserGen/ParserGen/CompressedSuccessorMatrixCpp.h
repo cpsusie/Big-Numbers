@@ -29,13 +29,14 @@ typedef IndexArray<StateArray> StateArrayIndexArray;
 
 class CompressedSuccessorMatrix : public MacroMap {
 private:
-  const Grammar         &m_grammar;
-  const BitSetParam      m_usedByParam;
-  UINT                   m_NTindexArraySize;
-  UINT                   m_newStateArraySize;
-  NTindexSetIndexMap     m_NTindexArrayMap;
-  StateArrayIndexMap     m_newStateArrayMap;
-  StateSet               m_definedStateSet;
+  const Grammar                &m_grammar;
+  const BitSetParam             m_usedByParam;
+  mutable TableTypeByteCountMap m_byteCountMap;
+  UINT                          m_NTindexArraySize;
+  UINT                          m_newStateArraySize;
+  NTindexSetIndexMap            m_NTindexArrayMap;
+  StateArrayIndexMap            m_newStateArrayMap;
+  StateSet                      m_definedStateSet;
 
   inline UINT getStateCount() const {
     return m_grammar.getStateCount();
@@ -45,12 +46,14 @@ private:
   Macro        doOneSuccessorState(    UINT state, const SuccessorState      &ss            );
   void         generateCompressedForm();
 
-  ByteCount    printMacroesAndSuccessorCodeArray(MarginFile &output) const;
-  ByteCount    printNTindexAndNewStateArray(     MarginFile &output) const;
+  void         printMacroesAndSuccessorCodeArray(MarginFile &output) const;
+  void         printNTindexAndNewStateArray(     MarginFile &output) const;
 
 public:
   CompressedSuccessorMatrix(const Grammar &grammar);
   ByteCount print(MarginFile &output) const;
+
+  static TableTypeByteCountMap findTablesByteCount(const Grammar &grammar);
 };
 
 }; // namespace SuccessorMatrixCompression

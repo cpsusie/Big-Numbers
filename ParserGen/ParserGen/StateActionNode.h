@@ -168,7 +168,7 @@ private:
   ParserActionArray  m_termListActionArray;
 public:
   BinSearchNode(const StateActionNode *parent, const ActionNodeCommonData &cd, const ParserActionArray &termListActionArray)
-    : StateActionNode(parent, cd, termListActionArray.getLegalTermCount(), AbstractParserTables::CompCodeBinSearch)
+    : StateActionNode(parent, cd, termListActionArray.getLegalTermCount(), CompCodeBinSearch)
     , m_termListActionArray(termListActionArray)
   {
   }
@@ -183,7 +183,7 @@ private:
   const StateActionNode *m_child[2];
 public:
   SplitNode(const StateActionNode *parent, const ActionNodeCommonData &cd, UINT legalTermCount)
-    : StateActionNode(parent, cd, legalTermCount, AbstractParserTables::CompCodeSplitNode)
+    : StateActionNode(parent, cd, legalTermCount, CompCodeSplitNode)
   {
     m_child[0] = m_child[1] = nullptr;
   }
@@ -201,7 +201,7 @@ private:
   const ParserAction m_action;
 public:
   ImmediateNode(const StateActionNode *parent, const ActionNodeCommonData &cd, ParserAction action)
-    : StateActionNode(parent, cd, 1, AbstractParserTables::CompCodeImmediate)
+    : StateActionNode(parent, cd, 1, CompCodeImmediate)
     , m_action(action)
   {
   }
@@ -216,7 +216,7 @@ private:
   const TermSetReduction m_termSetReduction;
 public:
   BitSetNode(const StateActionNode *parent, const ActionNodeCommonData &cd, const TermSetReduction &termSetReduction)
-    : StateActionNode(parent, cd, termSetReduction.getLegalTermCount(), AbstractParserTables::CompCodeBitSet)
+    : StateActionNode(parent, cd, termSetReduction.getLegalTermCount(), CompCodeBitSet)
     , m_termSetReduction(termSetReduction)
   {
   }

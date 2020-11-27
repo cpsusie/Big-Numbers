@@ -25,6 +25,8 @@ static void usage() {
        "      p               : Prune matrix, if there only 1 newstate for all possible from-states to a given nterm. ie no check is done.\n"
        "      r<maxLevel>     : Max recurse level when following splitnodes, actually a linked list\n"
        "      m<minBitSetSize>: Make only stateBitSets which will contain at least the specified number of 1-bits. Must be >= 2. Default minbitsetsize=2\n"
+       " -F : Find optimal compression parameters (max recurse levels, minimal bitsetsize,use transpose/non transpose successormatrix,etc.\n"
+       "      Does not generate a parser or tables, but print memoryusage for parsertables to stdout for various combinations of compress-parameters\n"
        " -v[level]:verbose.\n"
        "     level = 0 -> silence.\n"
        "     level = 1 -> write main steps in process.\n"
@@ -124,6 +126,9 @@ int _tmain(int argc, TCHAR **argv) {
         case 'h':
           options.m_generateLookahead      = true;
           continue;
+        case 'F':
+          options.m_findOptimalTableCompression = true;
+          continue;
         case 'c':
           options.m_useTableCompression    = false;
           options.m_maxRecursionAction     = 0;
@@ -137,7 +142,7 @@ int _tmain(int argc, TCHAR **argv) {
                 for(TCHAR *cp1 = s.cstr(); *cp1;) {
                   switch(*cp1) {
                   case 'p':
-                    options.m_pruneSuccTransBitSet = true;
+                    options.m_pruneTransSuccBitSet = true;
                     cp1++;
                     break;
                   case 'm':

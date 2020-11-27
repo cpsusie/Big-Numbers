@@ -87,11 +87,11 @@ namespace Expr {
 
 #define _ac0000 0x00000000 /* termArray    0, actionArray    0                      */
 #define _ac0001 0x00000000 /* termArray    0, actionArray    0                      */
-#define _ac0002 0x00000000 /* termArray    0, actionArray    0                      */
+#define _ac0002 0x0076003c /* termArray    1, actionArray    1                      */
 #define _ac0003 0x0076003c /* termArray    1, actionArray    1                      */
-#define _ac0004 0x0076003c /* termArray    1, actionArray    1                      */
+#define _ac0004 0x00000000 /* termArray    0, actionArray    0                      */
 #define _ac0005 0x00000000 /* termArray    0, actionArray    0                      */
-#define _ac0006 0x00000000 /* termArray    0, actionArray    0                      */
+#define _ac0006 0x0076003c /* termArray    1, actionArray    1                      */
 #define _ac0007 0x0076003c /* termArray    1, actionArray    1                      */
 #define _ac0008 0x0076003c /* termArray    1, actionArray    1                      */
 #define _ac0009 0x0076003c /* termArray    1, actionArray    1                      */
@@ -103,14 +103,14 @@ namespace Expr {
 #define _ac0015 0x0076003c /* termArray    1, actionArray    1                      */
 #define _ac0016 0x0076003c /* termArray    1, actionArray    1                      */
 #define _ac0017 0x0076003c /* termArray    1, actionArray    1                      */
-#define _ac0018 0x0076003c /* termArray    1, actionArray    1                      */
+#define _ac0018 0x00000000 /* termArray    0, actionArray    0                      */
 #define _ac0019 0x00000000 /* termArray    0, actionArray    0                      */
-#define _ac0020 0x00000000 /* termArray    0, actionArray    0                      */
+#define _ac0020 0x0076003c /* termArray    1, actionArray    1                      */
 #define _ac0021 0x0076003c /* termArray    1, actionArray    1                      */
 #define _ac0022 0x0076003c /* termArray    1, actionArray    1                      */
 #define _ac0023 0x0076003c /* termArray    1, actionArray    1                      */
-#define _ac0024 0x0076003c /* termArray    1, actionArray    1                      */
-#define _ac0025 0x00000000 /* termArray    0, actionArray    0                      */
+#define _ac0024 0x00000000 /* termArray    0, actionArray    0                      */
+#define _ac0025 0x0076003c /* termArray    1, actionArray    1                      */
 #define _ac0026 0x0076003c /* termArray    1, actionArray    1                      */
 #define _ac0027 0x0076003c /* termArray    1, actionArray    1                      */
 #define _ac0028 0x0076003c /* termArray    1, actionArray    1                      */
@@ -120,9 +120,9 @@ namespace Expr {
 #define _ac0032 0x0076003c /* termArray    1, actionArray    1                      */
 #define _ac0033 0x0076003c /* termArray    1, actionArray    1                      */
 #define _ac0034 0x0076003c /* termArray    1, actionArray    1                      */
-#define _ac0035 0x0076003c /* termArray    1, actionArray    1                      */
-#define _ac0036 0x00010000 /* Reduce by    0 (Accept) on EOI                        */
-#define _ac0037 0xffff0000 /* Reduce by    1 on EOI                                 */
+#define _ac0035 0x00010000 /* Reduce by    0 (Accept) on EOI                        */
+#define _ac0036 0xffff0000 /* Reduce by    1 on EOI                                 */
+#define _ac0037 0x00000000 /* termArray    0, actionArray    0                      */
 #define _ac0038 0x00ea0077 /* termArray    2, actionArray    2                      */
 #define _ac0039 0x01040085 /* termArray    3, actionArray    3                      */
 #define _ac0040 0xfff78000 /* Reduce by    5 on tokens in termBitSet[0]             */
@@ -130,16 +130,16 @@ namespace Expr {
 #define _ac0042 0x013e80a0 /* Split(_as0000,_as0001)                                */
 #define _ac0043 0xffe38014 /* Reduce by   15 on tokens in termBitSet[2]             */
 #define _ac0044 0xffe18014 /* Reduce by   16 on tokens in termBitSet[2]             */
-#define _ac0045 0x002d004a /* Shift  to   22 on LPAR                                */
-#define _ac0046 0x002f004a /* Shift  to   23 on LPAR                                */
+#define _ac0045 0x002b004a /* Shift  to   21 on LPAR                                */
+#define _ac0046 0x002d004a /* Shift  to   22 on LPAR                                */
 #define _ac0047 0xffd38014 /* Reduce by   23 on tokens in termBitSet[2]             */
 #define _ac0048 0xffd18014 /* Reduce by   24 on tokens in termBitSet[2]             */
 #define _ac0049 0xffcf8014 /* Reduce by   25 on tokens in termBitSet[2]             */
 #define _ac0050 0xffcd8014 /* Reduce by   26 on tokens in termBitSet[2]             */
-#define _ac0051 0x0033004a /* Shift  to   25 on LPAR                                */
+#define _ac0051 0x0031004a /* Shift  to   24 on LPAR                                */
 #define _ac0052 0x00e7004a /* Shift  to  115 on LPAR                                */
 #define _ac0053 0x00e9004a /* Shift  to  116 on LPAR                                */
-#define _ac0054 0x0035004c /* Shift  to   26 on LB                                  */
+#define _ac0054 0x0033004c /* Shift  to   25 on LB                                  */
 #define _ac0055 0xffbd004a /* Reduce by   34 on LPAR                                */
 #define _ac0056 0xffbb004a /* Reduce by   35 on LPAR                                */
 #define _ac0057 0xffb9004a /* Reduce by   36 on LPAR                                */
@@ -225,13 +225,13 @@ namespace Expr {
 #define _ac0137 0x017800b8 /* termArray   10, actionArray   12                      */
 #define _ac0138 0xffcb8014 /* Reduce by   27 on tokens in termBitSet[2]             */
 #define _ac0139 0x018600c8 /* termArray   12, actionArray   13                      */
-#define _ac0140 0x003b0007 /* Shift  to   29 on TO                                  */
-#define _ac0141 0x002b0004 /* Shift  to   21 on ASSIGN                              */
-#define _ac0142 0x003d0007 /* Shift  to   30 on TO                                  */
+#define _ac0140 0x00390007 /* Shift  to   28 on TO                                  */
+#define _ac0141 0x00290004 /* Shift  to   20 on ASSIGN                              */
+#define _ac0142 0x003b0007 /* Shift  to   29 on TO                                  */
 #define _ac0143 0x018c00cc /* termArray   13, actionArray   14                      */
 #define _ac0144 0x016880ab /* Split(_as0021,_as0012)                                */
 #define _ac0145 0xffdd8014 /* Reduce by   18 on tokens in termBitSet[2]             */
-#define _ac0146 0x0041004a /* Shift  to   32 on LPAR                                */
+#define _ac0146 0x003f004a /* Shift  to   31 on LPAR                                */
 #define _ac0147 0x019000b8 /* termArray   10, actionArray   15                      */
 #define _ac0148 0x019e00c0 /* termArray   11, actionArray   16                      */
 #define _ac0149 0x01ac00b8 /* termArray   10, actionArray   17                      */
@@ -245,14 +245,14 @@ namespace Expr {
 #define _ac0157 0xffc38014 /* Reduce by   31 on tokens in termBitSet[2]             */
 #define _ac0158 0xffc98014 /* Reduce by   28 on tokens in termBitSet[2]             */
 #define _as0000 0xffdf800a /* Reduce by   17 on tokens in termBitSet[1]   Used by state  [42]*/
-#define _as0001 0x002b0004 /* Shift  to   21 on ASSIGN                    Used by state  [42]*/
+#define _as0001 0x00290004 /* Shift  to   20 on ASSIGN                    Used by state  [42]*/
 #define _as0002 0xffd78028 /* Reduce by   21 on tokens in termBitSet[4]   Used by state  [111]*/
 #define _as0003 0x012a009b /* termArray    6, actionArray    6            Used by states [111-112,118-119]*/
 #define _as0004 0xffd58028 /* Reduce by   22 on tokens in termBitSet[4]   Used by state  [112]*/
 #define _as0005 0xffef8028 /* Reduce by    9 on tokens in termBitSet[4]   Used by state  [118]*/
 #define _as0006 0xffed8028 /* Reduce by   10 on tokens in termBitSet[4]   Used by state  [119]*/
 #define _as0007 0xffeb803c /* Reduce by   11 on tokens in termBitSet[6]   Used by state  [120]*/
-#define _as0008 0x00190018 /* Shift  to   12 on POW                       Used by states [120-122]*/
+#define _as0008 0x00170018 /* Shift  to   11 on POW                       Used by states [120-122]*/
 #define _as0009 0xffe9803c /* Reduce by   12 on tokens in termBitSet[6]   Used by state  [121]*/
 #define _as0010 0xffe7803c /* Reduce by   13 on tokens in termBitSet[6]   Used by state  [122]*/
 #define _as0011 0xff738032 /* Reduce by   71 on tokens in termBitSet[5]   Used by state  [124]*/
@@ -263,7 +263,7 @@ namespace Expr {
 #define _as0016 0xff6b8032 /* Reduce by   75 on tokens in termBitSet[5]   Used by state  [128]*/
 #define _as0017 0xff698032 /* Reduce by   76 on tokens in termBitSet[5]   Used by state  [129]*/
 #define _as0018 0xff658046 /* Reduce by   78 on tokens in termBitSet[7]   Used by state  [131]*/
-#define _as0019 0x0027000b /* Shift  to   19 on AND                       Used by state  [131]*/
+#define _as0019 0x0025000b /* Shift  to   18 on AND                       Used by state  [131]*/
 #define _as0020 0xfff18050 /* Reduce by    8 on tokens in termBitSet[8]   Used by state  [132]*/
 #define _as0021 0xffbf805a /* Reduce by   33 on tokens in termBitSet[9]   Used by state  [144]*/
 #define _as0022 0xffc1805a /* Reduce by   32 on tokens in termBitSet[9]   Used by state  [151]*/
@@ -293,10 +293,10 @@ static const unsigned int actionCodeArray[184] = {
 }; // Size of table:736(x86)/736(x64) bytes.
 
 static const unsigned char termArrayTable[207] = {
-    59,   1,   2,   3,   8,   9,  12,  19,  20,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36   /*   0 Used by states [0-2,5-6,19-20,25]                 */
+    59,   1,   2,   3,   8,   9,  12,  19,  20,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36   /*   0 Used by states [0-1,4-5,18-19,24,37]              */
       ,  37,  38,  39,  40,  41,  42,  43,  44,  45,  46,  47,  48,  49,  50,  51,  52,  53,  54,  55,  56
       ,  57,  58,  59,  60,  61,  62,  63,  64,  65,  66,  67,  68,  69,  70,  71,  72,  73,  74,  76
-  , 58,   1,   2,   3,   8,   9,  19,  20,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  37   /*   1 Used by states [3-4,7-18,21-24,26-35]             */
+  , 58,   1,   2,   3,   8,   9,  19,  20,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  37   /*   1 Used by states [2-3,6-17,20-23,25-34]             */
       ,  38,  39,  40,  41,  42,  43,  44,  45,  46,  47,  48,  49,  50,  51,  52,  53,  54,  55,  56,  57
       ,  58,  59,  60,  61,  62,  63,  64,  65,  66,  67,  68,  69,  70,  71,  72,  73,  74,  76
   , 13,   0,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23,  24                                      /*   2 Used by state  [38]                               */
@@ -314,31 +314,31 @@ static const unsigned char termArrayTable[207] = {
 }; // Size of table:208(x86)/208(x64) bytes.
 
 static const short actionArrayTable[242] = {
-    104, 103,  51,  52,  53,   6,   4,   3,  56,  57,  58,  59,  60,  61,  62,  63, 101,  64,  66,  67       /*   0 Used by states [0-2,5-6,19-20,25]                 */
+    104, 103,  51,  52,  53,   5,   3,   2,  56,  57,  58,  59,  60,  61,  62,  63, 101,  64,  66,  67       /*   0 Used by states [0-1,4-5,18-19,24,37]              */
   ,  68,  69,  84,  86,  87,  90,  91,  55,  65,  70,  71,  72,  73,  74,  75, 102,  76,  77,  78,  79
-  ,  80,  81,  82,  83,  99,  98, 100,  96,  85,  88,  89,  97,  92,  93,  94,  54,  95,   2,   5
-  , 104, 103,  51,  52,  53,   4,   3,  56,  57,  58,  59,  60,  61,  62,  63, 101,  64,  66,  67,  68       /*   1 Used by states [3-4,7-18,21-24,26-35]             */
+  ,  80,  81,  82,  83,  99,  98, 100,  96,  85,  88,  89,  97,  92,  93,  94,  54,  95,   1,   4
+  , 104, 103,  51,  52,  53,   3,   2,  56,  57,  58,  59,  60,  61,  62,  63, 101,  64,  66,  67,  68       /*   1 Used by states [2-3,6-17,20-23,25-34]             */
   ,  69,  84,  86,  87,  90,  91,  55,  65,  70,  71,  72,  73,  74,  75, 102,  76,  77,  78,  79,  80
-  ,  81,  82,  83,  99,  98, 100,  96,  85,  88,  89,  97,  92,  93,  94,  54,  95,  24,   5
-  ,  -3,  13,  17,  18,  15,  16,  14,   7,   8,   9,  10,  11,  12                                          /*   2 Used by state  [38]                               */
-  ,  -4,  20,  19                                                                                            /*   3 Used by state  [39]                               */
-  ,  13,  17,  18,  15,  16,  14,   7,   8,   9,  10,  11,  12, 135                                          /*   4 Used by state  [108]                              */
-  ,  20,  19, 136                                                                                            /*   5 Used by state  [109]                              */
-  ,   9,  10,  11,  12                                                                                       /*   6 Used by states [111-112,118-119]                  */
-  ,  20,  19, 138                                                                                            /*   7 Used by state  [113]                              */
-  ,  13,  17,  18,  15,  16,  14,   7,   8,   9,  10,  11,  12                                               /*   8 Used by state  [114]                              */
-  ,   7,   8,   9,  10,  11,  12                                                                             /*   9 Used by states [124-129,132,144,151,155-156]      */
-  ,   7,   8,   9,  10,  11,  12, 145                                                                        /*  10 Used by state  [133]                              */
-  ,  27,   7,   8,   9,  10,  11,  12                                                                        /*  11 Used by state  [134]                              */
-  ,   7,   8,   9,  10,  11,  12, 135                                                                        /*  12 Used by state  [137]                              */
-  ,  28,  20,  19                                                                                            /*  13 Used by state  [139]                              */
-  ,  31, 146                                                                                                 /*  14 Used by state  [143]                              */
-  ,   7,   8,   9,  10,  11,  12, 152                                                                        /*  15 Used by state  [147]                              */
-  ,  33,   7,   8,   9,  10,  11,  12                                                                        /*  16 Used by state  [148]                              */
-  ,   7,   8,   9,  10,  11,  12,  34                                                                        /*  17 Used by state  [149]                              */
-  ,   7,   8,   9,  10,  11,  12,  35                                                                        /*  18 Used by state  [150]                              */
-  ,   7,   8,   9,  10,  11,  12, 157                                                                        /*  19 Used by state  [153]                              */
-  ,   7,   8,   9,  10,  11,  12, 158                                                                        /*  20 Used by state  [154]                              */
+  ,  81,  82,  83,  99,  98, 100,  96,  85,  88,  89,  97,  92,  93,  94,  54,  95,  23,   4
+  ,  -3,  12,  16,  17,  14,  15,  13,   6,   7,   8,   9,  10,  11                                          /*   2 Used by state  [38]                               */
+  ,  -4,  19,  18                                                                                            /*   3 Used by state  [39]                               */
+  ,  12,  16,  17,  14,  15,  13,   6,   7,   8,   9,  10,  11, 135                                          /*   4 Used by state  [108]                              */
+  ,  19,  18, 136                                                                                            /*   5 Used by state  [109]                              */
+  ,   8,   9,  10,  11                                                                                       /*   6 Used by states [111-112,118-119]                  */
+  ,  19,  18, 138                                                                                            /*   7 Used by state  [113]                              */
+  ,  12,  16,  17,  14,  15,  13,   6,   7,   8,   9,  10,  11                                               /*   8 Used by state  [114]                              */
+  ,   6,   7,   8,   9,  10,  11                                                                             /*   9 Used by states [124-129,132,144,151,155-156]      */
+  ,   6,   7,   8,   9,  10,  11, 145                                                                        /*  10 Used by state  [133]                              */
+  ,  26,   6,   7,   8,   9,  10,  11                                                                        /*  11 Used by state  [134]                              */
+  ,   6,   7,   8,   9,  10,  11, 135                                                                        /*  12 Used by state  [137]                              */
+  ,  27,  19,  18                                                                                            /*  13 Used by state  [139]                              */
+  ,  30, 146                                                                                                 /*  14 Used by state  [143]                              */
+  ,   6,   7,   8,   9,  10,  11, 152                                                                        /*  15 Used by state  [147]                              */
+  ,  32,   6,   7,   8,   9,  10,  11                                                                        /*  16 Used by state  [148]                              */
+  ,   6,   7,   8,   9,  10,  11,  33                                                                        /*  17 Used by state  [149]                              */
+  ,   6,   7,   8,   9,  10,  11,  34                                                                        /*  18 Used by state  [150]                              */
+  ,   6,   7,   8,   9,  10,  11, 157                                                                        /*  19 Used by state  [153]                              */
+  ,   6,   7,   8,   9,  10,  11, 158                                                                        /*  20 Used by state  [154]                              */
 }; // Size of table:484(x86)/488(x64) bytes.
 
 static const unsigned char termBitSetTable[110] = { /* capacity(bitset)=78, bytes in bitset=10 */
@@ -426,17 +426,17 @@ static const unsigned char termBitSetTable[110] = { /* capacity(bitset)=78, byte
 *     back to LRParser (unless something is completely wrong). The search for a new  *
 *     state should ALWAYS succeed in the end.                                        *
 *     Note that each stateBitSet may be shared by several NTindices.                 *
-\**********************************************************************************/
+\************************************************************************************/
 
 #define _sc0000 0x00000000 /*                                                       */
-#define _sc0001 0x00497fff /* function        Goto  36 No check (  1 state )        */
+#define _sc0001 0x00477fff /* function        Goto  35 No check (  1 state )        */
 #define _sc0002 0x00000000 /* final_expr      stateArray    0, newStateArray    0   */
-#define _sc0003 0x00037fff /* assignStmtList  Goto   1 No check (  1 state )        */
-#define _sc0004 0x00248015 /* expr            Split(_ss0000,_ss0003)                */
-#define _sc0005 0x002c8017 /* boolExpr        Split(_ss0004,_ss0005)                */
-#define _sc0006 0x004a0000 /* assignStmt      stateArray    0, newStateArray    3   */
-#define _sc0007 0x00308019 /* assign          Split(_ss0006,_ss0007)                */
-#define _sc0008 0x0034801d /* name            Split(_ss0008,_ss0011)                */
+#define _sc0003 0x004b7fff /* assignStmtList  Goto  37 No check (  1 state )        */
+#define _sc0004 0x00040003 /* expr            stateArray    1, newStateArray    1   */
+#define _sc0005 0x004c0028 /* boolExpr        stateArray    2, newStateArray    2   */
+#define _sc0006 0x005c0000 /* assignStmt      stateArray    0, newStateArray    3   */
+#define _sc0007 0x00600031 /* assign          stateArray    3, newStateArray    4   */
+#define _sc0008 0x00248013 /* name            Split(_ss0000,_ss0001)                */
 #define _sc0009 0x00577fff /* unary           Goto  43 No check ( 36 states)        */
 #define _sc0010 0x00597fff /* number          Goto  44 No check ( 36 states)        */
 #define _sc0011 0x005b7fff /* function1       Goto  45 No check ( 36 states)        */
@@ -446,48 +446,36 @@ static const unsigned char termBitSetTable[110] = { /* capacity(bitset)=78, byte
 #define _sc0015 0x00637fff /* productExpr     Goto  49 No check ( 36 states)        */
 #define _sc0016 0x00657fff /* polyExpr        Goto  50 No check ( 36 states)        */
 #define _sc0017 0x011f7fff /* exprList        Goto 143 No check (  1 state )        */
-#define _ss0000 0x00e58000 /* Goto 114 on states in stateBitSet[0]                 Used by NTindex   [4]*/
-#define _ss0001 0x004d8005 /* Goto 38 on states in stateBitSet[1]                  Used by NTindex   [4]*/
-#define _ss0002 0x00040003 /* stateArray    1, newStateArray    1                  Used by NTindex   [4]*/
-#define _ss0003 0x00268014 /* Split(_ss0001,_ss0002)                               Used by NTindex   [4]*/
-#define _ss0004 0x004f8005 /* Goto 39 on states in stateBitSet[1]                  Used by NTindex   [5]*/
-#define _ss0005 0x003e0021 /* stateArray    2, newStateArray    2                  Used by NTindex   [5]*/
-#define _ss0006 0x00538005 /* Goto 41 on states in stateBitSet[1]                  Used by NTindex   [7]*/
-#define _ss0007 0x004e0028 /* stateArray    3, newStateArray    4                  Used by NTindex   [7]*/
-#define _ss0008 0x00dd800a /* Goto 110 on states in stateBitSet[2]                 Used by NTindex   [8]*/
-#define _ss0009 0x00558005 /* Goto 42 on states in stateBitSet[1]                  Used by NTindex   [8]*/
-#define _ss0010 0x011b7fff /* Goto 141 No check (  2 states)                       Used by NTindex   [8]*/
-#define _ss0011 0x0036801c /* Split(_ss0009,_ss0010)                               Used by NTindex   [8]*/
+#define _ss0000 0x00dd8000 /* Goto 110 on states in stateBitSet[0]                 Used by NTindex   [8]*/
+#define _ss0001 0x00680031 /* stateArray    3, newStateArray    5                  Used by NTindex   [8]*/
 
-static const unsigned int successorCodeArray[30] = {
+static const unsigned int successorCodeArray[20] = {
    _sc0000,_sc0001,_sc0002,_sc0003,_sc0004,_sc0005,_sc0006,_sc0007,_sc0008,_sc0009
   ,_sc0010,_sc0011,_sc0012,_sc0013,_sc0014,_sc0015,_sc0016,_sc0017
-  ,_ss0000,_ss0001,_ss0002,_ss0003,_ss0004,_ss0005,_ss0006,_ss0007,_ss0008,_ss0009
-  ,_ss0010,_ss0011
-}; // Size of table:120(x86)/120(x64) bytes.
+  ,_ss0000,_ss0001
+}; // Size of table:80(x86)/80(x64) bytes.
 
-static const unsigned char stateArrayTable[43] = {
-     2,   0,   1                                                                                             /*   0 Used by NTindices [2,6]                           */
-  , 29,   2,   3,   4,   7,   8,   9,  10,  11,  12,  13,  14,  15,  16,  17,  18,  21,  22,  23,  24,  26   /*   1 Used by NTindex   [4]                             */
-      ,  27,  28,  29,  30,  31,  32,  33,  34,  35
-  ,  6,   2,   5,   6,  19,  20,  25                                                                         /*   2 Used by NTindex   [5]                             */
-  ,  2, 115, 116                                                                                             /*   3 Used by NTindex   [7]                             */
-}; // Size of table:44(x86)/48(x64) bytes.
+static const unsigned char stateArrayTable[54] = {
+     2,   0,  37                                                                                             /*   0 Used by NTindices [2,6]                           */
+  , 36,   0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19   /*   1 Used by NTindex   [4]                             */
+      ,  20,  21,  22,  23,  24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  37
+  ,  8,   0,   1,   4,   5,  18,  19,  24,  37                                                               /*   2 Used by NTindex   [5]                             */
+  ,  4,   0,  37, 115, 116                                                                                   /*   3 Used by NTindices [7-8]                           */
+}; // Size of table:56(x86)/56(x64) bytes.
 
-static const unsigned char newStateArrayTable[41] = {
-     37, 105                                                                                                 /*   0 Used by NTindex   [2]                             */
-  , 108, 111, 112, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 132, 133, 134, 137, 144       /*   1 Used by NTindex   [4]                             */
-  , 147, 148, 149, 150, 151, 153, 154, 155, 156
-  , 109, 113, 117, 130, 131, 139                                                                             /*   2 Used by NTindex   [5]                             */
+static const unsigned char newStateArrayTable[56] = {
+     36, 105                                                                                                 /*   0 Used by NTindex   [2]                             */
+  ,  38, 108, 111, 112, 114, 114, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 114, 114       /*   1 Used by NTindex   [4]                             */
+  , 132, 133, 134, 137, 114, 144, 147, 148, 149, 150, 151, 153, 154, 155, 156,  38
+  ,  39, 109, 113, 117, 130, 131, 139,  39                                                                   /*   2 Used by NTindex   [5]                             */
   ,  40, 106                                                                                                 /*   3 Used by NTindex   [6]                             */
-  , 140, 142                                                                                                 /*   4 Used by NTindex   [7]                             */
-}; // Size of table:44(x86)/48(x64) bytes.
+  ,  41,  41, 140, 142                                                                                       /*   4 Used by NTindex   [7]                             */
+  ,  42,  42, 141, 141                                                                                       /*   5 Used by NTindex   [8]                             */
+}; // Size of table:56(x86)/56(x64) bytes.
 
-static const unsigned char stateBitSetTable[15] = { /* capacity(bitset)=36, bytes in bitset=5 */
-   0x60,0x00,0x18,0x02,0x00 /*   0   5 states Used by NTindex   [4]                  */
-  ,0x03,0x00,0x00,0x00,0x00 /*   1   2 states Used by NTindices [4-5,7-8]            */
-  ,0xfc,0xff,0xff,0xff,0x0f /*   2  34 states Used by NTindex   [8]                  */
-}; // Size of table:16(x86)/16(x64) bytes.
+static const unsigned char stateBitSetTable[5] = { /* capacity(bitset)=35, bytes in bitset=5 */
+   0xfe,0xff,0xff,0xff,0x07 /*   0  34 states Used by NTindex   [8]                  */
+}; // Size of table:8(x86)/8(x64) bytes.
 
 /************************************************************************************\
 * The prodLengthArray[] is indexed by production number and holds the number of      *
@@ -736,7 +724,7 @@ static const char *symbolNames = {
   " exprList"                                         /* NT  101 NTindex=17    */
 }; // Size of string:620(x86)/624(x64) bytes
 
-static const ParserTablesTemplateTransSucc<102,84,94,159,2820,2904,78,36
+static const ParserTablesTemplateTransSucc<102,84,94,159,2796,2872,78,35
                                           ,unsigned char
                                           ,unsigned char
                                           ,unsigned char
@@ -750,5 +738,5 @@ static const ParserTablesTemplateTransSucc<102,84,94,159,2820,2904,78,36
 const AbstractParserTables *ExpressionParser::ExpressionTables = &ExpressionTables_s;
 // Size of ExpressionTables_s: 68(x86)/128(x64) bytes. Size of ExpressionTables:4(x86)/8(x64) bytes
 
-// Total size of table data:2.820(x86)/2.904(x64) bytes.
+// Total size of table data:2.796(x86)/2.872(x64) bytes.
 }; // namespace Expr

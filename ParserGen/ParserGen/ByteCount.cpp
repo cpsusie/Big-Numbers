@@ -10,12 +10,23 @@ ByteCount ByteCount::getAlignedSize() const {
                   ,restx64 ? (m_countx64 + (8-restx64)) : m_countx64);
 }
 
+int ByteCount::compare(const ByteCount &rhs) const {
+  int c = (int)m_countx64 - (int)rhs.m_countx64;
+  if(c) return c;
+  return  (int)m_countx86 - (int)rhs.m_countx86;
+}
+
 String ByteCount::toString() const {
   return format(_T("%s(x86)/%s(x64) bytes")
                 ,format1000(m_countx86).cstr()
                 ,format1000(m_countx64).cstr());
 }
 
+String ByteCount::toStringTableForm() const {
+  return format(_T("%9s %9s")
+                ,format1000(m_countx86).cstr()
+                ,format1000(m_countx64).cstr());
+}
 
 static IntegerType findUintType(UINT maxValue) {
   const Options &options = Options::getInstance();
@@ -86,26 +97,4 @@ UINT getTypeSize(IntegerType type) {
   }
   throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), type);
   return 0;
-}
-
-AllTemplateTypes::AllTemplateTypes(const Grammar &grammar)
-  : m_symbolType( findIntType(0, grammar.getSymbolCount() - 1))
-  , m_termType(   findIntType(0, grammar.getTermCount()   - 1))
-  , m_NTindexType(findIntType(0, grammar.getNTermCount()  - 1))
-  , m_stateType(  findIntType(0, grammar.getStateCount()  - 1))
-  , m_actionType( ((grammar.getStateCount() < 128) && (grammar.getProductionCount() < 128))
-                  ? TYPE_CHAR
-                  : TYPE_SHORT)
-{
-}
-
-AllTemplateTypes::AllTemplateTypes(const AbstractParserTables &tables)
-  : m_symbolType( findIntType(0, tables.getSymbolCount() - 1))
-  , m_termType(   findIntType(0, tables.getTermCount()   - 1))
-  , m_NTindexType(findIntType(0, tables.getNTermCount()  - 1))
-  , m_stateType(  findIntType(0, tables.getStateCount()  - 1))
-  , m_actionType( ((tables.getStateCount() < 128) && (tables.getProductionCount() < 128))
-                  ? TYPE_CHAR
-                  : TYPE_SHORT)
-{
 }

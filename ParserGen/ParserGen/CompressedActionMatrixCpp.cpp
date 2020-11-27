@@ -12,6 +12,7 @@ CompressedActionMatrix::CompressedActionMatrix(const Grammar &grammar)
   , m_usedByParam(         grammar.getBitSetParam(STATE_BITSET)            )
   , m_sizeofTermBitSet(    getSizeofBitSet(grammar.getTermBitSetCapacity()))
   , m_stateActionNodeArray(grammar                                         )
+  , m_byteCountMap(        grammar                                         )
 {
   generateCompressedForm();
   if(!m_grammar.getTermReorderingDone()) {
@@ -34,6 +35,7 @@ void CompressedActionMatrix::generateCompressedForm() {
     Macro                  macro      = doStateActionNode(*actionNode);
     addMacro(macro.setIndex(state).setName(format(_T("_ac%04u"), state)));
   }
+  m_byteCountMap.m_splitNodeCount = m_splitNodeCount;
 }
 
 Macro CompressedActionMatrix::doStateActionNode(const StateActionNode &actionNode) {
@@ -42,7 +44,7 @@ Macro CompressedActionMatrix::doStateActionNode(const StateActionNode &actionNod
   case AbstractParserTables::CompCodeSplitNode: return doSplitNode(    actionNode);
   case AbstractParserTables::CompCodeImmediate: return doImmediateNode(actionNode);
   case AbstractParserTables::CompCodeBitSet   : return doBitSetNode(   actionNode);
-  default                             :
+  default                                     :
     throwException(_T("%s:Unknown compressionMethod for state %u"), __TFUNCTION__, actionNode.getState());
     break;
   }
@@ -80,7 +82,7 @@ Macro CompressedActionMatrix::doBinSearchNode(const StateActionNode &actionNode)
     m_actionArrayMap.put(actionList, IndexMapValue(m_usedByParam, state, actionListIndex));
     m_actionArraySize += (UINT)actionList.size();
   }
-  const String            macroValue = encodeMacroValue(AbstractParserTables::CompCodeBinSearch, actionListIndex, termListIndex);
+  const String            macroValue = encodeMacroValue(CompCodeBinSearch, actionListIndex, termListIndex);
   const String            comment    = format(_T("termArray %4u, actionArray %4u"), termListCount, actionListCount);
   return Macro(m_usedByParam, state, macroValue, comment);
 }
@@ -115,7 +117,7 @@ Macro CompressedActionMatrix::doSplitNode(const StateActionNode &actionNode) {
     mpR = &macroR;
   }
 
-  const String            macroValue = encodeMacroValue(AbstractParserTables::CompCodeSplitNode, indexL, indexR);
+  const String            macroValue = encodeMacroValue(CompCodeSplitNode, indexL, indexR);
   const String            comment    = format(_T("Split(%s,%s)"), mpL->getName().cstr(), mpR->getName().cstr());
   return Macro(m_usedByParam, state, macroValue, comment);
 }
@@ -125,7 +127,7 @@ Macro CompressedActionMatrix::doImmediateNode(const StateActionNode &actionNode)
   const ParserAction      pa         = actionNode.getOneItemAction();
   const int               action     = pa.m_action;                    // positive or negative
   const UINT              term       = pa.m_term;
-  const String            macroValue = encodeMacroValue(AbstractParserTables::CompCodeImmediate, action, term);
+  const String            macroValue = encodeMacroValue(CompCodeImmediate, action, term);
   const String            comment    = (action > 0)
                                      ? format(_T("Shift  to %4u on %s"),  action, getSymbolName(pa.m_term).cstr())
                                      : (pa.isAcceptAction()
@@ -153,22 +155,36 @@ Macro CompressedActionMatrix::doBitSetNode(const StateActionNode &actionNode) {
   }
   const int               prod       = tsr.getProduction();
   const int               action     = -prod;
-  const String            macroValue = encodeMacroValue(AbstractParserTables::CompCodeBitSet, action, byteIndex);
+  const String            macroValue = encodeMacroValue(CompCodeBitSet, action, byteIndex);
   const String            comment    = format(_T("Reduce by %4u on tokens in termBitSet[%u]"), prod, termSetCount);
   return Macro(m_usedByParam, state, macroValue, comment);
 }
 
 // ------------------------------------ Print ------------------------------------------------
 
-ByteCount CompressedActionMatrix::print(MarginFile &output) const {
-  ByteCount byteCount;
-  byteCount += printMacroesAndActionCodeArray(output);
-  byteCount += printTermAndActionArrayTable(   output);
-  byteCount += printTermBitSetTable(        output);
-  return byteCount;
+TableTypeByteCountMap CompressedActionMatrix::findTablesByteCount(const Grammar &grammar) {
+  Grammar g = grammar;
+  CompressedActionMatrix am(g);
+  const ByteCount savedBytes = am.getSavedBytesByOptimizedTermBitSets();
+  if(savedBytes.getByteCount(PLATFORM_X64) > 4) {
+    const OptimizedBitSetPermutation &termBitSetPermutation = am.getTermBitSetPermutation();
+    g.reorderTerminals(termBitSetPermutation, termBitSetPermutation.getNewCapacity());
+  }
+  CompressedActionMatrix am1(g);
+  std::wostringstream s;
+  am1.print(MarginFile(s));
+  return am1.m_byteCountMap;
 }
 
-ByteCount CompressedActionMatrix::printMacroesAndActionCodeArray(MarginFile &output) const {
+ByteCount CompressedActionMatrix::print(MarginFile &output) const {
+  m_byteCountMap.clear();
+  printMacroesAndActionCodeArray(output);
+  printTermAndActionArrayTable(  output);
+  printTermBitSetTable(          output);
+  return m_byteCountMap.getSum();
+}
+
+void CompressedActionMatrix::printMacroesAndActionCodeArray(MarginFile &output) const {
   const UINT   macroCount = getMacroCount();
   const UINT   stateCount = getStateCount();
   Array<Macro> macroes(getMacroArray());
@@ -204,15 +220,17 @@ ByteCount CompressedActionMatrix::printMacroesAndActionCodeArray(MarginFile &out
       }
     }
   }
-  return outputEndArrayDefinition(output, TYPE_UINT, macroCount, true);
+  const ByteCount bc = outputEndArrayDefinition(output, TYPE_UINT, macroCount, true);
+  m_byteCountMap.put(BC_ACTIONCODEARRAY, bc);
 }
 
-ByteCount CompressedActionMatrix::printTermAndActionArrayTable(MarginFile &output) const {
-  ByteCount byteCount;
+void CompressedActionMatrix::printTermAndActionArrayTable(MarginFile &output) const {
   if(m_termArraySize == 0) {
     output.printf(_T("#define termArrayTable   nullptr\n"  ));
     output.printf(_T("#define actionArrayTable nullptr\n\n"));
-    return byteCount;
+    m_byteCountMap.put(BC_TERMARRAYTABLE  , ByteCount());
+    m_byteCountMap.put(BC_ACTIONARRAYTABLE, ByteCount());
+    return;
   }
 
   const AllTemplateTypes types(m_grammar);
@@ -238,7 +256,8 @@ ByteCount CompressedActionMatrix::printTermAndActionArrayTable(MarginFile &outpu
       newLine(output, comment, 108);
       tableSize += n + 1;
     }
-    byteCount += outputEndArrayDefinition(output, types.getTermType(), tableSize);
+    const ByteCount bc = outputEndArrayDefinition(output, types.getTermType(), tableSize);
+    m_byteCountMap.put(BC_TERMARRAYTABLE, bc);
   }
   { const ActionArrayIndexArray           actionArrayTable  = m_actionArrayMap.getEntryArray();
     UINT                                  tableSize         = 0;
@@ -258,15 +277,15 @@ ByteCount CompressedActionMatrix::printTermAndActionArrayTable(MarginFile &outpu
       newLine(output, comment, 108);
       tableSize += n;
     }
-    byteCount += outputEndArrayDefinition(output, types.getActionType(), tableSize);
+    const ByteCount bc = outputEndArrayDefinition(output, types.getActionType(), tableSize);
+    m_byteCountMap.put(BC_ACTIONARRAYTABLE, bc);
   }
-  return byteCount;
 }
 
-ByteCount CompressedActionMatrix::printTermBitSetTable(MarginFile &output) const {
-  ByteCount byteCount;
+void CompressedActionMatrix::printTermBitSetTable(MarginFile &output) const {
   if(m_termBitSetMap.size() == 0) {
     output.printf(_T("#define termBitSetTable nullptr\n\n"));
+    m_byteCountMap.put(BC_TERMBITSETTABLE, ByteCount());
   } else {
     const TermSetIndexArray               bitSetArray = m_termBitSetMap.getEntryArray();
     const UINT                            bitSetCount = (UINT)m_termBitSetMap.size();
@@ -283,9 +302,9 @@ ByteCount CompressedActionMatrix::printTermBitSetTable(MarginFile &output) const
       }
       newLine(output, comment);
     }
-    byteCount = outputEndBitSetTableDefinition(output, arraySize);
+    ByteCount bc = outputEndBitSetTableDefinition(output, arraySize);
+    m_byteCountMap.put(BC_TERMBITSETTABLE, bc);
   }
-  return byteCount;
 }
 
 }; // namespace ActionMatrixCompression

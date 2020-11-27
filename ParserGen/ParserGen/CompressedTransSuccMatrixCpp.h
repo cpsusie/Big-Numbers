@@ -35,6 +35,7 @@ private:
   const BitSetParam             m_usedByParam;
   const UINT                    m_sizeofStateBitSet;
   const UINT                    m_maxNTermNameLength;
+  mutable TableTypeByteCountMap m_byteCountMap;
   UINT                          m_fromStateArraySize;
   UINT                          m_newStateArraySize;
   UINT                          m_splitNodeCount;
@@ -57,9 +58,9 @@ private:
   Macro               doBitSetNode(    const NTindexNode &node);
   void                generateCompressedForm();
 
-  ByteCount    printMacroesAndSuccessorCodeArray(MarginFile &output) const;
-  ByteCount    printStatePairArrayTables(        MarginFile &output) const;
-  ByteCount    printStateBitSetTable(            MarginFile &output) const;
+  void         printMacroesAndSuccessorCodeArray(MarginFile &output) const;
+  void         printStatePairArrayTables(        MarginFile &output) const;
+  void         printStateBitSetTable(            MarginFile &output) const;
 
 public:
   CompressedTransSuccMatrix(const Grammar &grammar);
@@ -70,6 +71,8 @@ public:
     return getStateBitSetPermutation().getSavedBytesByOptimizedBitSets((UINT)m_stateBitSetMap.size());
   }
   ByteCount print(MarginFile &output) const;
+
+  static TableTypeByteCountMap findTablesByteCount(const Grammar &grammar);
 };
 
 }; // namespace TransposedSuccessorMatrixCompression

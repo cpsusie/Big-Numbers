@@ -64,23 +64,21 @@ public:
   static inline ByteCount wordAlignedSize(UINT size) {
     return wordAlignedSize(ByteCount(size,size),1);
   }
+  // compare m_countx64 first, then compare m_contx86
+  int compare(const ByteCount &rhs) const;
+
   // sizeof(void*) in x86 and x64
   static const ByteCount s_pointerSize;
 
   String toString() const;
+  String toStringTableForm() const;
+  static constexpr UINT tableformWidth = 19;
 };
 
-class Grammar;
-class AllTemplateTypes {
-private:
-  const IntegerType m_symbolType, m_termType, m_NTindexType, m_actionType, m_stateType;
-public:
-  AllTemplateTypes(const Grammar              &grammar);
-  AllTemplateTypes(const AbstractParserTables &tables );
+inline bool operator==(const ByteCount &bc1, const ByteCount &bc2) { return bc1.compare(bc2) == 0; }
+inline bool operator!=(const ByteCount &bc1, const ByteCount &bc2) { return bc1.compare(bc2) != 0; }
+inline bool operator<=(const ByteCount &bc1, const ByteCount &bc2) { return bc1.compare(bc2) <= 0; }
+inline bool operator>=(const ByteCount &bc1, const ByteCount &bc2) { return bc1.compare(bc2) >= 0; }
+inline bool operator< (const ByteCount &bc1, const ByteCount &bc2) { return bc1.compare(bc2) <  0; }
+inline bool operator> (const ByteCount &bc1, const ByteCount &bc2) { return bc1.compare(bc2) >  0; }
 
-  inline IntegerType getSymbolType()  const { return m_symbolType;  }
-  inline IntegerType getTermType()    const { return m_termType;    }
-  inline IntegerType getNTindexType() const { return m_NTindexType; }
-  inline IntegerType getActionType()  const { return m_actionType;  }
-  inline IntegerType getStateType()   const { return m_stateType;   }
-};

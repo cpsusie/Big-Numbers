@@ -14,6 +14,7 @@ CompressedTransSuccMatrix::CompressedTransSuccMatrix(const Grammar &grammar)
   , m_sizeofStateBitSet( getSizeofBitSet(grammar.getStateBitSetCapacity())  )
   , m_maxNTermNameLength(grammar.getMaxNTermNameLength()                    )
   , m_NTindexNodeArray(  grammar                                            )
+  , m_byteCountMap(      grammar                                            )
 {
   generateCompressedForm();
   if(!m_grammar.getStateReorderingDone()) {
@@ -48,6 +49,7 @@ void CompressedTransSuccMatrix::generateCompressedForm() {
   for(UINT NTindex : undefinedEntries) {
     addMacro(Macro(m_usedByParam, NTindex, _T("0x00000000"), _T("")).setIndex(NTindex).setName(format(_T("_sc%04u"), NTindex)));
   }
+  m_byteCountMap.m_splitNodeCount = m_splitNodeCount;
 }
 
 Macro CompressedTransSuccMatrix::doNTindexNode(const NTindexNode &node) {
@@ -56,7 +58,7 @@ Macro CompressedTransSuccMatrix::doNTindexNode(const NTindexNode &node) {
   case AbstractParserTables::CompCodeSplitNode: return doSplitNode(     node);
   case AbstractParserTables::CompCodeImmediate: return doImmediateNode( node);
   case AbstractParserTables::CompCodeBitSet   : return doBitSetNode(    node);
-  default                             :
+  default                                     :
     throwException(_T("%s:Unknown compressionMethod for state %u"), __TFUNCTION__, node.getNTindex());
     break;
   }
@@ -81,7 +83,7 @@ Macro CompressedTransSuccMatrix::doBinSearchNode(const NTindexNode &node) {
     m_fromStateArraySize += (UINT)fromStateSet.size() + 1;
   }
 
-  const StateArray      newStateList  = statePairArray.getNewStateArray();
+  const StateArray      newStateList   = statePairArray.getNewStateArray();
   imvp = m_newStateArrayMap.get(newStateList);
   UINT                  newStateListIndex, newStateArrayCount;
   if(imvp != nullptr) {
@@ -94,69 +96,69 @@ Macro CompressedTransSuccMatrix::doBinSearchNode(const NTindexNode &node) {
     m_newStateArrayMap.put(newStateList, IndexMapValue(m_usedByParam, NTindex, newStateListIndex));
     m_newStateArraySize += (UINT)newStateList.size();
   }
-  const String          macroValue    = encodeMacroValue(AbstractParserTables::CompCodeBinSearch, newStateListIndex, fromStateArrayIndex);
-  const String          comment       = format(_T("stateArray %4u, newStateArray %4u"), fromStateArrayCount , newStateArrayCount );
+  const String           macroValue     = encodeMacroValue(CompCodeBinSearch, newStateListIndex, fromStateArrayIndex);
+  const String           comment        = format(_T("stateArray %4u, newStateArray %4u"), fromStateArrayCount , newStateArrayCount );
   return Macro(m_usedByParam, NTindex, macroValue, comment);
 }
 
 Macro CompressedTransSuccMatrix::doSplitNode(const NTindexNode &node) {
-  const UINT            NTindex       = node.getNTindex();
-  const NTindexNode    &left          = node.getChild(0);
-  const NTindexNode    &right         = node.getChild(1);
+  const UINT             NTindex        = node.getNTindex();
+  const NTindexNode     &left           = node.getChild(0);
+  const NTindexNode     &right          = node.getChild(1);
 
-  UINT                  indexL, indexR;
-  Macro                 macroL        = doNTindexNode(left);
-  const Macro          *mpL           = findMacroByValue(macroL.getValue());
+  UINT                   indexL, indexR;
+  Macro                  macroL         = doNTindexNode(left);
+  const Macro           *mpL            = findMacroByValue(macroL.getValue());
   if(mpL != nullptr) {
     mpL->addUsedByValue(NTindex);
     indexL = mpL->getIndex();
   } else {
-    const String        name          = format(_T("_ss%04u"), m_splitNodeCount);
+    const String        name            = format(_T("_ss%04u"), m_splitNodeCount);
     indexL = getNTermCount() + m_splitNodeCount++;
     addMacro(macroL.setIndex(indexL).setName(name));
     mpL = &macroL;
   }
 
-  Macro                 macroR        = doNTindexNode(right);
-  const Macro          *mpR           = findMacroByValue(macroR.getValue());
+  Macro                  macroR         = doNTindexNode(right);
+  const Macro           *mpR            = findMacroByValue(macroR.getValue());
   if(mpR != nullptr) {
     mpR->addUsedByValue(NTindex);
     indexR = mpR->getIndex();
   } else {
-    const String        name          = format(_T("_ss%04u"), m_splitNodeCount);
+    const String         name           = format(_T("_ss%04u"), m_splitNodeCount);
     indexR = getNTermCount() + m_splitNodeCount++;
     addMacro(macroR.setIndex(indexR).setName(name));
     mpR = &macroR;
   }
 
-  const String          macroValue    = encodeMacroValue(AbstractParserTables::CompCodeSplitNode, indexL, indexR);
-  const String          comment       = format(_T("Split(%s,%s)"), mpL->getName().cstr(), mpR->getName().cstr());
+  const String           macroValue     = encodeMacroValue(CompCodeSplitNode, indexL, indexR);
+  const String           comment        = format(_T("Split(%s,%s)"), mpL->getName().cstr(), mpR->getName().cstr());
   return Macro(m_usedByParam, NTindex, macroValue, comment);
 }
 
 Macro CompressedTransSuccMatrix::doImmediateNode(const NTindexNode &node) {
-  const UINT            NTindex        = node.getNTindex();
-  const StatePair       sp             = node.getStatePair();
-  const UINT            newState       = sp.m_newState;
-  const UINT            fromState      = sp.m_fromState;
-  const UINT            fromStateCount = node.getFromStateCount();
-  const String          macroValue     = encodeMacroValue(AbstractParserTables::CompCodeImmediate, newState, fromState);
-  const String          comment        = node.isDontCareNode()
-                                       ? ( (fromStateCount == 1)
-                                          ? format(_T("Goto %3u No check (  1 state )"), newState)
-                                          : format(_T("Goto %3u No check (%3u states)"), newState, fromStateCount)
-                                         )
-                                       : format(_T("Goto %3u on %3u"), newState, fromState);
+  const UINT             NTindex        = node.getNTindex();
+  const StatePair        sp             = node.getStatePair();
+  const UINT             newState       = sp.m_newState;
+  const UINT             fromState      = sp.m_fromState;
+  const UINT             fromStateCount = node.getFromStateCount();
+  const String           macroValue     = encodeMacroValue(CompCodeImmediate, newState, fromState);
+  const String           comment        = node.isDontCareNode()
+                                        ? ( (fromStateCount == 1)
+                                           ? format(_T("Goto %3u No check (  1 state )"), newState)
+                                           : format(_T("Goto %3u No check (%3u states)"), newState, fromStateCount)
+                                          )
+                                        : format(_T("Goto %3u on %3u"), newState, fromState);
   return Macro(m_usedByParam, NTindex, macroValue, comment);
 }
 
 Macro CompressedTransSuccMatrix::doBitSetNode(const NTindexNode &node) {
-  const UINT             NTindex      = node.getNTindex();
-  const StatePairBitSet &sps          = node.getStatePairBitSet();
+  const UINT             NTindex        = node.getNTindex();
+  const StatePairBitSet &sps            = node.getStatePairBitSet();
 
-  const StateSet       &stateSet      = sps.getFromStateSet();
-  IndexMapValue        *vp            = m_stateBitSetMap.get(stateSet);
-  UINT                  byteIndex, stateSetCount;
+  const StateSet        &stateSet       = sps.getFromStateSet();
+  IndexMapValue         *vp             = m_stateBitSetMap.get(stateSet);
+  UINT                   byteIndex, stateSetCount;
   if(vp != nullptr) {
     byteIndex     = vp->m_arrayIndex;
     stateSetCount = vp->m_commentIndex;
@@ -166,23 +168,37 @@ Macro CompressedTransSuccMatrix::doBitSetNode(const NTindexNode &node) {
     byteIndex     = stateSetCount * m_sizeofStateBitSet;
     m_stateBitSetMap.put(stateSet, IndexMapValue(m_usedByParam, NTindex, byteIndex));
   }
-  const UINT            newState      = sps.getNewState();
-  const String          macroValue    = encodeMacroValue(AbstractParserTables::CompCodeBitSet, newState, byteIndex);
-  const String          comment       = format(_T("Goto %u on states in stateBitSet[%u]"), newState, stateSetCount);
+  const UINT             newState       = sps.getNewState();
+  const String           macroValue     = encodeMacroValue(CompCodeBitSet, newState, byteIndex);
+  const String           comment        = format(_T("Goto %u on states in stateBitSet[%u]"), newState, stateSetCount);
   return Macro(m_usedByParam, NTindex, macroValue, comment);
 }
 
 // ------------------------------------ Print ------------------------------------------------
 
-ByteCount CompressedTransSuccMatrix::print(MarginFile &output) const {
-  ByteCount byteCount;
-  byteCount += printMacroesAndSuccessorCodeArray(output);
-  byteCount += printStatePairArrayTables(output);
-  byteCount += printStateBitSetTable( output);
-  return byteCount;
+TableTypeByteCountMap CompressedTransSuccMatrix::findTablesByteCount(const Grammar &grammar) {
+  Grammar g = grammar;
+  CompressedTransSuccMatrix sm(g);
+  const ByteCount savedBytes = sm.getSavedBytesByOptimizedStateBitSets();
+  if(savedBytes.getByteCount(PLATFORM_X64) > 2) {
+    const OptimizedBitSetPermutation &stateBitSetPermutation = sm.getStateBitSetPermutation();
+    g.reorderStates(stateBitSetPermutation, stateBitSetPermutation.getNewCapacity());
+  }
+  CompressedTransSuccMatrix sm1(g);
+  std::wostringstream s;
+  sm1.print(MarginFile(s));
+  return sm1.m_byteCountMap;
 }
 
-ByteCount CompressedTransSuccMatrix::printMacroesAndSuccessorCodeArray(MarginFile &output) const {
+ByteCount CompressedTransSuccMatrix::print(MarginFile &output) const {
+  m_byteCountMap.clear();
+  printMacroesAndSuccessorCodeArray(output);
+  printStatePairArrayTables(output);
+  printStateBitSetTable( output);
+  return m_byteCountMap.getSum();
+}
+
+void CompressedTransSuccMatrix::printMacroesAndSuccessorCodeArray(MarginFile &output) const {
   const UINT   macroCount = getMacroCount();
   const UINT   NTermCount = getNTermCount();
   Array<Macro> macroes(getMacroArray());
@@ -218,15 +234,18 @@ ByteCount CompressedTransSuccMatrix::printMacroesAndSuccessorCodeArray(MarginFil
       }
     }
   }
-  return outputEndArrayDefinition(output, TYPE_UINT, macroCount, true);
+  const ByteCount bc = outputEndArrayDefinition(output, TYPE_UINT, macroCount, true);
+  m_byteCountMap.put(BC_SUCCESSORCODEARRAY, bc);
 }
 
-ByteCount CompressedTransSuccMatrix::printStatePairArrayTables(MarginFile &output) const {
+void CompressedTransSuccMatrix::printStatePairArrayTables(MarginFile &output) const {
   ByteCount byteCount;
   if(m_fromStateArraySize == 0) {
     output.printf(_T("#define stateArrayTable    nullptr\n"  ));
     output.printf(_T("#define newStateArrayTable nullptr\n\n"));
-    return byteCount;
+    m_byteCountMap.put(BC_STATEARRAYTABLE   , ByteCount());
+    m_byteCountMap.put(BC_NEWSTATEARRAYTABLE, ByteCount());
+    return;
   }
 
   const IntegerType                       stateType          = AllTemplateTypes(m_grammar).getStateType();
@@ -252,8 +271,10 @@ ByteCount CompressedTransSuccMatrix::printStatePairArrayTables(MarginFile &outpu
       newLine(output, comment, 108);
       tableSize += n + 1;
     }
-    byteCount += outputEndArrayDefinition(output, stateType, tableSize);
+    const ByteCount bc = outputEndArrayDefinition(output, stateType, tableSize);
+    m_byteCountMap.put(BC_STATEARRAYTABLE, bc);
   }
+
   { const StateArrayIndexArray            newStateArrayTable = m_newStateArrayMap.getEntryArray();
     UINT                                  tableSize          = 0;
     TCHAR                                 delim              = ' ';
@@ -272,15 +293,15 @@ ByteCount CompressedTransSuccMatrix::printStatePairArrayTables(MarginFile &outpu
       newLine(output, comment, 108);
       tableSize += n;
     }
-    byteCount += outputEndArrayDefinition(output, stateType, tableSize);
+    const ByteCount bc = outputEndArrayDefinition(output, stateType, tableSize);
+    m_byteCountMap.put(BC_NEWSTATEARRAYTABLE, bc);
   }
-  return byteCount;
 }
 
-ByteCount CompressedTransSuccMatrix::printStateBitSetTable(MarginFile &output) const {
-  ByteCount byteCount;
+void CompressedTransSuccMatrix::printStateBitSetTable(MarginFile &output) const {
   if(m_stateBitSetMap.size() == 0) {
     output.printf(_T("#define stateBitSetTable nullptr\n\n"));
+    m_byteCountMap.put(BC_STATEBITSETTABLE, ByteCount());
   } else {
     const StateSetIndexArray bitSetArray = m_stateBitSetMap.getEntryArray();
     const UINT               bitSetCount = (UINT)m_stateBitSetMap.size();
@@ -297,9 +318,9 @@ ByteCount CompressedTransSuccMatrix::printStateBitSetTable(MarginFile &output) c
       }
       newLine(output, comment);
     }
-    byteCount = outputEndBitSetTableDefinition(output, arraySize);
+    const ByteCount bc = outputEndBitSetTableDefinition(output, arraySize);
+    m_byteCountMap.put(BC_STATEBITSETTABLE, bc);
   }
-  return byteCount;
 }
 
 }; // namespace TransposedSuccessorMatrixCompression

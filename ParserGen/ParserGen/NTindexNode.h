@@ -7,6 +7,7 @@ namespace TransposedSuccessorMatrixCompression {
 
 class StatePair {
 public:
+  static constexpr UINT NoFromStateCheck = AbstractParserTables::_NoFromStateCheck;
   UINT m_fromState;
   UINT m_newState;
   inline StatePair() : m_fromState(0), m_newState(0) {
@@ -15,7 +16,7 @@ public:
     assert(m_newState != NoFromStateCheck);
   }
   inline bool isNoFromStateCheck() const {
-    return m_fromState == AbstractParserTables::_NoFromStateCheck;
+    return m_fromState == NoFromStateCheck;
   }
   String toString() const {
     return isNoFromStateCheck()
@@ -159,11 +160,11 @@ public:
   }
 };
 
-class MixedSuccessorTable : public NTindexNodeCommonData {
+class MixedStatePairArray : public NTindexNodeCommonData {
 public:
   StatePairArray              m_statePairArray;
   StatePairBitSetArray        m_statePairBitSetArray;
-  MixedSuccessorTable(const NTindexNodeCommonData &cd, const StatePairArray &statePairArray);
+  MixedStatePairArray(const NTindexNodeCommonData &cd, const StatePairArray &statePairArray);
   StatePairArray mergeAll() const;
   inline UINT    getFromStateCount() const {
     return m_statePairArray.getFromStateCount() + m_statePairBitSetArray.getFromStateCount();
@@ -171,7 +172,7 @@ public:
   inline UINT    getNewStateCount() const {
     return m_statePairArray.getNewStateCount() + m_statePairBitSetArray.getNewStateCount();
   }
-  MixedSuccessorTable &removeFirstStatePairBitSet() {
+  MixedStatePairArray &removeFirstBitSet() {
     m_statePairBitSetArray.removeIndex(0);
     return *this;
   }
@@ -187,11 +188,11 @@ protected:
   const BYTE                  m_recurseLevel;
   const CompressionMethod     m_compressMethod;
   NTindexNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, UINT fromStateCount, CompressionMethod compressMethod);
-  static NTindexNode *allocateNode(                 const NTindexNode *parent, const MixedSuccessorTable  &mst);
-  static NTindexNode *allocateSplitNode(            const NTindexNode *parent, const MixedSuccessorTable  &mst);
+  static NTindexNode *allocateNode(                 const NTindexNode *parent, const MixedStatePairArray   &msp);
+  static NTindexNode *allocateSplitNode(            const NTindexNode *parent, const MixedStatePairArray   &msp);
   static NTindexNode *allocateStatePairArrayNode(   const NTindexNode *parent, const NTindexNodeCommonData &cd , const StatePairArray  &statePairArray );
   static NTindexNode *allocateStatePairBitSetNode(  const NTindexNode *parent, const NTindexNodeCommonData &cd , const StatePairBitSet &statePairBitSet);
-  static NTindexNode *allocateImmediateDontCareNode(const NTindexNode *parent, const MixedSuccessorTable  &mst);
+  static NTindexNode *allocateImmediateDontCareNode(const NTindexNode *parent, const MixedStatePairArray   &msp);
 public:
   static NTindexNode *allocateNTindexNode(UINT NTindex, const Grammar &grammar, const StatePairArray &statePairArray);
   virtual            ~NTindexNode() {
@@ -244,7 +245,7 @@ private:
   StatePairArray m_statePairArray;
 public:
   BinSearchNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, const StatePairArray &statePairArray)
-    : NTindexNode(parent, cd, statePairArray.getFromStateCount(), AbstractParserTables::CompCodeBinSearch)
+    : NTindexNode(parent, cd, statePairArray.getFromStateCount(), CompCodeBinSearch)
     , m_statePairArray(statePairArray)
   {
     assert(statePairArray.getFromStateCount() >= 2);
@@ -261,7 +262,7 @@ private:
   const NTindexNode *m_child[2];
 public:
   SplitNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, UINT fromStateCount)
-    : NTindexNode(parent, cd, fromStateCount, AbstractParserTables::CompCodeSplitNode)
+    : NTindexNode(parent, cd, fromStateCount, CompCodeSplitNode)
   {
     m_child[0] = m_child[1] = nullptr;
   }
@@ -279,13 +280,13 @@ private:
   const StatePair m_statePair;
 public:
   ImmediateNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, const StatePair &statePair)
-    : NTindexNode(parent, cd, 1, AbstractParserTables::CompCodeImmediate)
+    : NTindexNode(parent, cd, 1, CompCodeImmediate)
     , m_statePair(statePair)
   {
   }
   ImmediateNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, UINT newState, UINT fromStateCount)
-    : NTindexNode(parent, cd, fromStateCount, AbstractParserTables::CompCodeImmediate)
-    , m_statePair(StatePair(AbstractParserTables::_NoFromStateCheck, newState))
+    : NTindexNode(parent, cd, fromStateCount, CompCodeImmediate)
+    , m_statePair(StatePair(StatePair::NoFromStateCheck, newState))
   {
   }
   bool isDontCareNode() const override {
@@ -302,7 +303,7 @@ private:
   const StatePairBitSet m_statePairBitSet;
 public:
   BitSetNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, const StatePairBitSet &statePairBitSet)
-    : NTindexNode(parent, cd, statePairBitSet.getFromStateCount(), AbstractParserTables::CompCodeBitSet)
+    : NTindexNode(parent, cd, statePairBitSet.getFromStateCount(), CompCodeBitSet)
     , m_statePairBitSet(statePairBitSet)
   {
   }

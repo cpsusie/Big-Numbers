@@ -2,6 +2,7 @@
 #include <FileNameSplitter.h>
 #include "TemplateWriter.h"
 #include "CompressedActionMatrixCpp.h"
+#include "CompressedSuccessorMatrixCpp.h"
 #include "CompressedTransSuccMatrixCpp.h"
 #include "GrammarCode.h"
 
@@ -17,6 +18,10 @@ GrammarCode::GrammarCode(Grammar &grammar)
     return;
   }
   const Options &options = Options::getInstance();
+  if(options.m_findOptimalTableCompression) {
+    listCompressionCombination();
+    exit(0);
+  }
   if(options.m_useTableCompression) {
     ActionMatrixCompression::CompressedActionMatrix am(m_grammar);
     const ByteCount savedBytes = am.getSavedBytesByOptimizedTermBitSets();
@@ -34,6 +39,38 @@ GrammarCode::GrammarCode(Grammar &grammar)
       }
     }
   }
+}
+
+void GrammarCode::generateParser() {
+  const Options       &options = Options::getInstance();
+  SourceTextWriter     headerWriter(     m_grammar.getHeader()    );
+  SourceTextWriter     driverHeadWriter( m_grammar.getDriverHead());
+  SourceTextWriter     driverTailWriter( m_grammar.getDriverTail());
+  TablesWriter         tablesWriter(      *this       );
+  ActionsWriter        actionsWriter(     *this       );
+  SymbolsWriter        terminalsWriter(   *this, true );
+  SymbolsWriter        nonTerminalsWriter(*this, false);
+  DocFileWriter        docFileWriter(     *this       );
+  TemplateWriter       writer;
+
+  writer.addKeywordHandler(_T("FILEHEAD"           ), headerWriter         );
+  writer.addKeywordHandler(_T("CLASSHEAD"          ), driverHeadWriter     );
+  writer.addKeywordHandler(_T("CLASSTAIL"          ), driverTailWriter     );
+  writer.addKeywordHandler(_T("TABLES"             ), tablesWriter         );
+  writer.addKeywordHandler(_T("ACTIONS"            ), actionsWriter        );
+  writer.addKeywordHandler(_T("TERMINALSYMBOLS"    ), terminalsWriter      );
+  writer.addKeywordHandler(_T("NONTERMINALSYMBOLS" ), nonTerminalsWriter   );
+  writer.addKeywordHandler(_T("DOCFILE"            ), docFileWriter        );
+  writer.addMacro(         _T("GRAMMARNAME"        ), m_grammarName        );
+  writer.addMacro(         _T("PARSERCLASSNAME"    ), m_parserClassName    );
+  writer.addMacro(         _T("TABLESCLASSNAME"    ), m_tablesClassName    );
+  writer.addMacro(         _T("DOCFILENAME"        ), m_docFileName        );
+  writer.addMacro(         _T("TERMINALCOUNT"      ), toString(m_grammar.getTermCount(      )));
+  writer.addMacro(         _T("SYMBOLCOUNT"        ), toString(m_grammar.getSymbolCount(    )));
+  writer.addMacro(         _T("PRODUCTIONCOUNT"    ), toString(m_grammar.getProductionCount()));
+  writer.addMacro(         _T("STATECOUNT"         ), toString(m_grammar.getStateCount(     )));
+
+  writer.generateOutput();
 }
 
 void GrammarCode::generateDocFile() const {
@@ -68,36 +105,132 @@ void GrammarCode::generateDocFile(MarginFile &output) const {
   }
 }
 
-void GrammarCode::generateParser() {
-  const Options       &options = Options::getInstance();
-  SourceTextWriter     headerWriter(     m_grammar.getHeader()    );
-  SourceTextWriter     driverHeadWriter( m_grammar.getDriverHead());
-  SourceTextWriter     driverTailWriter( m_grammar.getDriverTail());
-  TablesWriter         tablesWriter(      *this       );
-  ActionsWriter        actionsWriter(     *this       );
-  SymbolsWriter        terminalsWriter(   *this, true );
-  SymbolsWriter        nonTerminalsWriter(*this, false);
-  DocFileWriter        docFileWriter(     *this       );
-  TemplateWriter       writer;
+static constexpr UINT recurseLevelWidth   = 10;
+static constexpr UINT splitNodeCountWidth = 14;
+static constexpr UINT bitSetCapacityWidth = 14;
+static constexpr UINT minBitSetSizeWidth  = 14;
 
-  writer.addKeywordHandler(_T("FILEHEAD"           ), headerWriter         );
-  writer.addKeywordHandler(_T("CLASSHEAD"          ), driverHeadWriter     );
-  writer.addKeywordHandler(_T("CLASSTAIL"          ), driverTailWriter     );
-  writer.addKeywordHandler(_T("TABLES"             ), tablesWriter         );
-  writer.addKeywordHandler(_T("ACTIONS"            ), actionsWriter        );
-  writer.addKeywordHandler(_T("TERMINALSYMBOLS"    ), terminalsWriter      );
-  writer.addKeywordHandler(_T("NONTERMINALSYMBOLS" ), nonTerminalsWriter   );
-  writer.addKeywordHandler(_T("DOCFILE"            ), docFileWriter        );
-  writer.addMacro(         _T("GRAMMARNAME"        ), m_grammarName        );
-  writer.addMacro(         _T("PARSERCLASSNAME"    ), m_parserClassName    );
-  writer.addMacro(         _T("TABLESCLASSNAME"    ), m_tablesClassName    );
-  writer.addMacro(         _T("DOCFILENAME"        ), m_docFileName        );
-  writer.addMacro(         _T("TERMINALCOUNT"      ), toString(m_grammar.getTermCount(      )));
-  writer.addMacro(         _T("SYMBOLCOUNT"        ), toString(m_grammar.getSymbolCount(    )));
-  writer.addMacro(         _T("PRODUCTIONCOUNT"    ), toString(m_grammar.getProductionCount()));
-  writer.addMacro(         _T("STATECOUNT"         ), toString(m_grammar.getStateCount(     )));
+void GrammarCode::listCompressionCombination() {
+  UINT      bestMaxRecursionAction = 0;
+  ByteCount bestByteCountActionMatrix;
+  ByteCount byteCountSuccessorMatrix;
 
-  writer.generateOutput();
+  UINT      bestMaxRecursionTransSucc = 0;
+  UINT      bestMinStateBitSetSize    = 0;
+  bool      bestPruneTransSuccBitSet  = false;
+  ByteCount bestByteCountTransSuccMatrix;
+
+  Options &options = Options::getInstance();
+
+  {  // Action Matrix (not transposed)
+    _tprintf(_T("%*s %*s %*s %*s %*s %*s %*s %*s\n")
+            ,recurseLevelWidth        , _T("recurseLvl"      )
+            ,ByteCount::tableformWidth, _T("ActionCodeArray" )
+            ,ByteCount::tableformWidth, _T("TermArrayTable"  )
+            ,ByteCount::tableformWidth, _T("ActionArrayTable")
+            ,ByteCount::tableformWidth, _T("TermBitSetTable" )
+            ,ByteCount::tableformWidth, _T("Total"           )
+            ,splitNodeCountWidth      , _T("Splitnodes"      )
+            ,bitSetCapacityWidth      , _T("termBitset.cap"  )
+            );
+    for(options.m_maxRecursionAction = 0; options.m_maxRecursionAction < Options::maxRecursiveCalls; options.m_maxRecursionAction++) {
+      Grammar tempGrammar(m_grammar);
+      const TableTypeByteCountMap map = ActionMatrixCompression::CompressedActionMatrix::findTablesByteCount(tempGrammar);
+      const ByteCount matrixTotal = map.getSum(); 
+      _tprintf(_T("%*u %*s %*s %*s %*s %*s %*u %*u\n")
+              ,recurseLevelWidth        , options.m_maxRecursionAction
+              ,ByteCount::tableformWidth, map.getTableString(BC_ACTIONCODEARRAY ).cstr()
+              ,ByteCount::tableformWidth, map.getTableString(BC_TERMARRAYTABLE  ).cstr()
+              ,ByteCount::tableformWidth, map.getTableString(BC_ACTIONARRAYTABLE).cstr()
+              ,ByteCount::tableformWidth, map.getTableString(BC_TERMBITSETTABLE ).cstr()
+              ,ByteCount::tableformWidth, matrixTotal.toStringTableForm().cstr()
+              ,splitNodeCountWidth      , map.getSplitNodeCount()
+              ,bitSetCapacityWidth      , map.getTermBitSetCapacity()
+              );
+      if(bestByteCountActionMatrix.isEmpty() || (matrixTotal < bestByteCountActionMatrix)) {
+        bestMaxRecursionAction    = options.m_maxRecursionAction;
+        bestByteCountActionMatrix = matrixTotal;
+      }
+    }
+  }
+
+  _tprintf(_T("Best recurselevel for ActionMatrix:%u. Gives action matrix size=%s\n")
+          ,bestMaxRecursionAction
+          ,bestByteCountActionMatrix.toString().cstr()
+          );
+
+  { // Successor Matrix (not transposed)
+    _tprintf(_T("%*s %*s %*s %*s\n")
+            ,ByteCount::tableformWidth, _T("SuccCodeArray"     )
+            ,ByteCount::tableformWidth, _T("NTIndexArrayTable" )
+            ,ByteCount::tableformWidth, _T("NewStateArrayTable")
+            ,ByteCount::tableformWidth, _T("Total"             )
+            );
+
+    Grammar                     tempGrammar(m_grammar);
+    const TableTypeByteCountMap map         = SuccessorMatrixCompression::CompressedSuccessorMatrix::findTablesByteCount(tempGrammar);
+    const ByteCount             matrixTotal = map.getSum();
+    _tprintf(_T("%*s %*s %*s %*s\n")
+            ,ByteCount::tableformWidth, map.getTableString(BC_SUCCESSORCODEARRAY ).cstr()
+            ,ByteCount::tableformWidth, map.getTableString(BC_NTINDEXARRAYTABLE  ).cstr()
+            ,ByteCount::tableformWidth, map.getTableString(BC_NEWSTATEARRAYTABLE ).cstr()
+            ,ByteCount::tableformWidth, matrixTotal.toStringTableForm().cstr()
+            );
+    byteCountSuccessorMatrix = matrixTotal;
+  }
+
+  { // Successor Matrix Transposed
+    _tprintf(_T("%*s %*s %*s %*s %*s %*s %*s %*s %*s %*s\n")
+            ,recurseLevelWidth        , _T("recurseLvl"        )
+            ,minBitSetSizeWidth       , _T("min.bitsetsize"    )
+            ,minBitSetSizeWidth       , _T("prune(bitset)"     )
+            ,ByteCount::tableformWidth, _T("SuccCodeArray"     )
+            ,ByteCount::tableformWidth, _T("StateArrayTable"   )
+            ,ByteCount::tableformWidth, _T("NewStateArrayTable")
+            ,ByteCount::tableformWidth, _T("StateBitSetTable"  )
+            ,ByteCount::tableformWidth, _T("Total"             )
+            ,splitNodeCountWidth      , _T("Splitnodes"        )
+            ,bitSetCapacityWidth      , _T("stateBitset.cap"   )
+            );
+
+    for(options.m_maxRecursionTransSucc = 0; options.m_maxRecursionTransSucc < Options::maxRecursiveCalls; options.m_maxRecursionTransSucc++) {
+      for(options.m_minStateBitSetSize = 2; options.m_minStateBitSetSize < 50; options.m_minStateBitSetSize++) {
+        for(BYTE pruneState = 0; pruneState < 2; pruneState++) {
+          options.m_pruneTransSuccBitSet = pruneState ? true : false;
+          Grammar tempGrammar(m_grammar);
+          const TableTypeByteCountMap map         = TransposedSuccessorMatrixCompression::CompressedTransSuccMatrix::findTablesByteCount(tempGrammar);
+          const ByteCount             matrixTotal = map.getSum();
+          _tprintf(_T("%*u %*u %*s %*s %*s %*s %*s %*s %*u %*u\n")
+                  ,recurseLevelWidth        , options.m_maxRecursionTransSucc
+                  ,minBitSetSizeWidth       , options.m_minStateBitSetSize
+                  ,minBitSetSizeWidth       , boolToStr(options.m_pruneTransSuccBitSet)
+                  ,ByteCount::tableformWidth, map.getTableString(BC_SUCCESSORCODEARRAY ).cstr()
+                  ,ByteCount::tableformWidth, map.getTableString(BC_STATEARRAYTABLE    ).cstr()
+                  ,ByteCount::tableformWidth, map.getTableString(BC_NEWSTATEARRAYTABLE ).cstr()
+                  ,ByteCount::tableformWidth, map.getTableString(BC_STATEBITSETTABLE   ).cstr()
+                  ,ByteCount::tableformWidth, matrixTotal.toStringTableForm().cstr()
+                  ,splitNodeCountWidth      , map.getSplitNodeCount()
+                  ,bitSetCapacityWidth      , map.getStateBitSetCapacity()
+                  );
+          if(bestByteCountTransSuccMatrix.isEmpty() || (matrixTotal < bestByteCountTransSuccMatrix)) {
+            bestMaxRecursionTransSucc    = options.m_maxRecursionTransSucc ;
+            bestMinStateBitSetSize       = options.m_minStateBitSetSize;
+            bestPruneTransSuccBitSet     = options.m_pruneTransSuccBitSet;
+            bestByteCountTransSuccMatrix = matrixTotal;
+          }
+        }
+      }
+    }
+  }
+
+  if(bestByteCountTransSuccMatrix < byteCountSuccessorMatrix) {
+    _tprintf(_T("Best parameters for Transposed SuccessorMatrix:-T,r%u,m%u%s. Gives matrix size=%s\n")
+            ,bestMaxRecursionTransSucc
+            ,bestMinStateBitSetSize
+            ,bestPruneTransSuccBitSet?_T(",p"):_T("")
+            ,bestByteCountTransSuccMatrix.toString().cstr()
+            );
+  }
 }
 
 ByteArray bitSetToByteArray(const BitSet &bitSet, UINT capacity) {

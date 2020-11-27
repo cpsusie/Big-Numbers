@@ -21,6 +21,8 @@ public:
   void generateParser();
   void generateDocFile()                   const;
   void generateDocFile(MarginFile &output) const;
+  // try various combinations of compression-parameters and print tables memory usage to stdout. then exit(0)
+  void listCompressionCombination();
 
   const Grammar   &getGrammar()            const { return m_grammar;         }
   const String    &getSourceName()         const { return m_sourceName;      }
