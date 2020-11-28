@@ -779,9 +779,9 @@ State 39:
    shift to 9 on TYPE
    shift to 12 on STRUCT
    shift to 14 on ENUM
-   shift to 86 on ELLIPSIS
    shift to 81 on RPAR
    shift to 88 on TTYPE
+   shift to 86 on ELLIPSIS
    goto 87 on type_specifier
    goto 10 on enum_specifier
    goto 11 on struct_specifier
@@ -891,10 +891,10 @@ State 41:
    shift to 9 on TYPE
    shift to 12 on STRUCT
    shift to 14 on ENUM
-   shift to 86 on ELLIPSIS
    shift to 91 on RPAR
    shift to 88 on TTYPE
    shift to 23 on NAME
+   shift to 86 on ELLIPSIS
    goto 87 on type_specifier
    goto 10 on enum_specifier
    goto 11 on struct_specifier
@@ -4278,8 +4278,8 @@ State 158:
    shift to 9 on TYPE
    shift to 12 on STRUCT
    shift to 14 on ENUM
-   shift to 86 on ELLIPSIS
    shift to 88 on TTYPE
+   shift to 86 on ELLIPSIS
    goto 87 on type_specifier
    goto 10 on enum_specifier
    goto 11 on struct_specifier
@@ -8236,7 +8236,7 @@ State 300:
  165	productions
  301	LALR(1) states
 3332	items
-7.560(x86)/7.640(x64) bytes	 required for parsertables
+7.424(x86)/7.504(x64) bytes	 required for parsertables
 
    0	shift/reduce  conflicts
    0	reduce/reduce conflicts

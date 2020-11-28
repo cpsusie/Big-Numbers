@@ -1053,15 +1053,15 @@ static const unsigned char termBitSetTable[378] = { /* capacity(bitset)=68, byte
 *   newstate = successor(S,A);                                                       *
 *   push(newstate), and set current state = newstate.                                *
 * Because the values of all non-terminals A = [terminalCount..symbolCount-1], the    *
-* value NTindex = A' = A - terminalCount is used as index into successorCodeArray.   *
-* NTindex = [0..NTermCount-1]                                                        *
+* value ntIndex = A' = A - terminalCount is used as index into successorCodeArray.   *
+* ntIndex = [0..NTermCount-1]                                                        *
 *                                                                                    *
 * For each non-terminal A, a #define is generated and used as element A' in array    *
 * successorCodeArray. Each define has the format:                                    *
 *                                                                                    *
 * #define _scDDDD Code                                                               *
 *                                                                                    *
-* where DDDD is NTindex A' and Code is an unsigned int with the following format     *
+* where DDDD is ntIndex A' and Code is an unsigned int with the following format     *
 *                                                                                    *
 *            0         1         2         3                                         *
 * Bit index: 01234567890123456789012345678901                                        *
@@ -1233,28 +1233,28 @@ static const unsigned char termBitSetTable[378] = { /* capacity(bitset)=68, byte
 #define _sc0115 0x00db7fff /* fileName                  Goto 109 No check (  1 state )      */
 #define _sc0116 0x010d7fff /* layoutInfo                Goto 134 No check (  1 state )      */
 #define _sc0117 0x00df7fff /* name                      Goto 111 No check (  1 state )      */
-#define _ss0000 0x00ab8000 /* Goto 85 on states in stateBitSet[0]                            Used by NTindex   [23]*/
-#define _ss0001 0x01ef8005 /* Goto 247 on states in stateBitSet[1]                           Used by NTindex   [23]*/
-#define _ss0002 0x001c0010 /* stateArray    2, newStateArray    2                            Used by NTindex   [23]*/
-#define _ss0003 0x00ee8078 /* Split(_ss0001,_ss0002)                                         Used by NTindex   [23]*/
-#define _ss0004 0x00a98000 /* Goto 84 on states in stateBitSet[0]                            Used by NTindex   [24]*/
-#define _ss0005 0x01ed8005 /* Goto 246 on states in stateBitSet[1]                           Used by NTindex   [24]*/
-#define _ss0006 0x0079800a /* Goto 60 on states in stateBitSet[2]                            Used by NTindex   [24]*/
-#define _ss0007 0x00420024 /* stateArray    3, newStateArray    3                            Used by NTindex   [24]*/
-#define _ss0008 0x00f8807d /* Split(_ss0006,_ss0007)                                         Used by NTindex   [24]*/
-#define _ss0009 0x00f6807e /* Split(_ss0005,_ss0008)                                         Used by NTindex   [24]*/
-#define _ss0010 0x00a78000 /* Goto 83 on states in stateBitSet[0]                            Used by NTindex   [37]*/
-#define _ss0011 0x008c0052 /* stateArray   12, newStateArray   12                            Used by NTindex   [37]*/
-#define _ss0012 0x0139800f /* Goto 156 on states in stateBitSet[3]                           Used by NTindex   [40]*/
-#define _ss0013 0x02e57fff /* Goto 370 No check (  3 states)                                 Used by NTindex   [40]*/
-#define _ss0014 0x02af8014 /* Goto 343 on states in stateBitSet[4]                           Used by NTindex   [56]*/
-#define _ss0015 0x02d17fff /* Goto 360 No check (  8 states)                                 Used by NTindex   [56]*/
-#define _ss0016 0x01238019 /* Goto 145 on states in stateBitSet[5]                           Used by NTindex   [96]*/
-#define _ss0017 0x0103801e /* Goto 129 on states in stateBitSet[6]                           Used by NTindex   [96]*/
-#define _ss0018 0x010e00a3 /* stateArray   28, newStateArray   28                            Used by NTindex   [96]*/
-#define _ss0019 0x010e8088 /* Split(_ss0017,_ss0018)                                         Used by NTindex   [96]*/
-#define _ss0020 0x01218023 /* Goto 144 on states in stateBitSet[7]                           Used by NTindex   [110]*/
-#define _ss0021 0x013800c0 /* stateArray   36, newStateArray   36                            Used by NTindex   [110]*/
+#define _ss0000 0x00ab8000 /* Goto 85 on states in stateBitSet[0]                            Used by ntIndex   [23]*/
+#define _ss0001 0x01ef8005 /* Goto 247 on states in stateBitSet[1]                           Used by ntIndex   [23]*/
+#define _ss0002 0x001c0010 /* stateArray    2, newStateArray    2                            Used by ntIndex   [23]*/
+#define _ss0003 0x00ee8078 /* Split(_ss0001,_ss0002)                                         Used by ntIndex   [23]*/
+#define _ss0004 0x00a98000 /* Goto 84 on states in stateBitSet[0]                            Used by ntIndex   [24]*/
+#define _ss0005 0x01ed8005 /* Goto 246 on states in stateBitSet[1]                           Used by ntIndex   [24]*/
+#define _ss0006 0x0079800a /* Goto 60 on states in stateBitSet[2]                            Used by ntIndex   [24]*/
+#define _ss0007 0x00420024 /* stateArray    3, newStateArray    3                            Used by ntIndex   [24]*/
+#define _ss0008 0x00f8807d /* Split(_ss0006,_ss0007)                                         Used by ntIndex   [24]*/
+#define _ss0009 0x00f6807e /* Split(_ss0005,_ss0008)                                         Used by ntIndex   [24]*/
+#define _ss0010 0x00a78000 /* Goto 83 on states in stateBitSet[0]                            Used by ntIndex   [37]*/
+#define _ss0011 0x008c0052 /* stateArray   12, newStateArray   12                            Used by ntIndex   [37]*/
+#define _ss0012 0x0139800f /* Goto 156 on states in stateBitSet[3]                           Used by ntIndex   [40]*/
+#define _ss0013 0x02e57fff /* Goto 370 No check (  3 states)                                 Used by ntIndex   [40]*/
+#define _ss0014 0x02af8014 /* Goto 343 on states in stateBitSet[4]                           Used by ntIndex   [56]*/
+#define _ss0015 0x02d17fff /* Goto 360 No check (  8 states)                                 Used by ntIndex   [56]*/
+#define _ss0016 0x01238019 /* Goto 145 on states in stateBitSet[5]                           Used by ntIndex   [96]*/
+#define _ss0017 0x0103801e /* Goto 129 on states in stateBitSet[6]                           Used by ntIndex   [96]*/
+#define _ss0018 0x010e00a3 /* stateArray   28, newStateArray   28                            Used by ntIndex   [96]*/
+#define _ss0019 0x010e8088 /* Split(_ss0017,_ss0018)                                         Used by ntIndex   [96]*/
+#define _ss0020 0x01218023 /* Goto 144 on states in stateBitSet[7]                           Used by ntIndex   [110]*/
+#define _ss0021 0x013800c0 /* stateArray   36, newStateArray   36                            Used by ntIndex   [110]*/
 
 static const unsigned int successorCodeArray[140] = {
    _sc0000,_sc0001,_sc0002,_sc0003,_sc0004,_sc0005,_sc0006,_sc0007,_sc0008,_sc0009
@@ -1275,100 +1275,100 @@ static const unsigned int successorCodeArray[140] = {
 }; // Size of table:560(x86)/560(x64) bytes.
 
 static const unsigned short stateArrayTable[207] = {
-     2,   0,   1                                                                                             /*   0 Used by NTindex   [3]                             */
-  , 12,  57,  64,  65,  66,  67,  69,  70,  72,  73,  74,  78,  80                                           /*   1 Used by NTindex   [22]                            */
-  , 19,  81,  87,  88,  89,  96, 120, 139, 140, 148, 225, 226, 251, 273, 277, 285, 287, 305, 315, 610        /*   2 Used by NTindex   [23]                            */
-  , 19,  55,  81, 101, 121, 137, 141, 149, 281, 282, 283, 284, 285, 291, 301, 340, 341, 344, 347, 349        /*   3 Used by NTindex   [24]                            */
-  ,  2,  68,  90                                                                                             /*   4 Used by NTindex   [25]                            */
-  ,  2, 151, 255                                                                                             /*   5 Used by NTindex   [27]                            */
-  ,  2, 116, 146                                                                                             /*   6 Used by NTindex   [29]                            */
-  ,  2,   6,  18                                                                                             /*   7 Used by NTindex   [30]                            */
-  ,  2, 122, 150                                                                                             /*   8 Used by NTindex   [31]                            */
-  ,  2,  91, 117                                                                                             /*   9 Used by NTindex   [32]                            */
-  ,  2, 119, 286                                                                                             /*  10 Used by NTindex   [35]                            */
-  ,  4, 119, 286, 344, 607                                                                                   /*  11 Used by NTindex   [36]                            */
-  , 22,   0,   1,  29,  68,  90,  93,  98, 122, 123, 130, 150, 220, 243, 285, 288, 344, 350, 351, 353, 611   /*  12 Used by NTindex   [37]                            */
+     2,   0,   1                                                                                             /*   0 Used by ntIndex   [3]                             */
+  , 12,  57,  64,  65,  66,  67,  69,  70,  72,  73,  74,  78,  80                                           /*   1 Used by ntIndex   [22]                            */
+  , 19,  81,  87,  88,  89,  96, 120, 139, 140, 148, 225, 226, 251, 273, 277, 285, 287, 305, 315, 610        /*   2 Used by ntIndex   [23]                            */
+  , 19,  55,  81, 101, 121, 137, 141, 149, 281, 282, 283, 284, 285, 291, 301, 340, 341, 344, 347, 349        /*   3 Used by ntIndex   [24]                            */
+  ,  2,  68,  90                                                                                             /*   4 Used by ntIndex   [25]                            */
+  ,  2, 151, 255                                                                                             /*   5 Used by ntIndex   [27]                            */
+  ,  2, 116, 146                                                                                             /*   6 Used by ntIndex   [29]                            */
+  ,  2,   6,  18                                                                                             /*   7 Used by ntIndex   [30]                            */
+  ,  2, 122, 150                                                                                             /*   8 Used by ntIndex   [31]                            */
+  ,  2,  91, 117                                                                                             /*   9 Used by ntIndex   [32]                            */
+  ,  2, 119, 286                                                                                             /*  10 Used by ntIndex   [35]                            */
+  ,  4, 119, 286, 344, 607                                                                                   /*  11 Used by ntIndex   [36]                            */
+  , 22,   0,   1,  29,  68,  90,  93,  98, 122, 123, 130, 150, 220, 243, 285, 288, 344, 350, 351, 353, 611   /*  12 Used by ntIndex   [37]                            */
       , 630, 632
-  ,  3,   6,  18,  24                                                                                        /*  13 Used by NTindex   [38]                            */
-  ,  3, 151, 255, 263                                                                                        /*  14 Used by NTindex   [42]                            */
-  ,  8,  25,  26,  27,  28,  30,  31,  32,  35                                                               /*  15 Used by NTindex   [52]                            */
-  ,  3,  17,  20,  23                                                                                        /*  16 Used by NTindex   [54]                            */
-  ,  2, 344, 606                                                                                             /*  17 Used by NTindex   [60]                            */
-  ,  3, 344, 369, 606                                                                                        /*  18 Used by NTindex   [61]                            */
-  ,  2,  17,  20                                                                                             /*  19 Used by NTindex   [76]                            */
-  ,  2, 219, 289                                                                                             /*  20 Used by NTindex   [82]                            */
-  ,  2,  94, 332                                                                                             /*  21 Used by NTindex   [84]                            */
-  ,  2, 127, 221                                                                                             /*  22 Used by NTindex   [86]                            */
-  ,  2, 296, 354                                                                                             /*  23 Used by NTindex   [89]                            */
-  ,  3,   0,   1,  29                                                                                        /*  24 Used by NTindex   [90]                            */
-  ,  2, 353, 612                                                                                             /*  25 Used by NTindex   [93]                            */
-  ,  2,   3,  33                                                                                             /*  26 Used by NTindex   [94]                            */
-  ,  4,   3,   7,  33,  34                                                                                   /*  27 Used by NTindex   [95]                            */
-  ,  6,   2,   4,   8,   9,  19,  22                                                                         /*  28 Used by NTindex   [96]                            */
-  ,  2,   9,  19                                                                                             /*  29 Used by NTindex   [98]                            */
-  ,  2, 357, 613                                                                                             /*  30 Used by NTindex   [101]                           */
-  ,  2,  98, 130                                                                                             /*  31 Used by NTindex   [102]                           */
-  ,  2, 101, 137                                                                                             /*  32 Used by NTindex   [104]                           */
-  ,  2, 233, 358                                                                                             /*  33 Used by NTindex   [107]                           */
-  ,  2,  97, 132                                                                                             /*  34 Used by NTindex   [108]                           */
-  ,  3,   5,  10,  11                                                                                        /*  35 Used by NTindex   [109]                           */
-  ,  6,  12,  13,  14,  15,  16,  21                                                                         /*  36 Used by NTindex   [110]                           */
-  ,  4, 233, 303, 358, 600                                                                                   /*  37 Used by NTindex   [111]                           */
-  ,  2, 358, 601                                                                                             /*  38 Used by NTindex   [114]                           */
+  ,  3,   6,  18,  24                                                                                        /*  13 Used by ntIndex   [38]                            */
+  ,  3, 151, 255, 263                                                                                        /*  14 Used by ntIndex   [42]                            */
+  ,  8,  25,  26,  27,  28,  30,  31,  32,  35                                                               /*  15 Used by ntIndex   [52]                            */
+  ,  3,  17,  20,  23                                                                                        /*  16 Used by ntIndex   [54]                            */
+  ,  2, 344, 606                                                                                             /*  17 Used by ntIndex   [60]                            */
+  ,  3, 344, 369, 606                                                                                        /*  18 Used by ntIndex   [61]                            */
+  ,  2,  17,  20                                                                                             /*  19 Used by ntIndex   [76]                            */
+  ,  2, 219, 289                                                                                             /*  20 Used by ntIndex   [82]                            */
+  ,  2,  94, 332                                                                                             /*  21 Used by ntIndex   [84]                            */
+  ,  2, 127, 221                                                                                             /*  22 Used by ntIndex   [86]                            */
+  ,  2, 296, 354                                                                                             /*  23 Used by ntIndex   [89]                            */
+  ,  3,   0,   1,  29                                                                                        /*  24 Used by ntIndex   [90]                            */
+  ,  2, 353, 612                                                                                             /*  25 Used by ntIndex   [93]                            */
+  ,  2,   3,  33                                                                                             /*  26 Used by ntIndex   [94]                            */
+  ,  4,   3,   7,  33,  34                                                                                   /*  27 Used by ntIndex   [95]                            */
+  ,  6,   2,   4,   8,   9,  19,  22                                                                         /*  28 Used by ntIndex   [96]                            */
+  ,  2,   9,  19                                                                                             /*  29 Used by ntIndex   [98]                            */
+  ,  2, 357, 613                                                                                             /*  30 Used by ntIndex   [101]                           */
+  ,  2,  98, 130                                                                                             /*  31 Used by ntIndex   [102]                           */
+  ,  2, 101, 137                                                                                             /*  32 Used by ntIndex   [104]                           */
+  ,  2, 233, 358                                                                                             /*  33 Used by ntIndex   [107]                           */
+  ,  2,  97, 132                                                                                             /*  34 Used by ntIndex   [108]                           */
+  ,  3,   5,  10,  11                                                                                        /*  35 Used by ntIndex   [109]                           */
+  ,  6,  12,  13,  14,  15,  16,  21                                                                         /*  36 Used by ntIndex   [110]                           */
+  ,  4, 233, 303, 358, 600                                                                                   /*  37 Used by ntIndex   [111]                           */
+  ,  2, 358, 601                                                                                             /*  38 Used by ntIndex   [114]                           */
 }; // Size of table:416(x86)/416(x64) bytes.
 
 static const unsigned short newStateArrayTable[168] = {
-     37,  63                                                                                                 /*   0 Used by NTindex   [3]                             */
-  ,  79,  87,  88,  89,  90,  93,  94,  95,  96,  97,  99, 108                                               /*   1 Used by NTindex   [22]                            */
-  , 110, 113, 114, 115, 131, 213, 250, 252, 258, 296, 297, 311, 318, 319, 322, 327, 336, 339,  35            /*   2 Used by NTindex   [23]                            */
-  ,  66, 112, 139, 214, 139, 253, 259,  25,  26,  27,  28, 323, 331, 333,  30,  31, 363,  32, 557            /*   3 Used by NTindex   [24]                            */
-  ,  91, 116                                                                                                 /*   4 Used by NTindex   [25]                            */
-  , 262, 314                                                                                                 /*   5 Used by NTindex   [27]                            */
-  , 147, 256                                                                                                 /*   6 Used by NTindex   [29]                            */
-  , 153, 257                                                                                                 /*   7 Used by NTindex   [30]                            */
-  , 217, 260                                                                                                 /*   8 Used by NTindex   [31]                            */
-  , 118, 152                                                                                                 /*   9 Used by NTindex   [32]                            */
-  , 192, 326                                                                                                 /*  10 Used by NTindex   [35]                            */
-  , 193, 193, 367, 626                                                                                       /*  11 Used by NTindex   [36]                            */
-  ,  58,  58, 355,  92,  92, 125, 136, 216, 218, 136, 261, 293, 306, 324, 328, 362, 558, 559, 561, 627       /*  12 Used by NTindex   [37]                            */
+     37,  63                                                                                                 /*   0 Used by ntIndex   [3]                             */
+  ,  79,  87,  88,  89,  90,  93,  94,  95,  96,  97,  99, 108                                               /*   1 Used by ntIndex   [22]                            */
+  , 110, 113, 114, 115, 131, 213, 250, 252, 258, 296, 297, 311, 318, 319, 322, 327, 336, 339,  35            /*   2 Used by ntIndex   [23]                            */
+  ,  66, 112, 139, 214, 139, 253, 259,  25,  26,  27,  28, 323, 331, 333,  30,  31, 363,  32, 557            /*   3 Used by ntIndex   [24]                            */
+  ,  91, 116                                                                                                 /*   4 Used by ntIndex   [25]                            */
+  , 262, 314                                                                                                 /*   5 Used by ntIndex   [27]                            */
+  , 147, 256                                                                                                 /*   6 Used by ntIndex   [29]                            */
+  , 153, 257                                                                                                 /*   7 Used by ntIndex   [30]                            */
+  , 217, 260                                                                                                 /*   8 Used by ntIndex   [31]                            */
+  , 118, 152                                                                                                 /*   9 Used by ntIndex   [32]                            */
+  , 192, 326                                                                                                 /*  10 Used by ntIndex   [35]                            */
+  , 193, 193, 367, 626                                                                                       /*  11 Used by ntIndex   [36]                            */
+  ,  58,  58, 355,  92,  92, 125, 136, 216, 218, 136, 261, 293, 306, 324, 328, 362, 558, 559, 561, 627       /*  12 Used by ntIndex   [37]                            */
   , 633, 634
-  , 154, 154, 325                                                                                            /*  13 Used by NTindex   [38]                            */
-  , 264, 264, 317                                                                                            /*  14 Used by NTindex   [42]                            */
-  , 342, 345, 346, 348, 604, 605, 609, 631                                                                   /*  15 Used by NTindex   [52]                            */
-  , 245, 245, 320                                                                                            /*  16 Used by NTindex   [54]                            */
-  , 366, 625                                                                                                 /*  17 Used by NTindex   [60]                            */
-  , 368, 608, 368                                                                                            /*  18 Used by NTindex   [61]                            */
-  , 244, 308                                                                                                 /*  19 Used by NTindex   [76]                            */
-  , 290, 330                                                                                                 /*  20 Used by NTindex   [82]                            */
-  , 126, 352                                                                                                 /*  21 Used by NTindex   [84]                            */
-  , 222, 295                                                                                                 /*  22 Used by NTindex   [86]                            */
-  , 332, 590                                                                                                 /*  23 Used by NTindex   [89]                            */
-  ,  59,  59, 354                                                                                            /*  24 Used by NTindex   [90]                            */
-  , 566, 628                                                                                                 /*  25 Used by NTindex   [93]                            */
-  ,   7,  34                                                                                                 /*  26 Used by NTindex   [94]                            */
-  , 128, 228, 128, 228                                                                                       /*  27 Used by NTindex   [95]                            */
-  ,  82, 142, 229, 231, 231, 313                                                                             /*  28 Used by NTindex   [96]                            */
-  , 230, 300                                                                                                 /*  29 Used by NTindex   [98]                            */
-  , 592, 629                                                                                                 /*  30 Used by NTindex   [101]                           */
-  , 135, 232                                                                                                 /*  31 Used by NTindex   [102]                           */
-  , 138, 249                                                                                                 /*  32 Used by NTindex   [104]                           */
-  , 303, 600                                                                                                 /*  33 Used by NTindex   [107]                           */
-  , 133, 234                                                                                                 /*  34 Used by NTindex   [108]                           */
-  , 143, 235, 236                                                                                            /*  35 Used by NTindex   [109]                           */
-  , 237, 238, 239, 240, 241, 312                                                                             /*  36 Used by NTindex   [110]                           */
-  , 304, 335, 304, 335                                                                                       /*  37 Used by NTindex   [111]                           */
-  , 602, 615                                                                                                 /*  38 Used by NTindex   [114]                           */
+  , 154, 154, 325                                                                                            /*  13 Used by ntIndex   [38]                            */
+  , 264, 264, 317                                                                                            /*  14 Used by ntIndex   [42]                            */
+  , 342, 345, 346, 348, 604, 605, 609, 631                                                                   /*  15 Used by ntIndex   [52]                            */
+  , 245, 245, 320                                                                                            /*  16 Used by ntIndex   [54]                            */
+  , 366, 625                                                                                                 /*  17 Used by ntIndex   [60]                            */
+  , 368, 608, 368                                                                                            /*  18 Used by ntIndex   [61]                            */
+  , 244, 308                                                                                                 /*  19 Used by ntIndex   [76]                            */
+  , 290, 330                                                                                                 /*  20 Used by ntIndex   [82]                            */
+  , 126, 352                                                                                                 /*  21 Used by ntIndex   [84]                            */
+  , 222, 295                                                                                                 /*  22 Used by ntIndex   [86]                            */
+  , 332, 590                                                                                                 /*  23 Used by ntIndex   [89]                            */
+  ,  59,  59, 354                                                                                            /*  24 Used by ntIndex   [90]                            */
+  , 566, 628                                                                                                 /*  25 Used by ntIndex   [93]                            */
+  ,   7,  34                                                                                                 /*  26 Used by ntIndex   [94]                            */
+  , 128, 228, 128, 228                                                                                       /*  27 Used by ntIndex   [95]                            */
+  ,  82, 142, 229, 231, 231, 313                                                                             /*  28 Used by ntIndex   [96]                            */
+  , 230, 300                                                                                                 /*  29 Used by ntIndex   [98]                            */
+  , 592, 629                                                                                                 /*  30 Used by ntIndex   [101]                           */
+  , 135, 232                                                                                                 /*  31 Used by ntIndex   [102]                           */
+  , 138, 249                                                                                                 /*  32 Used by ntIndex   [104]                           */
+  , 303, 600                                                                                                 /*  33 Used by ntIndex   [107]                           */
+  , 133, 234                                                                                                 /*  34 Used by ntIndex   [108]                           */
+  , 143, 235, 236                                                                                            /*  35 Used by ntIndex   [109]                           */
+  , 237, 238, 239, 240, 241, 312                                                                             /*  36 Used by ntIndex   [110]                           */
+  , 304, 335, 304, 335                                                                                       /*  37 Used by ntIndex   [111]                           */
+  , 602, 615                                                                                                 /*  38 Used by ntIndex   [114]                           */
 }; // Size of table:336(x86)/336(x64) bytes.
 
 static const unsigned char stateBitSetTable[40] = { /* capacity(bitset)=36, bytes in bitset=5 */
-   0xbc,0xff,0x69,0x00,0x06 /*   0  19 states Used by NTindices [23-24,37]           */
-  ,0x00,0x00,0x92,0x00,0x00 /*   1   3 states Used by NTindices [23-24]              */
-  ,0x03,0x00,0x00,0x20,0x00 /*   2   3 states Used by NTindex   [24]                 */
-  ,0x40,0x00,0x04,0x01,0x00 /*   3   3 states Used by NTindex   [40]                 */
-  ,0x00,0x00,0x00,0xde,0x09 /*   4   8 states Used by NTindex   [56]                 */
-  ,0x20,0xfc,0x21,0x00,0x00 /*   5   9 states Used by NTindex   [96]                 */
-  ,0x88,0x00,0x00,0x00,0x06 /*   6   4 states Used by NTindex   [96]                 */
-  ,0x20,0x0c,0x00,0x00,0x00 /*   7   3 states Used by NTindex   [110]                */
+   0xbc,0xff,0x69,0x00,0x06 /*   0  19 states Used by ntIndices [23-24,37]           */
+  ,0x00,0x00,0x92,0x00,0x00 /*   1   3 states Used by ntIndices [23-24]              */
+  ,0x03,0x00,0x00,0x20,0x00 /*   2   3 states Used by ntIndex   [24]                 */
+  ,0x40,0x00,0x04,0x01,0x00 /*   3   3 states Used by ntIndex   [40]                 */
+  ,0x00,0x00,0x00,0xde,0x09 /*   4   8 states Used by ntIndex   [56]                 */
+  ,0x20,0xfc,0x21,0x00,0x00 /*   5   9 states Used by ntIndex   [96]                 */
+  ,0x88,0x00,0x00,0x00,0x06 /*   6   4 states Used by ntIndex   [96]                 */
+  ,0x20,0x0c,0x00,0x00,0x00 /*   7   3 states Used by ntIndex   [110]                */
 }; // Size of table:40(x86)/40(x64) bytes.
 
 /************************************************************************************\
@@ -2293,124 +2293,124 @@ static const char *symbolNames = {
   " _MFS_TOPGAPDROP"                                  /* T   325               */
   " _MFS_GAPDROP"                                     /* T   326               */
   " NOT"                                              /* T   327               */
-  " start"                                            /* NT  328 NTindex=0     */
-  " resourceFile"                                     /* NT  329 NTindex=1     */
-  " resourceDefinitionList"                           /* NT  330 NTindex=2     */
-  " resourceDefinition"                               /* NT  331 NTindex=3     */
-  " bitmapDefinition"                                 /* NT  332 NTindex=4     */
-  " iconDefinition"                                   /* NT  333 NTindex=5     */
-  " customTypeDefinition"                             /* NT  334 NTindex=6     */
-  " dialogDefinition"                                 /* NT  335 NTindex=7     */
-  " extendedDialogDefinition"                         /* NT  336 NTindex=8     */
-  " guideLinesDefinition"                             /* NT  337 NTindex=9     */
-  " toolbarDefnition"                                 /* NT  338 NTindex=10    */
-  " menuDefinition"                                   /* NT  339 NTindex=11    */
-  " dialogInitDefinition"                             /* NT  340 NTindex=12    */
-  " acceleratorsDefinition"                           /* NT  341 NTindex=13    */
-  " rcdataDefinition"                                 /* NT  342 NTindex=14    */
-  " stringTableDefinition"                            /* NT  343 NTindex=15    */
-  " textIncludeDirective"                             /* NT  344 NTindex=16    */
-  " languageDirective"                                /* NT  345 NTindex=17    */
-  " versionDefinition"                                /* NT  346 NTindex=18    */
-  " typelibDefinition"                                /* NT  347 NTindex=19    */
-  " afxDialogLayout"                                  /* NT  348 NTindex=20    */
-  " resourceId"                                       /* NT  349 NTindex=21    */
-  " resourceAttributeList"                            /* NT  350 NTindex=22    */
-  " string"                                           /* NT  351 NTindex=23    */
-  " identifier"                                       /* NT  352 NTindex=24    */
-  " rectangleSpec"                                    /* NT  353 NTindex=25    */
-  " dialogSpecList"                                   /* NT  354 NTindex=26    */
-  " opt_dialogControlSpecList"                        /* NT  355 NTindex=27    */
-  " extendedDialogSpecList"                           /* NT  356 NTindex=28    */
-  " dialogSpec"                                       /* NT  357 NTindex=29    */
-  " dialogStyleExpr"                                  /* NT  358 NTindex=30    */
-  " fontSpec"                                         /* NT  359 NTindex=31    */
-  " extendedDialogSpec"                               /* NT  360 NTindex=32    */
-  " extendedDialogStyleExpr"                          /* NT  361 NTindex=33    */
-  " extendedFontSpec"                                 /* NT  362 NTindex=34    */
-  " extendedDialogStyle"                              /* NT  363 NTindex=35    */
-  " ws_ex_style"                                      /* NT  364 NTindex=36    */
-  " number"                                           /* NT  365 NTindex=37    */
-  " dialogStyle"                                      /* NT  366 NTindex=38    */
-  " ds_style"                                         /* NT  367 NTindex=39    */
-  " ws_style"                                         /* NT  368 NTindex=40    */
-  " dialogControlSpecList"                            /* NT  369 NTindex=41    */
-  " dialogControlSpec"                                /* NT  370 NTindex=42    */
-  " pushButtonSpec"                                   /* NT  371 NTindex=43    */
-  " lrcTextSpec"                                      /* NT  372 NTindex=44    */
-  " editSpec"                                         /* NT  373 NTindex=45    */
-  " comboBoxSpec"                                     /* NT  374 NTindex=46    */
-  " listBoxSpec"                                      /* NT  375 NTindex=47    */
-  " iconSpec"                                         /* NT  376 NTindex=48    */
-  " scrollBarSpec"                                    /* NT  377 NTindex=49    */
-  " controlSpec"                                      /* NT  378 NTindex=50    */
-  " buttonType"                                       /* NT  379 NTindex=51    */
-  " controlAttributeList"                             /* NT  380 NTindex=52    */
-  " lrcText"                                          /* NT  381 NTindex=53    */
-  " identifierOrString"                               /* NT  382 NTindex=54    */
-  " controlId"                                        /* NT  383 NTindex=55    */
-  " controlAttribute"                                 /* NT  384 NTindex=56    */
-  " ctrlAttribute"                                    /* NT  385 NTindex=57    */
-  " controlStyleExpr"                                 /* NT  386 NTindex=58    */
-  " extendedWindowStyleExpr"                          /* NT  387 NTindex=59    */
-  " ctrl_style"                                       /* NT  388 NTindex=60    */
-  " add_ctrl_style"                                   /* NT  389 NTindex=61    */
-  " ss_style"                                         /* NT  390 NTindex=62    */
-  " es_style"                                         /* NT  391 NTindex=63    */
-  " bs_style"                                         /* NT  392 NTindex=64    */
-  " cbs_style"                                        /* NT  393 NTindex=65    */
-  " sbs_style"                                        /* NT  394 NTindex=66    */
-  " lbs_style"                                        /* NT  395 NTindex=67    */
-  " tbs_style"                                        /* NT  396 NTindex=68    */
-  " tvs_style"                                        /* NT  397 NTindex=69    */
-  " lvs_style"                                        /* NT  398 NTindex=70    */
-  " uds_style"                                        /* NT  399 NTindex=71    */
-  " pbs_style"                                        /* NT  400 NTindex=72    */
-  " mcs_style"                                        /* NT  401 NTindex=73    */
-  " resourceAttribute"                                /* NT  402 NTindex=74    */
-  " designInfoList"                                   /* NT  403 NTindex=75    */
-  " designInfo"                                       /* NT  404 NTindex=76    */
-  " designSpecList"                                   /* NT  405 NTindex=77    */
-  " designSpec"                                       /* NT  406 NTindex=78    */
-  " marginSpec"                                       /* NT  407 NTindex=79    */
-  " sizeSpec"                                         /* NT  408 NTindex=80    */
-  " buttonSpecList"                                   /* NT  409 NTindex=81    */
-  " buttonSpec"                                       /* NT  410 NTindex=82    */
-  " menuType"                                         /* NT  411 NTindex=83    */
-  " menuBody"                                         /* NT  412 NTindex=84    */
-  " menuSpecList"                                     /* NT  413 NTindex=85    */
-  " menuSpec"                                         /* NT  414 NTindex=86    */
-  " popupMenu"                                        /* NT  415 NTindex=87    */
-  " menuItem"                                         /* NT  416 NTindex=88    */
-  " menuItemModifierList"                             /* NT  417 NTindex=89    */
-  " identifierOrNumber"                               /* NT  418 NTindex=90    */
-  " menuItemModifier"                                 /* NT  419 NTindex=91    */
-  " menuItemFlagExpr"                                 /* NT  420 NTindex=92    */
-  " menuItemFlag"                                     /* NT  421 NTindex=93    */
-  " constantElementList"                              /* NT  422 NTindex=94    */
-  " constantElement"                                  /* NT  423 NTindex=95    */
-  " constant"                                         /* NT  424 NTindex=96    */
-  " acceleratorList"                                  /* NT  425 NTindex=97    */
-  " accelerator"                                      /* NT  426 NTindex=98    */
-  " opt_acceleratorSpecList"                          /* NT  427 NTindex=99    */
-  " acceleratorSpecList"                              /* NT  428 NTindex=100   */
-  " acceleratorModifier"                              /* NT  429 NTindex=101   */
-  " numberList"                                       /* NT  430 NTindex=102   */
-  " stringSpecList"                                   /* NT  431 NTindex=103   */
-  " stringSpec"                                       /* NT  432 NTindex=104   */
-  " stringList"                                       /* NT  433 NTindex=105   */
-  " versionSpecList"                                  /* NT  434 NTindex=106   */
-  " blockList"                                        /* NT  435 NTindex=107   */
-  " versionSpec"                                      /* NT  436 NTindex=108   */
-  " exprList"                                         /* NT  437 NTindex=109   */
-  " expr"                                             /* NT  438 NTindex=110   */
-  " block"                                            /* NT  439 NTindex=111   */
-  " blockBody"                                        /* NT  440 NTindex=112   */
-  " valueList"                                        /* NT  441 NTindex=113   */
-  " value"                                            /* NT  442 NTindex=114   */
-  " fileName"                                         /* NT  443 NTindex=115   */
-  " layoutInfo"                                       /* NT  444 NTindex=116   */
-  " name"                                             /* NT  445 NTindex=117   */
+  " start"                                            /* NT  328 ntIndex=0     */
+  " resourceFile"                                     /* NT  329 ntIndex=1     */
+  " resourceDefinitionList"                           /* NT  330 ntIndex=2     */
+  " resourceDefinition"                               /* NT  331 ntIndex=3     */
+  " bitmapDefinition"                                 /* NT  332 ntIndex=4     */
+  " iconDefinition"                                   /* NT  333 ntIndex=5     */
+  " customTypeDefinition"                             /* NT  334 ntIndex=6     */
+  " dialogDefinition"                                 /* NT  335 ntIndex=7     */
+  " extendedDialogDefinition"                         /* NT  336 ntIndex=8     */
+  " guideLinesDefinition"                             /* NT  337 ntIndex=9     */
+  " toolbarDefnition"                                 /* NT  338 ntIndex=10    */
+  " menuDefinition"                                   /* NT  339 ntIndex=11    */
+  " dialogInitDefinition"                             /* NT  340 ntIndex=12    */
+  " acceleratorsDefinition"                           /* NT  341 ntIndex=13    */
+  " rcdataDefinition"                                 /* NT  342 ntIndex=14    */
+  " stringTableDefinition"                            /* NT  343 ntIndex=15    */
+  " textIncludeDirective"                             /* NT  344 ntIndex=16    */
+  " languageDirective"                                /* NT  345 ntIndex=17    */
+  " versionDefinition"                                /* NT  346 ntIndex=18    */
+  " typelibDefinition"                                /* NT  347 ntIndex=19    */
+  " afxDialogLayout"                                  /* NT  348 ntIndex=20    */
+  " resourceId"                                       /* NT  349 ntIndex=21    */
+  " resourceAttributeList"                            /* NT  350 ntIndex=22    */
+  " string"                                           /* NT  351 ntIndex=23    */
+  " identifier"                                       /* NT  352 ntIndex=24    */
+  " rectangleSpec"                                    /* NT  353 ntIndex=25    */
+  " dialogSpecList"                                   /* NT  354 ntIndex=26    */
+  " opt_dialogControlSpecList"                        /* NT  355 ntIndex=27    */
+  " extendedDialogSpecList"                           /* NT  356 ntIndex=28    */
+  " dialogSpec"                                       /* NT  357 ntIndex=29    */
+  " dialogStyleExpr"                                  /* NT  358 ntIndex=30    */
+  " fontSpec"                                         /* NT  359 ntIndex=31    */
+  " extendedDialogSpec"                               /* NT  360 ntIndex=32    */
+  " extendedDialogStyleExpr"                          /* NT  361 ntIndex=33    */
+  " extendedFontSpec"                                 /* NT  362 ntIndex=34    */
+  " extendedDialogStyle"                              /* NT  363 ntIndex=35    */
+  " ws_ex_style"                                      /* NT  364 ntIndex=36    */
+  " number"                                           /* NT  365 ntIndex=37    */
+  " dialogStyle"                                      /* NT  366 ntIndex=38    */
+  " ds_style"                                         /* NT  367 ntIndex=39    */
+  " ws_style"                                         /* NT  368 ntIndex=40    */
+  " dialogControlSpecList"                            /* NT  369 ntIndex=41    */
+  " dialogControlSpec"                                /* NT  370 ntIndex=42    */
+  " pushButtonSpec"                                   /* NT  371 ntIndex=43    */
+  " lrcTextSpec"                                      /* NT  372 ntIndex=44    */
+  " editSpec"                                         /* NT  373 ntIndex=45    */
+  " comboBoxSpec"                                     /* NT  374 ntIndex=46    */
+  " listBoxSpec"                                      /* NT  375 ntIndex=47    */
+  " iconSpec"                                         /* NT  376 ntIndex=48    */
+  " scrollBarSpec"                                    /* NT  377 ntIndex=49    */
+  " controlSpec"                                      /* NT  378 ntIndex=50    */
+  " buttonType"                                       /* NT  379 ntIndex=51    */
+  " controlAttributeList"                             /* NT  380 ntIndex=52    */
+  " lrcText"                                          /* NT  381 ntIndex=53    */
+  " identifierOrString"                               /* NT  382 ntIndex=54    */
+  " controlId"                                        /* NT  383 ntIndex=55    */
+  " controlAttribute"                                 /* NT  384 ntIndex=56    */
+  " ctrlAttribute"                                    /* NT  385 ntIndex=57    */
+  " controlStyleExpr"                                 /* NT  386 ntIndex=58    */
+  " extendedWindowStyleExpr"                          /* NT  387 ntIndex=59    */
+  " ctrl_style"                                       /* NT  388 ntIndex=60    */
+  " add_ctrl_style"                                   /* NT  389 ntIndex=61    */
+  " ss_style"                                         /* NT  390 ntIndex=62    */
+  " es_style"                                         /* NT  391 ntIndex=63    */
+  " bs_style"                                         /* NT  392 ntIndex=64    */
+  " cbs_style"                                        /* NT  393 ntIndex=65    */
+  " sbs_style"                                        /* NT  394 ntIndex=66    */
+  " lbs_style"                                        /* NT  395 ntIndex=67    */
+  " tbs_style"                                        /* NT  396 ntIndex=68    */
+  " tvs_style"                                        /* NT  397 ntIndex=69    */
+  " lvs_style"                                        /* NT  398 ntIndex=70    */
+  " uds_style"                                        /* NT  399 ntIndex=71    */
+  " pbs_style"                                        /* NT  400 ntIndex=72    */
+  " mcs_style"                                        /* NT  401 ntIndex=73    */
+  " resourceAttribute"                                /* NT  402 ntIndex=74    */
+  " designInfoList"                                   /* NT  403 ntIndex=75    */
+  " designInfo"                                       /* NT  404 ntIndex=76    */
+  " designSpecList"                                   /* NT  405 ntIndex=77    */
+  " designSpec"                                       /* NT  406 ntIndex=78    */
+  " marginSpec"                                       /* NT  407 ntIndex=79    */
+  " sizeSpec"                                         /* NT  408 ntIndex=80    */
+  " buttonSpecList"                                   /* NT  409 ntIndex=81    */
+  " buttonSpec"                                       /* NT  410 ntIndex=82    */
+  " menuType"                                         /* NT  411 ntIndex=83    */
+  " menuBody"                                         /* NT  412 ntIndex=84    */
+  " menuSpecList"                                     /* NT  413 ntIndex=85    */
+  " menuSpec"                                         /* NT  414 ntIndex=86    */
+  " popupMenu"                                        /* NT  415 ntIndex=87    */
+  " menuItem"                                         /* NT  416 ntIndex=88    */
+  " menuItemModifierList"                             /* NT  417 ntIndex=89    */
+  " identifierOrNumber"                               /* NT  418 ntIndex=90    */
+  " menuItemModifier"                                 /* NT  419 ntIndex=91    */
+  " menuItemFlagExpr"                                 /* NT  420 ntIndex=92    */
+  " menuItemFlag"                                     /* NT  421 ntIndex=93    */
+  " constantElementList"                              /* NT  422 ntIndex=94    */
+  " constantElement"                                  /* NT  423 ntIndex=95    */
+  " constant"                                         /* NT  424 ntIndex=96    */
+  " acceleratorList"                                  /* NT  425 ntIndex=97    */
+  " accelerator"                                      /* NT  426 ntIndex=98    */
+  " opt_acceleratorSpecList"                          /* NT  427 ntIndex=99    */
+  " acceleratorSpecList"                              /* NT  428 ntIndex=100   */
+  " acceleratorModifier"                              /* NT  429 ntIndex=101   */
+  " numberList"                                       /* NT  430 ntIndex=102   */
+  " stringSpecList"                                   /* NT  431 ntIndex=103   */
+  " stringSpec"                                       /* NT  432 ntIndex=104   */
+  " stringList"                                       /* NT  433 ntIndex=105   */
+  " versionSpecList"                                  /* NT  434 ntIndex=106   */
+  " blockList"                                        /* NT  435 ntIndex=107   */
+  " versionSpec"                                      /* NT  436 ntIndex=108   */
+  " exprList"                                         /* NT  437 ntIndex=109   */
+  " expr"                                             /* NT  438 ntIndex=110   */
+  " block"                                            /* NT  439 ntIndex=111   */
+  " blockBody"                                        /* NT  440 ntIndex=112   */
+  " valueList"                                        /* NT  441 ntIndex=113   */
+  " value"                                            /* NT  442 ntIndex=114   */
+  " fileName"                                         /* NT  443 ntIndex=115   */
+  " layoutInfo"                                       /* NT  444 ntIndex=116   */
+  " name"                                             /* NT  445 ntIndex=117   */
 }; // Size of string:6.028(x86)/6.032(x64) bytes
 
 static const ParserTablesTemplateTransSucc<446,328,475,635,16572,16656,68,36

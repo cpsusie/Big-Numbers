@@ -49,7 +49,7 @@ private:
   StringArray               m_stateStr;
   SafeRunnable             *m_yaccJob;
   void deleteNodeList();
-  void buildLegalInputArray();
+  void buildLegalTermStringArray();
   void buildReduceActionArray();
   void waitForYaccJob();
 public:

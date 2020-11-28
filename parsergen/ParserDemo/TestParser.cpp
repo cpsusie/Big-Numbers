@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include <ThreadPool.h>
+#include <ParserTransitionMatrix.h>
 #include "TestParser.h"
 #include "GRAMMARS.h"
-#include "TransitionMatrix.h"
 
 SyntaxNode::SyntaxNode(const String &symbol, UINT childCount, bool terminal, TestParser *parser)
 : m_symbol(    symbol    )
@@ -42,27 +42,6 @@ public:
   TestScanner(LRparser &parser) : m_parser(parser) {}
 };
 
-static String getLegalInput(const AbstractParserTables &tables, UINT state) {
-  UINT      *symbols = nullptr;
-  const UINT n       = tables.getLegalInputCount(state);
-  try {
-    symbols = new UINT[n]; TRACE_NEW(symbols);
-    tables.getLegalInputs(state, symbols);
-    String result;
-    for(UINT i = 0; i < n; i++) {
-      if(i > 0) {
-        result += _T(" ");
-      }
-      result += tables.getSymbolName(symbols[i]);
-    }
-    SAFEDELETEARRAY(symbols);
-    return result;
-  } catch(...) {
-    SAFEDELETEARRAY(symbols);
-    throw;
-  }
-}
-
 class YaccJob : public SafeRunnable {
 private:
   TestParser &m_parser;
@@ -87,7 +66,7 @@ TestParser::TestParser() : LRparser(*tablesToTest), m_grammar(*tablesToTest) {
   m_userStack  = new SyntaxNodep[getStackSize()]; TRACE_NEW(m_userStack);
   m_yaccJob    = new YaccJob(*this);              TRACE_NEW(m_yaccJob  );
   ThreadPool::executeNoWait(*m_yaccJob);
-  buildLegalInputArray();
+  buildLegalTermStringArray();
   buildReduceActionArray();
 }
 
@@ -106,12 +85,13 @@ void TestParser::deleteNodeList() {
   m_root = nullptr;
 }
 
-void TestParser::buildLegalInputArray() {
-  const AbstractParserTables &tables     = getParserTables();
+void TestParser::buildLegalTermStringArray() {
+  const AbstractParserTables &tables = getParserTables();
+  const FullActionMatrix      am(tables);
   const UINT                  stateCount = tables.getStateCount();
   m_legalLookahead.setCapacity(stateCount);
-  for(UINT i = 0; i < stateCount; i++) {
-    m_legalLookahead.add(::getLegalInput(tables, i));
+  for(UINT s = 0; s < stateCount; s++) {
+    m_legalLookahead.add(am.getLegalTermString(s));
   }
 }
 
@@ -213,7 +193,12 @@ String TestParser::getActionString() const {
 }
 
 String TestParser::getActionMatrixDump() const {
-  return FullActionMatrix(getParserTables()).toString();
+  const AbstractParserTables &tables = getParserTables();
+  String                      result;
+  result += FullActionMatrix(getParserTables()).toString();
+  result += _T("\n\n\n");
+  result += TransposedShiftMatrix(tables).toString();
+  return result;
 }
 
 String TestParser::getSuccessorMatrixDump() const {
@@ -221,6 +206,6 @@ String TestParser::getSuccessorMatrixDump() const {
   String                      result;
   result += FullSuccessorMatrix(tables).toString();
   result += _T("\n\n\n");
-  result += TransposeSuccessorMatrix(tables).toString();
+  result += TransposedSuccessorMatrix(tables).toString();
   return result;
 }
