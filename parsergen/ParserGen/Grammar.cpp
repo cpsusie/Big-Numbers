@@ -801,7 +801,7 @@ String Grammar::getRightSide(UINT p) const {
 const TCHAR *BitSetParam::s_elementName[][2] = {
   _T("symbol "    ), _T("symbols"    )
  ,_T("terminal "  ), _T("terminals"  )
- ,_T("NTindex  "  ), _T("NTindices"  )
+ ,_T("ntIndex  "  ), _T("ntIndices"  )
  ,_T("production "), _T("productions")
  ,_T("state "     ), _T("states"     )
 };

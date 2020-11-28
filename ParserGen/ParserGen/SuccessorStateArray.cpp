@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "Grammar.h"
 
-NTindexSet SuccessorStateArray::getNTindexSet(UINT termCount, UINT symbolCount) const {
-  NTindexSet result(symbolCount - termCount);
+NTIndexSet SuccessorStateArray::getNTIndexSet(UINT termCount, UINT symbolCount) const {
+  NTIndexSet result(symbolCount - termCount);
   for(const SuccessorState &ss : *this) {
     result.add((size_t)ss.m_nterm - termCount);
   }

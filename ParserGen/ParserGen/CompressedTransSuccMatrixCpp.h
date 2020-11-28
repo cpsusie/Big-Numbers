@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GrammarTables.h"
-#include "NTindexNodeArray.h"
+#include "NTIndexNodeArray.h"
 #include "IndexMap.h"
 #include "MacroMap.h"
 
@@ -39,7 +39,7 @@ private:
   UINT                          m_fromStateArraySize;
   UINT                          m_newStateArraySize;
   UINT                          m_splitNodeCount;
-  NTindexNodeArray              m_NTindexNodeArray;
+  NTIndexNodeArray              m_ntIndexNodeArray;
   StateSetIndexMap              m_fromStateArrayMap;
   StateArrayIndexMap            m_newStateArrayMap;
   StateSetIndexMap              m_stateBitSetMap;
@@ -51,11 +51,11 @@ private:
   inline UINT         getNTermCount() const {
     return m_grammar.getNTermCount();
   }
-  Macro               doNTindexNode(   const NTindexNode &node);
-  Macro               doBinSearchNode( const NTindexNode &node);
-  Macro               doSplitNode(     const NTindexNode &node);
-  Macro               doImmediateNode( const NTindexNode &node);
-  Macro               doBitSetNode(    const NTindexNode &node);
+  Macro               doNTIndexNode(   const NTIndexNode &node);
+  Macro               doBinSearchNode( const NTIndexNode &node);
+  Macro               doSplitNode(     const NTIndexNode &node);
+  Macro               doImmediateNode( const NTIndexNode &node);
+  Macro               doBitSetNode(    const NTIndexNode &node);
   void                generateCompressedForm();
 
   void         printMacroesAndSuccessorCodeArray(MarginFile &output) const;

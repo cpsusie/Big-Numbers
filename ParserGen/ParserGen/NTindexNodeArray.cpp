@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "NTindexNodeArray.h"
+#include "NTIndexNodeArray.h"
 
 namespace TransposedSuccessorMatrixCompression {
 
-// rows indexed by NTindex, has variable length. Each elment in a row is a StatePair containing m_state,m_newState
+// rows indexed by NTIndex, has variable length. Each elment in a row is a StatePair containing m_state,m_newState
 // elements ordered by m_newState
 class TransposedSuccessorMatrix : public Array<StatePairArray> {
 public:
@@ -12,12 +12,12 @@ public:
 
 TransposedSuccessorMatrix::TransposedSuccessorMatrix(const Grammar &grammar) {
   const UINT           termCount  = grammar.getTermCount();
-  const UINT           NTermCount = grammar.getNTermCount();
+  const UINT           ntermCount = grammar.getNTermCount();
   const UINT           stateCount = grammar.getStateCount();
   const GrammarResult &r          = grammar.getResult();
 
-  setCapacity(NTermCount);
-  for(UINT ntIndex = 0; ntIndex < NTermCount; ntIndex++) {
+  setCapacity(ntermCount);
+  for(UINT ntIndex = 0; ntIndex < ntermCount; ntIndex++) {
     add(StatePairArray());
   }
   for(UINT state = 0; state < stateCount; state++) {
@@ -34,26 +34,26 @@ TransposedSuccessorMatrix::TransposedSuccessorMatrix(const Grammar &grammar) {
   }
 }
 
-NTindexNodeArray::NTindexNodeArray(const Grammar &grammar) : m_grammar(grammar) {
+NTIndexNodeArray::NTIndexNodeArray(const Grammar &grammar) : m_grammar(grammar) {
   const TransposedSuccessorMatrix tsm(grammar);
 
 //  redirectDebugLog();
 //  debugLog(_T("%s"), tsm.toString(_T("\n"), BT_NOBRACKETS).cstr());
 
-  const UINT NTermCount = grammar.getNTermCount();
-  setCapacity(NTermCount);
-  for(UINT NTindex = 0; NTindex < NTermCount; NTindex++) {
-    const StatePairArray &row = tsm[NTindex];
-    add(row.isEmpty() ? nullptr : NTindexNode::allocateNTindexNode(NTindex, grammar, tsm[NTindex]));
+  const UINT ntermCount = grammar.getNTermCount();
+  setCapacity(ntermCount);
+  for(UINT ntIndex = 0; ntIndex < ntermCount; ntIndex++) {
+    const StatePairArray &row = tsm[ntIndex];
+    add(row.isEmpty() ? nullptr : NTIndexNode::allocateNTIndexNode(ntIndex, grammar, tsm[ntIndex]));
 //    debugLog(_T("%s"), (last() == nullptr) ? _T("null\n") : last()->toString().cstr());
   }
 }
 
-NTindexNodeArray::~NTindexNodeArray() {
+NTIndexNodeArray::~NTIndexNodeArray() {
   clear();
 }
 
-void NTindexNodeArray::clear() {
+void NTIndexNodeArray::clear() {
   const size_t n = size();
   for(size_t i = 0; i < n; i++) {
     SAFEDELETE((*this)[i]);
@@ -61,7 +61,7 @@ void NTindexNodeArray::clear() {
   __super::clear();
 }
 
-String NTindexNodeArray::toString() const {
+String NTIndexNodeArray::toString() const {
   String result;
   for(auto it = getIterator(); it.hasNext();) {
     result += it.next()->toString();

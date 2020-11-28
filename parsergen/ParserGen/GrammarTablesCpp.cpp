@@ -76,7 +76,7 @@ _T("/***************************************************************************
    "*     b                  : Number of bytes in each termBitSet=(capacity-1)/8+1       *\n"
    "*     termBitSet[0..b-1] : termBitSetTable[t..t+b-1]                                 *\n"
    "*                                                                                    *\n"
-   "*     The value of capacity is minimized, capacity <= terminalCount                  *\n"
+   "*     The value of capacity is minimized, capacity <= termCount                      *\n"
    "*     As for other node types, the same check for existence is done. If terminal T   *\n"
    "*     is not present in termBitSet, or T >= capacity, set action = _ParseError.      *\n"
    "*     Note that each termBitSet may be shared by several states.                     *\n"
@@ -84,7 +84,7 @@ _T("/***************************************************************************
 
 static const TCHAR *comment2 =
 _T("/************************************************************************************\\\n"
-   "* The 3 arrays successorCodeArray, NTindexArrayTable , newStateArrayTable            *\n"
+   "* The 3 arrays successorCodeArray, ntIndexArrayTable , newStateArrayTable            *\n"
    "* compressed succesor-matrix, used by LRParser to find newstate = successor(S,A)     *\n"
    "* as last part of a reduction with production P, A -> alfa.                          *\n"
    "* A reduction by production P goes as follows:                                       *\n"
@@ -111,22 +111,22 @@ _T("/***************************************************************************
    "*                                                                                    *\n"
    "* CC has the same meaning as for actionCodeArray, but only CC={0,2} are used.        *\n"
    "* CC==0: CompCodeBinSearch                                                           *\n"
-   "*     i: Index into array NTindexArrayTable, pointing at the first element of        *\n"
-   "*        NTIndexArray                                                                *\n"
+   "*     i: Index into array ntIndexArrayTable, pointing at the first element of        *\n"
+   "*        ntIndexArray                                                                *\n"
    "*     s: Index into array newStateArrayTable, pointing at the first element of       *\n"
    "*        newStateArray                                                               *\n"
    "*                                                                                    *\n"
-   "*     n                    : NTIndexArrayTable[i]=number of elements in NTIndexArray *\n"
-   "*     NTIndexArray[0..n-1] : NTIndexArrayTable[i+1..i+n]                             *\n"
+   "*     n                    : ntIndexArrayTable[i]=number of elements in ntIndexArray *\n"
+   "*     ntIndexArray[0..n-1] : ntIndexArrayTable[i+1..i+n]                             *\n"
    "*                            Ordered list of possible nonterminal-indices.           *\n"
    "*     newStateArray[0..n-1]: newStateArrayTable[s..s+n-1], length = n                *\n"
    "*                                                                                    *\n"
-   "*     To get newstate, find k so NTIndexArray[k] == A', k=[0..n-1] and set           *\n"
+   "*     To get newstate, find k so ntIndexArray[k] == A', k=[0..n-1] and set           *\n"
    "*     newstate = newStateArray[k].                                                   *\n"
-   "*     A' = (A - terminalCount) will always exist.                                    *\n"
-   "*     Note that both NTIndexArray and newStateArray may be shared by several states. *\n"
+   "*     A' = (A - termCount) will always exist.                                        *\n"
+   "*     Note that both ntIndexArray and newStateArray may be shared by several states. *\n"
    "* CC==2: CompCodeImmediate, used if there is only 1 possible newstate.               *\n"
-   "*     i: Index A' of nonterminal A, A' = (A - terminalCount).                        *\n"
+   "*     i: Index A' of nonterminal A, A' = (A - termCount).                            *\n"
    "*     s: New state.                                                                  *\n"
    "*                                                                                    *\n"
    "\\************************************************************************************/\n\n");
@@ -143,16 +143,16 @@ _T("/***************************************************************************
    "*   A = leftside of the reduce production P;                                         *\n"
    "*   newstate = successor(S,A);                                                       *\n"
    "*   push(newstate), and set current state = newstate.                                *\n"
-   "* Because the values of all non-terminals A = [terminalCount..symbolCount-1], the    *\n"
-   "* value NTindex = A' = A - terminalCount is used as index into successorCodeArray.   *\n"
-   "* NTindex = [0..NTermCount-1]                                                        *\n"
+   "* Because the values of all non-terminals A = [termCount..symbolCount-1], the        *\n"
+   "* value ntIndex = A' = A - termCount is used as index into successorCodeArray.       *\n"
+   "* ntIndex = [0..ntermCount-1]                                                        *\n"
    "*                                                                                    *\n"
    "* For each non-terminal A, a #define is generated and used as element A' in array    *\n"
    "* successorCodeArray. Each define has the format:                                    *\n"
    "*                                                                                    *\n"
    "* #define _scDDDD Code                                                               *\n"
    "*                                                                                    *\n"
-   "* where DDDD is NTindex A' and Code is an unsigned int with the following format     *\n"
+   "* where DDDD is ntIndex A' and Code is an unsigned int with the following format     *\n"
    "*                                                                                    *\n"
    "*            0         1         2         3                                         *\n"
    "* Bit index: 01234567890123456789012345678901                                        *\n"
@@ -216,9 +216,9 @@ _T("/***************************************************************************
 static const TCHAR *comment4 =
 _T("/************************************************************************************\\\n"
    "* leftSideArray[] is indexed by production number.                                   *\n"
-   "* leftSideArray[p] = A', A' = (A - terminalCount)                                    *\n"
+   "* leftSideArray[p] = A', A' = (A - termCount)                                        *\n"
    "*                        where A is the left side of production p.                   *\n"
-   "* A' = [0..nonterminalCount-1]                                                       *\n"
+   "* A' = [0..ntermCount-1]                                                             *\n"
    "* p  = [0..productionCount-1]                                                        *\n"
    "\\************************************************************************************/\n");
 
@@ -279,7 +279,7 @@ ByteCount GrammarTables::printCppParserTablesTemplate(MarginFile &output) const 
                ,m_grammar.getTermBitSetCapacity()
                ,getTypeName(m_types.getSymbolType() )
                ,getTypeName(m_types.getTermType()   )
-               ,getTypeName(m_types.getNTindexType())
+               ,getTypeName(m_types.getNTIndexType())
                ,getTypeName(m_types.getActionType() )
                ,getTypeName(m_types.getStateType()  )
                ,tablesClassName.cstr()
@@ -290,7 +290,7 @@ ByteCount GrammarTables::printCppParserTablesTemplate(MarginFile &output) const 
   output.printf(_T("prodLengthArray   , leftSideArray\n"
                    ",rightSideTable    , symbolNames\n"
                    ",actionCodeArray   , termArrayTable    , actionArrayTable, termBitSetTable\n"
-                   ",successorCodeArray, NTindexArrayTable , newStateArrayTable\n);\n\n")
+                   ",successorCodeArray, ntIndexArrayTable , newStateArrayTable\n);\n\n")
                );
   output.setLeftMargin(0);
 
@@ -334,7 +334,7 @@ ByteCount GrammarTables::printCppParserTablesTemplateTransSucc(MarginFile &outpu
                ,m_grammar.getTermBitSetCapacity(), m_grammar.getStateBitSetCapacity()
                ,getTypeName(m_types.getSymbolType() )
                ,getTypeName(m_types.getTermType()   )
-               ,getTypeName(m_types.getNTindexType())
+               ,getTypeName(m_types.getNTIndexType())
                ,getTypeName(m_types.getActionType() )
                ,getTypeName(m_types.getStateType()  )
                ,tablesClassName.cstr()
@@ -398,7 +398,7 @@ ByteCount GrammarTables::printProdLengthArrayCpp(MarginFile &output) const {
 ByteCount GrammarTables::printLeftSideArrayCpp(MarginFile &output) const {
   output.printf(_T("%s"), comment4);
   const UINT productionCount = getProductionCount();
-  outputBeginArrayDefinition(output, _T("leftSideArray"), m_types.getNTindexType(), productionCount);
+  outputBeginArrayDefinition(output, _T("leftSideArray"), m_types.getNTIndexType(), productionCount);
   TCHAR delim = ' ';
   for(UINT p = 0; p < productionCount; p++, delim = ',') {
     const int l = getLeftSymbol(p) - getTermCount();
@@ -410,7 +410,7 @@ ByteCount GrammarTables::printLeftSideArrayCpp(MarginFile &output) const {
       output.printf(_T("\n"));
     }
   }
-  return outputEndArrayDefinition(output, m_types.getNTindexType(), productionCount, true);
+  return outputEndArrayDefinition(output, m_types.getNTIndexType(), productionCount, true);
 }
 
 ByteCount GrammarTables::printRightSideTableCpp(MarginFile &output) const {
@@ -450,7 +450,7 @@ ByteCount GrammarTables::printSymbolNamesCpp(MarginFile &output) const {
     const int    l       = (int)name.length()+(s?1:0), fillerLen = minMax(50 - l, 0, 50);
     const String comment = (s < termCount)
                          ? format(_T("T  %4u"), s)
-                         : format(_T("NT %4u NTindex=%u"), s, s-termCount);
+                         : format(_T("NT %4u ntIndex=%u"), s, s-termCount);
     output.printf(_T("%s\"%*s/* %-21s */\n"), name.cstr(), fillerLen,_T(""),comment.cstr());
     charCount += l;
   }

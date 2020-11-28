@@ -79,7 +79,7 @@ namespace Expr {
 *     b                  : Number of bytes in each termBitSet=(capacity-1)/8+1       *
 *     termBitSet[0..b-1] : termBitSetTable[t..t+b-1]                                 *
 *                                                                                    *
-*     The value of capacity is minimized, capacity <= terminalCount                  *
+*     The value of capacity is minimized, capacity <= termCount                      *
 *     As for other node types, the same check for existence is done. If terminal T   *
 *     is not present in termBitSet, or T >= capacity, set action = _ParseError.      *
 *     Note that each termBitSet may be shared by several states.                     *
@@ -365,16 +365,16 @@ static const unsigned char termBitSetTable[110] = { /* capacity(bitset)=78, byte
 *   A = leftside of the reduce production P;                                         *
 *   newstate = successor(S,A);                                                       *
 *   push(newstate), and set current state = newstate.                                *
-* Because the values of all non-terminals A = [terminalCount..symbolCount-1], the    *
-* value NTindex = A' = A - terminalCount is used as index into successorCodeArray.   *
-* NTindex = [0..NTermCount-1]                                                        *
+* Because the values of all non-terminals A = [termCount..symbolCount-1], the        *
+* value ntIndex = A' = A - termCount is used as index into successorCodeArray.       *
+* ntIndex = [0..ntermCount-1]                                                        *
 *                                                                                    *
 * For each non-terminal A, a #define is generated and used as element A' in array    *
 * successorCodeArray. Each define has the format:                                    *
 *                                                                                    *
 * #define _scDDDD Code                                                               *
 *                                                                                    *
-* where DDDD is NTindex A' and Code is an unsigned int with the following format     *
+* where DDDD is ntIndex A' and Code is an unsigned int with the following format     *
 *                                                                                    *
 *            0         1         2         3                                         *
 * Bit index: 01234567890123456789012345678901                                        *
@@ -446,8 +446,8 @@ static const unsigned char termBitSetTable[110] = { /* capacity(bitset)=78, byte
 #define _sc0015 0x00637fff /* productExpr     Goto  49 No check ( 36 states)        */
 #define _sc0016 0x00657fff /* polyExpr        Goto  50 No check ( 36 states)        */
 #define _sc0017 0x011f7fff /* exprList        Goto 143 No check (  1 state )        */
-#define _ss0000 0x00dd8000 /* Goto 110 on states in stateBitSet[0]                 Used by NTindex   [8]*/
-#define _ss0001 0x00680031 /* stateArray    3, newStateArray    5                  Used by NTindex   [8]*/
+#define _ss0000 0x00dd8000 /* Goto 110 on states in stateBitSet[0]                 Used by ntIndex   [8]*/
+#define _ss0001 0x00680031 /* stateArray    3, newStateArray    5                  Used by ntIndex   [8]*/
 
 static const unsigned int successorCodeArray[20] = {
    _sc0000,_sc0001,_sc0002,_sc0003,_sc0004,_sc0005,_sc0006,_sc0007,_sc0008,_sc0009
@@ -456,25 +456,25 @@ static const unsigned int successorCodeArray[20] = {
 }; // Size of table:80(x86)/80(x64) bytes.
 
 static const unsigned char stateArrayTable[54] = {
-     2,   0,  37                                                                                             /*   0 Used by NTindices [2,6]                           */
-  , 36,   0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19   /*   1 Used by NTindex   [4]                             */
+     2,   0,  37                                                                                             /*   0 Used by ntIndices [2,6]                           */
+  , 36,   0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19   /*   1 Used by ntIndex   [4]                             */
       ,  20,  21,  22,  23,  24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  37
-  ,  8,   0,   1,   4,   5,  18,  19,  24,  37                                                               /*   2 Used by NTindex   [5]                             */
-  ,  4,   0,  37, 115, 116                                                                                   /*   3 Used by NTindices [7-8]                           */
+  ,  8,   0,   1,   4,   5,  18,  19,  24,  37                                                               /*   2 Used by ntIndex   [5]                             */
+  ,  4,   0,  37, 115, 116                                                                                   /*   3 Used by ntIndices [7-8]                           */
 }; // Size of table:56(x86)/56(x64) bytes.
 
 static const unsigned char newStateArrayTable[56] = {
-     36, 105                                                                                                 /*   0 Used by NTindex   [2]                             */
-  ,  38, 108, 111, 112, 114, 114, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 114, 114       /*   1 Used by NTindex   [4]                             */
+     36, 105                                                                                                 /*   0 Used by ntIndex   [2]                             */
+  ,  38, 108, 111, 112, 114, 114, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 114, 114       /*   1 Used by ntIndex   [4]                             */
   , 132, 133, 134, 137, 114, 144, 147, 148, 149, 150, 151, 153, 154, 155, 156,  38
-  ,  39, 109, 113, 117, 130, 131, 139,  39                                                                   /*   2 Used by NTindex   [5]                             */
-  ,  40, 106                                                                                                 /*   3 Used by NTindex   [6]                             */
-  ,  41,  41, 140, 142                                                                                       /*   4 Used by NTindex   [7]                             */
-  ,  42,  42, 141, 141                                                                                       /*   5 Used by NTindex   [8]                             */
+  ,  39, 109, 113, 117, 130, 131, 139,  39                                                                   /*   2 Used by ntIndex   [5]                             */
+  ,  40, 106                                                                                                 /*   3 Used by ntIndex   [6]                             */
+  ,  41,  41, 140, 142                                                                                       /*   4 Used by ntIndex   [7]                             */
+  ,  42,  42, 141, 141                                                                                       /*   5 Used by ntIndex   [8]                             */
 }; // Size of table:56(x86)/56(x64) bytes.
 
 static const unsigned char stateBitSetTable[5] = { /* capacity(bitset)=35, bytes in bitset=5 */
-   0xfe,0xff,0xff,0xff,0x07 /*   0  34 states Used by NTindex   [8]                  */
+   0xfe,0xff,0xff,0xff,0x07 /*   0  34 states Used by ntIndex   [8]                  */
 }; // Size of table:8(x86)/8(x64) bytes.
 
 /************************************************************************************\
@@ -496,9 +496,9 @@ static const unsigned char prodLengthArray[94] = {
 
 /************************************************************************************\
 * leftSideArray[] is indexed by production number.                                   *
-* leftSideArray[p] = A', A' = (A - terminalCount)                                    *
+* leftSideArray[p] = A', A' = (A - termCount)                                        *
 *                        where A is the left side of production p.                   *
-* A' = [0..nonterminalCount-1]                                                       *
+* A' = [0..ntermCount-1]                                                             *
 * p  = [0..productionCount-1]                                                        *
 \************************************************************************************/
 static const unsigned char leftSideArray[94] = {
@@ -704,24 +704,24 @@ static const char *symbolNames = {
   " ADDENT"                                           /* T    81               */
   " UNARYMINUS"                                       /* T    82               */
   " PRODUCT"                                          /* T    83               */
-  " start"                                            /* NT   84 NTindex=0     */
-  " function"                                         /* NT   85 NTindex=1     */
-  " final_expr"                                       /* NT   86 NTindex=2     */
-  " assignStmtList"                                   /* NT   87 NTindex=3     */
-  " expr"                                             /* NT   88 NTindex=4     */
-  " boolExpr"                                         /* NT   89 NTindex=5     */
-  " assignStmt"                                       /* NT   90 NTindex=6     */
-  " assign"                                           /* NT   91 NTindex=7     */
-  " name"                                             /* NT   92 NTindex=8     */
-  " unary"                                            /* NT   93 NTindex=9     */
-  " number"                                           /* NT   94 NTindex=10    */
-  " function1"                                        /* NT   95 NTindex=11    */
-  " function2"                                        /* NT   96 NTindex=12    */
-  " conditionalExpr"                                  /* NT   97 NTindex=13    */
-  " sumExpr"                                          /* NT   98 NTindex=14    */
-  " productExpr"                                      /* NT   99 NTindex=15    */
-  " polyExpr"                                         /* NT  100 NTindex=16    */
-  " exprList"                                         /* NT  101 NTindex=17    */
+  " start"                                            /* NT   84 ntIndex=0     */
+  " function"                                         /* NT   85 ntIndex=1     */
+  " final_expr"                                       /* NT   86 ntIndex=2     */
+  " assignStmtList"                                   /* NT   87 ntIndex=3     */
+  " expr"                                             /* NT   88 ntIndex=4     */
+  " boolExpr"                                         /* NT   89 ntIndex=5     */
+  " assignStmt"                                       /* NT   90 ntIndex=6     */
+  " assign"                                           /* NT   91 ntIndex=7     */
+  " name"                                             /* NT   92 ntIndex=8     */
+  " unary"                                            /* NT   93 ntIndex=9     */
+  " number"                                           /* NT   94 ntIndex=10    */
+  " function1"                                        /* NT   95 ntIndex=11    */
+  " function2"                                        /* NT   96 ntIndex=12    */
+  " conditionalExpr"                                  /* NT   97 ntIndex=13    */
+  " sumExpr"                                          /* NT   98 ntIndex=14    */
+  " productExpr"                                      /* NT   99 ntIndex=15    */
+  " polyExpr"                                         /* NT  100 ntIndex=16    */
+  " exprList"                                         /* NT  101 ntIndex=17    */
 }; // Size of string:620(x86)/624(x64) bytes
 
 static const ParserTablesTemplateTransSucc<102,84,94,159,2796,2872,78,35

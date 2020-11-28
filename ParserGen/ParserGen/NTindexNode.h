@@ -146,25 +146,25 @@ public:
   }
 };
 
-class NTindexNodeCommonData {
+class NTIndexNodeCommonData {
 public:
-  const UINT     m_NTindex;
+  const UINT     m_ntIndex;
   const Grammar &m_grammar;
-  NTindexNodeCommonData(UINT NTindex, const Grammar &grammar) : m_NTindex(NTindex), m_grammar(grammar) {
+  NTIndexNodeCommonData(UINT ntIndex, const Grammar &grammar) : m_ntIndex(ntIndex), m_grammar(grammar) {
   }
-  inline UINT getNTindex() const {
-    return m_NTindex;
+  inline UINT getNTIndex() const {
+    return m_ntIndex;
   }
   inline const String &getSymbolName() const {
-    return m_grammar.getSymbolName(m_grammar.getTermCount() + m_NTindex);
+    return m_grammar.getSymbolName(m_grammar.getTermCount() + m_ntIndex);
   }
 };
 
-class MixedStatePairArray : public NTindexNodeCommonData {
+class MixedStatePairArray : public NTIndexNodeCommonData {
 public:
   StatePairArray              m_statePairArray;
   StatePairBitSetArray        m_statePairBitSetArray;
-  MixedStatePairArray(const NTindexNodeCommonData &cd, const StatePairArray &statePairArray);
+  MixedStatePairArray(const NTIndexNodeCommonData &cd, const StatePairArray &statePairArray);
   StatePairArray mergeAll() const;
   inline UINT    getFromStateCount() const {
     return m_statePairArray.getFromStateCount() + m_statePairBitSetArray.getFromStateCount();
@@ -178,24 +178,24 @@ public:
   }
 };
 
-class NTindexNode : public NTindexNodeCommonData {
+class NTIndexNode : public NTIndexNodeCommonData {
 private:
-  NTindexNode(           const NTindexNode &src); // not implemented
-  NTindexNode &operator=(const NTindexNode &src); // not implemented
+  NTIndexNode(           const NTIndexNode &src); // not implemented
+  NTIndexNode &operator=(const NTIndexNode &src); // not implemented
 protected:
-  const NTindexNode          *m_parent;
+  const NTIndexNode          *m_parent;
   const UINT                  m_fromStateCount;
   const BYTE                  m_recurseLevel;
   const CompressionMethod     m_compressMethod;
-  NTindexNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, UINT fromStateCount, CompressionMethod compressMethod);
-  static NTindexNode *allocateNode(                 const NTindexNode *parent, const MixedStatePairArray   &msp);
-  static NTindexNode *allocateSplitNode(            const NTindexNode *parent, const MixedStatePairArray   &msp);
-  static NTindexNode *allocateStatePairArrayNode(   const NTindexNode *parent, const NTindexNodeCommonData &cd , const StatePairArray  &statePairArray );
-  static NTindexNode *allocateStatePairBitSetNode(  const NTindexNode *parent, const NTindexNodeCommonData &cd , const StatePairBitSet &statePairBitSet);
-  static NTindexNode *allocateImmediateDontCareNode(const NTindexNode *parent, const MixedStatePairArray   &msp);
+  NTIndexNode(const NTIndexNode *parent, const NTIndexNodeCommonData &cd, UINT fromStateCount, CompressionMethod compressMethod);
+  static NTIndexNode *allocateNode(                 const NTIndexNode *parent, const MixedStatePairArray   &msp);
+  static NTIndexNode *allocateSplitNode(            const NTIndexNode *parent, const MixedStatePairArray   &msp);
+  static NTIndexNode *allocateStatePairArrayNode(   const NTIndexNode *parent, const NTIndexNodeCommonData &cd , const StatePairArray  &statePairArray );
+  static NTIndexNode *allocateStatePairBitSetNode(  const NTIndexNode *parent, const NTIndexNodeCommonData &cd , const StatePairBitSet &statePairBitSet);
+  static NTIndexNode *allocateImmediateDontCareNode(const NTIndexNode *parent, const MixedStatePairArray   &msp);
 public:
-  static NTindexNode *allocateNTindexNode(UINT NTindex, const Grammar &grammar, const StatePairArray &statePairArray);
-  virtual            ~NTindexNode() {
+  static NTIndexNode *allocateNTIndexNode(UINT ntIndex, const Grammar &grammar, const StatePairArray &statePairArray);
+  virtual            ~NTIndexNode() {
   }
 
   inline UINT                         getFromStateCount()    const {
@@ -214,7 +214,7 @@ public:
     return *new StatePairArray();
   }
   // Call only if getCompressionMethod() == CompCodeSplitNode
-  virtual const NTindexNode          &getChild(BYTE index)   const {
+  virtual const NTIndexNode          &getChild(BYTE index)   const {
     throwUnsupportedOperationException(__TFUNCTION__);
     __assume(0);
     return *this;
@@ -240,12 +240,12 @@ public:
   virtual String toString() const;
 };
 
-class BinSearchNode : public NTindexNode {
+class BinSearchNode : public NTIndexNode {
 private:
   StatePairArray m_statePairArray;
 public:
-  BinSearchNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, const StatePairArray &statePairArray)
-    : NTindexNode(parent, cd, statePairArray.getFromStateCount(), CompCodeBinSearch)
+  BinSearchNode(const NTIndexNode *parent, const NTIndexNodeCommonData &cd, const StatePairArray &statePairArray)
+    : NTIndexNode(parent, cd, statePairArray.getFromStateCount(), CompCodeBinSearch)
     , m_statePairArray(statePairArray)
   {
     assert(statePairArray.getFromStateCount() >= 2);
@@ -257,35 +257,35 @@ public:
   String toString() const override;
 };
 
-class SplitNode : public NTindexNode {
+class SplitNode : public NTIndexNode {
 private:
-  const NTindexNode *m_child[2];
+  const NTIndexNode *m_child[2];
 public:
-  SplitNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, UINT fromStateCount)
-    : NTindexNode(parent, cd, fromStateCount, CompCodeSplitNode)
+  SplitNode(const NTIndexNode *parent, const NTIndexNodeCommonData &cd, UINT fromStateCount)
+    : NTIndexNode(parent, cd, fromStateCount, CompCodeSplitNode)
   {
     m_child[0] = m_child[1] = nullptr;
   }
   ~SplitNode() override;
-  SplitNode &setChild(BYTE index, NTindexNode *child);
-  const NTindexNode &getChild(BYTE index) const override {
+  SplitNode &setChild(BYTE index, NTIndexNode *child);
+  const NTIndexNode &getChild(BYTE index) const override {
     assert(index < 2);
     return *m_child[index];
   }
   String toString() const override;
 };
 
-class ImmediateNode : public NTindexNode {
+class ImmediateNode : public NTIndexNode {
 private:
   const StatePair m_statePair;
 public:
-  ImmediateNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, const StatePair &statePair)
-    : NTindexNode(parent, cd, 1, CompCodeImmediate)
+  ImmediateNode(const NTIndexNode *parent, const NTIndexNodeCommonData &cd, const StatePair &statePair)
+    : NTIndexNode(parent, cd, 1, CompCodeImmediate)
     , m_statePair(statePair)
   {
   }
-  ImmediateNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, UINT newState, UINT fromStateCount)
-    : NTindexNode(parent, cd, fromStateCount, CompCodeImmediate)
+  ImmediateNode(const NTIndexNode *parent, const NTIndexNodeCommonData &cd, UINT newState, UINT fromStateCount)
+    : NTIndexNode(parent, cd, fromStateCount, CompCodeImmediate)
     , m_statePair(StatePair(StatePair::NoFromStateCheck, newState))
   {
   }
@@ -298,12 +298,12 @@ public:
   String toString() const override;
 };
 
-class BitSetNode : public NTindexNode {
+class BitSetNode : public NTIndexNode {
 private:
   const StatePairBitSet m_statePairBitSet;
 public:
-  BitSetNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, const StatePairBitSet &statePairBitSet)
-    : NTindexNode(parent, cd, statePairBitSet.getFromStateCount(), CompCodeBitSet)
+  BitSetNode(const NTIndexNode *parent, const NTIndexNodeCommonData &cd, const StatePairBitSet &statePairBitSet)
+    : NTIndexNode(parent, cd, statePairBitSet.getFromStateCount(), CompCodeBitSet)
     , m_statePairBitSet(statePairBitSet)
   {
   }

@@ -6,18 +6,18 @@
 
 namespace SuccessorMatrixCompression {
 
-inline int NTindexSetCmp(const NTindexSet &s1, const NTindexSet &s2) {
+inline int ntIndexSetCmp(const NTIndexSet &s1, const NTIndexSet &s2) {
   assert(s1.getCapacity() == s2.getCapacity());
   return bitSetCmp(s1, s2);
 }
 
-class NTindexSetIndexMap : public IndexMap<NTindexSet> {
+class NTIndexSetIndexMap : public IndexMap<NTIndexSet> {
 public:
-  NTindexSetIndexMap() : IndexMap(NTindexSetCmp) {
+  NTIndexSetIndexMap() : IndexMap(ntIndexSetCmp) {
   }
 };
 
-typedef IndexArray<NTindexSet> NTindexSetIndexArray;
+typedef IndexArray<NTIndexSet> NTIndexSetIndexArray;
 
 class StateArrayIndexMap : public IndexMap<StateArray> {
 public:
@@ -32,9 +32,9 @@ private:
   const Grammar                &m_grammar;
   const BitSetParam             m_usedByParam;
   mutable TableTypeByteCountMap m_byteCountMap;
-  UINT                          m_NTindexArraySize;
+  UINT                          m_ntIndexArraySize;
   UINT                          m_newStateArraySize;
-  NTindexSetIndexMap            m_NTindexArrayMap;
+  NTIndexSetIndexMap            m_ntIndexArrayMap;
   StateArrayIndexMap            m_newStateArrayMap;
   StateSet                      m_definedStateSet;
 
@@ -42,12 +42,12 @@ private:
     return m_grammar.getStateCount();
   }
   Macro        doSuccessorArray(       UINT state, const SuccessorStateArray &successorArray);
-  Macro        doNTindexArrayState(    UINT state, const SuccessorStateArray &successorArray);
+  Macro        doNTIndexArrayState(    UINT state, const SuccessorStateArray &successorArray);
   Macro        doOneSuccessorState(    UINT state, const SuccessorState      &ss            );
   void         generateCompressedForm();
 
   void         printMacroesAndSuccessorCodeArray(MarginFile &output) const;
-  void         printNTindexAndNewStateArray(     MarginFile &output) const;
+  void         printNTIndexAndNewStateArray(     MarginFile &output) const;
 
 public:
   CompressedSuccessorMatrix(const Grammar &grammar);

@@ -13,7 +13,7 @@ CompressedTransSuccMatrix::CompressedTransSuccMatrix(const Grammar &grammar)
   , m_usedByParam(       grammar.getBitSetParam(NTINDEX_BITSET)             )
   , m_sizeofStateBitSet( getSizeofBitSet(grammar.getStateBitSetCapacity())  )
   , m_maxNTermNameLength(grammar.getMaxNTermNameLength()                    )
-  , m_NTindexNodeArray(  grammar                                            )
+  , m_ntIndexNodeArray(  grammar                                            )
   , m_byteCountMap(      grammar                                            )
 {
   generateCompressedForm();
@@ -33,53 +33,53 @@ void CompressedTransSuccMatrix::generateCompressedForm() {
   m_splitNodeCount     = 0;
   CompactUIntArray undefinedEntries;
   const UINT       termCount = getTermCount();
-  for(UINT NTindex = 0; NTindex < getNTermCount(); NTindex++) {
-    const NTindexNode *node = m_NTindexNodeArray[NTindex];
+  for(UINT ntIndex = 0; ntIndex < getNTermCount(); ntIndex++) {
+    const NTIndexNode *node = m_ntIndexNodeArray[ntIndex];
     if(node == nullptr) {
-      undefinedEntries.add(NTindex);
+      undefinedEntries.add(ntIndex);
     } else {
-      Macro macro = doNTindexNode(*node);
+      Macro macro = doNTIndexNode(*node);
       const String comment = macro.getComment();
-      addMacro(macro.setComment(format(_T("%-*s %s"), m_maxNTermNameLength, getSymbolName(NTindex + termCount).cstr(), comment.cstr()))
-                    .setIndex(NTindex)
-                    .setName(format(_T("_sc%04u"), NTindex))
+      addMacro(macro.setComment(format(_T("%-*s %s"), m_maxNTermNameLength, getSymbolName(ntIndex + termCount).cstr(), comment.cstr()))
+                    .setIndex(ntIndex)
+                    .setName(format(_T("_sc%04u"), ntIndex))
               );
     }
   }
-  for(UINT NTindex : undefinedEntries) {
-    addMacro(Macro(m_usedByParam, NTindex, _T("0x00000000"), _T("")).setIndex(NTindex).setName(format(_T("_sc%04u"), NTindex)));
+  for(UINT ntIndex : undefinedEntries) {
+    addMacro(Macro(m_usedByParam, ntIndex, _T("0x00000000"), _T("")).setIndex(ntIndex).setName(format(_T("_sc%04u"), ntIndex)));
   }
   m_byteCountMap.m_splitNodeCount = m_splitNodeCount;
 }
 
-Macro CompressedTransSuccMatrix::doNTindexNode(const NTindexNode &node) {
+Macro CompressedTransSuccMatrix::doNTIndexNode(const NTIndexNode &node) {
   switch(node.getCompressionMethod()) {
   case AbstractParserTables::CompCodeBinSearch: return doBinSearchNode( node);
   case AbstractParserTables::CompCodeSplitNode: return doSplitNode(     node);
   case AbstractParserTables::CompCodeImmediate: return doImmediateNode( node);
   case AbstractParserTables::CompCodeBitSet   : return doBitSetNode(    node);
   default                                     :
-    throwException(_T("%s:Unknown compressionMethod for state %u"), __TFUNCTION__, node.getNTindex());
+    throwException(_T("%s:Unknown compressionMethod for state %u"), __TFUNCTION__, node.getNTIndex());
     break;
   }
   return Macro(m_usedByParam, 0, EMPTYSTRING, EMPTYSTRING); // should not come here
 }
 
-Macro CompressedTransSuccMatrix::doBinSearchNode(const NTindexNode &node) {
-  const UINT            NTindex        = node.getNTindex();
+Macro CompressedTransSuccMatrix::doBinSearchNode(const NTIndexNode &node) {
+  const UINT            ntIndex        = node.getNTIndex();
   const StatePairArray &statePairArray = node.getStatePairArray();
-  const NTindexSet      fromStateSet   = statePairArray.getFromStateSet(getStateCount());
+  const NTIndexSet      fromStateSet   = statePairArray.getFromStateSet(getStateCount());
   IndexMapValue        *imvp           = m_fromStateArrayMap.get(fromStateSet);
   UINT                  fromStateArrayIndex, fromStateArrayCount;
 
   if(imvp != nullptr) {
     fromStateArrayIndex = imvp->m_arrayIndex;
     fromStateArrayCount = imvp->m_commentIndex;
-    imvp->addUsedByValue(NTindex);
+    imvp->addUsedByValue(ntIndex);
   } else {
     fromStateArrayIndex = m_fromStateArraySize;
     fromStateArrayCount = m_fromStateArrayMap.getCount();
-    m_fromStateArrayMap.put(fromStateSet, IndexMapValue(m_usedByParam, NTindex, fromStateArrayIndex));
+    m_fromStateArrayMap.put(fromStateSet, IndexMapValue(m_usedByParam, ntIndex, fromStateArrayIndex));
     m_fromStateArraySize += (UINT)fromStateSet.size() + 1;
   }
 
@@ -89,28 +89,28 @@ Macro CompressedTransSuccMatrix::doBinSearchNode(const NTindexNode &node) {
   if(imvp != nullptr) {
     newStateListIndex  = imvp->m_arrayIndex;
     newStateArrayCount = imvp->m_commentIndex;
-    imvp->addUsedByValue(NTindex);
+    imvp->addUsedByValue(ntIndex);
   } else {
     newStateListIndex  = m_newStateArraySize;
     newStateArrayCount = m_newStateArrayMap.getCount();
-    m_newStateArrayMap.put(newStateList, IndexMapValue(m_usedByParam, NTindex, newStateListIndex));
+    m_newStateArrayMap.put(newStateList, IndexMapValue(m_usedByParam, ntIndex, newStateListIndex));
     m_newStateArraySize += (UINT)newStateList.size();
   }
   const String           macroValue     = encodeMacroValue(CompCodeBinSearch, newStateListIndex, fromStateArrayIndex);
   const String           comment        = format(_T("stateArray %4u, newStateArray %4u"), fromStateArrayCount , newStateArrayCount );
-  return Macro(m_usedByParam, NTindex, macroValue, comment);
+  return Macro(m_usedByParam, ntIndex, macroValue, comment);
 }
 
-Macro CompressedTransSuccMatrix::doSplitNode(const NTindexNode &node) {
-  const UINT             NTindex        = node.getNTindex();
-  const NTindexNode     &left           = node.getChild(0);
-  const NTindexNode     &right          = node.getChild(1);
+Macro CompressedTransSuccMatrix::doSplitNode(const NTIndexNode &node) {
+  const UINT             ntIndex        = node.getNTIndex();
+  const NTIndexNode     &left           = node.getChild(0);
+  const NTIndexNode     &right          = node.getChild(1);
 
   UINT                   indexL, indexR;
-  Macro                  macroL         = doNTindexNode(left);
+  Macro                  macroL         = doNTIndexNode(left);
   const Macro           *mpL            = findMacroByValue(macroL.getValue());
   if(mpL != nullptr) {
-    mpL->addUsedByValue(NTindex);
+    mpL->addUsedByValue(ntIndex);
     indexL = mpL->getIndex();
   } else {
     const String        name            = format(_T("_ss%04u"), m_splitNodeCount);
@@ -119,10 +119,10 @@ Macro CompressedTransSuccMatrix::doSplitNode(const NTindexNode &node) {
     mpL = &macroL;
   }
 
-  Macro                  macroR         = doNTindexNode(right);
+  Macro                  macroR         = doNTIndexNode(right);
   const Macro           *mpR            = findMacroByValue(macroR.getValue());
   if(mpR != nullptr) {
-    mpR->addUsedByValue(NTindex);
+    mpR->addUsedByValue(ntIndex);
     indexR = mpR->getIndex();
   } else {
     const String         name           = format(_T("_ss%04u"), m_splitNodeCount);
@@ -133,11 +133,11 @@ Macro CompressedTransSuccMatrix::doSplitNode(const NTindexNode &node) {
 
   const String           macroValue     = encodeMacroValue(CompCodeSplitNode, indexL, indexR);
   const String           comment        = format(_T("Split(%s,%s)"), mpL->getName().cstr(), mpR->getName().cstr());
-  return Macro(m_usedByParam, NTindex, macroValue, comment);
+  return Macro(m_usedByParam, ntIndex, macroValue, comment);
 }
 
-Macro CompressedTransSuccMatrix::doImmediateNode(const NTindexNode &node) {
-  const UINT             NTindex        = node.getNTindex();
+Macro CompressedTransSuccMatrix::doImmediateNode(const NTIndexNode &node) {
+  const UINT             ntIndex        = node.getNTIndex();
   const StatePair        sp             = node.getStatePair();
   const UINT             newState       = sp.m_newState;
   const UINT             fromState      = sp.m_fromState;
@@ -149,11 +149,11 @@ Macro CompressedTransSuccMatrix::doImmediateNode(const NTindexNode &node) {
                                            : format(_T("Goto %3u No check (%3u states)"), newState, fromStateCount)
                                           )
                                         : format(_T("Goto %3u on %3u"), newState, fromState);
-  return Macro(m_usedByParam, NTindex, macroValue, comment);
+  return Macro(m_usedByParam, ntIndex, macroValue, comment);
 }
 
-Macro CompressedTransSuccMatrix::doBitSetNode(const NTindexNode &node) {
-  const UINT             NTindex        = node.getNTindex();
+Macro CompressedTransSuccMatrix::doBitSetNode(const NTIndexNode &node) {
+  const UINT             ntIndex        = node.getNTIndex();
   const StatePairBitSet &sps            = node.getStatePairBitSet();
 
   const StateSet        &stateSet       = sps.getFromStateSet();
@@ -162,16 +162,16 @@ Macro CompressedTransSuccMatrix::doBitSetNode(const NTindexNode &node) {
   if(vp != nullptr) {
     byteIndex     = vp->m_arrayIndex;
     stateSetCount = vp->m_commentIndex;
-    vp->addUsedByValue(NTindex);
+    vp->addUsedByValue(ntIndex);
   } else {
     stateSetCount = m_stateBitSetMap.getCount();
     byteIndex     = stateSetCount * m_sizeofStateBitSet;
-    m_stateBitSetMap.put(stateSet, IndexMapValue(m_usedByParam, NTindex, byteIndex));
+    m_stateBitSetMap.put(stateSet, IndexMapValue(m_usedByParam, ntIndex, byteIndex));
   }
   const UINT             newState       = sps.getNewState();
   const String           macroValue     = encodeMacroValue(CompCodeBitSet, newState, byteIndex);
   const String           comment        = format(_T("Goto %u on states in stateBitSet[%u]"), newState, stateSetCount);
-  return Macro(m_usedByParam, NTindex, macroValue, comment);
+  return Macro(m_usedByParam, ntIndex, macroValue, comment);
 }
 
 // ------------------------------------ Print ------------------------------------------------
@@ -200,7 +200,7 @@ ByteCount CompressedTransSuccMatrix::print(MarginFile &output) const {
 
 void CompressedTransSuccMatrix::printMacroesAndSuccessorCodeArray(MarginFile &output) const {
   const UINT   macroCount = getMacroCount();
-  const UINT   NTermCount = getNTermCount();
+  const UINT   ntermCount = getNTermCount();
   Array<Macro> macroes(getMacroArray());
   if(macroCount > 0) {
     const UINT commentLen = getMaxCommentLength() + 1;
@@ -216,9 +216,9 @@ void CompressedTransSuccMatrix::printMacroesAndSuccessorCodeArray(MarginFile &ou
   TCHAR delim = ' ';
   UINT  count = 0;
   auto  it = macroes.getIterator();
-  for(; it.hasNext() && (count < NTermCount); count++, delim = ',') {
+  for(; it.hasNext() && (count < ntermCount); count++, delim = ',') {
     output.printf(_T("%c%s"), delim, it.next().getName().cstr());
-    if((count % 10 == 9) && (count != NTermCount - 1)) {
+    if((count % 10 == 9) && (count != ntermCount - 1)) {
       output.printf(_T("\n"));
     }
   }

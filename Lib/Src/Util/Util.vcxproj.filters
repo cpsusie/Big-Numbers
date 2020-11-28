@@ -1048,6 +1048,9 @@
     <ClCompile Include="AbstractSymbolNameContainer.cpp">
       <Filter>Source Files\Parser</Filter>
     </ClCompile>
+    <ClCompile Include="ParserTransitionMatrix.cpp">
+      <Filter>Source Files\Parser</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -1515,6 +1518,9 @@
       <Filter>Source Files\Parser\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\AbstractSymbolNameContainer.h">
+      <Filter>Source Files\Parser\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\ParserTransitionMatrix.h">
       <Filter>Source Files\Parser\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

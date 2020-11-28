@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "NTindexNode.h"
+#include "NTIndexNode.h"
 
 namespace TransposedSuccessorMatrixCompression {
 
@@ -35,8 +35,8 @@ StatePairBitSet::operator StatePairArray() const {
   return result;
 }
 
-MixedStatePairArray::MixedStatePairArray(const NTindexNodeCommonData &cd, const StatePairArray &statePairArray)
-: NTindexNodeCommonData(cd)
+MixedStatePairArray::MixedStatePairArray(const NTIndexNodeCommonData &cd, const StatePairArray &statePairArray)
+: NTIndexNodeCommonData(cd)
 {
   CompactUIntHashMap<UINT, 256>  sameNewStateMap(241); // map from newState -> index into m_statePairBitSetArray
   for(const StatePair sp : statePairArray) {
@@ -67,8 +67,8 @@ StatePairArray MixedStatePairArray::mergeAll() const {
   return result;
 }
 
-NTindexNode::NTindexNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, UINT fromStateCount, CompressionMethod compressMethod)
-  : NTindexNodeCommonData(cd                                      )
+NTIndexNode::NTIndexNode(const NTIndexNode *parent, const NTIndexNodeCommonData &cd, UINT fromStateCount, CompressionMethod compressMethod)
+  : NTIndexNodeCommonData(cd                                      )
   , m_parent(             parent                                  )
   , m_fromStateCount(     fromStateCount                          )
   , m_recurseLevel(       parent?(parent->getRecurseLevel()+1) : 0)
@@ -76,9 +76,9 @@ NTindexNode::NTindexNode(const NTindexNode *parent, const NTindexNodeCommonData 
 {
 }
 
-NTindexNode *NTindexNode::allocateNTindexNode(UINT NTindex, const Grammar &grammar, const StatePairArray &statePairArray) {
+NTIndexNode *NTIndexNode::allocateNTIndexNode(UINT ntIndex, const Grammar &grammar, const StatePairArray &statePairArray) {
   const Options              &options = Options::getInstance();
-  const NTindexNodeCommonData commonData(NTindex, grammar);
+  const NTIndexNodeCommonData commonData(ntIndex, grammar);
   if(!options.m_useTableCompression) {
     return new BinSearchNode(nullptr, commonData, statePairArray);
   } else {
@@ -86,7 +86,7 @@ NTindexNode *NTindexNode::allocateNTindexNode(UINT NTindex, const Grammar &gramm
   }
 }
 
-NTindexNode *NTindexNode::allocateNode(const NTindexNode *parent, const MixedStatePairArray &msp) {
+NTIndexNode *NTIndexNode::allocateNode(const NTIndexNode *parent, const MixedStatePairArray &msp) {
   const UINT     newStateCountArray  = msp.m_statePairArray.getNewStateCount();
   const UINT     newStateCountBitSet = msp.m_statePairBitSetArray.getNewStateCount();
   const UINT     newStateCount       = newStateCountArray + newStateCountBitSet;
@@ -113,28 +113,28 @@ NTindexNode *NTindexNode::allocateNode(const NTindexNode *parent, const MixedSta
 }
 
 // assume (fromStateCount + statePairSetCount >= 1);
-NTindexNode *NTindexNode::allocateImmediateDontCareNode(const NTindexNode *parent, const MixedStatePairArray &msp) {
+NTIndexNode *NTIndexNode::allocateImmediateDontCareNode(const NTIndexNode *parent, const MixedStatePairArray &msp) {
   const UINT   newStateCountArray  = msp.m_statePairArray.getNewStateCount();
   const UINT   newStateCountBitSet = msp.m_statePairBitSetArray.getNewStateCount();
   const UINT   newStateCount       = newStateCountArray + newStateCountBitSet;
   assert(newStateCount == 1);
   const UINT   newState            = (newStateCountArray == 1) ? msp.m_statePairArray.first().m_newState : msp.m_statePairBitSetArray.first().getNewState();
-  NTindexNode *p                   = new ImmediateNode(parent, msp, newState, msp.getFromStateCount()); TRACE_NEW(p);
+  NTIndexNode *p                   = new ImmediateNode(parent, msp, newState, msp.getFromStateCount()); TRACE_NEW(p);
   return p;
 }
 
-NTindexNode *NTindexNode::allocateSplitNode(const NTindexNode *parent, const MixedStatePairArray &msp) {
+NTIndexNode *NTIndexNode::allocateSplitNode(const NTIndexNode *parent, const MixedStatePairArray &msp) {
   const UINT   fromStateCount      = msp.getFromStateCount();
   SplitNode   *p                   = new SplitNode(parent, msp, fromStateCount); TRACE_NEW(p);
   // (newStateCount >= 2) && (newStateCountBitSet >= 1) && (m_statePairBitSetArray.first().getFromStateCount() >= options.m_minStateBitSetSize)
-  NTindexNode *child0 = allocateStatePairBitSetNode(p, msp, msp.m_statePairBitSetArray[0]);
-  NTindexNode *child1 = allocateNode(               p, MixedStatePairArray(msp).removeFirstBitSet());
+  NTIndexNode *child0 = allocateStatePairBitSetNode(p, msp, msp.m_statePairBitSetArray[0]);
+  NTIndexNode *child1 = allocateNode(               p, MixedStatePairArray(msp).removeFirstBitSet());
   p->setChild(0, child0).setChild(1, child1);
   return p;
 }
 
-NTindexNode *NTindexNode::allocateStatePairArrayNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, const StatePairArray &statePairArray) {
-  NTindexNode *p;
+NTIndexNode *NTIndexNode::allocateStatePairArrayNode(const NTIndexNode *parent, const NTIndexNodeCommonData &cd, const StatePairArray &statePairArray) {
+  NTIndexNode *p;
   if(statePairArray.getFromStateCount() == 1) {
     p = new ImmediateNode(parent, cd, statePairArray.first()); TRACE_NEW(p);
   } else {
@@ -143,8 +143,8 @@ NTindexNode *NTindexNode::allocateStatePairArrayNode(const NTindexNode *parent, 
   return p;
 }
 
-NTindexNode *NTindexNode::allocateStatePairBitSetNode(const NTindexNode *parent, const NTindexNodeCommonData &cd, const StatePairBitSet &statePairBitSet) {
-  NTindexNode *p;
+NTIndexNode *NTIndexNode::allocateStatePairBitSetNode(const NTIndexNode *parent, const NTIndexNodeCommonData &cd, const StatePairBitSet &statePairBitSet) {
+  NTIndexNode *p;
   if(statePairBitSet.getFromStateCount() == 1) {
     p = new ImmediateNode(parent, cd, StatePairArray(statePairBitSet).first()); TRACE_NEW(p);
   } else {
@@ -158,17 +158,17 @@ SplitNode::~SplitNode() {
   SAFEDELETE(m_child[1]);
 }
 
-SplitNode &SplitNode::setChild(BYTE index, NTindexNode *child) {
+SplitNode &SplitNode::setChild(BYTE index, NTIndexNode *child) {
   assert(index < 2);
   assert(m_child[index] == nullptr);
   m_child[index] = child;
   return *this;
 }
 
-String NTindexNode::toString() const {
-  return format(_T("%u - NTindex %u %s %-20s (From states:%u)\n")
+String NTIndexNode::toString() const {
+  return format(_T("%u - ntIndex %u %s %-20s (From states:%u)\n")
                ,m_recurseLevel
-               ,m_NTindex
+               ,m_ntIndex
                ,getSymbolName().cstr()
                ,compressMethodToString(getCompressionMethod())
                ,getFromStateCount()

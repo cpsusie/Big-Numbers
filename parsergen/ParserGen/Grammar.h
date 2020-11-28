@@ -25,7 +25,7 @@ typedef enum {
 typedef BitSet    SymbolSet;
 typedef SymbolSet TermSet;    // capacity always #terminals
 typedef BitSet    StateSet;   // capacity always #states
-typedef BitSet    NTindexSet; // capacity always #non-terminals
+typedef BitSet    NTIndexSet; // capacity always #non-terminals
 
 // Must match elements in BitSetParam::s_elementName
 typedef enum {
@@ -287,7 +287,7 @@ public:
     sort(successorStateCompareNTerm);
     return *this;
   }
-  NTindexSet     getNTindexSet(UINT termCount, UINT symbolCount) const;
+  NTIndexSet     getNTIndexSet(UINT termCount, UINT symbolCount) const;
   inline UINT    getLegalNTermCount()                const {
     return(UINT)size();
   }

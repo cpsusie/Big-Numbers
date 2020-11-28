@@ -24,3 +24,16 @@ String AbstractParserTables::getRightString(UINT prod) const {
     return result;
   }
 }
+
+  UINT AbstractParserTables::getNewState(UINT symbol, UINT state  ) const {
+    assert(symbol < getSymbolCount());
+    assert(state  < getStateCount());
+
+    const UINT termCount = getTermCount();
+    if(symbol < termCount) { // symbol is a terminal
+      const int action = getAction(state, symbol);
+      return (action > 0) ? action : _ParserError;
+    } else {
+      return getSuccessor(state, symbol);
+    }
+  }

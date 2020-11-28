@@ -1,15 +1,15 @@
 #pragma once
 
-#include "NTindexNode.h"
+#include "NTIndexNode.h"
 
 namespace TransposedSuccessorMatrixCompression {
 
-class NTindexNodeArray : public CompactArray<const NTindexNode*> {
+class NTIndexNodeArray : public CompactArray<const NTIndexNode*> {
 private:
   const Grammar &m_grammar;
 public:
-  NTindexNodeArray(const Grammar &grammar);
-  ~NTindexNodeArray() override;
+  NTIndexNodeArray(const Grammar &grammar);
+  ~NTIndexNodeArray() override;
   void clear() override;
   String toString() const;
 };

@@ -52,10 +52,6 @@ public:
   UINT           getProductionLength(   UINT prod                 ) const final;
   UINT           getLeftSymbol(         UINT prod                 ) const final;
   void           getRightSide(          UINT prod, UINT *dst      ) const final;
-  UINT           getLegalInputCount(    UINT state                ) const final;
-  void           getLegalInputs(        UINT state, UINT *symbols ) const final;
-  UINT           getLegalNTermCount(    UINT state                ) const final;
-  void           getLegalNTerms(        UINT state, UINT *symbols ) const final;
   UINT           getTableByteCount(     Platform platform         ) const final { return m_countTableBytes.getByteCount(platform); }
 
   ByteCount                     getTotalSizeInBytes()     const;

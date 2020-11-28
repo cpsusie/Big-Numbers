@@ -850,6 +850,7 @@
     <ClInclude Include="..\..\Include\Packer.h" />
     <ClInclude Include="..\..\Include\AbstractParserTables.h" />
     <ClInclude Include="..\..\Include\ParserTablesTemplate.h" />
+    <ClInclude Include="..\..\Include\ParserTransitionMatrix.h" />
     <ClInclude Include="..\..\Include\PersistentDataTemplate.h" />
     <ClInclude Include="..\..\Include\Pipe.h" />
     <ClInclude Include="..\..\Include\PragmaLib.h" />
@@ -1059,6 +1060,7 @@
     <ClCompile Include="ListIterator.cpp" />
     <ClCompile Include="ListSelect.cpp" />
     <ClCompile Include="MarginFile.cpp" />
+    <ClCompile Include="ParserTransitionMatrix.cpp" />
     <ClCompile Include="PipeUtil.cpp" />
     <ClCompile Include="PriorityClass.cpp" />
     <ClCompile Include="RegexIStream\DFADumpStates.cpp" />

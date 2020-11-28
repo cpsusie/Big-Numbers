@@ -27,10 +27,10 @@ public:
   virtual void          getRightSide(        UINT prod, UINT *dst     ) const = 0;
   virtual UINT          getProductionCount()                            const = 0;
   virtual UINT          getStateCount()                                 const = 0;
-  virtual UINT          getLegalInputCount(  UINT state               ) const = 0;
-  virtual void          getLegalInputs(      UINT state, UINT *symbols) const = 0;
-  virtual UINT          getLegalNTermCount(  UINT state               ) const = 0;
-  virtual void          getLegalNTerms(      UINT state, UINT *symbols) const = 0;
+  // if symbol is a terminal   , return getAction(   state,symbol), if this is positive (shift to state), or else _ParserError
+  // if symbol is a nonterminal, return getSuccessor(state,symbol)
+  UINT                  getNewState(         UINT symbol, UINT state  ) const;
+
   virtual UINT          getTableByteCount(   Platform platform        ) const = 0;
   virtual ~AbstractParserTables() {
   }
@@ -45,7 +45,7 @@ public:
   static constexpr CompressionMethod CompCodeBitSet    = 3;
 
   // Return value from getAction, on invalid input => parser will not accept
-  static constexpr INT               _ParserError      = 0xffff;
+  static constexpr INT               _ParserError      = 0x7fff;
   // special value for fromState, indicating always goto newState, no matter which state we come from
   static constexpr UINT              _NoFromStateCheck = 0x7fff;
 };

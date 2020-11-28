@@ -93,28 +93,6 @@ UINT GrammarTables::getSuccessor(UINT state, UINT nterm) const {
   return getGrammarResult().m_stateResult[state].m_succs.getSuccessor(nterm);
 }
 
-UINT GrammarTables::getLegalInputCount(UINT state) const {
-  return (UINT)getGrammarResult().m_stateResult[state].m_actions.getLegalTermCount();
-}
-
-void GrammarTables::getLegalInputs(UINT state, UINT *symbols) const {
-  const ParserActionArray &paa = getGrammarResult().m_stateResult[state].m_actions;
-  for(ParserAction pa : paa) {
-    *(symbols++) = pa.m_term;
-  }
-}
-
-UINT GrammarTables::getLegalNTermCount(UINT state) const {
-  return (UINT)getGrammarResult().m_stateResult[state].m_succs.getLegalNTermCount();
-}
-
-void GrammarTables::getLegalNTerms(UINT state, UINT *symbols) const {
-  const SuccessorStateArray &ssa = getGrammarResult().m_stateResult[state].m_succs;
-  for(SuccessorState ss : ssa) {
-    *(symbols++) = ss.m_nterm;
-  }
-};
-
 void GrammarTables::print(MarginFile &output) const {
   const Options &options = Options::getInstance();
   switch(options.m_language) {
