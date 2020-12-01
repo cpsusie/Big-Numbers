@@ -121,3 +121,4 @@ public:
 typedef NumberInterval<FLOAT  > FloatInterval;
 typedef NumberInterval<DOUBLE > DoubleInterval;
 typedef NumberInterval<INT    > IntInterval;
+typedef NumberInterval<UINT   > UIntInterval;
