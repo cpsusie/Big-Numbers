@@ -11,7 +11,7 @@ CompressedActionMatrix::CompressedActionMatrix(const Grammar &grammar)
   , m_grammarResult(       grammar.getResult()                             )
   , m_usedByParam(         grammar.getBitSetParam(STATE_BITSET)            )
   , m_sizeofTermBitSet(    getSizeofBitSet(grammar.getTermBitSetCapacity()))
-  , m_stateActionNodeArray(grammar                                         )
+  , m_stateActionNodeArray(grammar, Options::getOptParam(OPTPARAM_ACTION)  )
   , m_byteCountMap(        grammar                                         )
 {
   generateCompressedForm();
@@ -167,8 +167,7 @@ TableTypeByteCountMap CompressedActionMatrix::findTablesByteCount(const Grammar 
   CompressedActionMatrix am(g);
   const ByteCount savedBytes = am.getSavedBytesByOptimizedTermBitSets();
   if(savedBytes.getByteCount(PLATFORM_X64) > 4) {
-    const OptimizedBitSetPermutation &termBitSetPermutation = am.getTermBitSetPermutation();
-    g.reorderTerminals(termBitSetPermutation, termBitSetPermutation.getNewCapacity());
+    g.reorderTerminals(am.getTermBitSetPermutation());
   }
   CompressedActionMatrix am1(g);
   std::wostringstream s;
@@ -221,15 +220,15 @@ void CompressedActionMatrix::printMacroesAndActionCodeArray(MarginFile &output) 
     }
   }
   const ByteCount bc = outputEndArrayDefinition(output, TYPE_UINT, macroCount, true);
-  m_byteCountMap.put(BC_ACTIONCODEARRAY, bc);
+  m_byteCountMap.add(BC_ACTIONCODEARRAY, bc);
 }
 
 void CompressedActionMatrix::printTermAndActionArrayTable(MarginFile &output) const {
   if(m_termArraySize == 0) {
     output.printf(_T("#define termArrayTable   nullptr\n"  ));
     output.printf(_T("#define actionArrayTable nullptr\n\n"));
-    m_byteCountMap.put(BC_TERMARRAYTABLE  , ByteCount());
-    m_byteCountMap.put(BC_ACTIONARRAYTABLE, ByteCount());
+    m_byteCountMap.add(BC_TERMARRAYTABLE  , ByteCount());
+    m_byteCountMap.add(BC_ACTIONARRAYTABLE, ByteCount());
     return;
   }
 
@@ -257,7 +256,7 @@ void CompressedActionMatrix::printTermAndActionArrayTable(MarginFile &output) co
       tableSize += n + 1;
     }
     const ByteCount bc = outputEndArrayDefinition(output, types.getTermType(), tableSize);
-    m_byteCountMap.put(BC_TERMARRAYTABLE, bc);
+    m_byteCountMap.add(BC_TERMARRAYTABLE, bc);
   }
   { const ActionArrayIndexArray           actionArrayTable  = m_actionArrayMap.getEntryArray();
     UINT                                  tableSize         = 0;
@@ -278,20 +277,21 @@ void CompressedActionMatrix::printTermAndActionArrayTable(MarginFile &output) co
       tableSize += n;
     }
     const ByteCount bc = outputEndArrayDefinition(output, types.getActionType(), tableSize);
-    m_byteCountMap.put(BC_ACTIONARRAYTABLE, bc);
+    m_byteCountMap.add(BC_ACTIONARRAYTABLE, bc);
   }
 }
 
 void CompressedActionMatrix::printTermBitSetTable(MarginFile &output) const {
   if(m_termBitSetMap.size() == 0) {
     output.printf(_T("#define termBitSetTable nullptr\n\n"));
-    m_byteCountMap.put(BC_TERMBITSETTABLE, ByteCount());
+    m_byteCountMap.add(BC_TERMBITSETTABLE, ByteCount());
   } else {
     const TermSetIndexArray               bitSetArray = m_termBitSetMap.getEntryArray();
     const UINT                            bitSetCount = (UINT)m_termBitSetMap.size();
     const UINT                            capacity    = m_grammar.getTermBitSetCapacity();
+    const BitSetInterval                  interval(0, capacity);
     TCHAR                                 delim       = ' ';
-    const UINT arraySize = outputBeginBitSetTableDefinition(output, _T("termBitSetTable"), capacity, bitSetCount);
+    const UINT                            arraySize   = outputBeginBitSetTableDefinition(output, _T("termBitSetTable"), interval, bitSetCount);
     for(auto it = bitSetArray.getIterator(); it.hasNext();) {
       const IndexArrayEntry<TermSet>     &e                 = it.next();
       String                              comment           = format(_T("%3u %3u tokens %s"), e.m_commentIndex, (UINT)e.m_key.size(), e.getUsedByComment().cstr());
@@ -303,7 +303,7 @@ void CompressedActionMatrix::printTermBitSetTable(MarginFile &output) const {
       newLine(output, comment);
     }
     ByteCount bc = outputEndBitSetTableDefinition(output, arraySize);
-    m_byteCountMap.put(BC_TERMBITSETTABLE, bc);
+    m_byteCountMap.add(BC_TERMBITSETTABLE, bc);
   }
 }
 

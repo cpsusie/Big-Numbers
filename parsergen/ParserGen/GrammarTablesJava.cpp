@@ -70,7 +70,7 @@ void GrammarTables::printJava(MarginFile &output) const {
 
   for(UINT s = 0; s < stateCount; s++) {
     const ParserActionArray &actions = m_grammarResult.m_stateResult[s].m_actions;
-    if(options.m_useTableCompression && isCompressibleState(s)) {
+    if(options.getOptParam(OPTPARAM_ACTION).m_enabled && isCompressibleState(s)) {
       printCompressedActionArrayJava(output, tableType, s, actions);
     } else {
       printUncompressedActionArrayJava(output, tableType, s, actions);

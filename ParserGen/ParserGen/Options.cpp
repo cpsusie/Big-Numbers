@@ -14,13 +14,17 @@ Options::Options() : Singleton(__TFUNCTION__) {
   m_generateNonTerminals        = false;
   m_skipIfEqual                 = false;
   m_callWizard                  = false;
-  m_useTableCompression         = true;
   m_findOptimalTableCompression = false;
-  m_compressSuccTransposed      = false;
-  m_pruneTransSuccBitSet        = false;
-  m_maxRecursionAction          = defaultRecurseLevel;
-  m_maxRecursionTransSucc       = defaultRecurseLevel;
-  m_minStateBitSetSize          = 2;
+
+  MatrixOptimizeParameters &optAction = getOptimizeParameters(OPTPARAM_ACTION);
+  MatrixOptimizeParameters &optShift  = getOptimizeParameters(OPTPARAM_SHIFT );
+  MatrixOptimizeParameters &optReduce = getOptimizeParameters(OPTPARAM_REDUCE);
+  MatrixOptimizeParameters &optSucc   = getOptimizeParameters(OPTPARAM_SUCC  );
+
+  optAction.m_enabled = false; optAction.m_pruneBitSet = false;
+  optShift.m_enabled  = true ; optShift.m_pruneBitSet  = false;
+  optReduce.m_enabled = true ; optReduce.m_pruneBitSet = false;
+  optSucc.m_enabled   = true ; optSucc.m_pruneBitSet   = true ;
 }
 
 void Options::checkTemplateExist(const String &defaultTemplateName) {

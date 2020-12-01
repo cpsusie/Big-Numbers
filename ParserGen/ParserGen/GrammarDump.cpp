@@ -68,3 +68,121 @@ void Grammar::dumpFirst1Sets(FILE *f) const {
   }
 }
 
+String Grammar::itemToString(const LR1Item &item, int flags) const {
+  String result;
+  const Production &prod = getProduction(item.m_prod);
+  result = format(_T(" (%3u)%c %-15s -> "), item.m_prod, item.m_kernelItem?'K':' ', getSymbol(prod.m_leftSide).m_name.cstr());
+  for(UINT i = 0; i < item.m_dot; i++) {
+    result += getSymbol(prod.m_rightSide[i]).m_name;
+    result += ' ';
+  }
+  result += '.';
+  const UINT n     = prod.getLength();
+  TCHAR      delim = 0;
+  for(UINT i = item.m_dot; i < n; i++, delim = ' ') {
+    if(delim) result += delim;
+    result += getSymbol(prod.m_rightSide[i]).m_name;
+  }
+  if(flags & DUMP_LOOKAHEAD) {
+    result += symbolSetToString(item.m_la);
+  }
+
+  if((flags & DUMP_SUCC) && (item.m_succ >= 0)) {
+    result += format(_T(" -> %d"), item.getSuccessor()); // ie not reduce-item
+  }
+  return result;
+}
+
+String Grammar::stateToString(const LR1State &state, int flags) const {
+  String result;
+  result = format(_T("State %u:\n"), state.m_index);
+  const UINT itemstodump = (flags & DUMP_KERNELONLY) ? state.m_kernelItemCount : (UINT)state.m_items.size();
+  for(UINT i = 0; i < itemstodump; i++) {
+    const LR1Item &item = state.m_items[i];
+    if(isShiftItem(item) && !(flags & DUMP_SHIFTITEMS)) {
+      continue;
+    }
+    result += itemToString(state.m_items[i], flags) + _T("\n");
+  }
+  if(flags & DUMP_ACTIONS) {
+    result += _T("\n");
+    const StateResult         &sr         = m_result.m_stateResult[state.m_index];
+    const ParserActionArray   &actions    = sr.m_actions;
+    const SuccessorStateArray &successors = sr.m_succs;
+    result += actions.toString(   *this);
+    result += successors.toString(*this);
+  }
+  return result;
+}
+
+String Grammar::getRightSide(UINT p) const {
+  const Production &prod = getProduction(p);
+  const UINT        n    = prod.getLength();
+
+  if(n == 0) {
+    return _T("epsilon");
+  }
+
+  String result;
+  for(UINT i = 0; i < n; i++) {
+    const UINT s = prod.m_rightSide[i];
+    if(i > 0) {
+      result += ' ';
+    }
+    result += getSymbolName(s);
+  }
+  return result;
+}
+
+const TCHAR *BitSetParam::s_elementName[][2] = {
+  _T("symbol "    ), _T("symbols"    )
+ ,_T("terminal "  ), _T("terminals"  )
+ ,_T("ntIndex  "  ), _T("ntIndices"  )
+ ,_T("production "), _T("productions")
+ ,_T("state "     ), _T("states"     )
+};
+
+String UsedByBitSet::toString() const {
+  const size_t n = size();
+  return format(_T("Used by %s %s")
+               ,BitSetParam::getElementName(m_type,n > 1)
+               ,toRangeString(SizeTStringifier(),_T(","), BT_BRACKETS).cstr());
+}
+
+BitSetParam Grammar::getBitSetParam(BitSetType type) const {
+  switch(type) {
+  case SYMBOL_BITSET    : return BitSetParam(type, getSymbolCount()    );
+  case TERM_BITSET      : return BitSetParam(type, getTermCount()      );
+  case NTINDEX_BITSET   : return BitSetParam(type, getNTermCount()     );
+  case PRODUCTION_BITSET: return BitSetParam(type, getProductionCount());
+  case STATE_BITSET     : return BitSetParam(type, getStateCount()     );
+  default               : throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), type);
+  }
+  return BitSetParam(type, 0);
+}
+
+BitSet BitSetInterval::createBitSetMask() const {
+  const UINT capacity = max(1, getTo());
+  BitSet result(capacity);
+  if(getTo() > getFrom()) {
+    result.add(getFrom(), getTo() - 1);
+  }
+  return result;
+}
+
+bool BitSetInterval::checkBitSetValues(const BitSet &set) const {
+  if((getFrom() == 0) && set.getCapacity() <= getCapacity()) {
+    return true;
+  }
+  BitSet tmp(set.getCapacity());
+  if(getTo() > getFrom()) {
+    tmp.add(getFrom(), getTo() - 1);
+  }
+  return (set & tmp.invert()).isEmpty();
+}
+
+String Grammar::getProductionString(UINT prod) const {
+  return getSymbol(getProduction(prod).m_leftSide).m_name
+       + _T(" -> ")
+       + getRightSide(prod);
+}

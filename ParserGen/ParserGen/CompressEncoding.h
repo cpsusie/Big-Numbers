@@ -18,10 +18,13 @@ String encodeMacroValue(CompressionMethod method, int highEnd, int lowEnd);
 
 typedef enum {
   BC_ACTIONCODEARRAY
+ ,BC_SHIFTCODEARRAY
+ ,BC_REDUCECODEARRAY
+ ,BC_SUCCESSORCODEARRAY
  ,BC_TERMARRAYTABLE
  ,BC_ACTIONARRAYTABLE
+ ,BC_REDUCEARRAYTABLE
  ,BC_TERMBITSETTABLE
- ,BC_SUCCESSORCODEARRAY
  ,BC_NTINDEXARRAYTABLE
  ,BC_NEWSTATEARRAYTABLE
  ,BC_STATEARRAYTABLE
@@ -30,10 +33,11 @@ typedef enum {
 
 class Grammar;
 
-class TableTypeByteCountMap : public CompactHashMap<CompactKeyType<ByteCountTableType> , ByteCount, 5> {
+class TableTypeByteCountMap : private CompactHashMap<CompactKeyType<ByteCountTableType> , ByteCount, 5> {
 private:
-  UINT m_termBitSetCapacity;
-  UINT m_stateBitSetCapacity;
+  UINT           m_termBitSetCapacity;
+  BitSetInterval m_shiftStateInterval;
+  BitSetInterval m_succStateInterval;
 public:
   UINT m_splitNodeCount;
   TableTypeByteCountMap(const Grammar &g);
@@ -44,11 +48,18 @@ public:
   inline UINT getTermBitSetCapacity() const {
     return m_termBitSetCapacity;
   }
-  inline UINT getStateBitSetCapacity() const {
-    return m_stateBitSetCapacity;
+  inline const BitSetInterval &getShiftStateBitSetInterval() const {
+    return m_shiftStateInterval;
+  }
+  inline const BitSetInterval &getSuccStateBitSetInterval() const {
+    return m_succStateInterval;
+  }
+  void clear() {
+    __super::clear();
   }
   String getTableString(ByteCountTableType type) const;
-
+  TableTypeByteCountMap &add(ByteCountTableType type, const ByteCount &bc);
+  TableTypeByteCountMap &operator+=(const TableTypeByteCountMap &rhs);
 };
 
 class Grammar;

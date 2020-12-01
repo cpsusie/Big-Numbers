@@ -65,6 +65,10 @@ UINT GrammarTables::getStateCount()      const {
   return getGrammar().getStateCount();
 }
 
+UINT GrammarTables::getStartState()      const {
+  return getGrammar().getStartState();
+}
+
 const String &GrammarTables::getSymbolName(UINT symbolIndex) const {
   return getGrammar().getSymbolName(symbolIndex);
 }

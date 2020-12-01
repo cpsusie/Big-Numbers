@@ -19,8 +19,7 @@ void CompressedSuccessorMatrix::generateCompressedForm() {
   m_ntIndexArraySize  = 0;
   m_newStateArraySize = 0;
 
-  SuccessorMatrix sm;
-  m_grammar.getResult().getSuccessorMatrix(sm);
+  const SuccessorMatrix sm(m_grammar);
 
   for(UINT state = 0; state < getStateCount(); state++) {
     const SuccessorStateArray &succArray = sm[state];
@@ -129,7 +128,7 @@ void CompressedSuccessorMatrix::printMacroesAndSuccessorCodeArray(MarginFile &ou
     }
   }
   const ByteCount bc = outputEndArrayDefinition(output, TYPE_UINT, getStateCount(), true);
-  m_byteCountMap.put(BC_SUCCESSORCODEARRAY, bc);
+  m_byteCountMap.add(BC_SUCCESSORCODEARRAY, bc);
 }
 
 void CompressedSuccessorMatrix::printNTIndexAndNewStateArray(MarginFile &output) const {
@@ -137,8 +136,8 @@ void CompressedSuccessorMatrix::printNTIndexAndNewStateArray(MarginFile &output)
   if(m_ntIndexArraySize == 0) {
     output.printf(_T("#define ntIndexArrayTable  nullptr\n"));
     output.printf(_T("#define newStateArrayTable nullptr\n\n"));
-    m_byteCountMap.put(BC_NTINDEXARRAYTABLE , ByteCount());
-    m_byteCountMap.put(BC_NEWSTATEARRAYTABLE, ByteCount());
+    m_byteCountMap.add(BC_NTINDEXARRAYTABLE , ByteCount());
+    m_byteCountMap.add(BC_NEWSTATEARRAYTABLE, ByteCount());
     return;
   }
 
@@ -166,7 +165,7 @@ void CompressedSuccessorMatrix::printNTIndexAndNewStateArray(MarginFile &output)
       tableSize += n + 1;
     }
     const ByteCount bc = outputEndArrayDefinition(output, types.getNTIndexType(), tableSize);
-    m_byteCountMap.put(BC_NTINDEXARRAYTABLE, bc);
+    m_byteCountMap.add(BC_NTINDEXARRAYTABLE, bc);
   }
   { const StateArrayIndexArray            stateArrayTable   = m_newStateArrayMap.getEntryArray();
     UINT                                  tableSize         = 0;
@@ -187,7 +186,7 @@ void CompressedSuccessorMatrix::printNTIndexAndNewStateArray(MarginFile &output)
       tableSize += n;
     }
     const ByteCount bc = outputEndArrayDefinition(output, types.getStateType(), tableSize);
-    m_byteCountMap.put(BC_NEWSTATEARRAYTABLE, bc);
+    m_byteCountMap.add(BC_NEWSTATEARRAYTABLE, bc);
   }
 }
 

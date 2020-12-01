@@ -20,17 +20,19 @@ private:
     return m_compressibleStateSet.contains(state);
   }
 
-  void      printCpp(                             MarginFile &output) const;
-  void      printJava(                            MarginFile &output) const;
-  ByteCount printCppParserTablesTemplate(         MarginFile &output) const; // return size in bytes
-  ByteCount printCppParserTablesTemplateTransSucc(MarginFile &output) const; // return size in bytes
-  ByteCount printCompressedActionMatrixCpp(       MarginFile &output) const; // return size in bytes
-  ByteCount printCompressedSuccessorMatrixCpp(    MarginFile &output) const; // return size in bytes
-  ByteCount printCompressedTransSuccMatrixCpp(    MarginFile &output) const; // return size in bytes
-  ByteCount printProdLengthArrayCpp(              MarginFile &output) const; // return size in bytes
-  ByteCount printLeftSideArrayCpp(                MarginFile &output) const; // return size in bytes
-  ByteCount printRightSideTableCpp(               MarginFile &output) const; // return size in bytes
-  ByteCount printSymbolNamesCpp(                  MarginFile &output) const; // return size in bytes
+  void      printCpp(                              MarginFile &output) const;
+  void      printJava(                             MarginFile &output) const;
+  ByteCount printCppParserTablesTemplate(          MarginFile &output) const; // return size in bytes
+//  ByteCount printCppParserTablesTemplateTransSucc( MarginFile &output) const; // return size in bytes
+  ByteCount printCppParserTablesTemplateTransShift(MarginFile &output) const; // return size in bytes
+  ByteCount printCompressedActionMatrixCpp(        MarginFile &output) const; // return size in bytes
+  ByteCount printCompressedTransShiftMatrixCpp(    MarginFile &output) const; // return size in bytes
+  ByteCount printCompressedSuccessorMatrixCpp(     MarginFile &output) const; // return size in bytes
+  ByteCount printCompressedTransSuccMatrixCpp(     MarginFile &output) const; // return size in bytes
+  ByteCount printProdLengthArrayCpp(               MarginFile &output) const; // return size in bytes
+  ByteCount printLeftSideArrayCpp(                 MarginFile &output) const; // return size in bytes
+  ByteCount printRightSideTableCpp(                MarginFile &output) const; // return size in bytes
+  ByteCount printSymbolNamesCpp(                   MarginFile &output) const; // return size in bytes
 public:
   GrammarTables(const GrammarCode &grammarCode);
   inline const GrammarCode   &getGrammarCode()                      const {
@@ -46,6 +48,7 @@ public:
   UINT           getTermCount()                                     const final;
   UINT           getProductionCount()                               const final;
   UINT           getStateCount()                                    const final;
+  UINT           getStartState()                                    const final;
   const String  &getSymbolName(         UINT symbolIndex          ) const final;
   int            getAction(             UINT state, UINT term     ) const final;
   UINT           getSuccessor(          UINT state, UINT nterm    ) const final;

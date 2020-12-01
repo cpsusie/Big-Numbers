@@ -108,28 +108,28 @@ void LR1State::sortItems() {
 }
 
 Grammar::Grammar()
-: m_stateMap(        4001)
-, m_unfinishedSet(   1001)
-, m_symbolMap(       1001)
-, m_termCount(          0)
-, m_termBitSetCapacity( 0)
-, m_stateBitSetCapacity(0)
-, m_startSymbol(        0)
-, m_termPermutationDone( false)
-, m_statePermutationDone(false)
+: m_stateMap(              4001)
+, m_unfinishedSet(         1001)
+, m_symbolMap(             1001)
+, m_termCount(                0)
+, m_startSymbol(              0)
+, m_startState(               0)
+, m_termPermutationDone(  false)
+, m_termBitSetCapacity(       0)
+, m_statePermutationDone( false)
 {
 }
 
 Grammar::Grammar(const AbstractParserTables &src)
-: m_stateMap(        4001)
-, m_unfinishedSet(   1001)
-, m_symbolMap(       1001)
-, m_termCount(          0)
-, m_termBitSetCapacity( 0)
-, m_stateBitSetCapacity(0)
-, m_startSymbol(        0)
-, m_termPermutationDone( true)
-, m_statePermutationDone(true)
+: m_stateMap(              4001)
+, m_unfinishedSet(         1001)
+, m_symbolMap(             1001)
+, m_termCount(                0)
+, m_startSymbol(              0)
+, m_startState(               0)
+, m_termPermutationDone(   true)
+, m_termBitSetCapacity(       0)
+, m_statePermutationDone(  true)
 {
   SourcePosition dummyPos;
   for(UINT t = 0; t < src.getTermCount(); t++) {
@@ -403,7 +403,8 @@ UINT Grammar::addState(const LR1State &state) {
   const UINT stateIndex = getStateCount();
   m_states.add(state);
   m_stateMap.put(&m_states.last(), stateIndex);
-  m_stateBitSetCapacity++;
+  m_succStateSetInterval.setTo(stateIndex + 1);
+  m_shiftStateSetInterval.setTo(stateIndex + 1);
   return stateIndex;
 }
 
@@ -716,236 +717,10 @@ void StateResult::sortArrays() {
   m_succs.sortByNTerm();  // sort result  by symbolnumber (nonTerminal)
 }
 
-ActionMatrix &GrammarResult::getActionMatrix(ActionMatrix &am) const {
-  am.clear(getStateCount());
-  for(auto it = m_stateResult.getIterator(); it.hasNext();) {
-    am.add(it.next().m_actions);
-  }
-  return am;
-}
-
-SuccessorMatrix &GrammarResult::getSuccessorMatrix(SuccessorMatrix &sm) const {
-  sm.clear(getStateCount());
-  for(auto it = m_stateResult.getIterator(); it.hasNext();) {
-    sm.add(it.next().m_succs);
-  }
-  return sm;
-}
-
-String Grammar::itemToString(const LR1Item &item, int flags) const {
-  String result;
-  const Production &prod = getProduction(item.m_prod);
-  result = format(_T(" (%3u)%c %-15s -> "), item.m_prod, item.m_kernelItem?'K':' ', getSymbol(prod.m_leftSide).m_name.cstr());
-  for(UINT i = 0; i < item.m_dot; i++) {
-    result += getSymbol(prod.m_rightSide[i]).m_name;
-    result += ' ';
-  }
-  result += '.';
-  const UINT n     = prod.getLength();
-  TCHAR      delim = 0;
-  for(UINT i = item.m_dot; i < n; i++, delim = ' ') {
-    if(delim) result += delim;
-    result += getSymbol(prod.m_rightSide[i]).m_name;
-  }
-  if(flags & DUMP_LOOKAHEAD) {
-    result += symbolSetToString(item.m_la);
-  }
-
-  if((flags & DUMP_SUCC) && (item.m_succ >= 0)) {
-    result += format(_T(" -> %d"), item.getSuccessor()); // ie not reduce-item
-  }
-  return result;
-}
-
-String Grammar::stateToString(const LR1State &state, int flags) const {
-  String result;
-  result = format(_T("State %u:\n"), state.m_index);
-  const UINT itemstodump = (flags & DUMP_KERNELONLY) ? state.m_kernelItemCount : (UINT)state.m_items.size();
-  for(UINT i = 0; i < itemstodump; i++) {
-    const LR1Item &item = state.m_items[i];
-    if(isShiftItem(item) && !(flags & DUMP_SHIFTITEMS)) {
-      continue;
-    }
-    result += itemToString(state.m_items[i], flags) + _T("\n");
-  }
-  if(flags & DUMP_ACTIONS) {
-    result += _T("\n");
-    const StateResult         &sr         = m_result.m_stateResult[state.m_index];
-    const ParserActionArray   &actions    = sr.m_actions;
-    const SuccessorStateArray &successors = sr.m_succs;
-    result += actions.toString(   *this);
-    result += successors.toString(*this);
-  }
-  return result;
-}
-
-String Grammar::getRightSide(UINT p) const {
-  const Production &prod = getProduction(p);
-  const UINT        n    = prod.getLength();
-
-  if(n == 0) {
-    return _T("epsilon");
-  }
-
-  String result;
-  for(UINT i = 0; i < n; i++) {
-    const UINT s = prod.m_rightSide[i];
-    if(i > 0) {
-      result += ' ';
-    }
-    result += getSymbolName(s);
-  }
-  return result;
-}
-
-const TCHAR *BitSetParam::s_elementName[][2] = {
-  _T("symbol "    ), _T("symbols"    )
- ,_T("terminal "  ), _T("terminals"  )
- ,_T("ntIndex  "  ), _T("ntIndices"  )
- ,_T("production "), _T("productions")
- ,_T("state "     ), _T("states"     )
-};
-
-String UsedByBitSet::toString() const {
-  const size_t n = size();
-  return format(_T("Used by %s %s")
-               ,BitSetParam::getElementName(m_type,n > 1)
-               ,toRangeString(SizeTStringifier(),_T(","), BT_BRACKETS).cstr());
-}
-
-BitSetParam Grammar::getBitSetParam(BitSetType type) const {
-  switch(type) {
-  case SYMBOL_BITSET    : return BitSetParam(type, getSymbolCount()    );
-  case TERM_BITSET      : return BitSetParam(type, getTermCount()      );
-  case NTINDEX_BITSET   : return BitSetParam(type, getNTermCount()     );
-  case PRODUCTION_BITSET: return BitSetParam(type, getProductionCount());
-  case STATE_BITSET     : return BitSetParam(type, getStateCount()     );
-  default               : throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), type);
-  }
-  return BitSetParam(type, 0);
-}
-
-String Grammar::getProductionString(UINT prod) const {
-  return getSymbol(getProduction(prod).m_leftSide).m_name
-       + _T(" -> ")
-       + getRightSide(prod);
-}
-
 UINT Grammar::getItemCount() const {
   size_t count = 0;
   for(auto it = m_states.getIterator(); it.hasNext();) {
     count += it.next().m_items.size();
   }
   return (UINT)count;
-}
-
-static int symbolCmpByIndex(const GrammarSymbol &s1, const GrammarSymbol &s2) {
-  return (int)s1.m_index - (int)s2.m_index;
-}
-
-static void reorderTermSet(TermSet &s, const CompactUIntArray &newOrder) {
-  TermSet newSet(s.getCapacity());
-  for(auto it = s.getIterator(); it.hasNext();) {
-    newSet.add(newOrder[it.next()]);
-  }
-  s = newSet;
-}
-
-void Grammar::reorderTerminals(const CompactUIntArray &newOrder, UINT termBitSetCapacity) {
-  if(getTermReorderingDone()) {
-    return;
-  }
-  disableReorderTerminals();
-  m_termBitSetCapacity   = termBitSetCapacity;
-  const UINT symbolCount = getSymbolCount();
-  const UINT termCount   = (UINT)newOrder.size();
-  assert(termCount == getTermCount());
-  for(UINT oldIndex = 0; oldIndex < termCount; oldIndex++) {
-    const UINT     newIndex = newOrder[oldIndex];
-    if(newIndex == oldIndex) {
-      continue;
-    }
-    GrammarSymbol &gs       = m_symbolArray[oldIndex];
-    UINT          *indexp   = m_symbolMap.get(gs.m_name.cstr());
-    assert(newIndex < termCount);
-    assert(indexp != nullptr   );
-    gs.m_index = newIndex;
-    *indexp    = newIndex;
-  }
-  m_symbolArray.sort(symbolCmpByIndex);
-  for(auto it = m_productions.getIterator(); it.hasNext();) {
-    Production                    &prod = it.next();
-    CompactArray<RightSideSymbol> &rs   = prod.m_rightSide;
-    const size_t                   len  = rs.size();
-    for(UINT i = 0; i < len; i++) {
-      RightSideSymbol &rss = rs[i];
-      if(isTerminal(rss.m_index)) {
-        rss.m_index = newOrder[rss.m_index];
-      }
-    }
-  }
-  for(UINT nterm = termCount; nterm < symbolCount; nterm++) {
-    GrammarSymbol &gs       = m_symbolArray[nterm];
-    reorderTermSet(gs.m_first1, newOrder);
-  }
-  for(auto it = m_states.getIterator(); it.hasNext();) {
-    LR1State &state = it.next();
-    for(auto it1 = state.m_items.getIterator(); it1.hasNext();) {
-      LR1Item &item = it1.next();
-      reorderTermSet(item.m_la, newOrder);
-    }
-  }
-
-  for(auto it = m_result.m_stateResult.getIterator(); it.hasNext();) {
-    StateResult &sr = it.next();
-    for(auto it1 = sr.m_actions.getIterator(); it1.hasNext();) {
-      ParserAction &pa = it1.next();
-      pa.m_term = newOrder[pa.m_term];
-    }
-    sr.m_actions.sortByTerm();
-  }
-}
-
-static int stateCmpByIndex(const LR1State &s1, const LR1State &s2) {
-  return (int)s1.m_index - (int)s2.m_index;
-}
-
-static int stateResultCmpByIndex(const StateResult &sr1, const StateResult &sr2) {
-  return (int)sr1.m_index - (int)sr2.m_index;
-}
-
-void Grammar::reorderStates(const CompactUIntArray &newOrder, UINT stateBitSetCapacity) {
-  if(getStateReorderingDone()) {
-    return;
-  }
-  disableReorderStates();
-  m_stateBitSetCapacity   = stateBitSetCapacity;
-  for(auto it = m_states.getIterator(); it.hasNext();) {
-    LR1State &state = it.next();
-    state.m_index   = newOrder[state.m_index];
-    for(auto it1 = state.m_items.getIterator(); it1.hasNext();) {
-      LR1Item &item = it1.next();
-      if(item.m_succ >= 0) {
-        item.m_succ = newOrder[item.m_succ];
-      }
-    }
-    UINT *indexp = m_stateMap.get(&state);
-    *indexp = newOrder[*indexp];
-  }
-  m_states.sort(stateCmpByIndex);
-  for(auto it = m_result.m_stateResult.getIterator(); it.hasNext();) {
-    StateResult &sr = it.next();
-    sr.m_index = newOrder[sr.m_index];
-    for(auto it1 = sr.m_actions.getIterator(); it1.hasNext();) {
-      ParserAction &pa = it1.next();
-      if(pa.m_action > 0) {
-        pa.m_action = newOrder[pa.m_action];
-      }
-    }
-    for(auto it1 = sr.m_succs.getIterator(); it1.hasNext();) {
-      SuccessorState &ss = it1.next();
-      ss.m_newState = newOrder[ss.m_newState];
-    }
-  }
-  m_result.m_stateResult.sort(stateResultCmpByIndex);
 }

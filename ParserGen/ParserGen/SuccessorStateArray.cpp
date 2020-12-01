@@ -29,3 +29,9 @@ String SuccessorState::toString(const AbstractSymbolNameContainer &nameContainer
   const TCHAR *name = nameContainer.getSymbolName(m_nterm).cstr();
   return format(_T("goto %u on %s"), m_newState, name);
 }
+
+SuccessorMatrix::SuccessorMatrix(const Grammar &grammar) : Array(grammar.getStateCount()) {
+  for(auto it = grammar.getResult().m_stateResult.getIterator(); it.hasNext();) {
+    add(it.next().m_succs);
+  }
+}

@@ -1,49 +1,28 @@
 #pragma once
 
 #include "GrammarTables.h"
-#include "NTIndexNodeArray.h"
+#include "SymbolNodeArray.h"
 #include "IndexMap.h"
 #include "MacroMap.h"
 
 namespace TransposedSuccessorMatrixCompression {
 
-inline int stateSetCmp(const StateSet &s1, const StateSet &s2) {
-  assert(s1.getCapacity() == s2.getCapacity());
-  return bitSetCmp(s1, s2);
-}
-
-class StateSetIndexMap : public IndexMap<StateSet> {
-public:
-  StateSetIndexMap() : IndexMap(stateSetCmp) {
-  }
-};
-
-typedef IndexArray<StateSet> StateSetIndexArray;
-
-class StateArrayIndexMap : public IndexMap<StateArray> {
-public:
-  StateArrayIndexMap() : IndexMap(stateArrayCmp) {
-  }
-};
-
-typedef IndexArray<StateArray> StateArrayIndexArray;
-
 class CompressedTransSuccMatrix : public MacroMap {
 private:
-  const Grammar                &m_grammar;
-  const GrammarResult          &m_grammarResult;
-  const BitSetParam             m_usedByParam;
-  const UINT                    m_sizeofStateBitSet;
-  const UINT                    m_maxNTermNameLength;
-  mutable TableTypeByteCountMap m_byteCountMap;
-  UINT                          m_fromStateArraySize;
-  UINT                          m_newStateArraySize;
-  UINT                          m_splitNodeCount;
-  NTIndexNodeArray              m_ntIndexNodeArray;
-  StateSetIndexMap              m_fromStateArrayMap;
-  StateArrayIndexMap            m_newStateArrayMap;
-  StateSetIndexMap              m_stateBitSetMap;
-  OptimizedBitSetPermutation    m_stateBitSetPermutation;
+  const Grammar                     &m_grammar;
+  const GrammarResult               &m_grammarResult;
+  const BitSetParam                  m_usedByParam;
+  const BitSetInterval               m_bitSetInterval;
+  const UINT                         m_maxNTermNameLength;
+  UINT                               m_fromStateArraySize;
+  UINT                               m_newStateArraySize;
+  UINT                               m_splitNodeCount;
+  SymbolNodeArray                    m_ntIndexNodeArray;
+  StateSetIndexMap                   m_fromStateArrayMap;
+  StateArrayIndexMap                 m_newStateArrayMap;
+  StateSetIndexMap                   m_stateBitSetMap;
+  mutable OptimizedBitSetPermutation m_stateBitSetPermutation;
+  mutable TableTypeByteCountMap      m_byteCountMap;
 
   inline UINT         getStateCount() const {
     return m_grammar.getStateCount();
@@ -51,12 +30,13 @@ private:
   inline UINT         getNTermCount() const {
     return m_grammar.getNTermCount();
   }
-  Macro               doNTIndexNode(   const NTIndexNode &node);
-  Macro               doBinSearchNode( const NTIndexNode &node);
-  Macro               doSplitNode(     const NTIndexNode &node);
-  Macro               doImmediateNode( const NTIndexNode &node);
-  Macro               doBitSetNode(    const NTIndexNode &node);
+  Macro               doNTIndexNode(   const SymbolNode &node);
+  Macro               doBinSearchNode( const SymbolNode &node);
+  Macro               doSplitNode(     const SymbolNode &node);
+  Macro               doImmediateNode( const SymbolNode &node);
+  Macro               doBitSetNode(    const SymbolNode &node);
   void                generateCompressedForm();
+  void                findStateBitSetPermutation() const;
 
   void         printMacroesAndSuccessorCodeArray(MarginFile &output) const;
   void         printStatePairArrayTables(        MarginFile &output) const;
@@ -64,15 +44,21 @@ private:
 
 public:
   CompressedTransSuccMatrix(const Grammar &grammar);
-  const OptimizedBitSetPermutation &getStateBitSetPermutation() const {
-    return m_stateBitSetPermutation;
-  }
-  inline ByteCount getSavedBytesByOptimizedStateBitSets() const {
-    return getStateBitSetPermutation().getSavedBytesByOptimizedBitSets((UINT)m_stateBitSetMap.size());
-  }
-  ByteCount print(MarginFile &output) const;
 
-  static TableTypeByteCountMap findTablesByteCount(const Grammar &grammar);
+  BitSet getBitSetsTableUnion() const;
+  const OptimizedBitSetPermutation &getStateBitSetPermutation() const;
+  inline ByteCount getSavedBytesByOptimizedStateBitSets() const {
+    return getStateBitSetPermutation().getSavedBytesByOptimizedBitSets(getStateBitSetCount());
+  }
+
+  inline UINT getStateBitSetCount() const {
+    return (UINT)m_stateBitSetMap.size();
+  }
+  const TableTypeByteCountMap &getByteCountMap() const {
+    return m_byteCountMap;
+  }
+  
+  ByteCount print(MarginFile &output) const;
 };
 
 }; // namespace TransposedSuccessorMatrixCompression

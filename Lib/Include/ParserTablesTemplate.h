@@ -263,6 +263,9 @@ private:
 
 public:
 #pragma warning(push)
+  UINT          getStartState() const {
+    return 0;
+  }
 
   // term is a terminal-symbol.
   // Return action
@@ -417,7 +420,9 @@ private:
 
 public:
 #pragma warning(push)
-
+  UINT          getStartState() const {
+    return 0;
+  }
   // term is a terminal-symbol.
   // Return action
   //   action >  0 : Shift to state = action
@@ -463,6 +468,209 @@ public:
     ,m_stateArrayTable    (stateArrayTable    )
     ,m_newStateArrayTable (newStateArrayTable )
     ,m_stateBitSetTable   (stateBitSetTable   )
+  {
+  }
+};
+
+
+template<UINT     symbolCount
+        ,UINT     termCount
+        ,UINT     productionCount
+        ,UINT     stateCount
+        ,UINT     tableByteCountx86
+        ,UINT     tableByteCountx64
+        ,UINT     startState
+        ,UINT     termBitSetCapacity
+        ,UINT     shiftStateIntervalFrom, UINT     shiftStateIntervalTo
+        ,UINT     succStateIntervalFrom , UINT     succStateIntervalTo
+        ,typename SymbolType       /* unsigned, values:[0..symbolCount             [ */
+        ,typename TerminalType     /* unsigned, values:[0..termCount               [ */
+        ,typename NTIndexType      /* unsigned, values:[0..ntermCount              [ */
+        ,typename ActionType       /* signed  , values:[-maxproduction..stateCount [ */
+        ,typename StateType>       /* unsigned, values:[0..stateCount              [ */
+class ParserTablesTemplateTransShift
+: public GenereratedTablesCommon<symbolCount
+                                ,termCount
+                                ,productionCount
+                                ,stateCount
+                                ,tableByteCountx86
+                                ,tableByteCountx64
+                                ,SymbolType
+                                ,NTIndexType>
+{
+private:
+  const UINT           *m_shiftCodeArray;
+  const StateType      *m_shiftFromStateArrayTable;
+  const StateType      *m_shiftToStateArrayTable;
+  const BYTE           *m_shiftStateBitSetTable;
+  const UINT           *m_reduceCodeArray;
+  const TerminalType   *m_termArrayTable;
+  const ActionType     *m_reduceArrayTable;
+  const BYTE           *m_termBitSetTable;
+  const UINT           *m_successorCodeArray;
+  const StateType      *m_stateArrayTable;
+  const StateType      *m_newStateArrayTable;
+  const BYTE           *m_stateBitSetTable;
+
+// ----------------------------- successor functions ---------------------------------------
+  inline const  StateType   *getStateArray(      UINT code) const {
+    return m_stateArrayTable + (code & 0x7fff);
+  }
+  inline const  BYTE        *getStateBitSet(     UINT code) const {
+    return m_stateBitSetTable  + (code & 0x7fff);
+  }
+  inline        UINT getSuccessorBinSearch(      UINT code, UINT state) const {
+    const int index = findArrayIndex(getStateArray(code), state);
+    return (index >= 0) ? m_newStateArrayTable[(code >> 17) + index] : _ParserError;
+  }
+  inline        UINT getSuccessorSplitNode(      UINT code, UINT state) const {
+    const UINT a = getSuccessorFromCode(leftChild(m_successorCodeArray, code), state);
+    return (a != _ParserError) ? a : getSuccessorFromCode(rightChild(m_successorCodeArray, code), state);
+  }
+  static inline UINT getSuccessorImmediate(      UINT code, UINT state) {
+    const UINT fromState = code & 0x7fff;
+    return ((fromState == _NoFromStateCheck) || (state == fromState)) ? (code >> 17) : _ParserError;
+  }
+  inline        UINT getSuccessorBitSet(         UINT code, UINT state) const {
+    return bitsetContains(getStateBitSet(code), succStateIntervalTo-succStateIntervalFrom, state-succStateIntervalFrom) ? (code >> 17) : _ParserError;
+  }
+  inline        UINT getSuccessorFromCode(       UINT code, UINT state) const {
+    switch(getCompressionCode(code)) {
+    case CompCodeBinSearch : return getSuccessorBinSearch(code, state);
+    case CompCodeSplitNode : return getSuccessorSplitNode(code, state);
+    case CompCodeImmediate : return getSuccessorImmediate(code, state);
+    case CompCodeBitSet    : return getSuccessorBitSet(   code, state);
+    default                : __assume(0);
+    }
+    return 0;
+  }
+
+// ----------------------------- shift functions ---------------------------------------
+  inline const  StateType   *getShiftFromStateArray(  UINT code) const {
+    return m_shiftFromStateArrayTable + (code & 0x7fff);
+  }
+  inline const  BYTE        *getShiftStateBitSet(     UINT code) const {
+    return m_shiftStateBitSetTable  + (code & 0x7fff);
+  }
+  inline        UINT getShiftBinSearch(      UINT code, UINT state) const {
+    const int index = findArrayIndex(getShiftFromStateArray(code), state);
+    return (index >= 0) ? m_shiftToStateArrayTable[(code >> 17) + index] : _ParserError;
+  }
+  inline        UINT getShiftSplitNode(      UINT code, UINT state) const {
+    const UINT a = getShiftFromCode(leftChild(m_shiftCodeArray, code), state);
+    return (a != _ParserError) ? a : getShiftFromCode(rightChild(m_shiftCodeArray, code), state);
+  }
+  static inline UINT getShiftImmediate(      UINT code, UINT state) {
+    const UINT fromState = code & 0x7fff;
+    return ((fromState == _NoFromStateCheck) || (state == fromState)) ? (code >> 17) : _ParserError;
+  }
+  inline        UINT getShiftBitSet(         UINT code, UINT state) const {
+    return bitsetContains(getShiftStateBitSet(code), shiftStateIntervalTo-shiftStateIntervalFrom, state-shiftStateIntervalFrom) ? (code >> 17) : _ParserError;
+  }
+  inline        UINT getShiftFromCode(       UINT code, UINT state) const {
+    switch(getCompressionCode(code)) {
+    case CompCodeBinSearch : return getShiftBinSearch(code, state);
+    case CompCodeSplitNode : return getShiftSplitNode(code, state);
+    case CompCodeImmediate : return getShiftImmediate(code, state);
+    case CompCodeBitSet    : return getShiftBitSet(   code, state);
+    default                : __assume(0);
+    }
+    return 0;
+  }
+
+  // ----------------------------------- reduce functions ---------------------------------
+  inline const TerminalType *getTermArray(       UINT code) const {
+    return m_termArrayTable  + (code & 0x7fff);
+  }
+  inline const  BYTE        *getTermBitSet(      UINT code) const {
+    return m_termBitSetTable + (code & 0x7fff);
+  }
+
+// --------------------------- getReduce -------------------------------------
+  inline        int getReduceBinSearch(          UINT code, UINT term) const {
+    const int index = findArrayIndex(getTermArray(code), term);
+    return (index >= 0) ? m_reduceArrayTable[(code >> 17) + index] : _ParserError;
+  }
+  inline        int getReduceSplitNode(          UINT code, UINT term) const {
+    const int a = getReduceFromCode(leftChild(m_reduceCodeArray, code), term);
+    return (a != _ParserError) ? a : getReduceFromCode(rightChild(m_reduceCodeArray, code), term);
+  }
+  static inline int getReduceImmediate(          UINT code, UINT term)       {
+    return ((code & 0x7fff) == term)        ? ((signed int)code >> 17) : _ParserError;
+  }
+  inline        int getReduceBitSet(             UINT code, UINT term) const {
+    return bitsetContains(getTermBitSet(code), termBitSetCapacity, term) ? ((signed int)code >> 17) : _ParserError;
+  }
+  inline        int getReduceFromCode(           UINT code, UINT term) const {
+    switch(getCompressionCode(code)) {
+    case CompCodeBinSearch : return getReduceBinSearch(code, term);
+    case CompCodeSplitNode : return getReduceSplitNode(code, term);
+    case CompCodeImmediate : return getReduceImmediate(code, term);
+    case CompCodeBitSet    : return getReduceBitSet(   code, term);
+    default                : __assume(0);
+    }
+  }
+
+public:
+#pragma warning(push)
+  UINT          getStartState() const {
+    return startState;
+  }
+  // term is a terminal-symbol.
+  // Return action
+  //   action >  0 : Shift to state = action
+  //   action <  0 : Reduce by production p = -action;
+  //   action == 0 : Accept, ie. reduce by production 0
+  //   _ParserError: Unexpected term
+  int getAction(          UINT state, UINT term     ) const final {
+    assert(state < stateCount);
+    assert(term  < termCount );
+    const int action = getShiftFromCode(m_shiftCodeArray[term], state);
+    return (action != _ParserError) ? action : getReduceFromCode(m_reduceCodeArray[state], term);
+  }
+
+  // nterm is nonterminal
+  UINT getSuccessor(      UINT state, UINT nterm    ) const final {
+    assert( state < stateCount);
+    assert((nterm >= termCount) && (nterm < symbolCount));
+    return getSuccessorFromCode(m_successorCodeArray[nterm-termCount], state);
+  }
+
+#pragma warning(pop)
+
+  ParserTablesTemplateTransShift(
+                       const BYTE          *prodLengthArray
+                      ,const NTIndexType   *leftSideArray
+                      ,const SymbolType    *rightSideTable
+                      ,const char          *nameString
+                      ,const UINT          *shiftCodeArray
+                      ,const StateType     *shiftFromStateArrayTable
+                      ,const StateType     *shiftToStateArrayTable
+                      ,const BYTE          *shiftStateBitSetTable
+                      ,const UINT          *reduceCodeArray
+                      ,const TerminalType  *termArrayTable
+                      ,const ActionType    *reduceArrayTable
+                      ,const BYTE          *termBitSetTable
+                      ,const UINT          *successorCodeArray
+                      ,const StateType     *stateArrayTable
+                      ,const StateType     *newStateArrayTable
+                      ,const BYTE          *stateBitSetTable
+                      )
+    :GenereratedTablesCommon(prodLengthArray  , leftSideArray
+                            ,rightSideTable   , nameString
+                            )
+    ,m_shiftCodeArray          (shiftCodeArray           )
+    ,m_shiftFromStateArrayTable(shiftFromStateArrayTable )
+    ,m_shiftToStateArrayTable  (shiftToStateArrayTable   )
+    ,m_shiftStateBitSetTable   (shiftStateBitSetTable    )
+    ,m_reduceCodeArray         (reduceCodeArray          )
+    ,m_termArrayTable          (termArrayTable           )
+    ,m_reduceArrayTable        (reduceArrayTable         )
+    ,m_termBitSetTable         (termBitSetTable          )
+    ,m_successorCodeArray      (successorCodeArray       )
+    ,m_stateArrayTable         (stateArrayTable          )
+    ,m_newStateArrayTable      (newStateArrayTable       )
+    ,m_stateBitSetTable        (stateBitSetTable         )
   {
   }
 };

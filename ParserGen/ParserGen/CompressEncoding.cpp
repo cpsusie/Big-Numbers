@@ -60,9 +60,10 @@ const TCHAR *compressMethodToString(CompressionMethod method) {
 
 
 TableTypeByteCountMap::TableTypeByteCountMap(const Grammar &g) {
-  m_termBitSetCapacity     = g.getTermBitSetCapacity();
-  m_stateBitSetCapacity    = g.getStateBitSetCapacity();
-  m_splitNodeCount         = 0;
+  m_termBitSetCapacity  = g.getTermBitSetCapacity();
+  m_shiftStateInterval  = g.getShiftStateBitSetInterval();
+  m_succStateInterval   = g.getSuccStateBitSetInterval();
+  m_splitNodeCount      = 0;
 }
 
 String TableTypeByteCountMap::getTableString(ByteCountTableType type) const {
@@ -72,6 +73,24 @@ String TableTypeByteCountMap::getTableString(ByteCountTableType type) const {
   } else {
     return spaceString(ByteCount::tableformWidth);
   }
+}
+
+TableTypeByteCountMap &TableTypeByteCountMap::add(ByteCountTableType type, const ByteCount &bc) {
+  ByteCount *e = get(type);
+  if(e) {
+    *e += bc;
+  } else {
+    put(type, bc);
+  }
+  return *this;
+}
+
+TableTypeByteCountMap &TableTypeByteCountMap::operator+=(const TableTypeByteCountMap &rhs) {
+  for(auto it = rhs.getIterator(); it.hasNext();) {
+    auto &e = it.next();
+    add(e.getKey(), e.getValue());
+  }
+  return *this;
 }
 
 ByteCount TableTypeByteCountMap::getSum() const {

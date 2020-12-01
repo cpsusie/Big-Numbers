@@ -18,7 +18,7 @@ static void usage() {
        "      Applies only to c++-code.\n"
        " -n : Generate nonterminalsymbols in XXXSymbol.h/XXXSymbol.java).\n"
        " -h : Write lookahead symbols in docfile.\n"
-       " [-c|+c<level>]: Disable or enable parser tables compression. If enabled, level specifies max number of recursive calls\n"
+       " [-c|+c[,t][,r<maxlevel>]: Disable or enable parser tables compression. If enabled, level specifies max number of recursive calls\n"
        "                 to determine parseraction. level=[0..%u]. Default is +c%u\n"
        " -T[,p][,r<maxlevel>][,m<minBitSetSize>]"
        "    : Compress successor matrix with same technique as action-matrix compression, but on the transposed successor-matrix.\n"
@@ -38,7 +38,7 @@ static void usage() {
        " -ttabsize:Tabulatorcharater will expand to this many spaces. tabsize=[1..%u]. Default tabsize=%u.\n"
        " -j : Generate java-parser. Default is C++.\n")
       ,Options::maxRecursiveCalls
-      ,Options::defaultRecurseLevel
+      ,MatrixOptimizeParameters::defaultRecurseLevel
       ,Options::defaultVerboseLevel
       ,Options::maxTabSize
       ,Options::defaultTabSize
@@ -75,31 +75,35 @@ int _tmain(int argc, TCHAR **argv) {
   Options  &options = Options::getInstance();
   try {
     for(argv++; *argv && _tcschr(_T("-+"), *(cp = *argv)); argv++) {
-      if(*cp == '+') {
-        cp++;
-        switch(*cp) {
-        case 'c':
-          { options.m_useTableCompression  = true;
-            cp++;
-            const UINT maxRecurseLevel = parseUINT(cp);
-            if(maxRecurseLevel > Options::maxRecursiveCalls) {
-              usage();
-            }
-            options.m_maxRecursionAction = maxRecurseLevel;
-          }
-          break;
-        default:
-          usage();
-        }
-        continue;
-      }
-      // *cp = '-'
       for(cp++; *cp; cp++) {
         switch(*cp) {
         case 'm':
           options.m_templateName = cp+1;
           if(options.m_templateName.length() == 0) {
             usage();
+          }
+          break;
+        case 'C':
+          { cp++;
+            MatrixOptimizeParameters *optParam = nullptr;
+            for(Tokenizer tok(cp, _T(",")); tok.hasNext();) {
+              String cs = tok.next();
+              for(TCHAR *cp1 = cs.cstr(); *cp1; cp1++) {
+#define CHECKOPT() if(optParam == nullptr) usage(); (*optParam)
+                switch(*cp1) {
+                case 'A': optParam = &options.getOptimizeParameters(OPTPARAM_ACTION); continue;
+                case 'R': optParam = &options.getOptimizeParameters(OPTPARAM_REDUCE); continue;
+                case 'S': optParam = &options.getOptimizeParameters(OPTPARAM_SHIFT ); continue;
+                case 'N': optParam = &options.getOptimizeParameters(OPTPARAM_SUCC  ); continue;
+                case 'e':         CHECKOPT().m_enabled       = true;                  continue;
+                case 'r': cp1++;  CHECKOPT().m_maxRecursion  = parseUINT(cp1);        break;
+                case 'p':         CHECKOPT().m_pruneBitSet   = true;                  continue;
+                case 's': cp1++;  CHECKOPT().m_minBitSetSize = parseUINT(cp1);        break;
+                default : usage();
+                }
+                break;
+              }
+            }
           }
           break;
         case 'v':
@@ -129,48 +133,6 @@ int _tmain(int argc, TCHAR **argv) {
         case 'F':
           options.m_findOptimalTableCompression = true;
           continue;
-        case 'c':
-          options.m_useTableCompression    = false;
-          options.m_maxRecursionAction     = 0;
-          continue;
-        case 'T':
-          { options.m_compressSuccTransposed = true;
-            cp++;
-            if(*cp) {
-              for(Tokenizer tok(cp, _T(",")); tok.hasNext();) {
-                String s = tok.next();
-                for(TCHAR *cp1 = s.cstr(); *cp1;) {
-                  switch(*cp1) {
-                  case 'p':
-                    options.m_pruneTransSuccBitSet = true;
-                    cp1++;
-                    break;
-                  case 'm':
-                    { cp1++;
-                      const UINT v = parseUINT(cp1);
-                      if((v < 2)) {
-                        usage();
-                      }
-                      options.m_minStateBitSetSize = v;
-                    }
-                    break;
-                  case 'r':
-                    { cp1++;
-                      const UINT v = parseUINT(cp1);
-                      if(v > Options::maxRecursiveCalls) {
-                        usage();
-                      }
-                      options.m_maxRecursionTransSucc = v;
-                    }
-                    break;
-                  default:
-                    usage();
-                  }
-                }
-              }
-            }
-          }
-          break;
         case 'n':
           options.m_generateNonTerminals   = true;
           continue;

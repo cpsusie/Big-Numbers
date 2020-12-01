@@ -75,6 +75,30 @@ public:
   String toString() const;
 };
 
+class BitSetInterval : public UIntInterval {
+public:
+  BitSetInterval() : UIntInterval(0,0) {
+  }
+  BitSetInterval(const UIntInterval &src) : UIntInterval(src) {
+  }
+  BitSetInterval(UINT minValue, UINT capacity) : UIntInterval(minValue, minValue+capacity) {
+  }
+  inline UINT getCapacity() const {
+    return getLength();
+  }
+  inline UINT getSizeofBitSet() const {
+    return ::getSizeofBitSet(getCapacity());
+  }
+  // Return true, if set doesn't contain any 1-bits at positions outside range [getFrom()..getTo()-1],
+  // else return false
+  bool checkBitSetValues(const BitSet &set) const;
+  // Return a BitSet, with all 1-bits in range getFrom()..getTo()-1, and capacity = max(1,getTo())
+  BitSet createBitSetMask() const;
+  String toString() const {
+    return format(_T("[%u-%u]"), getFrom(), getTo() - 1);
+  }
+};
+
 class GrammarSymbol {
 public:
   UINT             m_index;
@@ -196,6 +220,9 @@ public:
   inline bool isAcceptAction() const {
     return (m_action == 0) && (m_term == 0);
   }
+  inline bool isShift() const {
+    return m_action > 0;
+  }
   String toString(const AbstractSymbolNameContainer &nameContainer) const;
 };
 
@@ -303,9 +330,6 @@ public:
   String         toString(const AbstractSymbolNameContainer &nameContainer) const;
 };
 
-typedef Array<ParserActionArray>   ActionMatrix;
-typedef Array<SuccessorStateArray> SuccessorMatrix;
-
 class StateResult {
 public:
   UINT                m_index;
@@ -317,13 +341,15 @@ public:
   void sortArrays();
 };
 
+inline int stateResultCmpByIndex(const StateResult &sr1, const StateResult &sr2) {
+  return (int)sr1.m_index - (int)sr2.m_index;
+}
+
 class GrammarResult {
 public:
   Array<StateResult> m_stateResult;
   UINT               m_SRconflicts, m_RRconflicts;         // only for doc-file
   UINT               m_warningCount;
-  ActionMatrix      &getActionMatrix(   ActionMatrix    &am) const;
-  SuccessorMatrix   &getSuccessorMatrix(SuccessorMatrix &sm) const;
   GrammarResult()
     : m_SRconflicts(0)
     , m_RRconflicts(0)
@@ -335,16 +361,21 @@ public:
     m_stateResult.clear(capacity);
     return *this;
   }
-  inline bool        allStatesConsistent() const {
+  inline bool    allStatesConsistent() const {
     return (m_SRconflicts == 0) && (m_RRconflicts == 0);
   }
-  inline UINT getStateCount() const {
+  inline UINT    getStateCount() const {
     return (UINT)m_stateResult.size();
+  }
+  void           sortStateResult() {
+    m_stateResult.sort(stateResultCmpByIndex);
   }
   void addSRError(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   void addWarning(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 };
 
+class OptimizedBitSetPermutation;
+class OptimizedBitSetPermutation2;
 
 class StateHashMap : public HashMap<const LR1State *, UINT> {
 public:
@@ -372,9 +403,11 @@ private:
   Array<LR1State>              m_states;
   StateHashMap                 m_stateMap; // map core(state) -> index (UINT) into m_states
   CompactUIntHashSet<1000>     m_unfinishedSet;
-  UINT                         m_termCount, m_startSymbol;
-  UINT                         m_termBitSetCapacity, m_stateBitSetCapacity;
-  bool                         m_termPermutationDone, m_statePermutationDone;
+  UINT                         m_termCount, m_startSymbol, m_startState;
+  bool                         m_termPermutationDone;
+  UINT                         m_termBitSetCapacity;
+  bool                         m_statePermutationDone;
+  BitSetInterval               m_shiftStateSetInterval, m_succStateSetInterval;
   SourceText                   m_header, m_driverHead, m_driverTail; // programtext between %{ and %}
   GrammarResult                m_result;
 
@@ -457,23 +490,25 @@ public:
 
 // ------------------------------------- helper functions for code generation ---------------------------------
 
-  const String               &getName()                       const { return m_name;                   }
-  inline const GrammarResult &getResult()                     const { return m_result;                 }
-  inline UINT                 getStartSymbol()                const { return m_startSymbol;            }
-  inline const SourceText    &getHeader()                     const { return m_header;                 }
-  inline const SourceText    &getDriverHead()                 const { return m_driverHead;             }
-  inline const SourceText    &getDriverTail()                 const { return m_driverTail;             }
+  const String                &getName()                      const { return m_name;                   }
+  inline const GrammarResult  &getResult()                    const { return m_result;                 }
+  inline UINT                  getStartSymbol()               const { return m_startSymbol;            }
+  inline UINT                  getStartState()                const { return m_startState;             }
+  inline const SourceText     &getHeader()                    const { return m_header;                 }
+  inline const SourceText     &getDriverHead()                const { return m_driverHead;             }
+  inline const SourceText     &getDriverTail()                const { return m_driverTail;             }
 
-  BitSetParam                 getBitSetParam(BitSetType type) const;
+  BitSetParam                  getBitSetParam(BitSetType type) const;
 
-  void                        reorderTerminals(const CompactUIntArray &newOrder, UINT termBitSetCapacity );
-  void                        reorderStates(   const CompactUIntArray &newOrder, UINT stateBitSetCapacity);
-  void                        disableReorderTerminals()             { m_termPermutationDone  = true;   }
-  void                        disableReorderStates()                { m_statePermutationDone = true;   }
-  bool                        getTermReorderingDone()         const { return m_termPermutationDone;    }
-  bool                        getStateReorderingDone()        const { return m_statePermutationDone;   }
-  inline UINT                 getTermBitSetCapacity()         const { return m_termBitSetCapacity;     }
-  inline UINT                 getStateBitSetCapacity()        const { return m_stateBitSetCapacity;    }
+  void                         reorderTerminals(const OptimizedBitSetPermutation  &permutation);
+  void                         reorderStates(   const OptimizedBitSetPermutation2 &permutation);
+  void                         disableReorderTerminals()            { m_termPermutationDone  = true;   }
+  void                         disableReorderStates()               { m_statePermutationDone = true;   }
+  bool                         getTermReorderingDone()        const { return m_termPermutationDone;    }
+  bool                         getStateReorderingDone()       const { return m_statePermutationDone;   }
+  inline UINT                  getTermBitSetCapacity()        const { return m_termBitSetCapacity;     }
+  const BitSetInterval        &getShiftStateBitSetInterval()  const { return m_shiftStateSetInterval;  }
+  const BitSetInterval        &getSuccStateBitSetInterval()   const { return m_succStateSetInterval;   }
 
   // Convert symbolset to String
   String itemToString(     const LR1Item   &item , int flags = DUMP_LOOKAHEAD) const; // flags any combination of {DUMP_LOOKAHEAD,DUMP_SUCC}
@@ -490,4 +525,20 @@ public:
   void   dumpStates(                                int flags = DUMP_DOCFORMAT, MarginFile *f = tostdout) const; // flags as for dump(const LR1State &state...)
   void   dump(                                                                  MarginFile *f = tostdout) const;
   void   dumpFirst1Sets(FILE *f) const;
+};
+
+class ActionMatrix : public Array<ParserActionArray> {
+public:
+  ActionMatrix(const Grammar &grammar);
+  inline UINT getRowCount() const {
+    return (UINT)size();
+  }
+};
+
+class SuccessorMatrix : public Array<SuccessorStateArray> {
+public:
+  SuccessorMatrix(const Grammar &grammar);
+  inline UINT getRowCount() const {
+    return (UINT)size();
+  }
 };

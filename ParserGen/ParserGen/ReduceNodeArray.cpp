@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "StateActionNodeArray.h"
+#include "ReduceNodeArray.h"
 
-namespace ActionMatrixCompression {
+namespace TransposedShiftMatrixCompression {
 
-StateActionNodeArray::StateActionNodeArray(const Grammar &grammar, const MatrixOptimizeParameters &opt)
+ReduceNodeArray::ReduceNodeArray(const Grammar &grammar, const MatrixOptimizeParameters &opt)
 : m_grammar(grammar)
 {
   const UINT          stateCount = grammar.getStateCount();
@@ -11,16 +11,16 @@ StateActionNodeArray::StateActionNodeArray(const Grammar &grammar, const MatrixO
   setCapacity(stateCount);
 //  redirectDebugLog();
   for(UINT state = 0; state < stateCount; state++) {
-    add(StateActionNode::allocateStateActionNode(grammar, state, actionMatrix[state], opt));
+    add(ReduceNode::allocateReduceNode(grammar, state, actionMatrix[state], opt));
 //    debugLog(_T("%s"), last()->toString().cstr());
   }
 }
 
-StateActionNodeArray::~StateActionNodeArray() {
+ReduceNodeArray::~ReduceNodeArray() {
   clear();
 }
 
-void StateActionNodeArray::clear() {
+void ReduceNodeArray::clear() {
   const size_t n = size();
   for(size_t i = 0; i < n; i++) {
     SAFEDELETE((*this)[i]);
@@ -28,7 +28,7 @@ void StateActionNodeArray::clear() {
   __super::clear();
 }
 
-String StateActionNodeArray::toString() const {
+String ReduceNodeArray::toString() const {
   String result;
   for(auto it = getIterator(); it.hasNext();) {
     result += it.next()->toString();
@@ -37,4 +37,4 @@ String StateActionNodeArray::toString() const {
   return result;
 }
 
-}; // namespace ActionMatrixCompression
+}; // namespace TransposedShiftMatrixCompression

@@ -35,3 +35,9 @@ String ParserAction::toString(const AbstractSymbolNameContainer &nameContainer) 
     return format(_T("accept on %s"      ),            name);
   }
 }
+
+ActionMatrix::ActionMatrix(const Grammar &grammar) : Array(grammar.getStateCount()) {
+  for(auto it = grammar.getResult().m_stateResult.getIterator(); it.hasNext();) {
+    add(it.next().m_actions);
+  }
+}

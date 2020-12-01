@@ -49,6 +49,12 @@
     <Filter Include="Source Files\GrammarOutput\MatrixCompression\ActionMatrix\Header Files">
       <UniqueIdentifier>{6f46e068-0527-4acd-bf3f-cb4d0d65bf3d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\GrammarOutput\MatrixCompression\TransposedShiftMatrix">
+      <UniqueIdentifier>{80da6141-7b68-496f-a86f-7a88331abeec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GrammarOutput\MatrixCompression\TransposedShiftMatrix\Header Files">
+      <UniqueIdentifier>{08cfa8c2-88ca-4f18-a561-b1f0663a7abd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -117,12 +123,6 @@
     <ClInclude Include="CompressedTransSuccMatrixCpp.h">
       <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedSuccessorMatrix\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NTindexNode.h">
-      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedSuccessorMatrix\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NTindexNodeArray.h">
-      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedSuccessorMatrix\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="StateActionNode.h">
       <Filter>Source Files\GrammarOutput\MatrixCompression\ActionMatrix\Header Files</Filter>
     </ClInclude>
@@ -130,6 +130,33 @@
       <Filter>Source Files\GrammarOutput\MatrixCompression\ActionMatrix\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CompressEncoding.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CompressedTransShiftMatrixCpp.h">
+      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedShiftMatrix\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReduceNode.h">
+      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedShiftMatrix\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReduceNodeArray.h">
+      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedShiftMatrix\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TermSetReduction.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StatePair.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SymbolNodeBase.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SymbolNode.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StatePairMatrix.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SymbolNodeArray.h">
       <Filter>Source Files\GrammarOutput\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -215,12 +242,6 @@
     <ClCompile Include="CompressedTransSuccMatrixCpp.cpp">
       <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedSuccessorMatrix</Filter>
     </ClCompile>
-    <ClCompile Include="NTindexNode.cpp">
-      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedSuccessorMatrix</Filter>
-    </ClCompile>
-    <ClCompile Include="NTindexNodeArray.cpp">
-      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedSuccessorMatrix</Filter>
-    </ClCompile>
     <ClCompile Include="StateActionNode.cpp">
       <Filter>Source Files\GrammarOutput\MatrixCompression\ActionMatrix</Filter>
     </ClCompile>
@@ -231,6 +252,39 @@
       <Filter>Source Files\GrammarOutput</Filter>
     </ClCompile>
     <ClCompile Include="CompressEncoding.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="CompressedTransShiftMatrixCpp.cpp">
+      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedShiftMatrix</Filter>
+    </ClCompile>
+    <ClCompile Include="ReduceNode.cpp">
+      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedShiftMatrix</Filter>
+    </ClCompile>
+    <ClCompile Include="ReduceNodeArray.cpp">
+      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedShiftMatrix</Filter>
+    </ClCompile>
+    <ClCompile Include="TermSetReduction.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="StatePair.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="SymbolNode.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="StatePairMatrix.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="SymbolNodeArray.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="TransposedShiftMatrix.cpp">
+      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedShiftMatrix</Filter>
+    </ClCompile>
+    <ClCompile Include="TransposedSuccessorMatrix.cpp">
+      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedSuccessorMatrix</Filter>
+    </ClCompile>
+    <ClCompile Include="GrammarPermutation.cpp">
       <Filter>Source Files\GrammarOutput</Filter>
     </ClCompile>
   </ItemGroup>

@@ -27,6 +27,7 @@ public:
   virtual void          getRightSide(        UINT prod, UINT *dst     ) const = 0;
   virtual UINT          getProductionCount()                            const = 0;
   virtual UINT          getStateCount()                                 const = 0;
+  virtual UINT          getStartState()                                 const = 0;
   // if symbol is a terminal   , return getAction(   state,symbol), if this is positive (shift to state), or else _ParserError
   // if symbol is a nonterminal, return getSuccessor(state,symbol)
   UINT                  getNewState(         UINT symbol, UINT state  ) const;

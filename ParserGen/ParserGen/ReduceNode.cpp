@@ -1,16 +1,16 @@
 #include "stdafx.h"
 #include <CompactHashMap.h>
-#include "StateActionNode.h"
+#include "ReduceNode.h"
 
-namespace ActionMatrixCompression {
+namespace TransposedShiftMatrixCompression {
 
-ShiftAndReduceActions::ShiftAndReduceActions(const ActionNodeCommonData &cd, const ParserActionArray &actionArray)
-  : ActionNodeCommonData(cd)
+MixedReductionArray::MixedReductionArray(const ReduceNodeCommonData &cd, const ParserActionArray &actionArray)
+  : ReduceNodeCommonData(cd)
 {
   CompactUIntHashMap<UINT, 256>  termSetReductionMap(241); // map from reduce-production -> index into termSetReductionArray
   for(const ParserAction pa : actionArray) {
     if(pa.m_action > 0) {
-      m_shiftActionArray.add(pa);
+      ; // do NOTHING
     } else { // pa.action <= 0.....reduce (or accept)
       const UINT  prod   = -pa.m_action;
       const UINT *indexp = termSetReductionMap.get(prod);
@@ -26,9 +26,9 @@ ShiftAndReduceActions::ShiftAndReduceActions(const ActionNodeCommonData &cd, con
   m_termSetReductionArray.sortByLegalTermCount();
 }
 
-ParserActionArray ShiftAndReduceActions::mergeAll() const {
+ParserActionArray MixedReductionArray::mergeAll() const {
   ParserActionArray result(getLegalTermCount());
-  result.addAll(m_shiftActionArray);
+  result.addAll(m_parserActionArray);
   if(!m_termSetReductionArray.isEmpty()) {
     for(auto it = m_termSetReductionArray.getIterator(); it.hasNext();) {
       result.addAll((ParserActionArray)it.next());
@@ -40,31 +40,30 @@ ParserActionArray ShiftAndReduceActions::mergeAll() const {
   return result;
 }
 
-StateActionNode *StateActionNode::allocateStateActionNode(const Grammar &grammar, UINT state, const ParserActionArray &actionArray, const MatrixOptimizeParameters &opt) {
-  const ActionNodeCommonData commonData(grammar, state, opt);
-  const Options             &options = Options::getInstance();
+ReduceNode *ReduceNode::allocateReduceNode(const Grammar &grammar, UINT state, const ParserActionArray &actionArray, const MatrixOptimizeParameters &opt) {
+  const ReduceNodeCommonData commonData(grammar, state, opt);
   if(!opt.m_enabled) {
-    return new BinSearchNode(nullptr, commonData, actionArray);
+    return new ReduceNodeBinSearch(nullptr, commonData, actionArray);
   } else {
-    return allocateNode(nullptr, ShiftAndReduceActions(commonData, actionArray));
+    const MixedReductionArray mr(commonData, actionArray);
+    return (mr.getLegalTermCount() == 0) ? nullptr : allocateNode(nullptr, mr);
   }
 }
 
-StateActionNode *StateActionNode::allocateNode(const StateActionNode *parent, const ShiftAndReduceActions &sra) {
-  const UINT                      shiftActions  = sra.m_shiftActionArray.getLegalTermCount();
-  const UINT                      reduceActions = (UINT)sra.m_termSetReductionArray.size();
-  const MatrixOptimizeParameters &opt           = sra.getOptimizeParam();
+ReduceNode *ReduceNode::allocateNode(const ReduceNode *parent, const MixedReductionArray &sra) {
+  const UINT                     parserActions = sra.m_parserActionArray.getLegalTermCount();
+  const UINT                     reduceActions = (UINT)sra.m_termSetReductionArray.size();
+  const MatrixOptimizeParameters opt = sra.getOptimizeParam();
 
-  assert(shiftActions + reduceActions >= 1);
+  assert(parserActions + reduceActions >= 1);
 
-  if(shiftActions + reduceActions == 1) {
+  if(parserActions + reduceActions == 1) {
     if(reduceActions == 0) {
-      return allocateBinSearchNode(parent, sra, sra.m_shiftActionArray);
+      return allocateBinSearchNode(parent, sra, sra.m_parserActionArray);
     } else { // reduceActions == 1
       return allocateBitSetNode( parent, sra, sra.m_termSetReductionArray.first());
     }
   }
-
   const BYTE recurseLevel = parent ? parent->getRecurseLevel() + 1 : 0;
   if((reduceActions == 0) || (sra.m_termSetReductionArray.first().getLegalTermCount() < opt.m_minBitSetSize) || (recurseLevel >= opt.m_maxRecursion)) {
     return allocateBinSearchNode(parent, sra, sra.mergeAll());
@@ -72,72 +71,73 @@ StateActionNode *StateActionNode::allocateNode(const StateActionNode *parent, co
   return allocateSplitNode(parent, sra);
 }
 
-StateActionNode *StateActionNode::allocateSplitNode(const StateActionNode *parent, const ShiftAndReduceActions &sra) {
+ReduceNode *ReduceNode::allocateSplitNode(const ReduceNode *parent, const MixedReductionArray &sra) {
   const UINT legalTokenCount = sra.getLegalTermCount();
-  SplitNode *p = new SplitNode(parent, sra, legalTokenCount); TRACE_NEW(p);
+  ReduceNodeSplit *p = new ReduceNodeSplit(parent, sra, legalTokenCount); TRACE_NEW(p);
   // (shiftActions + reduceActions >= 2) && (reduceActions >= 1) && (m_termSetReductionArray.first().getLegalTermCount() >= options.m_minTermBitSetSize)
-  StateActionNode *child0 = allocateBitSetNode(p, sra, sra.m_termSetReductionArray.first());
-  StateActionNode *child1 = allocateNode(      p, ShiftAndReduceActions(sra).removeFirstTermSet());
+  ReduceNode *child0 = allocateBitSetNode(p, sra, sra.m_termSetReductionArray.first());
+  ReduceNode *child1 = allocateNode(      p, MixedReductionArray(sra).removeFirstTermSet());
   p->setChild(0, child0).setChild(1, child1);
   return p;
 }
 
-StateActionNode *StateActionNode::allocateBinSearchNode(const StateActionNode *parent, const ActionNodeCommonData &cd, const ParserActionArray &actionArray) {
-  StateActionNode *p;
+ReduceNode *ReduceNode::allocateBinSearchNode(const ReduceNode *parent, const ReduceNodeCommonData &cd, const ParserActionArray &actionArray) {
+  ReduceNode *p;
   if(actionArray.getLegalTermCount() == 1) {
-    p = new ImmediateNode(parent, cd, actionArray.first()); TRACE_NEW(p);
+    p = new ReduceNodeImmediate(parent, cd, actionArray.first()); TRACE_NEW(p);
   } else {
-    p = new BinSearchNode(parent, cd, actionArray        ); TRACE_NEW(p);
+    p = new ReduceNodeBinSearch(parent, cd, actionArray        ); TRACE_NEW(p);
   }
   return p;
 }
 
-StateActionNode *StateActionNode::allocateBitSetNode(const StateActionNode *parent, const ActionNodeCommonData &cd, const TermSetReduction &termSetReduction) {
-  StateActionNode *p;
+
+ReduceNode *ReduceNode::allocateBitSetNode(const ReduceNode *parent, const ReduceNodeCommonData &cd, const TermSetReduction &termSetReduction) {
+  ReduceNode *p;
   if(termSetReduction.getLegalTermCount() == 1) {
-    p = new ImmediateNode(parent, cd, ParserActionArray(termSetReduction).first()); TRACE_NEW(p);
+    p = new ReduceNodeImmediate(parent, cd, ParserActionArray(termSetReduction).first()); TRACE_NEW(p);
   } else {
-    p = new BitSetNode(   parent, cd, termSetReduction                           ); TRACE_NEW(p);
+    p = new ReduceNodeBitSet(   parent, cd, termSetReduction                           ); TRACE_NEW(p);
   }
   return p;
 }
 
-SplitNode::~SplitNode() {
+ReduceNodeSplit::~ReduceNodeSplit() {
   SAFEDELETE(m_child[0]);
   SAFEDELETE(m_child[1]);
 }
 
-SplitNode &SplitNode::setChild(BYTE index, StateActionNode *child) {
+ReduceNodeSplit &ReduceNodeSplit::setChild(BYTE index, ReduceNode *child) {
   assert(index < 2);
   assert(m_child[index] == nullptr);
   m_child[index] = child;
   return *this;
 }
 
-String StateActionNode::toString() const {
+String ReduceNode::toString() const {
   return format(_T("State %u %-20s recurseLevel:%u, (Legal tokens:%u)\n"), getState(), compressMethodToString(getCompressionMethod()), m_recurseLevel, m_legalTermCount);
 }
 
-String BinSearchNode::toString() const {
-  const String result = __super::toString()  + indentString(m_termListActionArray.toString(getGrammar()),3);
+String ReduceNodeBinSearch::toString() const {
+  const String result = __super::toString()  + indentString(m_parserActionArray.toString(getGrammar()),3);
   return indentString(result, m_recurseLevel * 2);
 }
 
-String SplitNode::toString() const {
+String ReduceNodeSplit::toString() const {
   const String cstr0  = indentString(getChild(0).toString(),2);
   const String cstr1  = indentString(getChild(1).toString(),2);
   const String result = __super::toString() + indentString(format(_T("Child 0:\n%s\nChild 1:\n%s"), cstr0.cstr(), cstr1.cstr()), 3);
   return indentString(result, m_recurseLevel * 2);
 }
 
-String ImmediateNode::toString() const {
+String ReduceNodeImmediate::toString() const {
   const String result = __super::toString() + indentString(m_action.toString(getGrammar()),3);
   return indentString(result, m_recurseLevel * 2);
 }
 
-String BitSetNode::toString() const {
+String ReduceNodeBitSet::toString() const {
   const String result = __super::toString() + indentString(m_termSetReduction.toString(),3);
   return indentString(result, m_recurseLevel * 2);
 }
 
-}; // namespace ActionMatrixCompression
+}; // namespace TransposedShiftMatrixCompression

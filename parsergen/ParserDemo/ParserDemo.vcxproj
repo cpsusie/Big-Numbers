@@ -289,6 +289,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\parsergen\Grammar.cpp" />
+    <ClCompile Include="..\ParserGen\GrammarDump.cpp" />
     <ClCompile Include="..\ParserGen\Options.cpp" />
     <ClCompile Include="..\ParserGen\ParserActionArray.cpp" />
     <ClCompile Include="..\ParserGen\SuccessorStateArray.cpp" />

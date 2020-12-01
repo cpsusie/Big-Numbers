@@ -4,6 +4,7 @@
 #include "CompressedActionMatrixCpp.h"
 #include "CompressedSuccessorMatrixCpp.h"
 #include "CompressedTransSuccMatrixCpp.h"
+#include "CompressedTransShiftMatrixCpp.h"
 #include "GrammarCode.h"
 
 GrammarCode::GrammarCode(Grammar &grammar)
@@ -22,21 +23,19 @@ GrammarCode::GrammarCode(Grammar &grammar)
     listCompressionCombination();
     exit(0);
   }
-  if(options.m_useTableCompression) {
+  if(options.getOptParam(OPTPARAM_ACTION).m_enabled) {
     ActionMatrixCompression::CompressedActionMatrix am(m_grammar);
     const ByteCount savedBytes = am.getSavedBytesByOptimizedTermBitSets();
     if(savedBytes.getByteCount(PLATFORM_X64) > 20) {
-      const OptimizedBitSetPermutation &termBitSetPermutation = am.getTermBitSetPermutation();
-      m_grammar.reorderTerminals(termBitSetPermutation, termBitSetPermutation.getNewCapacity());
+      m_grammar.reorderTerminals(am.getTermBitSetPermutation());
     }
-
-    if(options.m_compressSuccTransposed) {
-      TransposedSuccessorMatrixCompression::CompressedTransSuccMatrix sm(m_grammar);
-      const ByteCount savedBytes = sm.getSavedBytesByOptimizedStateBitSets();
-      if(savedBytes.getByteCount(PLATFORM_X64) > 20) {
-        const OptimizedBitSetPermutation &stateBitSetPermutation = sm.getStateBitSetPermutation();
-        m_grammar.reorderStates(stateBitSetPermutation, stateBitSetPermutation.getNewCapacity());
-      }
+  } else if(options.getOptParam(OPTPARAM_SHIFT).m_enabled) {
+    TransposedShiftMatrixCompression::CompressedTransShiftMatrix sm(m_grammar);
+    if(sm.getSavedBytesByOptimizedStateBitSets().getByteCount(PLATFORM_X64) > 20) {
+      m_grammar.reorderStates(sm.getStateBitSetPermutation());
+    }
+    if(sm.getSavedBytesByOptimizedTermBitSets().getByteCount(PLATFORM_X64) > 20) {
+      m_grammar.reorderTerminals(sm.getTermBitSetPermutation());
     }
   }
 }
@@ -109,19 +108,70 @@ static constexpr UINT recurseLevelWidth   = 10;
 static constexpr UINT splitNodeCountWidth = 14;
 static constexpr UINT bitSetCapacityWidth = 14;
 static constexpr UINT minBitSetSizeWidth  = 14;
+static constexpr UINT minBitSetRangeWidth = 14;
+
+using namespace TransposedShiftMatrixCompression;
 
 void GrammarCode::listCompressionCombination() {
-  UINT      bestMaxRecursionAction = 0;
-  ByteCount bestByteCountActionMatrix;
-  ByteCount byteCountSuccessorMatrix;
-
-  UINT      bestMaxRecursionTransSucc = 0;
-  UINT      bestMinStateBitSetSize    = 0;
-  bool      bestPruneTransSuccBitSet  = false;
-  ByteCount bestByteCountTransSuccMatrix;
+  MatrixOptimizeParameters bestShiftParam, bestSuccParam;
+  ByteCount                bestByteCount;
 
   Options &options = Options::getInstance();
 
+  { // Successor Matrix Transposed
+    _tprintf(_T("%*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s\n")
+            ,recurseLevelWidth        , _T("SHFT.recurseLvl"   )
+            ,minBitSetSizeWidth       , _T("SHFT.bitsetsize"   )
+            ,recurseLevelWidth        , _T("SUCC.recurseLvl"   )
+            ,minBitSetSizeWidth       , _T("SUCC.bitsetsize"   )
+            ,ByteCount::tableformWidth, _T("SuccCodeArray"     )
+            ,ByteCount::tableformWidth, _T("StateArrayTable"   )
+            ,ByteCount::tableformWidth, _T("NewStateArrayTable")
+            ,ByteCount::tableformWidth, _T("StateBitSetTable"  )
+            ,ByteCount::tableformWidth, _T("Total"             )
+            ,splitNodeCountWidth      , _T("Splitnodes"        )
+            ,minBitSetRangeWidth      , _T("shiftBitset.ran"   )
+            ,minBitSetRangeWidth      , _T("succBitset.ran"    )
+            );
+
+    MatrixOptimizeParameters &optShift  = options.getOptimizeParameters(OPTPARAM_SHIFT );
+    MatrixOptimizeParameters &optReduce = options.getOptimizeParameters(OPTPARAM_REDUCE);
+    MatrixOptimizeParameters &optSucc   = options.getOptimizeParameters(OPTPARAM_SUCC  );
+
+    for(optShift.m_maxRecursion = 0; optShift.m_maxRecursion < Options::maxRecursiveCalls; optShift.m_maxRecursion++) {
+      for(optShift.m_minBitSetSize = 2; optShift.m_minBitSetSize < 50; optShift.m_minBitSetSize++) {
+        for(optSucc.m_maxRecursion = 0; optSucc.m_maxRecursion < Options::maxRecursiveCalls; optSucc.m_maxRecursion++) {
+          for(optSucc.m_minBitSetSize = 2; optSucc.m_minBitSetSize < 50; optSucc.m_minBitSetSize++) {
+            Grammar tempGrammar(m_grammar);
+            const TableTypeByteCountMap map         = CompressedTransShiftMatrix::findTablesByteCount(tempGrammar);
+            const ByteCount             matrixTotal = map.getSum();
+            _tprintf(_T("%*u %*u %*u %*u %*s %*s %*s %*s %*s %*u %*s %*s\n")
+                    ,recurseLevelWidth        , optShift.m_maxRecursion
+                    ,minBitSetSizeWidth       , optShift.m_minBitSetSize
+                    ,recurseLevelWidth        , optSucc.m_maxRecursion
+                    ,minBitSetSizeWidth       , optSucc.m_minBitSetSize
+                    ,ByteCount::tableformWidth, map.getTableString(BC_SUCCESSORCODEARRAY ).cstr()
+                    ,ByteCount::tableformWidth, map.getTableString(BC_STATEARRAYTABLE    ).cstr()
+                    ,ByteCount::tableformWidth, map.getTableString(BC_NEWSTATEARRAYTABLE ).cstr()
+                    ,ByteCount::tableformWidth, map.getTableString(BC_STATEBITSETTABLE   ).cstr()
+                    ,ByteCount::tableformWidth, matrixTotal.toStringTableForm().cstr()
+                    ,splitNodeCountWidth      , map.getSplitNodeCount()
+                    ,minBitSetRangeWidth      , map.getShiftStateBitSetInterval().toString().cstr()
+                    ,minBitSetRangeWidth      , map.getSuccStateBitSetInterval().toString().cstr()
+                    );
+            if(bestByteCount.isEmpty() || (matrixTotal < bestByteCount)) {
+              bestShiftParam = optShift;
+              bestSuccParam  = optSucc;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+#if defined(__NEVER__)
+/*
   {  // Action Matrix (not transposed)
     _tprintf(_T("%*s %*s %*s %*s %*s %*s %*s %*s\n")
             ,recurseLevelWidth        , _T("recurseLvl"      )
@@ -133,12 +183,16 @@ void GrammarCode::listCompressionCombination() {
             ,splitNodeCountWidth      , _T("Splitnodes"      )
             ,bitSetCapacityWidth      , _T("termBitset.cap"  )
             );
-    for(options.m_maxRecursionAction = 0; options.m_maxRecursionAction < Options::maxRecursiveCalls; options.m_maxRecursionAction++) {
+
+    OptimizationParameters &optShift = options.getOptimizeParameters(OPTPARAM_SHIFT);
+    OptimizationParameters &optSucc  = options.getOptimizeParameters(OPTPARAM_SUCC );
+
+    for(options.m_maxActionRecursion = 0; options.m_maxActionRecursion < Options::maxRecursiveCalls; options.m_maxActionRecursion++) {
       Grammar tempGrammar(m_grammar);
       const TableTypeByteCountMap map = ActionMatrixCompression::CompressedActionMatrix::findTablesByteCount(tempGrammar);
       const ByteCount matrixTotal = map.getSum(); 
       _tprintf(_T("%*u %*s %*s %*s %*s %*s %*u %*u\n")
-              ,recurseLevelWidth        , options.m_maxRecursionAction
+              ,recurseLevelWidth        , options.m_maxActionRecursion
               ,ByteCount::tableformWidth, map.getTableString(BC_ACTIONCODEARRAY ).cstr()
               ,ByteCount::tableformWidth, map.getTableString(BC_TERMARRAYTABLE  ).cstr()
               ,ByteCount::tableformWidth, map.getTableString(BC_ACTIONARRAYTABLE).cstr()
@@ -148,7 +202,7 @@ void GrammarCode::listCompressionCombination() {
               ,bitSetCapacityWidth      , map.getTermBitSetCapacity()
               );
       if(bestByteCountActionMatrix.isEmpty() || (matrixTotal < bestByteCountActionMatrix)) {
-        bestMaxRecursionAction    = options.m_maxRecursionAction;
+        bestMaxRecursionAction    = options.m_maxActionRecursion;
         bestByteCountActionMatrix = matrixTotal;
       }
     }
@@ -178,75 +232,26 @@ void GrammarCode::listCompressionCombination() {
             );
     byteCountSuccessorMatrix = matrixTotal;
   }
-
-  { // Successor Matrix Transposed
-    _tprintf(_T("%*s %*s %*s %*s %*s %*s %*s %*s %*s %*s\n")
-            ,recurseLevelWidth        , _T("recurseLvl"        )
-            ,minBitSetSizeWidth       , _T("min.bitsetsize"    )
-            ,minBitSetSizeWidth       , _T("prune(bitset)"     )
-            ,ByteCount::tableformWidth, _T("SuccCodeArray"     )
-            ,ByteCount::tableformWidth, _T("StateArrayTable"   )
-            ,ByteCount::tableformWidth, _T("NewStateArrayTable")
-            ,ByteCount::tableformWidth, _T("StateBitSetTable"  )
-            ,ByteCount::tableformWidth, _T("Total"             )
-            ,splitNodeCountWidth      , _T("Splitnodes"        )
-            ,bitSetCapacityWidth      , _T("stateBitset.cap"   )
-            );
-
-    for(options.m_maxRecursionTransSucc = 0; options.m_maxRecursionTransSucc < Options::maxRecursiveCalls; options.m_maxRecursionTransSucc++) {
-      for(options.m_minStateBitSetSize = 2; options.m_minStateBitSetSize < 50; options.m_minStateBitSetSize++) {
-        for(BYTE pruneState = 0; pruneState < 2; pruneState++) {
-          options.m_pruneTransSuccBitSet = pruneState ? true : false;
-          Grammar tempGrammar(m_grammar);
-          const TableTypeByteCountMap map         = TransposedSuccessorMatrixCompression::CompressedTransSuccMatrix::findTablesByteCount(tempGrammar);
-          const ByteCount             matrixTotal = map.getSum();
-          _tprintf(_T("%*u %*u %*s %*s %*s %*s %*s %*s %*u %*u\n")
-                  ,recurseLevelWidth        , options.m_maxRecursionTransSucc
-                  ,minBitSetSizeWidth       , options.m_minStateBitSetSize
-                  ,minBitSetSizeWidth       , boolToStr(options.m_pruneTransSuccBitSet)
-                  ,ByteCount::tableformWidth, map.getTableString(BC_SUCCESSORCODEARRAY ).cstr()
-                  ,ByteCount::tableformWidth, map.getTableString(BC_STATEARRAYTABLE    ).cstr()
-                  ,ByteCount::tableformWidth, map.getTableString(BC_NEWSTATEARRAYTABLE ).cstr()
-                  ,ByteCount::tableformWidth, map.getTableString(BC_STATEBITSETTABLE   ).cstr()
-                  ,ByteCount::tableformWidth, matrixTotal.toStringTableForm().cstr()
-                  ,splitNodeCountWidth      , map.getSplitNodeCount()
-                  ,bitSetCapacityWidth      , map.getStateBitSetCapacity()
-                  );
-          if(bestByteCountTransSuccMatrix.isEmpty() || (matrixTotal < bestByteCountTransSuccMatrix)) {
-            bestMaxRecursionTransSucc    = options.m_maxRecursionTransSucc ;
-            bestMinStateBitSetSize       = options.m_minStateBitSetSize;
-            bestPruneTransSuccBitSet     = options.m_pruneTransSuccBitSet;
-            bestByteCountTransSuccMatrix = matrixTotal;
-          }
-        }
-      }
-    }
+*/
+#endif
+ByteArray bitSetToByteArray(const BitSet &bitSet, UINT capacity) {
+  if(capacity == 0) {
+    capacity = (UINT)bitSet.getCapacity();
   }
-
-  if(bestByteCountTransSuccMatrix < byteCountSuccessorMatrix) {
-    _tprintf(_T("Best parameters for Transposed SuccessorMatrix:-T,r%u,m%u%s. Gives matrix size=%s\n")
-            ,bestMaxRecursionTransSucc
-            ,bestMinStateBitSetSize
-            ,bestPruneTransSuccBitSet?_T(",p"):_T("")
-            ,bestByteCountTransSuccMatrix.toString().cstr()
-            );
-  }
+  return bitSetToByteArray(bitSet, BitSetInterval(0, capacity));
 }
 
-ByteArray bitSetToByteArray(const BitSet &bitSet, UINT capacity) {
-  const size_t byteCount = getSizeofBitSet(capacity ? capacity : (UINT)bitSet.getCapacity());
-  if(capacity && (capacity < bitSet.getCapacity())) {
-    BitSet tmp(bitSet.getCapacity());
-    tmp.add(capacity, bitSet.getCapacity() - 1);
-    if(!(bitSet & tmp).isEmpty()) {
-      throwInvalidArgumentException(__TFUNCTION__, _T("BitSet:%s, capacity=%u"), bitSet.toRangeString().cstr(), capacity);
-    }
+ByteArray bitSetToByteArray(const BitSet &bitSet, const BitSetInterval &interval) {
+  if(!interval.checkBitSetValues(bitSet)) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("BitSet:%s, interval=%s"), bitSet.toRangeString().cstr(), interval.toString().cstr());
   }
+  const size_t byteCount = interval.getSizeofBitSet();
   ByteArray    result(byteCount);
   result.addZeroes(byteCount);
   BYTE *b = (BYTE*)result.getData();
+  const UINT base = interval.getFrom();
   for(auto it = bitSet.getIterator(); it.hasNext();) {
-    const UINT v = (UINT)it.next();
+    const UINT v = (UINT)it.next() - base;
     b[v >> 3] |= (1 << (v & 7));
   }
   return result;
@@ -265,12 +270,12 @@ ByteCount outputEndArrayDefinition(  MarginFile &output,                        
   return byteCount;
 }
 
-UINT outputBeginBitSetTableDefinition(MarginFile &output, const TCHAR *tableName, UINT capacity, UINT count) {
+UINT outputBeginBitSetTableDefinition(MarginFile &output, const TCHAR *tableName, const BitSetInterval &interval, UINT count) {
   output.setLeftMargin(0);
-  const UINT bytesPerBitSet = getSizeofBitSet(capacity);
-  const UINT totalSize   = count * bytesPerBitSet;
-  output.printf(_T("static const %s %s[%u] = { /* capacity(bitset)=%u, bytes in bitset=%u */\n")
-               ,getTypeName(TYPE_UCHAR), tableName, totalSize, capacity, bytesPerBitSet);
+  const UINT bytesPerBitSet = interval.getSizeofBitSet();
+  const UINT totalSize      = count * bytesPerBitSet;
+  output.printf(_T("static const %s %s[%u] = { /* range:%s, bytes in bitset=%u */\n")
+               ,getTypeName(TYPE_UCHAR), tableName, totalSize, interval.toString().cstr(), bytesPerBitSet);
   output.setLeftMargin(2);
   return totalSize;
 }

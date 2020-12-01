@@ -52,6 +52,9 @@ private:
 public:
   CompressedSuccessorMatrix(const Grammar &grammar);
   ByteCount print(MarginFile &output) const;
+  const TableTypeByteCountMap &getByteCountMap() const {
+    return m_byteCountMap;
+  }
 
   static TableTypeByteCountMap findTablesByteCount(const Grammar &grammar);
 };

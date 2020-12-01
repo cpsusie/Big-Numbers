@@ -231,12 +231,11 @@
     <ClInclude Include="..\..\Lib\Include\LRparser.h" />
     <ClInclude Include="ByteCount.h" />
     <ClInclude Include="CompressedSuccessorMatrixCpp.h" />
+    <ClInclude Include="CompressedTransShiftMatrixCpp.h" />
     <ClInclude Include="CompressedTransSuccMatrixCpp.h" />
     <ClInclude Include="IndexMap.h" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="MacroMap.h" />
-    <ClInclude Include="NTindexNode.h" />
-    <ClInclude Include="NTindexNodeArray.h" />
     <ClInclude Include="Options.h" />
     <ClInclude Include="CompressedActionMatrixCpp.h" />
     <ClInclude Include="CompressEncoding.h" />
@@ -250,17 +249,26 @@
     <ClInclude Include="SourceText.h" />
     <ClInclude Include="StateActionNode.h" />
     <ClInclude Include="StateActionNodeArray.h" />
+    <ClInclude Include="ReduceNode.h" />
+    <ClInclude Include="ReduceNodeArray.h" />
+    <ClInclude Include="StatePair.h" />
+    <ClInclude Include="StatePairMatrix.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StringCollector.h" />
+    <ClInclude Include="SymbolNodeArray.h" />
+    <ClInclude Include="SymbolNodeBase.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TemplateWriter.h" />
+    <ClInclude Include="SymbolNode.h" />
+    <ClInclude Include="TermSetReduction.h" />
     <ClInclude Include="Wizard.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CompressedTransShiftMatrixCpp.cpp" />
     <ClCompile Include="CompressedTransSuccMatrixCpp.cpp" />
+    <ClCompile Include="GrammarPermutation.cpp" />
     <ClCompile Include="OptimizedBitSetPermutation.cpp" />
-    <ClCompile Include="NTindexNode.cpp" />
-    <ClCompile Include="NTindexNodeArray.cpp" />
+    <ClCompile Include="TransposedSuccessorMatrix.cpp" />
     <ClCompile Include="ParserActionArray.cpp" />
     <ClCompile Include="ActionsWriter.cpp" />
     <ClCompile Include="ByteCount.cpp" />
@@ -283,6 +291,10 @@
     <ClCompile Include="ParserGen.cpp" />
     <ClCompile Include="StateActionNode.cpp" />
     <ClCompile Include="StateActionNodeArray.cpp" />
+    <ClCompile Include="ReduceNode.cpp" />
+    <ClCompile Include="ReduceNodeArray.cpp" />
+    <ClCompile Include="StatePair.cpp" />
+    <ClCompile Include="StatePairMatrix.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -291,9 +303,13 @@
     </ClCompile>
     <ClCompile Include="StringCollector.cpp" />
     <ClCompile Include="SuccessorStateArray.cpp" />
+    <ClCompile Include="SymbolNodeArray.cpp" />
     <ClCompile Include="SymbolsWriter.cpp" />
     <ClCompile Include="TablesWriter.cpp" />
     <ClCompile Include="TemplateWriter.cpp" />
+    <ClCompile Include="SymbolNode.cpp" />
+    <ClCompile Include="TransposedShiftMatrix.cpp" />
+    <ClCompile Include="TermSetReduction.cpp" />
     <ClCompile Include="Wizard.cpp" />
   </ItemGroup>
   <ItemGroup>

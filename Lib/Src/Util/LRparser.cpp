@@ -20,7 +20,7 @@ LRparser::~LRparser() {
 }
 
 void LRparser::initialize() {
-  m_state         = 0;
+  m_state         = m_tables.getStartState();
   m_suppressError = 0;
   m_errorCount    = 0;
   m_done          = false;

@@ -81,6 +81,9 @@
     <ClCompile Include="..\ParserGen\SuccessorStateArray.cpp">
       <Filter>Source Files\ParserGen Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\ParserGen\GrammarDump.cpp">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ParserDemo.rc">

@@ -7,27 +7,6 @@
 
 namespace ActionMatrixCompression {
 
-inline int termSetCmp(const TermSet &s1, const TermSet &s2) {
-  assert(s1.getCapacity() == s2.getCapacity());
-  return bitSetCmp(s1, s2);
-}
-
-class TermSetIndexMap : public IndexMap<TermSet> {
-public:
-  TermSetIndexMap() : IndexMap(termSetCmp) {
-  }
-};
-
-typedef IndexArray<TermSet> TermSetIndexArray;
-
-class ActionArrayIndexMap : public IndexMap<ActionArray> {
-public:
-  ActionArrayIndexMap() : IndexMap(actionArrayCmp) {
-  }
-};
-
-typedef IndexArray<ActionArray> ActionArrayIndexArray;
-
 class CompressedActionMatrix : public MacroMap {
 private:
   const Grammar                &m_grammar;
@@ -65,6 +44,10 @@ public:
   inline ByteCount getSavedBytesByOptimizedTermBitSets() const {
     return getTermBitSetPermutation().getSavedBytesByOptimizedBitSets((UINT)m_termBitSetMap.size());
   }
+  const TableTypeByteCountMap &getByteCountMap() const {
+    return m_byteCountMap;
+  }
+
   ByteCount print(MarginFile &output) const;
 
   static TableTypeByteCountMap findTablesByteCount(const Grammar &grammar);
