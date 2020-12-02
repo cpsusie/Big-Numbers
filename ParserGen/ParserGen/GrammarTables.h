@@ -22,13 +22,8 @@ private:
 
   void      printCpp(                              MarginFile &output) const;
   void      printJava(                             MarginFile &output) const;
-  ByteCount printCppParserTablesTemplate(          MarginFile &output) const; // return size in bytes
-//  ByteCount printCppParserTablesTemplateTransSucc( MarginFile &output) const; // return size in bytes
   ByteCount printCppParserTablesTemplateTransShift(MarginFile &output) const; // return size in bytes
-  ByteCount printCompressedActionMatrixCpp(        MarginFile &output) const; // return size in bytes
   ByteCount printCompressedTransShiftMatrixCpp(    MarginFile &output) const; // return size in bytes
-  ByteCount printCompressedSuccessorMatrixCpp(     MarginFile &output) const; // return size in bytes
-  ByteCount printCompressedTransSuccMatrixCpp(     MarginFile &output) const; // return size in bytes
   ByteCount printProdLengthArrayCpp(               MarginFile &output) const; // return size in bytes
   ByteCount printLeftSideArrayCpp(                 MarginFile &output) const; // return size in bytes
   ByteCount printRightSideTableCpp(                MarginFile &output) const; // return size in bytes

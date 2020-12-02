@@ -14,18 +14,25 @@ inline UINT encodeCompressMethod(CompressionMethod method) {
 }
 
 UINT   encodeValue(     CompressionMethod method, int highEnd, int lowEnd);
+
+#define TEST_ENCODING
+#if defined(TEST_ENCODING)
+
+String tencodeMacroValue(CompressionMethod method, int highEnd, int lowEnd, const TCHAR *func, int line, const TCHAR *hstr,const TCHAR *lstr);
+#define encodeMacroValue(method, highEnd, lowEnd) \
+  tencodeMacroValue(method, highEnd, lowEnd, __TFUNCTION__, __LINE__, _T(#highEnd), _T(#lowEnd))
+
+#else
 String encodeMacroValue(CompressionMethod method, int highEnd, int lowEnd);
+#endif
 
 typedef enum {
-  BC_ACTIONCODEARRAY
- ,BC_SHIFTCODEARRAY
+  BC_SHIFTCODEARRAY
  ,BC_REDUCECODEARRAY
  ,BC_SUCCESSORCODEARRAY
  ,BC_TERMARRAYTABLE
- ,BC_ACTIONARRAYTABLE
  ,BC_REDUCEARRAYTABLE
  ,BC_TERMBITSETTABLE
- ,BC_NTINDEXARRAYTABLE
  ,BC_NEWSTATEARRAYTABLE
  ,BC_STATEARRAYTABLE
  ,BC_STATEBITSETTABLE

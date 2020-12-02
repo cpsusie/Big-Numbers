@@ -91,7 +91,6 @@ int _tmain(int argc, TCHAR **argv) {
               for(TCHAR *cp1 = cs.cstr(); *cp1; cp1++) {
 #define CHECKOPT() if(optParam == nullptr) usage(); (*optParam)
                 switch(*cp1) {
-                case 'A': optParam = &options.getOptimizeParameters(OPTPARAM_ACTION); continue;
                 case 'R': optParam = &options.getOptimizeParameters(OPTPARAM_REDUCE); continue;
                 case 'S': optParam = &options.getOptimizeParameters(OPTPARAM_SHIFT ); continue;
                 case 'N': optParam = &options.getOptimizeParameters(OPTPARAM_SUCC  ); continue;
@@ -214,6 +213,8 @@ int _tmain(int argc, TCHAR **argv) {
       if(!*argv) {
         usage();
       }
+
+//      debugLog(_T("Options:\n%s"), options.toString().cstr());
 
       options.checkTemplateExist(skeletonFileName);
 

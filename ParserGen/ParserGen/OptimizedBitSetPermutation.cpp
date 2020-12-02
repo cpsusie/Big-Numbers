@@ -50,7 +50,13 @@ OptimizedBitSetPermutation::OptimizedBitSetPermutation(const BitSet &bitSet)
   BitSet compl(bitSet);
   compl.invert();
   UINT index = 0;
-  addSet(bitSet, index).setNewCapacity(index).addSet(compl, index);
+
+//  debugLog(_T("%s:bitSet:%s\n"       ), __TFUNCTION__, bitSet.toRangeString().cstr());
+//  debugLog(_T("%s:compl(bitSet):%s\n"), __TFUNCTION__, compl.toRangeString().cstr());
+
+  addSet(bitSet, index);
+  setNewCapacity(index);
+  addSet(compl, index);
 }
 
 OptimizedBitSetPermutation &OptimizedBitSetPermutation::addSet(const BitSet &s, UINT &v) {
@@ -76,6 +82,12 @@ ByteCount OptimizedBitSetPermutation::getSavedBytesByOptimizedBitSets(UINT bitSe
   }
 }
 
+void OptimizedBitSetPermutation::validate() const {
+  __super::validate();
+  if((m_newCapacity == 0) || (m_newCapacity > getOldCapacity())) {
+    throwException(_T("%s: newCapacity(=%u) must be in range [1..%u]"), __TFUNCTION__, m_newCapacity, getOldCapacity());
+  }
+}
 // -----------------------------------------------------------------------------------------------------------------------
 
 OptimizedBitSetPermutation2::OptimizedBitSetPermutation2(const BitSet &A, const BitSet &B)
@@ -99,19 +111,40 @@ OptimizedBitSetPermutation2::OptimizedBitSetPermutation2(const BitSet &A, const 
   }
 #endif // _DEBUG
 
+//  for(UINT i = 0; i < S.size(); i++) {
+//    debugLog(_T("%s:S[%u]:%s\n"), __TFUNCTION__, i, S[i].toRangeString().cstr());
+//  }
+
   const UINT oldCapacity = (UINT)A.getCapacity();
 
   UINT index = 0;
   if(S[3].isEmpty()) {
     addSet(compl(S[3]), index).setInterval(0, 0,index).setInterval(0, 0,index);
   } else if(S[0].isEmpty()) { // A - B empty => A <= B.  permutation = A*B, B-A, tail
-    addSet(S[1], index).setInterval(0, 0,index).addSet(S[0], index).setInterval(1, 0,index).addSet(S[3], index);
+    addSet(     S[1], index);
+    setInterval(0, 0, index);
+    addSet(     S[2], index);
+    setInterval(1, 0, index);
+    addSet(     S[3], index);
   } else if(S[2].isEmpty()) { // B - A empty => B <= A.  permutation = A*B, A-B, tail
-    addSet(S[1], index).setInterval(1, 0,index).addSet(S[0], index).setInterval(0, 0,index).addSet(S[3], index);
+    addSet(     S[1], index);
+    setInterval(1, 0, index);
+    addSet(     S[0], index);
+    setInterval(0, 0, index);
+    addSet(     S[3], index);
   } else {
-    setStart(0, index).addSet(S[0], index).setStart(1, index).addSet(S[1], index)
-   .setEnd(  0, index).addSet(S[2], index).setEnd(  1, index).addSet(S[3], index);
+    setStart(   0   , index);
+    addSet(     S[0], index);
+    setStart(   1   , index);
+    addSet(     S[1], index);
+    setEnd(     0   , index);
+    addSet(     S[2], index);
+    setEnd(     1   , index);
+    addSet(     S[3], index);
   }
+//  for(UINT i = 0; i < ARRAYSIZE(m_interval); i++) {
+//    debugLog(_T("%s:interval[%u]:%s\n"), __TFUNCTION__, i, m_interval[i].toString().cstr());
+//  }
 }
 
 BitSetInterval &OptimizedBitSetPermutation2::getInterval(BYTE index) {
@@ -150,5 +183,17 @@ ByteCount OptimizedBitSetPermutation2::getSavedBytesByOptimizedBitSets(UINT Acou
     const ByteCount Abc    = ByteCount::wordAlignedSize(Acount     * Acap  );
     const ByteCount Bbc    = ByteCount::wordAlignedSize(Bcount     * Bcap  );
     return oldBC - (Abc + Bbc);
+  }
+}
+
+void OptimizedBitSetPermutation2::validate() const {
+  __super::validate();
+  for(UINT i = 0; i < ARRAYSIZE(m_interval); i++) {
+    const BitSetInterval &v = getInterval(i);
+    const UINT            capacity = v.getCapacity();
+    if((capacity == 0) || (capacity > getOldCapacity())) {
+      throwException(_T("%s: bitSetInterval[%u]:%s, capacity(=%u) must be in range [1..%u]")
+                    ,__TFUNCTION__, i, v.toString().cstr(), capacity, getOldCapacity());
+    }
   }
 }

@@ -17,6 +17,7 @@ CompressedTransSuccMatrix::CompressedTransSuccMatrix(const Grammar &grammar)
   , m_ntIndexNodeArray(TransposedSuccessorMatrix(grammar)      )
   , m_byteCountMap(grammar                                     )
 {
+//  debugLog(_T("%s:bitSetInterval:%s\n"), __TFUNCTION__, m_bitSetInterval.toString().cstr());
   generateCompressedForm();
 }
 

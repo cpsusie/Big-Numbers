@@ -32,6 +32,8 @@ static void printCompressedActionArrayJava(MarginFile &output, const TCHAR *tabl
 }
 
 void GrammarTables::printJava(MarginFile &output) const {
+  throwUnsupportedOperationException(__TFUNCTION__);
+#if defined(__NEVER__)
   output.printf(
        _T("/*****************************************************************\\\n"
           "* The action matrix holds the parse action(state,terminal)        *\n"
@@ -236,4 +238,6 @@ void GrammarTables::printJava(MarginFile &output) const {
   }
   output.setLeftMargin(4);
   output.printf(_T("};\n\n"));
+#endif
+
 }

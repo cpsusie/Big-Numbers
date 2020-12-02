@@ -141,7 +141,7 @@ public:
   UINT findIndex(UINT v) const;
   // Check that all elements are distinct, and in range [0..size-1]
   // throw exception, if not
-  void validate() const;
+  virtual void validate() const;
 };
 
 // find permutation of elements in this, so that all 1-bits will be put first in bitset
@@ -159,6 +159,7 @@ public:
     return m_newCapacity;
   }
   ByteCount getSavedBytesByOptimizedBitSets(UINT bitSetCount) const;
+  void validate() const override;
 };
 
 class OptimizedBitSetPermutation2 : public UIntPermutation {
@@ -192,4 +193,5 @@ public:
     return getInterval(index).getCapacity();
   }
   ByteCount getSavedBytesByOptimizedBitSets(UINT Acount, UINT Bcount) const;
+  void validate() const override;
 };

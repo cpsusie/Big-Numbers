@@ -23,10 +23,16 @@ void Grammar::reorderTerminals(const OptimizedBitSetPermutation &permutation) {
   if(!permutation.isEmpty() && permutation[0] != 0) {
     throwInvalidArgumentException(__TFUNCTION__, _T("permutaton[0] != 0. Must be 0 (=EOI)"));
   }
+  if(permutation.getNewCapacity() > getTermCount()) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("permutation.newCapacity=%u > termCount(=%u)"), permutation.getNewCapacity(), getTermCount());
+  }
   permutation.validate();
 
   disableReorderTerminals();
-  m_termBitSetCapacity   = permutation.getNewCapacity();
+  m_termBitSetCapacity  = permutation.getNewCapacity();
+
+//  debugLog(_T("%s:m_termBitSetCapacity:%u\n"), __TFUNCTION__, m_termBitSetCapacity);
+
   const UINT symbolCount = getSymbolCount();
   const UINT termCount   = getTermCount();
   for(UINT oldIndex = 0; oldIndex < termCount; oldIndex++) {
@@ -90,6 +96,9 @@ void Grammar::reorderStates(const OptimizedBitSetPermutation2 &permutation) {
   disableReorderStates();
   m_shiftStateSetInterval = permutation.getInterval(0);
   m_succStateSetInterval  = permutation.getInterval(1);
+
+//  debugLog(_T("%s:shiftStateSetInterval:%s\n"), __TFUNCTION__, m_shiftStateSetInterval.toString().cstr());
+//  debugLog(_T("%s:succStateSetInterval :%s\n"), __TFUNCTION__, m_succStateSetInterval.toString().cstr());
 
   for(auto it = m_states.getIterator(); it.hasNext();) {
     LR1State &state = it.next();

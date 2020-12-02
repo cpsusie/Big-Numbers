@@ -28,6 +28,8 @@ CompressedTransShiftMatrix::CompressedTransShiftMatrix(const Grammar &grammar)
   , m_reduceNodeArray(         grammar, Options::getOptParam(OPTPARAM_REDUCE)     )
   , m_byteCountMap(            grammar                                            )
 {
+//  debugLog(_T("%s:m_shiftStateBitSetInterval:%s\n"), __TFUNCTION__, m_shiftStateBitSetInterval.toString().cstr());
+//  debugLog(_T("%s:m_sizeofTermBitSet:%u\n"), __TFUNCTION__, m_sizeofTermBitSet);
   generateCompressedForm();
 }
 
@@ -197,7 +199,7 @@ Macro CompressedTransShiftMatrix::doShiftNodeImmediate(const SymbolNode &node) {
   const UINT             fromState      = sp.m_fromState;
   const UINT             fromStateCount = node.getFromStateCount();
   const String           macroValue     = encodeMacroValue(CompCodeImmediate, newState, fromState);
-  const String           comment        = format(_T("Shift to %3u from %3u"), newState, fromState);
+  const String           comment        = format(_T("Shift to %4u from %4u"), newState, fromState);
   return Macro(m_shiftUsedByParam, term, macroValue, comment);
 }
 
@@ -218,7 +220,7 @@ Macro CompressedTransShiftMatrix::doShiftNodeBitSet(const SymbolNode &node) {
   }
   const UINT             newState       = sps.getNewState();
   const String           macroValue     = encodeMacroValue(CompCodeBitSet, newState, byteIndex);
-  const String           comment        = format(_T("Shift to %u on states in shiftStateBitSet[%u]"), newState, stateSetCount);
+  const String           comment        = format(_T("Shift to %4u on states in shiftStateBitSet[%u]"), newState, stateSetCount);
   return Macro(m_shiftUsedByParam, term, macroValue, comment);
 }
 
@@ -355,6 +357,9 @@ Macro CompressedTransShiftMatrix::doReduceNodeBitSet(const ReduceNode &node) {
     vp->addUsedByValue(state);
   } else {
     termSetCount = m_termBitSetMap.getCount();
+
+//  debugLog(_T("%s:m_sizeofTermBitSet:%u\n"), __TFUNCTION__, m_sizeofTermBitSet);
+
     byteIndex    = termSetCount * m_sizeofTermBitSet;
     m_termBitSetMap.put(termSet, IndexMapValue(m_reduceUsedByParam, state, byteIndex));
   }
@@ -566,7 +571,7 @@ void CompressedTransShiftMatrix::printMacroesAndReduceCodeArray(MarginFile &outp
     }
   }
   const ByteCount bc = outputEndArrayDefinition(output, TYPE_UINT, macroCount, true);
-  m_byteCountMap.add(BC_ACTIONCODEARRAY, bc);
+  m_byteCountMap.add(BC_REDUCECODEARRAY, bc);
 }
 
 void CompressedTransShiftMatrix::printTermAndReduceArrayTable(MarginFile &output) const {

@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include <FileNameSplitter.h>
 #include "TemplateWriter.h"
-#include "CompressedActionMatrixCpp.h"
-#include "CompressedSuccessorMatrixCpp.h"
 #include "CompressedTransSuccMatrixCpp.h"
 #include "CompressedTransShiftMatrixCpp.h"
 #include "GrammarCode.h"
@@ -23,13 +21,7 @@ GrammarCode::GrammarCode(Grammar &grammar)
     listCompressionCombination();
     exit(0);
   }
-  if(options.getOptParam(OPTPARAM_ACTION).m_enabled) {
-    ActionMatrixCompression::CompressedActionMatrix am(m_grammar);
-    const ByteCount savedBytes = am.getSavedBytesByOptimizedTermBitSets();
-    if(savedBytes.getByteCount(PLATFORM_X64) > 20) {
-      m_grammar.reorderTerminals(am.getTermBitSetPermutation());
-    }
-  } else if(options.getOptParam(OPTPARAM_SHIFT).m_enabled) {
+  if(options.getOptParam(OPTPARAM_SHIFT).m_enabled) {
     TransposedShiftMatrixCompression::CompressedTransShiftMatrix sm(m_grammar);
     if(sm.getSavedBytesByOptimizedStateBitSets().getByteCount(PLATFORM_X64) > 20) {
       m_grammar.reorderStates(sm.getStateBitSetPermutation());
@@ -170,70 +162,6 @@ void GrammarCode::listCompressionCombination() {
   }
 }
 
-#if defined(__NEVER__)
-/*
-  {  // Action Matrix (not transposed)
-    _tprintf(_T("%*s %*s %*s %*s %*s %*s %*s %*s\n")
-            ,recurseLevelWidth        , _T("recurseLvl"      )
-            ,ByteCount::tableformWidth, _T("ActionCodeArray" )
-            ,ByteCount::tableformWidth, _T("TermArrayTable"  )
-            ,ByteCount::tableformWidth, _T("ActionArrayTable")
-            ,ByteCount::tableformWidth, _T("TermBitSetTable" )
-            ,ByteCount::tableformWidth, _T("Total"           )
-            ,splitNodeCountWidth      , _T("Splitnodes"      )
-            ,bitSetCapacityWidth      , _T("termBitset.cap"  )
-            );
-
-    OptimizationParameters &optShift = options.getOptimizeParameters(OPTPARAM_SHIFT);
-    OptimizationParameters &optSucc  = options.getOptimizeParameters(OPTPARAM_SUCC );
-
-    for(options.m_maxActionRecursion = 0; options.m_maxActionRecursion < Options::maxRecursiveCalls; options.m_maxActionRecursion++) {
-      Grammar tempGrammar(m_grammar);
-      const TableTypeByteCountMap map = ActionMatrixCompression::CompressedActionMatrix::findTablesByteCount(tempGrammar);
-      const ByteCount matrixTotal = map.getSum(); 
-      _tprintf(_T("%*u %*s %*s %*s %*s %*s %*u %*u\n")
-              ,recurseLevelWidth        , options.m_maxActionRecursion
-              ,ByteCount::tableformWidth, map.getTableString(BC_ACTIONCODEARRAY ).cstr()
-              ,ByteCount::tableformWidth, map.getTableString(BC_TERMARRAYTABLE  ).cstr()
-              ,ByteCount::tableformWidth, map.getTableString(BC_ACTIONARRAYTABLE).cstr()
-              ,ByteCount::tableformWidth, map.getTableString(BC_TERMBITSETTABLE ).cstr()
-              ,ByteCount::tableformWidth, matrixTotal.toStringTableForm().cstr()
-              ,splitNodeCountWidth      , map.getSplitNodeCount()
-              ,bitSetCapacityWidth      , map.getTermBitSetCapacity()
-              );
-      if(bestByteCountActionMatrix.isEmpty() || (matrixTotal < bestByteCountActionMatrix)) {
-        bestMaxRecursionAction    = options.m_maxActionRecursion;
-        bestByteCountActionMatrix = matrixTotal;
-      }
-    }
-  }
-
-  _tprintf(_T("Best recurselevel for ActionMatrix:%u. Gives action matrix size=%s\n")
-          ,bestMaxRecursionAction
-          ,bestByteCountActionMatrix.toString().cstr()
-          );
-
-  { // Successor Matrix (not transposed)
-    _tprintf(_T("%*s %*s %*s %*s\n")
-            ,ByteCount::tableformWidth, _T("SuccCodeArray"     )
-            ,ByteCount::tableformWidth, _T("NTIndexArrayTable" )
-            ,ByteCount::tableformWidth, _T("NewStateArrayTable")
-            ,ByteCount::tableformWidth, _T("Total"             )
-            );
-
-    Grammar                     tempGrammar(m_grammar);
-    const TableTypeByteCountMap map         = SuccessorMatrixCompression::CompressedSuccessorMatrix::findTablesByteCount(tempGrammar);
-    const ByteCount             matrixTotal = map.getSum();
-    _tprintf(_T("%*s %*s %*s %*s\n")
-            ,ByteCount::tableformWidth, map.getTableString(BC_SUCCESSORCODEARRAY ).cstr()
-            ,ByteCount::tableformWidth, map.getTableString(BC_NTINDEXARRAYTABLE  ).cstr()
-            ,ByteCount::tableformWidth, map.getTableString(BC_NEWSTATEARRAYTABLE ).cstr()
-            ,ByteCount::tableformWidth, matrixTotal.toStringTableForm().cstr()
-            );
-    byteCountSuccessorMatrix = matrixTotal;
-  }
-*/
-#endif
 ByteArray bitSetToByteArray(const BitSet &bitSet, UINT capacity) {
   if(capacity == 0) {
     capacity = (UINT)bitSet.getCapacity();

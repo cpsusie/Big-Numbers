@@ -42,9 +42,24 @@ UINT encodeValue(CompressionMethod method, int highEnd, int lowEnd) {
   return (v | encodeCompressMethod(method));
 }
 
+#if defined(TEST_ENCODING)
+String tencodeMacroValue(CompressionMethod method, int highEnd, int lowEnd, const TCHAR *func, int line, const TCHAR *hstr,const TCHAR *lstr) {
+  try {
+    return format(_T("0x%08x"), encodeValue(method, highEnd, lowEnd));
+  } catch(Exception e) {
+    throwInvalidArgumentException(func, _T("line:%d, %s=%d(%#08x), %s=%d(%#08x):%s")
+                                      ,line
+                                      ,hstr, highEnd, highEnd
+                                      ,lstr, lowEnd , lowEnd);
+    return EMPTYSTRING;
+  }
+}
+
+#else
 String encodeMacroValue(CompressionMethod method, int highEnd, int lowEnd) {
   return format(_T("0x%08x"), encodeValue(method, highEnd, lowEnd));
 }
+#endif
 
 static const TCHAR *methodNames[] = {
   _T("BinSearch" )

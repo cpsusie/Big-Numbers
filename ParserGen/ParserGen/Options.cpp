@@ -16,15 +16,21 @@ Options::Options() : Singleton(__TFUNCTION__) {
   m_callWizard                  = false;
   m_findOptimalTableCompression = false;
 
-  MatrixOptimizeParameters &optAction = getOptimizeParameters(OPTPARAM_ACTION);
   MatrixOptimizeParameters &optShift  = getOptimizeParameters(OPTPARAM_SHIFT );
   MatrixOptimizeParameters &optReduce = getOptimizeParameters(OPTPARAM_REDUCE);
   MatrixOptimizeParameters &optSucc   = getOptimizeParameters(OPTPARAM_SUCC  );
 
-  optAction.m_enabled = false; optAction.m_pruneBitSet = false;
   optShift.m_enabled  = true ; optShift.m_pruneBitSet  = false;
   optReduce.m_enabled = true ; optReduce.m_pruneBitSet = false;
   optSucc.m_enabled   = true ; optSucc.m_pruneBitSet   = true ;
+}
+
+String Options::toString() const {
+  String result;
+  result  = format(_T("OptimizationParameters(%s): %s\n"), _T("OPTPARAM_SHIFT" ), m_optParam[OPTPARAM_SHIFT ].toString().cstr());
+  result += format(_T("OptimizationParameters(%s): %s\n"), _T("OPTPARAM_REDUCE"), m_optParam[OPTPARAM_REDUCE].toString().cstr());
+  result += format(_T("OptimizationParameters(%s): %s\n"), _T("OPTPARAM_SUCC"  ), m_optParam[OPTPARAM_SUCC  ].toString().cstr());
+  return result;
 }
 
 void Options::checkTemplateExist(const String &defaultTemplateName) {
@@ -39,6 +45,7 @@ void Options::checkTemplateExist(const String &defaultTemplateName) {
     }
   }
 }
+
 
 void verbose(int level, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   if(level <= Options::getInstance().m_verboseLevel) {

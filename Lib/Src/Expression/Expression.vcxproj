@@ -1184,22 +1184,22 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">false</ExcludedFromBuild>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parsergen +c1 -T,p,r1,m6 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">parsergen +c1 -T,p,r1,m6 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">parsergen +c1 -T,p,r1,m6 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|Win32'">parsergen +c1 -T,p,r1,m6 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">parsergen +c1 -T,p,r1,m6 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|Win32'">parsergen +c1 -T,p,r1,m6 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parsergen +c1 -T,p,r1,m6 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">parsergen +c1 -T,p,r1,m6 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">parsergen +c1 -T,p,r1,m6 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">parsergen +c1 -T,p,r1,m6 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">parsergen +c1 -T,p,r1,m6 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'">parsergen +c1 -T,p,r1,m6 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">parsergen +c1 -T,p,r1,m6 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">parsergen +c1 -T,p,r1,m6 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">parsergen +c1 -T,p,r1,m6 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">parsergen +c1 -T,p,r1,m6 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parsergen -C,R,r1,N,p,r2,s4 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">parsergen -C,R,r1,N,p,r2,s4 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">parsergen -C,R,r1,N,p,r2,s4 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|Win32'">parsergen -C,R,r1,N,p,r2,s4 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">parsergen -C,R,r1,N,p,r2,s4 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|Win32'">parsergen -C,R,r1,N,p,r2,s4 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parsergen -C,R,r1,N,p,r2,s4 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">parsergen -C,R,r1,N,p,r2,s4 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">parsergen -C,R,r1,N,p,r2,s4 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">parsergen -C,R,r1,N,p,r2,s4 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">parsergen -C,R,r1,N,p,r2,s4 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'">parsergen -C,R,r1,N,p,r2,s4 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">parsergen -C,R,r1,N,p,r2,s4 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">parsergen -C,R,r1,N,p,r2,s4 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">parsergen -C,R,r1,N,p,r2,s4 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">parsergen -C,R,r1,N,p,r2,s4 -NExpr -O.,..\..\include\Math\Expression Expression.y</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Analyzing Expression Grammar</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">Analyzing Expression Grammar</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">Analyzing Expression Grammar</Message>

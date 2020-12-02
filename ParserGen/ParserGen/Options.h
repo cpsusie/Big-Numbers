@@ -23,11 +23,15 @@ public:
     , m_pruneBitSet(false)
   {
   }
+  String toString() const {
+    return format(_T("enabled:%s, maxrec:%u, minsetsize:%u, prune:%s")
+                 , boolToStr(m_enabled), m_maxRecursion, m_minBitSetSize, boolToStr(m_pruneBitSet)
+                 );
+  }
 };
 
 typedef enum {
-  OPTPARAM_ACTION
- ,OPTPARAM_SHIFT
+  OPTPARAM_SHIFT
  ,OPTPARAM_REDUCE
  ,OPTPARAM_SUCC
 } OptimizationParameters;
@@ -35,7 +39,7 @@ typedef enum {
 class Options : public Singleton {
 private:
   Options();
-  MatrixOptimizeParameters m_optParam[4];
+  MatrixOptimizeParameters m_optParam[3];
 public:
   String   m_templateName;
   String   m_implOutputDir;
@@ -70,6 +74,7 @@ public:
   static inline const MatrixOptimizeParameters &getOptParam(OptimizationParameters type) {
     return getInstance().getOptimizeParameters(type);
   }
+  String toString() const;
 };
 
 void verbose(int level, _In_z_ _Printf_format_string_ TCHAR const *const format, ...);
