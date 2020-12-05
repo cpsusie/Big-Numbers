@@ -22,7 +22,8 @@ public:
   static inline const TCHAR *getElementName(ElementType type, bool plur) {
     return s_elementName[type][plur?1:0];
   }
-  static String createElementCountText(ElementType type, UINT count);
+  // minWidth = minimum width of count
+  static String createElementCountText(ElementType type, UINT count, UINT minWidth = 1);
 };
 
 typedef BitSet    SymbolSet;

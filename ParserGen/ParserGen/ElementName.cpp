@@ -8,6 +8,6 @@ const TCHAR *ElementName::s_elementName[][2] = {
  ,_T("state "     ), _T("states"     )
 };
 
-String ElementName::createElementCountText(ElementType type, UINT count) { // static
-  return format(_T("%u %s"), count, getElementName(type, count > 1));
+String ElementName::createElementCountText(ElementType type, UINT count, UINT minWidth) { // static
+  return format(_T("%*u %s"), minWidth, count, getElementName(type, count > 1));
 }

@@ -18,7 +18,7 @@ String UsedByBitSet::toString(const AbstractSymbolNameContainer *nameContainer) 
     break;
   }
   if(elementString.length() == 0) {
-    elementString = toRangeString(SizeTStringifier(), _T(","), BT_BRACKETS);
+    elementString = toRangeString();
   }
   return format(_T("Used by %s %s")
                ,ElementName::createElementCountText(m_type, n).cstr()
