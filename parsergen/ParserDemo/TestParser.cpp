@@ -59,10 +59,14 @@ UINT YaccJob::safeRun() {
   return 0;
 }
 
-TestParser::TestParser() : LRparser(*tablesToTest), m_grammar(*tablesToTest) {
+TestParser::TestParser()
+  : LRparser(*tablesToTest), m_grammar(*tablesToTest)
+  , m_ok(true)
+  , m_cycleCount(0)
+  , m_root(nullptr)
+{
   m_scanner    = new TestScanner(*this);          TRACE_NEW(m_scanner  );
   setScanner(m_scanner);
-  m_root       = nullptr;
   m_userStack  = new SyntaxNodep[getStackSize()]; TRACE_NEW(m_userStack);
   m_yaccJob    = new YaccJob(*this);              TRACE_NEW(m_yaccJob  );
   ThreadPool::executeNoWait(*m_yaccJob);
@@ -182,13 +186,12 @@ int TestParser::reduceAction(UINT prod) {
 }
 
 String TestParser::getActionString() const {
-  const int action = getNextAction();
-  if(action == AbstractParserTables::_ParserError) {
-    return _T("Error");
-  } else if(action > 0) {
-    return format(_T("Shift to state %d"), action);
-  } else { // action <= 0 : prod = -action
-    return m_reduceActionStr[-action];
+  const Action action = getNextAction();
+  switch(action.getType()) {
+  case PA_SHIFT : return format(_T("Shift to state %u"), action.getNewState());
+  case PA_REDUCE: return m_reduceActionStr[action.getReduceProduction()];
+  case PA_ERROR : return _T("Error");
+  default       : return format(_T("Unknown actionType:%d"), action.getType());
   }
 }
 

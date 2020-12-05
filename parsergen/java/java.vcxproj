@@ -293,14 +293,14 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\lexgen.exe;c:\mytools2015\parsergen\lib\lexgencpp.par;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="java5.y">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parsergen -v -n  -C,N,p,r4,s8 Java5.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">parsergen -v -n  -C,N,p,r4,s8 Java5.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parsergen -v -n  -C,N,r4,s8 Java5.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">parsergen -v -n  -C,N,r4,s8 Java5.y</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Java5Symbol.h;Java5Parser.h;Java5Action.cpp;Java5Tables.cpp;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Java5Symbol.h;Java5Parser.h;Java5Action.cpp;Java5Tables.cpp;%(Outputs)</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\parsergen.exe;c:\mytools2015\parsergen\lib\parsergencpp.par;%(AdditionalInputs)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\parsergen.exe;c:\mytools2015\parsergen\lib\parsergencpp.par;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parsergen -v -n  -C,N,p,r4,s8 Java5.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">parsergen -v -n  -C,N,p,r4,s8 Java5.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parsergen -v -n  -C,N,r4,s8 Java5.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">parsergen -v -n  -C,N,r4,s8 Java5.y</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Java5Symbol.h;Java5Parser.h;Java5Action.cpp;Java5Tables.cpp;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Java5Symbol.h;Java5Parser.h;Java5Action.cpp;Java5Tables.cpp;%(Outputs)</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\parsergen.exe;c:\mytools2015\parsergen\lib\parsergencpp.par;%(AdditionalInputs)</AdditionalInputs>

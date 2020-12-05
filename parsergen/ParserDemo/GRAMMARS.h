@@ -2,25 +2,35 @@
 
 #include <LRparser.h>
 
-#define EXPR_GRAMMAR    1
-#define EVAL_GRAMMAR    2
-#define SQL_GRAMMAR     3
-#define OLM641_GRAMMAR  4
-#define EXCEL_GRAMMAR   5
-#define ACCESS_GRAMMAR  6
-#define CPP_GRAMMAR     7
-#define JAVA5_GRAMMAR   8
+#define JAVA5_GRAMMAR   1
+#define EXPR_GRAMMAR    2
+#define EVAL_GRAMMAR    3
+#define SQL_GRAMMAR     4
+#define OLM641_GRAMMAR  5
+#define EXCEL_GRAMMAR   6
+#define ACCESS_GRAMMAR  7
+#define CPP_GRAMMAR     8
 
 #define USE_GRAMMAR  JAVA5_GRAMMAR
 
 // if names are changed, modify GRAMMARS.cpp too
 
-#if USE_GRAMMAR == EXPR_GRAMMAR
+#if USE_GRAMMAR == JAVA5_GRAMMAR
 
-#include <Math/Expression/ExpressionLex.h>
+#include "../java/Java5lex.h"
+#include "../java/Java5Parser.h"
+typedef      Java5Lex      ScannerToTest;
+#define      tablesToTest  Java5Parser::Java5Tables
+
+#elif USE_GRAMMAR == EXPR_GRAMMAR
+
+#include <Math/Expression/ExpressionParser.h>
+#include <c:/Mytools2015/lib/src/Expression/ExpressionLex.h>
+#include <c:/Mytools2015/lib/src/Expression/ExpressionLex.h>
+using namespace Expr;
 typedef      ExpressionLex          ScannerToTest;
-const extern AbstractParserTables  *ExpressionTables;
-#define      tablesToTest           ExpressionTables
+#define      tablesToTestRef        (ExpressionParser::getTables())
+#define      tablesToTest           (&tablesToTestRef)
 
 #elif USE_GRAMMAR == EVAL_GRAMMAR
 
@@ -64,13 +74,6 @@ const extern AbstractParserTables *SqlTables;
 typedef      CppLex                ScannerToTest;
 const extern AbstractParserTables *CppTables;
 #define      tablesToTest          CppTables
-
-#elif USE_GRAMMAR == JAVA5_GRAMMAR
-
-#include "../java/Java5lex.h"
-#include "../java/Java5Parser.h"
-typedef      Java5Lex      ScannerToTest;
-#define      tablesToTest  Java5Parser::Java5Tables
 
 #else
 

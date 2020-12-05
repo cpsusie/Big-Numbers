@@ -55,16 +55,20 @@ private:
 public:
   TestParser();
   ~TestParser() override;
-  Grammar      &getGrammar()                        { return m_grammar;                 }
-  void          setHandler(ParserHandler *handler)  { m_handler = handler;              }
+  Grammar      &getGrammar()                        { return m_grammar;                     }
+  void          setHandler(ParserHandler *handler)  { m_handler = handler;                  }
   void          setNewInput(const TCHAR *String);
-  inline bool   accept()                 const      { return m_ok;                      }
-  inline UINT   getCycleCount()          const      { return m_cycleCount;              }
-  const String &getLegalInput()          const      { return m_legalLookahead[state()]; }
+  inline bool   accept()                 const      { return m_ok && (getCycleCount() > 0); }
+  inline UINT   getCycleCount()          const      { return m_cycleCount;                  }
+  const String &getLegalInput()          const      { return m_legalLookahead[state()];     }
   String        getActionString()        const;
   String        getActionMatrixDump()    const;
   String        getSuccessorMatrixDump() const;
   const String &getStateItems(UINT state);
+  Action        getNextAction()          const {
+    return done() ? (accept() ? Action(PA_REDUCE,0) : Action()) : getParserTables().getAction(state(), input());
+  }
+
   inline SyntaxNodep getRoot()                      { return m_root;                    }
   void addSyntaxNode(SyntaxNodep p)                 { m_nodeList.add(p);                }
   void vdebug(                           const TCHAR *format, va_list argptr) override;

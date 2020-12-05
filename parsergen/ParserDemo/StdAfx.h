@@ -4,6 +4,7 @@
 
 #include <MFCUtil/WinTools.h>
 #include <MyUtil.h>
+#include <BasicTypes.h>
 #include <Options.h>
 #include <Grammar.h>
 #include "ParserDemo.h"

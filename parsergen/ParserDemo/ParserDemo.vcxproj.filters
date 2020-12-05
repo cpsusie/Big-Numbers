@@ -75,13 +75,22 @@
     <ClCompile Include="..\ParserGen\Options.cpp">
       <Filter>Source Files\ParserGen Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ParserGen\ParserActionArray.cpp">
-      <Filter>Source Files\ParserGen Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ParserGen\SuccessorStateArray.cpp">
-      <Filter>Source Files\ParserGen Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\ParserGen\GrammarDump.cpp">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ParserGen\GrammarResult.cpp">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ParserGen\StateResult.cpp">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ParserGen\NTermNewStatePairArray.cpp">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ParserGen\TermActionPairArray.cpp">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ParserGen\SymbolDataPair.cpp">
       <Filter>Source Files\ParserGen Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -152,6 +161,15 @@
       <Filter>Source Files\ParserGen Files</Filter>
     </ClInclude>
     <ClInclude Include="..\ParserGen\Options.h">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ParserGen\BasicTypes.h">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ParserGen\GrammarResult.h">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ParserGen\StateResult.h">
       <Filter>Source Files\ParserGen Files</Filter>
     </ClInclude>
   </ItemGroup>

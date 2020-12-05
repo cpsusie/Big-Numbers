@@ -9,150 +9,153 @@
 
 namespace Expr {
 
-#define _pc0000 0x00000000 /*                                                                      */
-#define _pc0001 0x01198000 /* NUMBER         Shift to  140 on states in shiftStateBitSet[0]        */
-#define _pc0002 0x0117800a /* NAME           Shift to  139 on states in shiftStateBitSet[1]        */
-#define _pc0003 0x00af8000 /* IIF            Shift to   87 on states in shiftStateBitSet[0]        */
-#define _pc0004 0x00278014 /* ASSIGN         Shift to   19 on states in shiftStateBitSet[2]        */
-#define _pc0005 0x011f004e /* SEMI           Shift to  143 from   78                               */
-#define _pc0006 0x00000000 /* COMMA          shiftFromStateArray    0, shiftToStateArrayTable    0 */
-#define _pc0007 0x00080005 /* TO             shiftFromStateArray    1, shiftToStateArrayTable    1 */
-#define _pc0008 0x00b18000 /* INDEXEDSUM     Shift to   88 on states in shiftStateBitSet[0]        */
-#define _pc0009 0x00b38000 /* INDEXEDPRODUCT Shift to   89 on states in shiftStateBitSet[0]        */
-#define _pc0010 0x0025801e /* OR             Shift to   18 on states in shiftStateBitSet[3]        */
-#define _pc0011 0x00238028 /* AND            Shift to   17 on states in shiftStateBitSet[4]        */
-#define _pc0012 0x00098032 /* NOT            Shift to    4 on states in shiftStateBitSet[5]        */
-#define _pc0013 0x0017803c /* EQ             Shift to   11 on states in shiftStateBitSet[6]        */
-#define _pc0014 0x001f803c /* GE             Shift to   15 on states in shiftStateBitSet[6]        */
-#define _pc0015 0x0021803c /* GT             Shift to   16 on states in shiftStateBitSet[6]        */
-#define _pc0016 0x001b803c /* LE             Shift to   13 on states in shiftStateBitSet[6]        */
-#define _pc0017 0x001d803c /* LT             Shift to   14 on states in shiftStateBitSet[6]        */
-#define _pc0018 0x0019803c /* NE             Shift to   12 on states in shiftStateBitSet[6]        */
-#define _pc0019 0x00a88055 /* PLUS           Split(_ps0000,_ps0001)                                */
-#define _pc0020 0x00ac8057 /* MINUS          Split(_ps0002,_ps0003)                                */
-#define _pc0021 0x000f8050 /* PROD           Shift to    7 on states in shiftStateBitSet[8]        */
-#define _pc0022 0x00118050 /* QUOT           Shift to    8 on states in shiftStateBitSet[8]        */
-#define _pc0023 0x00138050 /* MOD            Shift to    9 on states in shiftStateBitSet[8]        */
-#define _pc0024 0x0015805a /* POW            Shift to   10 on states in shiftStateBitSet[9]        */
-#define _pc0025 0x00b98000 /* ACOS           Shift to   92 on states in shiftStateBitSet[0]        */
-#define _pc0026 0x00bb8000 /* ACOSH          Shift to   93 on states in shiftStateBitSet[0]        */
-#define _pc0027 0x00bd8000 /* ACOT           Shift to   94 on states in shiftStateBitSet[0]        */
-#define _pc0028 0x00bf8000 /* ACSC           Shift to   95 on states in shiftStateBitSet[0]        */
-#define _pc0029 0x00c18000 /* ASEC           Shift to   96 on states in shiftStateBitSet[0]        */
-#define _pc0030 0x00c38000 /* ASIN           Shift to   97 on states in shiftStateBitSet[0]        */
-#define _pc0031 0x00c58000 /* ASINH          Shift to   98 on states in shiftStateBitSet[0]        */
-#define _pc0032 0x00c78000 /* ATAN           Shift to   99 on states in shiftStateBitSet[0]        */
-#define _pc0033 0x01138000 /* ATAN2          Shift to  137 on states in shiftStateBitSet[0]        */
-#define _pc0034 0x00c98000 /* ATANH          Shift to  100 on states in shiftStateBitSet[0]        */
-#define _pc0035 0x00cd8000 /* COS            Shift to  102 on states in shiftStateBitSet[0]        */
-#define _pc0036 0x00cf8000 /* COSH           Shift to  103 on states in shiftStateBitSet[0]        */
-#define _pc0037 0x00d18000 /* COT            Shift to  104 on states in shiftStateBitSet[0]        */
-#define _pc0038 0x00d38000 /* CSC            Shift to  105 on states in shiftStateBitSet[0]        */
-#define _pc0039 0x00f18000 /* SEC            Shift to  120 on states in shiftStateBitSet[0]        */
-#define _pc0040 0x00f58000 /* SIN            Shift to  122 on states in shiftStateBitSet[0]        */
-#define _pc0041 0x00f78000 /* SINH           Shift to  123 on states in shiftStateBitSet[0]        */
-#define _pc0042 0x00fd8000 /* TAN            Shift to  126 on states in shiftStateBitSet[0]        */
-#define _pc0043 0x00ff8000 /* TANH           Shift to  127 on states in shiftStateBitSet[0]        */
-#define _pc0044 0x00b78000 /* ABS            Shift to   91 on states in shiftStateBitSet[0]        */
-#define _pc0045 0x00cb8000 /* CEIL           Shift to  101 on states in shiftStateBitSet[0]        */
-#define _pc0046 0x00d58000 /* ERF            Shift to  106 on states in shiftStateBitSet[0]        */
-#define _pc0047 0x00d78000 /* EXP            Shift to  107 on states in shiftStateBitSet[0]        */
-#define _pc0048 0x00d98000 /* EXP10          Shift to  108 on states in shiftStateBitSet[0]        */
-#define _pc0049 0x00db8000 /* EXP2           Shift to  109 on states in shiftStateBitSet[0]        */
-#define _pc0050 0x00dd8000 /* FAC            Shift to  110 on states in shiftStateBitSet[0]        */
-#define _pc0051 0x00df8000 /* FLOOR          Shift to  111 on states in shiftStateBitSet[0]        */
-#define _pc0052 0x01158000 /* HYPOT          Shift to  138 on states in shiftStateBitSet[0]        */
-#define _pc0053 0x00e18000 /* GAMMA          Shift to  112 on states in shiftStateBitSet[0]        */
-#define _pc0054 0x00e38000 /* GAUSS          Shift to  113 on states in shiftStateBitSet[0]        */
-#define _pc0055 0x00e58000 /* INVERF         Shift to  114 on states in shiftStateBitSet[0]        */
-#define _pc0056 0x00e78000 /* LN             Shift to  115 on states in shiftStateBitSet[0]        */
-#define _pc0057 0x00e98000 /* LOG10          Shift to  116 on states in shiftStateBitSet[0]        */
-#define _pc0058 0x00eb8000 /* LOG2           Shift to  117 on states in shiftStateBitSet[0]        */
-#define _pc0059 0x00ed8000 /* NORM           Shift to  118 on states in shiftStateBitSet[0]        */
-#define _pc0060 0x00ef8000 /* PROBIT         Shift to  119 on states in shiftStateBitSet[0]        */
-#define _pc0061 0x010f8000 /* CHI2DIST       Shift to  135 on states in shiftStateBitSet[0]        */
-#define _pc0062 0x010d8000 /* CHI2DENS       Shift to  134 on states in shiftStateBitSet[0]        */
-#define _pc0063 0x01118000 /* LINCGAMMA      Shift to  136 on states in shiftStateBitSet[0]        */
-#define _pc0064 0x01098000 /* ROOT           Shift to  132 on states in shiftStateBitSet[0]        */
-#define _pc0065 0x00f38000 /* SIGN           Shift to  121 on states in shiftStateBitSet[0]        */
-#define _pc0066 0x00f98000 /* SQR            Shift to  124 on states in shiftStateBitSet[0]        */
-#define _pc0067 0x00fb8000 /* SQRT           Shift to  125 on states in shiftStateBitSet[0]        */
-#define _pc0068 0x010b8000 /* BINOMIAL       Shift to  133 on states in shiftStateBitSet[0]        */
-#define _pc0069 0x01018000 /* MAX            Shift to  128 on states in shiftStateBitSet[0]        */
-#define _pc0070 0x01038000 /* MIN            Shift to  129 on states in shiftStateBitSet[0]        */
-#define _pc0071 0x01058000 /* NORMRAND       Shift to  130 on states in shiftStateBitSet[0]        */
-#define _pc0072 0x00b58000 /* POLY           Shift to   90 on states in shiftStateBitSet[0]        */
-#define _pc0073 0x01078000 /* RAND           Shift to  131 on states in shiftStateBitSet[0]        */
-#define _pc0074 0x00b08059 /* LPAR           Split(_ps0004,_ps0005)                                */
-#define _pc0075 0x00b4805b /* RPAR           Split(_ps0006,_ps0007)                                */
-#define _pc0076 0x00b8805d /* LB             Split(_ps0008,_ps0009)                                */
-#define _pc0077 0x00260017 /* RB             shiftFromStateArray    4, shiftToStateArrayTable    4 */
-#define _pc0078 0x00000000 /*                                                                      */
-#define _pc0079 0x00000000 /*                                                                      */
-#define _pc0080 0x00000000 /*                                                                      */
-#define _pc0081 0x00000000 /*                                                                      */
-#define _pc0082 0x00000000 /*                                                                      */
-#define _pc0083 0x00000000 /*                                                                      */
-#define _ps0000 0x00058000 /* Shift to    2 on states in shiftStateBitSet[0]                        Used by terminal  [19]*/
-#define _ps0001 0x000b8046 /* Shift to    5 on states in shiftStateBitSet[7]                        Used by terminal  [19]*/
-#define _ps0002 0x00038000 /* Shift to    1 on states in shiftStateBitSet[0]                        Used by terminal  [20]*/
-#define _ps0003 0x000d8046 /* Shift to    6 on states in shiftStateBitSet[7]                        Used by terminal  [20]*/
-#define _ps0004 0x002d8064 /* Shift to   22 on states in shiftStateBitSet[10]                       Used by terminal  [74]*/
-#define _ps0005 0x000c0008 /* shiftFromStateArray    2, shiftToStateArrayTable    2                 Used by terminal  [74]*/
-#define _ps0006 0x0129806e /* Shift to  148 on states in shiftStateBitSet[11]                       Used by terminal  [75]*/
-#define _ps0007 0x0018000f /* shiftFromStateArray    3, shiftToStateArrayTable    3                 Used by terminal  [75]*/
-#define _ps0008 0x00078000 /* Shift to    3 on states in shiftStateBitSet[0]                        Used by terminal  [76]*/
-#define _ps0009 0x0031005a /* Shift to   24 from   90                                               Used by terminal  [76]*/
+#define _tc0000 0x00000000 /*                                                                      */
+#define _tc0001 0x01198000 /* NUMBER         Shift to  140 on states in shiftStateBitSet[0]        */
+#define _tc0002 0x0117800a /* NAME           Shift to  139 on states in shiftStateBitSet[1]        */
+#define _tc0003 0x00af8000 /* IIF            Shift to   87 on states in shiftStateBitSet[0]        */
+#define _tc0004 0x00278014 /* ASSIGN         Shift to   19 on states in shiftStateBitSet[2]        */
+#define _tc0005 0x011f004e /* SEMI           Shift to  143 from   78                               */
+#define _tc0006 0x00000000 /* COMMA          shiftFromStateArray    0, shiftToStateArrayTable    0 */
+#define _tc0007 0x00080005 /* TO             shiftFromStateArray    1, shiftToStateArrayTable    1 */
+#define _tc0008 0x00b18000 /* INDEXEDSUM     Shift to   88 on states in shiftStateBitSet[0]        */
+#define _tc0009 0x00b38000 /* INDEXEDPRODUCT Shift to   89 on states in shiftStateBitSet[0]        */
+#define _tc0010 0x0025801e /* OR             Shift to   18 on states in shiftStateBitSet[3]        */
+#define _tc0011 0x00238028 /* AND            Shift to   17 on states in shiftStateBitSet[4]        */
+#define _tc0012 0x00098032 /* NOT            Shift to    4 on states in shiftStateBitSet[5]        */
+#define _tc0013 0x0017803c /* EQ             Shift to   11 on states in shiftStateBitSet[6]        */
+#define _tc0014 0x001f803c /* GE             Shift to   15 on states in shiftStateBitSet[6]        */
+#define _tc0015 0x0021803c /* GT             Shift to   16 on states in shiftStateBitSet[6]        */
+#define _tc0016 0x001b803c /* LE             Shift to   13 on states in shiftStateBitSet[6]        */
+#define _tc0017 0x001d803c /* LT             Shift to   14 on states in shiftStateBitSet[6]        */
+#define _tc0018 0x0019803c /* NE             Shift to   12 on states in shiftStateBitSet[6]        */
+#define _tc0019 0x00a88055 /* PLUS           Split(_ts0000,_ts0001)                                */
+#define _tc0020 0x00ac8057 /* MINUS          Split(_ts0002,_ts0003)                                */
+#define _tc0021 0x000f8050 /* PROD           Shift to    7 on states in shiftStateBitSet[8]        */
+#define _tc0022 0x00118050 /* QUOT           Shift to    8 on states in shiftStateBitSet[8]        */
+#define _tc0023 0x00138050 /* MOD            Shift to    9 on states in shiftStateBitSet[8]        */
+#define _tc0024 0x0015805a /* POW            Shift to   10 on states in shiftStateBitSet[9]        */
+#define _tc0025 0x00b98000 /* ACOS           Shift to   92 on states in shiftStateBitSet[0]        */
+#define _tc0026 0x00bb8000 /* ACOSH          Shift to   93 on states in shiftStateBitSet[0]        */
+#define _tc0027 0x00bd8000 /* ACOT           Shift to   94 on states in shiftStateBitSet[0]        */
+#define _tc0028 0x00bf8000 /* ACSC           Shift to   95 on states in shiftStateBitSet[0]        */
+#define _tc0029 0x00c18000 /* ASEC           Shift to   96 on states in shiftStateBitSet[0]        */
+#define _tc0030 0x00c38000 /* ASIN           Shift to   97 on states in shiftStateBitSet[0]        */
+#define _tc0031 0x00c58000 /* ASINH          Shift to   98 on states in shiftStateBitSet[0]        */
+#define _tc0032 0x00c78000 /* ATAN           Shift to   99 on states in shiftStateBitSet[0]        */
+#define _tc0033 0x01138000 /* ATAN2          Shift to  137 on states in shiftStateBitSet[0]        */
+#define _tc0034 0x00c98000 /* ATANH          Shift to  100 on states in shiftStateBitSet[0]        */
+#define _tc0035 0x00cd8000 /* COS            Shift to  102 on states in shiftStateBitSet[0]        */
+#define _tc0036 0x00cf8000 /* COSH           Shift to  103 on states in shiftStateBitSet[0]        */
+#define _tc0037 0x00d18000 /* COT            Shift to  104 on states in shiftStateBitSet[0]        */
+#define _tc0038 0x00d38000 /* CSC            Shift to  105 on states in shiftStateBitSet[0]        */
+#define _tc0039 0x00f18000 /* SEC            Shift to  120 on states in shiftStateBitSet[0]        */
+#define _tc0040 0x00f58000 /* SIN            Shift to  122 on states in shiftStateBitSet[0]        */
+#define _tc0041 0x00f78000 /* SINH           Shift to  123 on states in shiftStateBitSet[0]        */
+#define _tc0042 0x00fd8000 /* TAN            Shift to  126 on states in shiftStateBitSet[0]        */
+#define _tc0043 0x00ff8000 /* TANH           Shift to  127 on states in shiftStateBitSet[0]        */
+#define _tc0044 0x00b78000 /* ABS            Shift to   91 on states in shiftStateBitSet[0]        */
+#define _tc0045 0x00cb8000 /* CEIL           Shift to  101 on states in shiftStateBitSet[0]        */
+#define _tc0046 0x00d58000 /* ERF            Shift to  106 on states in shiftStateBitSet[0]        */
+#define _tc0047 0x00d78000 /* EXP            Shift to  107 on states in shiftStateBitSet[0]        */
+#define _tc0048 0x00d98000 /* EXP10          Shift to  108 on states in shiftStateBitSet[0]        */
+#define _tc0049 0x00db8000 /* EXP2           Shift to  109 on states in shiftStateBitSet[0]        */
+#define _tc0050 0x00dd8000 /* FAC            Shift to  110 on states in shiftStateBitSet[0]        */
+#define _tc0051 0x00df8000 /* FLOOR          Shift to  111 on states in shiftStateBitSet[0]        */
+#define _tc0052 0x01158000 /* HYPOT          Shift to  138 on states in shiftStateBitSet[0]        */
+#define _tc0053 0x00e18000 /* GAMMA          Shift to  112 on states in shiftStateBitSet[0]        */
+#define _tc0054 0x00e38000 /* GAUSS          Shift to  113 on states in shiftStateBitSet[0]        */
+#define _tc0055 0x00e58000 /* INVERF         Shift to  114 on states in shiftStateBitSet[0]        */
+#define _tc0056 0x00e78000 /* LN             Shift to  115 on states in shiftStateBitSet[0]        */
+#define _tc0057 0x00e98000 /* LOG10          Shift to  116 on states in shiftStateBitSet[0]        */
+#define _tc0058 0x00eb8000 /* LOG2           Shift to  117 on states in shiftStateBitSet[0]        */
+#define _tc0059 0x00ed8000 /* NORM           Shift to  118 on states in shiftStateBitSet[0]        */
+#define _tc0060 0x00ef8000 /* PROBIT         Shift to  119 on states in shiftStateBitSet[0]        */
+#define _tc0061 0x010f8000 /* CHI2DIST       Shift to  135 on states in shiftStateBitSet[0]        */
+#define _tc0062 0x010d8000 /* CHI2DENS       Shift to  134 on states in shiftStateBitSet[0]        */
+#define _tc0063 0x01118000 /* LINCGAMMA      Shift to  136 on states in shiftStateBitSet[0]        */
+#define _tc0064 0x01098000 /* ROOT           Shift to  132 on states in shiftStateBitSet[0]        */
+#define _tc0065 0x00f38000 /* SIGN           Shift to  121 on states in shiftStateBitSet[0]        */
+#define _tc0066 0x00f98000 /* SQR            Shift to  124 on states in shiftStateBitSet[0]        */
+#define _tc0067 0x00fb8000 /* SQRT           Shift to  125 on states in shiftStateBitSet[0]        */
+#define _tc0068 0x010b8000 /* BINOMIAL       Shift to  133 on states in shiftStateBitSet[0]        */
+#define _tc0069 0x01018000 /* MAX            Shift to  128 on states in shiftStateBitSet[0]        */
+#define _tc0070 0x01038000 /* MIN            Shift to  129 on states in shiftStateBitSet[0]        */
+#define _tc0071 0x01058000 /* NORMRAND       Shift to  130 on states in shiftStateBitSet[0]        */
+#define _tc0072 0x00b58000 /* POLY           Shift to   90 on states in shiftStateBitSet[0]        */
+#define _tc0073 0x01078000 /* RAND           Shift to  131 on states in shiftStateBitSet[0]        */
+#define _tc0074 0x00b0805b /* LPAR           Split(_ts0004,_ts0007)                                */
+#define _tc0075 0x00b8805d /* RPAR           Split(_ts0008,_ts0009)                                */
+#define _tc0076 0x00bc805f /* LB             Split(_ts0010,_ts0011)                                */
+#define _tc0077 0x00260017 /* RB             shiftFromStateArray    4, shiftToStateArrayTable    4 */
+#define _tc0078 0x00000000 /*                                                                      */
+#define _tc0079 0x00000000 /*                                                                      */
+#define _tc0080 0x00000000 /*                                                                      */
+#define _tc0081 0x00000000 /*                                                                      */
+#define _tc0082 0x00000000 /*                                                                      */
+#define _tc0083 0x00000000 /*                                                                      */
+#define _ts0000 0x00058000 /* Shift to    2 on states in shiftStateBitSet[0]                        Used by 1 terminal  [PLUS]*/
+#define _ts0001 0x000b8046 /* Shift to    5 on states in shiftStateBitSet[7]                        Used by 1 terminal  [PLUS]*/
+#define _ts0002 0x00038000 /* Shift to    1 on states in shiftStateBitSet[0]                        Used by 1 terminal  [MINUS]*/
+#define _ts0003 0x000d8046 /* Shift to    6 on states in shiftStateBitSet[7]                        Used by 1 terminal  [MINUS]*/
+#define _ts0004 0x002d8064 /* Shift to   22 on states in shiftStateBitSet[10]                       Used by 1 terminal  [LPAR]*/
+#define _ts0005 0x00018032 /* Shift to    0 on states in shiftStateBitSet[5]                        Used by 1 terminal  [LPAR]*/
+#define _ts0006 0x000c0008 /* shiftFromStateArray    2, shiftToStateArrayTable    2                 Used by 1 terminal  [LPAR]*/
+#define _ts0007 0x00b2805a /* Split(_ts0005,_ts0006)                                                Used by 1 terminal  [LPAR]*/
+#define _ts0008 0x0129806e /* Shift to  148 on states in shiftStateBitSet[11]                       Used by 1 terminal  [RPAR]*/
+#define _ts0009 0x0018000f /* shiftFromStateArray    3, shiftToStateArrayTable    3                 Used by 1 terminal  [RPAR]*/
+#define _ts0010 0x00078000 /* Shift to    3 on states in shiftStateBitSet[0]                        Used by 1 terminal  [LB]*/
+#define _ts0011 0x0031005a /* Shift to   24 from   90                                               Used by 1 terminal  [LB]*/
 
-static const unsigned int shiftCodeArray[94] = {
-   _pc0000,_pc0001,_pc0002,_pc0003,_pc0004,_pc0005,_pc0006,_pc0007,_pc0008,_pc0009
-  ,_pc0010,_pc0011,_pc0012,_pc0013,_pc0014,_pc0015,_pc0016,_pc0017,_pc0018,_pc0019
-  ,_pc0020,_pc0021,_pc0022,_pc0023,_pc0024,_pc0025,_pc0026,_pc0027,_pc0028,_pc0029
-  ,_pc0030,_pc0031,_pc0032,_pc0033,_pc0034,_pc0035,_pc0036,_pc0037,_pc0038,_pc0039
-  ,_pc0040,_pc0041,_pc0042,_pc0043,_pc0044,_pc0045,_pc0046,_pc0047,_pc0048,_pc0049
-  ,_pc0050,_pc0051,_pc0052,_pc0053,_pc0054,_pc0055,_pc0056,_pc0057,_pc0058,_pc0059
-  ,_pc0060,_pc0061,_pc0062,_pc0063,_pc0064,_pc0065,_pc0066,_pc0067,_pc0068,_pc0069
-  ,_pc0070,_pc0071,_pc0072,_pc0073,_pc0074,_pc0075,_pc0076,_pc0077,_pc0078,_pc0079
-  ,_pc0080,_pc0081,_pc0082,_pc0083
-  ,_ps0000,_ps0001,_ps0002,_ps0003,_ps0004,_ps0005,_ps0006,_ps0007,_ps0008,_ps0009
-}; // Size of table:376(x86)/376(x64) bytes.
+static const unsigned int shiftCodeArray[96] = {
+   _tc0000,_tc0001,_tc0002,_tc0003,_tc0004,_tc0005,_tc0006,_tc0007,_tc0008,_tc0009
+  ,_tc0010,_tc0011,_tc0012,_tc0013,_tc0014,_tc0015,_tc0016,_tc0017,_tc0018,_tc0019
+  ,_tc0020,_tc0021,_tc0022,_tc0023,_tc0024,_tc0025,_tc0026,_tc0027,_tc0028,_tc0029
+  ,_tc0030,_tc0031,_tc0032,_tc0033,_tc0034,_tc0035,_tc0036,_tc0037,_tc0038,_tc0039
+  ,_tc0040,_tc0041,_tc0042,_tc0043,_tc0044,_tc0045,_tc0046,_tc0047,_tc0048,_tc0049
+  ,_tc0050,_tc0051,_tc0052,_tc0053,_tc0054,_tc0055,_tc0056,_tc0057,_tc0058,_tc0059
+  ,_tc0060,_tc0061,_tc0062,_tc0063,_tc0064,_tc0065,_tc0066,_tc0067,_tc0068,_tc0069
+  ,_tc0070,_tc0071,_tc0072,_tc0073,_tc0074,_tc0075,_tc0076,_tc0077,_tc0078,_tc0079
+  ,_tc0080,_tc0081,_tc0082,_tc0083
+  ,_ts0000,_ts0001,_ts0002,_ts0003,_ts0004,_ts0005,_ts0006,_ts0007,_ts0008,_ts0009
+  ,_ts0010,_ts0011
+}; // Size of table:384(x86)/384(x64) bytes.
 
 static const unsigned char shiftFromStateArrayTable[26] = {
-     4,  61,  63,  67, 153                                                                                   /*   0 Used by terminal  [6]                             */
-  ,  2, 151, 152                                                                                             /*   1 Used by terminal  [7]                             */
-  ,  6,  81,  82,  87,  88,  89, 155                                                                         /*   2 Used by terminal  [74]                            */
-  ,  7,  40,  60,  66,  68,  69,  71,  72                                                                    /*   3 Used by terminal  [75]                            */
-  ,  2,  43, 153                                                                                             /*   4 Used by terminal  [77]                            */
+     4,  61,  63,  67, 153                                                                                   /*   0 Used by 1 terminal  [COMMA]                       */
+  ,  2, 151, 152                                                                                             /*   1 Used by 1 terminal  [TO]                          */
+  ,  6,  81,  82,  87,  88,  89, 155                                                                         /*   2 Used by 1 terminal  [LPAR]                        */
+  ,  7,  40,  60,  66,  68,  69,  71,  72                                                                    /*   3 Used by 1 terminal  [RPAR]                        */
+  ,  2,  43, 153                                                                                             /*   4 Used by 1 terminal  [RB]                          */
 }; // Size of table:28(x86)/32(x64) bytes.
 
 static const unsigned char shiftToStateArrayTable[21] = {
-     25,  26,  31,  29                                                                                       /*   0 Used by terminal  [6]                             */
-  ,  27,  28                                                                                                 /*   1 Used by terminal  [7]                             */
-  ,  20,  21,  23,  45,  46,  30                                                                             /*   2 Used by terminal  [74]                            */
-  , 149, 154, 156,  32,  33, 157, 158                                                                        /*   3 Used by terminal  [75]                            */
-  , 150, 155                                                                                                 /*   4 Used by terminal  [77]                            */
+     25,  26,  31,  29                                                                                       /*   0 Used by 1 terminal  [COMMA]                       */
+  ,  27,  28                                                                                                 /*   1 Used by 1 terminal  [TO]                          */
+  ,  20,  21,  23,  45,  46,  30                                                                             /*   2 Used by 1 terminal  [LPAR]                        */
+  , 149, 154, 156,  32,  33, 157, 158                                                                        /*   3 Used by 1 terminal  [RPAR]                        */
+  , 150, 155                                                                                                 /*   4 Used by 1 terminal  [RB]                          */
 }; // Size of table:24(x86)/24(x64) bytes.
 
 static const unsigned char shiftStateBitSetTable[120] = { /* range:[0-74], bytes in bitset=10 */
-   0xff,0xff,0xff,0xff,0x0f,0x00,0x00,0x00,0x00,0x00 /*   0  36 states Used by terminals [1,3,8-9,19-20,25-73,76]*/
-  ,0xff,0xff,0xff,0xff,0x0f,0x60,0x00,0x00,0x00,0x00 /*   1  38 states Used by terminal  [2]                  */
-  ,0x00,0x00,0x00,0x00,0x40,0x00,0x00,0x00,0x01,0x00 /*   2   2 states Used by terminal  [4]                  */
-  ,0x00,0x00,0x00,0x00,0x20,0x09,0x00,0x80,0x00,0x00 /*   3   4 states Used by terminal  [10]                 */
-  ,0x00,0x00,0x00,0x00,0x20,0x09,0x00,0x84,0x00,0x00 /*   4   5 states Used by terminal  [11]                 */
-  ,0x19,0x00,0x86,0x00,0x0c,0x00,0x00,0x00,0x00,0x00 /*   5   8 states Used by terminal  [12]                 */
-  ,0x00,0x00,0x00,0x00,0x90,0x10,0x00,0x00,0x00,0x00 /*   6   3 states Used by terminals [13-18]              */
-  ,0x00,0x00,0x00,0x00,0x90,0x10,0xf0,0x7b,0xfe,0x07 /*   7  23 states Used by terminals [19-20]              */
-  ,0x00,0x00,0x00,0x00,0x90,0x96,0xf1,0x7b,0xfe,0x07 /*   8  27 states Used by terminals [21-23]              */
-  ,0x00,0x00,0x00,0x00,0x90,0x96,0xff,0x7b,0xfe,0x07 /*   9  30 states Used by terminal  [24]                 */
-  ,0xe6,0xff,0x79,0xff,0x03,0x00,0x00,0x00,0x00,0x00 /*  10  28 states Used by terminal  [74]                 */
-  ,0x00,0x00,0x00,0x00,0x80,0x00,0x00,0x40,0x00,0x00 /*  11   2 states Used by terminal  [75]                 */
+   0xff,0xff,0xff,0xff,0x0f,0x00,0x00,0x00,0x00,0x00 /*   0  36 states Used by 56 terminals [1,3,8-9,19-20,25-73,76]*/
+  ,0xff,0xff,0xff,0xff,0x0f,0x60,0x00,0x00,0x00,0x00 /*   1  38 states Used by 1 terminal  [NAME]             */
+  ,0x00,0x00,0x00,0x00,0x40,0x00,0x00,0x00,0x01,0x00 /*   2   2 states Used by 1 terminal  [ASSIGN]           */
+  ,0x00,0x00,0x00,0x00,0x20,0x09,0x00,0x80,0x00,0x00 /*   3   4 states Used by 1 terminal  [OR]               */
+  ,0x00,0x00,0x00,0x00,0x20,0x09,0x00,0x84,0x00,0x00 /*   4   5 states Used by 1 terminal  [AND]              */
+  ,0x19,0x00,0x86,0x00,0x0c,0x00,0x00,0x00,0x00,0x00 /*   5   8 states Used by 2 terminals [NOT LPAR]         */
+  ,0x00,0x00,0x00,0x00,0x90,0x10,0x00,0x00,0x00,0x00 /*   6   3 states Used by 6 terminals [13-18]            */
+  ,0x00,0x00,0x00,0x00,0x90,0x10,0xf0,0x7b,0xfe,0x07 /*   7  23 states Used by 2 terminals [PLUS MINUS]       */
+  ,0x00,0x00,0x00,0x00,0x90,0x96,0xf1,0x7b,0xfe,0x07 /*   8  27 states Used by 3 terminals [PROD QUOT MOD]    */
+  ,0x00,0x00,0x00,0x00,0x90,0x96,0xff,0x7b,0xfe,0x07 /*   9  30 states Used by 1 terminal  [POW]              */
+  ,0xe6,0xff,0x79,0xff,0x03,0x00,0x00,0x00,0x00,0x00 /*  10  28 states Used by 1 terminal  [LPAR]             */
+  ,0x00,0x00,0x00,0x00,0x80,0x00,0x00,0x40,0x00,0x00 /*  11   2 states Used by 1 terminal  [RPAR]             */
 }; // Size of table:120(x86)/120(x64) bytes.
 
-#define _rc0000 0x0001004a /* Reduce by    0 on LPAR                                */
+#define _rc0000 0x00037fff /*                                                       */
 #define _rc0001 0x00037fff /*                                                       */
 #define _rc0002 0x00037fff /*                                                       */
-#define _rc0003 0x0001004a /* Reduce by    0 on LPAR                                */
-#define _rc0004 0x0001004a /* Reduce by    0 on LPAR                                */
+#define _rc0003 0x00037fff /*                                                       */
+#define _rc0004 0x00037fff /*                                                       */
 #define _rc0005 0x00037fff /*                                                       */
 #define _rc0006 0x00037fff /*                                                       */
 #define _rc0007 0x00037fff /*                                                       */
@@ -165,13 +168,13 @@ static const unsigned char shiftStateBitSetTable[120] = { /* range:[0-74], bytes
 #define _rc0014 0x00037fff /*                                                       */
 #define _rc0015 0x00037fff /*                                                       */
 #define _rc0016 0x00037fff /*                                                       */
-#define _rc0017 0x0001004a /* Reduce by    0 on LPAR                                */
-#define _rc0018 0x0001004a /* Reduce by    0 on LPAR                                */
+#define _rc0017 0x00037fff /*                                                       */
+#define _rc0018 0x00037fff /*                                                       */
 #define _rc0019 0x00037fff /*                                                       */
 #define _rc0020 0x00037fff /*                                                       */
 #define _rc0021 0x00037fff /*                                                       */
 #define _rc0022 0x00037fff /*                                                       */
-#define _rc0023 0x0001004a /* Reduce by    0 on LPAR                                */
+#define _rc0023 0x00037fff /*                                                       */
 #define _rc0024 0x00037fff /*                                                       */
 #define _rc0025 0x00037fff /*                                                       */
 #define _rc0026 0x00037fff /*                                                       */
@@ -182,131 +185,131 @@ static const unsigned char shiftStateBitSetTable[120] = { /* range:[0-74], bytes
 #define _rc0031 0x00037fff /*                                                       */
 #define _rc0032 0x00037fff /*                                                       */
 #define _rc0033 0x00037fff /*                                                       */
-#define _rc0034 0x0001004a /* Reduce by    0 on LPAR                                */
-#define _rc0035 0x0001004a /* Reduce by    0 on LPAR                                */
-#define _rc0036 0xfffb0000 /* Reduce by    3 on EOI                                 */
-#define _rc0037 0xfff90000 /* Reduce by    4 on EOI                                 */
-#define _rc0038 0xffdf8000 /* Reduce by   17 on tokens in termBitSet[0]             */
+#define _rc0034 0x00037fff /*                                                       */
+#define _rc0035 0x00037fff /*                                                       */
+#define _rc0036 0x00070000 /* Reduce by    3 on EOI                                 */
+#define _rc0037 0x00090000 /* Reduce by    4 on EOI                                 */
+#define _rc0038 0x00238000 /* Reduce by   17 on tokens in termBitSet[0]             */
 #define _rc0039 0x00037fff /*                                                       */
 #define _rc0040 0x00037fff /*                                                       */
-#define _rc0041 0xffd7800a /* Reduce by   21 on tokens in termBitSet[1]             */
-#define _rc0042 0xffd5800a /* Reduce by   22 on tokens in termBitSet[1]             */
+#define _rc0041 0x002b800a /* Reduce by   21 on tokens in termBitSet[1]             */
+#define _rc0042 0x002d800a /* Reduce by   22 on tokens in termBitSet[1]             */
 #define _rc0043 0x00037fff /*                                                       */
 #define _rc0044 0x00037fff /*                                                       */
 #define _rc0045 0x00037fff /*                                                       */
 #define _rc0046 0x00037fff /*                                                       */
-#define _rc0047 0xffef800a /* Reduce by    9 on tokens in termBitSet[1]             */
-#define _rc0048 0xffed800a /* Reduce by   10 on tokens in termBitSet[1]             */
-#define _rc0049 0xffeb8014 /* Reduce by   11 on tokens in termBitSet[2]             */
-#define _rc0050 0xffe98014 /* Reduce by   12 on tokens in termBitSet[2]             */
-#define _rc0051 0xffe78014 /* Reduce by   13 on tokens in termBitSet[2]             */
-#define _rc0052 0xff73801e /* Reduce by   71 on tokens in termBitSet[3]             */
-#define _rc0053 0xff71801e /* Reduce by   72 on tokens in termBitSet[3]             */
-#define _rc0054 0xff6f801e /* Reduce by   73 on tokens in termBitSet[3]             */
-#define _rc0055 0xff6d801e /* Reduce by   74 on tokens in termBitSet[3]             */
-#define _rc0056 0xff6b801e /* Reduce by   75 on tokens in termBitSet[3]             */
-#define _rc0057 0xff69801e /* Reduce by   76 on tokens in termBitSet[3]             */
-#define _rc0058 0xff658028 /* Reduce by   78 on tokens in termBitSet[4]             */
-#define _rc0059 0xfff18032 /* Reduce by    8 on tokens in termBitSet[5]             */
+#define _rc0047 0x0013800a /* Reduce by    9 on tokens in termBitSet[1]             */
+#define _rc0048 0x0015800a /* Reduce by   10 on tokens in termBitSet[1]             */
+#define _rc0049 0x00178014 /* Reduce by   11 on tokens in termBitSet[2]             */
+#define _rc0050 0x00198014 /* Reduce by   12 on tokens in termBitSet[2]             */
+#define _rc0051 0x001b8014 /* Reduce by   13 on tokens in termBitSet[2]             */
+#define _rc0052 0x008f801e /* Reduce by   71 on tokens in termBitSet[3]             */
+#define _rc0053 0x0091801e /* Reduce by   72 on tokens in termBitSet[3]             */
+#define _rc0054 0x0093801e /* Reduce by   73 on tokens in termBitSet[3]             */
+#define _rc0055 0x0095801e /* Reduce by   74 on tokens in termBitSet[3]             */
+#define _rc0056 0x0097801e /* Reduce by   75 on tokens in termBitSet[3]             */
+#define _rc0057 0x0099801e /* Reduce by   76 on tokens in termBitSet[3]             */
+#define _rc0058 0x009d8028 /* Reduce by   78 on tokens in termBitSet[4]             */
+#define _rc0059 0x00118032 /* Reduce by    8 on tokens in termBitSet[5]             */
 #define _rc0060 0x00037fff /*                                                       */
 #define _rc0061 0x00037fff /*                                                       */
 #define _rc0062 0x00037fff /*                                                       */
 #define _rc0063 0x00037fff /*                                                       */
 #define _rc0064 0x00037fff /*                                                       */
-#define _rc0065 0xffbf803c /* Reduce by   33 on tokens in termBitSet[6]             */
+#define _rc0065 0x0043803c /* Reduce by   33 on tokens in termBitSet[6]             */
 #define _rc0066 0x00037fff /*                                                       */
 #define _rc0067 0x00037fff /*                                                       */
 #define _rc0068 0x00037fff /*                                                       */
 #define _rc0069 0x00037fff /*                                                       */
-#define _rc0070 0xffc1803c /* Reduce by   32 on tokens in termBitSet[6]             */
+#define _rc0070 0x0041803c /* Reduce by   32 on tokens in termBitSet[6]             */
 #define _rc0071 0x00037fff /*                                                       */
 #define _rc0072 0x00037fff /*                                                       */
-#define _rc0073 0xffc78046 /* Reduce by   29 on tokens in termBitSet[7]             */
-#define _rc0074 0xffc58046 /* Reduce by   30 on tokens in termBitSet[7]             */
+#define _rc0073 0x003b8046 /* Reduce by   29 on tokens in termBitSet[7]             */
+#define _rc0074 0x003d8046 /* Reduce by   30 on tokens in termBitSet[7]             */
 #define _rc0075 0x00010000 /* Reduce by    0 (Accept) on EOI                        */
-#define _rc0076 0xffff0000 /* Reduce by    1 on EOI                                 */
-#define _rc0077 0xfff78050 /* Reduce by    5 on tokens in termBitSet[8]             */
+#define _rc0076 0x00030000 /* Reduce by    1 on EOI                                 */
+#define _rc0077 0x000b8050 /* Reduce by    5 on tokens in termBitSet[8]             */
 #define _rc0078 0x00037fff /*                                                       */
-#define _rc0079 0xffe3805a /* Reduce by   15 on tokens in termBitSet[9]             */
-#define _rc0080 0xffe1805a /* Reduce by   16 on tokens in termBitSet[9]             */
+#define _rc0079 0x001f805a /* Reduce by   15 on tokens in termBitSet[9]             */
+#define _rc0080 0x0021805a /* Reduce by   16 on tokens in termBitSet[9]             */
 #define _rc0081 0x00037fff /*                                                       */
 #define _rc0082 0x00037fff /*                                                       */
-#define _rc0083 0xffd3805a /* Reduce by   23 on tokens in termBitSet[9]             */
-#define _rc0084 0xffd1805a /* Reduce by   24 on tokens in termBitSet[9]             */
-#define _rc0085 0xffcf805a /* Reduce by   25 on tokens in termBitSet[9]             */
-#define _rc0086 0xffcd805a /* Reduce by   26 on tokens in termBitSet[9]             */
+#define _rc0083 0x002f805a /* Reduce by   23 on tokens in termBitSet[9]             */
+#define _rc0084 0x0031805a /* Reduce by   24 on tokens in termBitSet[9]             */
+#define _rc0085 0x0033805a /* Reduce by   25 on tokens in termBitSet[9]             */
+#define _rc0086 0x0035805a /* Reduce by   26 on tokens in termBitSet[9]             */
 #define _rc0087 0x00037fff /*                                                       */
 #define _rc0088 0x00037fff /*                                                       */
 #define _rc0089 0x00037fff /*                                                       */
 #define _rc0090 0x00037fff /*                                                       */
-#define _rc0091 0xffbd004a /* Reduce by   34 on LPAR                                */
-#define _rc0092 0xffbb004a /* Reduce by   35 on LPAR                                */
-#define _rc0093 0xffb9004a /* Reduce by   36 on LPAR                                */
-#define _rc0094 0xffb7004a /* Reduce by   37 on LPAR                                */
-#define _rc0095 0xffb5004a /* Reduce by   38 on LPAR                                */
-#define _rc0096 0xffb3004a /* Reduce by   39 on LPAR                                */
-#define _rc0097 0xffb1004a /* Reduce by   40 on LPAR                                */
-#define _rc0098 0xffaf004a /* Reduce by   41 on LPAR                                */
-#define _rc0099 0xffad004a /* Reduce by   42 on LPAR                                */
-#define _rc0100 0xffab004a /* Reduce by   43 on LPAR                                */
-#define _rc0101 0xffa9004a /* Reduce by   44 on LPAR                                */
-#define _rc0102 0xffa7004a /* Reduce by   45 on LPAR                                */
-#define _rc0103 0xffa5004a /* Reduce by   46 on LPAR                                */
-#define _rc0104 0xffa3004a /* Reduce by   47 on LPAR                                */
-#define _rc0105 0xffa1004a /* Reduce by   48 on LPAR                                */
-#define _rc0106 0xff9f004a /* Reduce by   49 on LPAR                                */
-#define _rc0107 0xff9d004a /* Reduce by   50 on LPAR                                */
-#define _rc0108 0xff9b004a /* Reduce by   51 on LPAR                                */
-#define _rc0109 0xff99004a /* Reduce by   52 on LPAR                                */
-#define _rc0110 0xff97004a /* Reduce by   53 on LPAR                                */
-#define _rc0111 0xff95004a /* Reduce by   54 on LPAR                                */
-#define _rc0112 0xff93004a /* Reduce by   55 on LPAR                                */
-#define _rc0113 0xff91004a /* Reduce by   56 on LPAR                                */
-#define _rc0114 0xff8f004a /* Reduce by   57 on LPAR                                */
-#define _rc0115 0xff8d004a /* Reduce by   58 on LPAR                                */
-#define _rc0116 0xff8b004a /* Reduce by   59 on LPAR                                */
-#define _rc0117 0xff89004a /* Reduce by   60 on LPAR                                */
-#define _rc0118 0xff87004a /* Reduce by   61 on LPAR                                */
-#define _rc0119 0xff85004a /* Reduce by   62 on LPAR                                */
-#define _rc0120 0xff83004a /* Reduce by   63 on LPAR                                */
-#define _rc0121 0xff81004a /* Reduce by   64 on LPAR                                */
-#define _rc0122 0xff7f004a /* Reduce by   65 on LPAR                                */
-#define _rc0123 0xff7d004a /* Reduce by   66 on LPAR                                */
-#define _rc0124 0xff7b004a /* Reduce by   67 on LPAR                                */
-#define _rc0125 0xff79004a /* Reduce by   68 on LPAR                                */
-#define _rc0126 0xff77004a /* Reduce by   69 on LPAR                                */
-#define _rc0127 0xff75004a /* Reduce by   70 on LPAR                                */
-#define _rc0128 0xff5f004a /* Reduce by   81 on LPAR                                */
-#define _rc0129 0xff5d004a /* Reduce by   82 on LPAR                                */
-#define _rc0130 0xff5b004a /* Reduce by   83 on LPAR                                */
-#define _rc0131 0xff59004a /* Reduce by   84 on LPAR                                */
-#define _rc0132 0xff57004a /* Reduce by   85 on LPAR                                */
-#define _rc0133 0xff55004a /* Reduce by   86 on LPAR                                */
-#define _rc0134 0xff53004a /* Reduce by   87 on LPAR                                */
-#define _rc0135 0xff51004a /* Reduce by   88 on LPAR                                */
-#define _rc0136 0xff4f004a /* Reduce by   89 on LPAR                                */
-#define _rc0137 0xff4d004a /* Reduce by   90 on LPAR                                */
-#define _rc0138 0xff4b004a /* Reduce by   91 on LPAR                                */
-#define _rc0139 0xff498064 /* Reduce by   92 on tokens in termBitSet[10]            */
-#define _rc0140 0xff47805a /* Reduce by   93 on tokens in termBitSet[9]             */
-#define _rc0141 0xfffd0000 /* Reduce by    2 on EOI                                 */
-#define _rc0142 0xfff58050 /* Reduce by    6 on tokens in termBitSet[8]             */
-#define _rc0143 0xfff38050 /* Reduce by    7 on tokens in termBitSet[8]             */
-#define _rc0144 0xffdf805a /* Reduce by   17 on tokens in termBitSet[9]             */
-#define _rc0145 0xff63801e /* Reduce by   79 on tokens in termBitSet[3]             */
-#define _rc0146 0xffe5805a /* Reduce by   14 on tokens in termBitSet[9]             */
-#define _rc0147 0xff67801e /* Reduce by   77 on tokens in termBitSet[3]             */
-#define _rc0148 0xffd9805a /* Reduce by   20 on tokens in termBitSet[9]             */
-#define _rc0149 0xff61801e /* Reduce by   80 on tokens in termBitSet[3]             */
-#define _rc0150 0xffcb805a /* Reduce by   27 on tokens in termBitSet[9]             */
+#define _rc0091 0x0045004a /* Reduce by   34 on LPAR                                */
+#define _rc0092 0x0047004a /* Reduce by   35 on LPAR                                */
+#define _rc0093 0x0049004a /* Reduce by   36 on LPAR                                */
+#define _rc0094 0x004b004a /* Reduce by   37 on LPAR                                */
+#define _rc0095 0x004d004a /* Reduce by   38 on LPAR                                */
+#define _rc0096 0x004f004a /* Reduce by   39 on LPAR                                */
+#define _rc0097 0x0051004a /* Reduce by   40 on LPAR                                */
+#define _rc0098 0x0053004a /* Reduce by   41 on LPAR                                */
+#define _rc0099 0x0055004a /* Reduce by   42 on LPAR                                */
+#define _rc0100 0x0057004a /* Reduce by   43 on LPAR                                */
+#define _rc0101 0x0059004a /* Reduce by   44 on LPAR                                */
+#define _rc0102 0x005b004a /* Reduce by   45 on LPAR                                */
+#define _rc0103 0x005d004a /* Reduce by   46 on LPAR                                */
+#define _rc0104 0x005f004a /* Reduce by   47 on LPAR                                */
+#define _rc0105 0x0061004a /* Reduce by   48 on LPAR                                */
+#define _rc0106 0x0063004a /* Reduce by   49 on LPAR                                */
+#define _rc0107 0x0065004a /* Reduce by   50 on LPAR                                */
+#define _rc0108 0x0067004a /* Reduce by   51 on LPAR                                */
+#define _rc0109 0x0069004a /* Reduce by   52 on LPAR                                */
+#define _rc0110 0x006b004a /* Reduce by   53 on LPAR                                */
+#define _rc0111 0x006d004a /* Reduce by   54 on LPAR                                */
+#define _rc0112 0x006f004a /* Reduce by   55 on LPAR                                */
+#define _rc0113 0x0071004a /* Reduce by   56 on LPAR                                */
+#define _rc0114 0x0073004a /* Reduce by   57 on LPAR                                */
+#define _rc0115 0x0075004a /* Reduce by   58 on LPAR                                */
+#define _rc0116 0x0077004a /* Reduce by   59 on LPAR                                */
+#define _rc0117 0x0079004a /* Reduce by   60 on LPAR                                */
+#define _rc0118 0x007b004a /* Reduce by   61 on LPAR                                */
+#define _rc0119 0x007d004a /* Reduce by   62 on LPAR                                */
+#define _rc0120 0x007f004a /* Reduce by   63 on LPAR                                */
+#define _rc0121 0x0081004a /* Reduce by   64 on LPAR                                */
+#define _rc0122 0x0083004a /* Reduce by   65 on LPAR                                */
+#define _rc0123 0x0085004a /* Reduce by   66 on LPAR                                */
+#define _rc0124 0x0087004a /* Reduce by   67 on LPAR                                */
+#define _rc0125 0x0089004a /* Reduce by   68 on LPAR                                */
+#define _rc0126 0x008b004a /* Reduce by   69 on LPAR                                */
+#define _rc0127 0x008d004a /* Reduce by   70 on LPAR                                */
+#define _rc0128 0x00a3004a /* Reduce by   81 on LPAR                                */
+#define _rc0129 0x00a5004a /* Reduce by   82 on LPAR                                */
+#define _rc0130 0x00a7004a /* Reduce by   83 on LPAR                                */
+#define _rc0131 0x00a9004a /* Reduce by   84 on LPAR                                */
+#define _rc0132 0x00ab004a /* Reduce by   85 on LPAR                                */
+#define _rc0133 0x00ad004a /* Reduce by   86 on LPAR                                */
+#define _rc0134 0x00af004a /* Reduce by   87 on LPAR                                */
+#define _rc0135 0x00b1004a /* Reduce by   88 on LPAR                                */
+#define _rc0136 0x00b3004a /* Reduce by   89 on LPAR                                */
+#define _rc0137 0x00b5004a /* Reduce by   90 on LPAR                                */
+#define _rc0138 0x00b7004a /* Reduce by   91 on LPAR                                */
+#define _rc0139 0x00b98064 /* Reduce by   92 on tokens in termBitSet[10]            */
+#define _rc0140 0x00bb805a /* Reduce by   93 on tokens in termBitSet[9]             */
+#define _rc0141 0x00050000 /* Reduce by    2 on EOI                                 */
+#define _rc0142 0x000d8050 /* Reduce by    6 on tokens in termBitSet[8]             */
+#define _rc0143 0x000f8050 /* Reduce by    7 on tokens in termBitSet[8]             */
+#define _rc0144 0x0023805a /* Reduce by   17 on tokens in termBitSet[9]             */
+#define _rc0145 0x009f801e /* Reduce by   79 on tokens in termBitSet[3]             */
+#define _rc0146 0x001d805a /* Reduce by   14 on tokens in termBitSet[9]             */
+#define _rc0147 0x009b801e /* Reduce by   77 on tokens in termBitSet[3]             */
+#define _rc0148 0x0029805a /* Reduce by   20 on tokens in termBitSet[9]             */
+#define _rc0149 0x00a1801e /* Reduce by   80 on tokens in termBitSet[3]             */
+#define _rc0150 0x0037805a /* Reduce by   27 on tokens in termBitSet[9]             */
 #define _rc0151 0x00037fff /*                                                       */
 #define _rc0152 0x00037fff /*                                                       */
 #define _rc0153 0x00037fff /*                                                       */
-#define _rc0154 0xffdd805a /* Reduce by   18 on tokens in termBitSet[9]             */
+#define _rc0154 0x0025805a /* Reduce by   18 on tokens in termBitSet[9]             */
 #define _rc0155 0x00037fff /*                                                       */
-#define _rc0156 0xffdb805a /* Reduce by   19 on tokens in termBitSet[9]             */
-#define _rc0157 0xffc3805a /* Reduce by   31 on tokens in termBitSet[9]             */
-#define _rc0158 0xffc9805a /* Reduce by   28 on tokens in termBitSet[9]             */
+#define _rc0156 0x0027805a /* Reduce by   19 on tokens in termBitSet[9]             */
+#define _rc0157 0x003f805a /* Reduce by   31 on tokens in termBitSet[9]             */
+#define _rc0158 0x0039805a /* Reduce by   28 on tokens in termBitSet[9]             */
 
 static const unsigned int reduceCodeArray[159] = {
    _rc0000,_rc0001,_rc0002,_rc0003,_rc0004,_rc0005,_rc0006,_rc0007,_rc0008,_rc0009
@@ -331,69 +334,69 @@ static const unsigned int reduceCodeArray[159] = {
 #define reduceArrayTable nullptr
 
 static const unsigned char termBitSetTable[110] = { /* range:[0-77], bytes in bitset=10 */
-   0x01,0xe0,0xff,0x01,0x00,0x00,0x00,0x00,0x00,0x00 /*   0  13 tokens Used by state  [38]                    */
-  ,0xe1,0xec,0x1f,0x00,0x00,0x00,0x00,0x00,0x00,0x28 /*   1  16 tokens Used by states [41-42,47-48]           */
-  ,0xe1,0xec,0xff,0x00,0x00,0x00,0x00,0x00,0x00,0x28 /*   2  19 tokens Used by states [49-51]                 */
-  ,0x41,0x0c,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x28 /*   3   6 tokens Used by states [52-57,145,147,149]     */
-  ,0x41,0x04,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x28 /*   4   5 tokens Used by state  [58]                    */
-  ,0xa0,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00 /*   5   2 tokens Used by state  [59]                    */
-  ,0x40,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x20 /*   6   2 tokens Used by states [65,70]                 */
-  ,0xe1,0xec,0x07,0x00,0x00,0x00,0x00,0x00,0x00,0x28 /*   7  14 tokens Used by states [73-74]                 */
-  ,0x0e,0x13,0x18,0xfe,0xff,0xff,0xff,0xff,0xff,0x17 /*   8  59 tokens Used by states [77,142-143]            */
-  ,0xe1,0xec,0xff,0x01,0x00,0x00,0x00,0x00,0x00,0x28 /*   9  20 tokens Used by states [79-80,83-86,140,144,146,148,150,154,156-158]*/
-  ,0xf1,0xec,0xff,0x01,0x00,0x00,0x00,0x00,0x00,0x28 /*  10  21 tokens Used by state  [139]                   */
+   0x01,0xe0,0xff,0x01,0x00,0x00,0x00,0x00,0x00,0x00 /*   0  13 tokens Used by 1 state  [38]                  */
+  ,0xe1,0xec,0x1f,0x00,0x00,0x00,0x00,0x00,0x00,0x28 /*   1  16 tokens Used by 4 states [41-42,47-48]         */
+  ,0xe1,0xec,0xff,0x00,0x00,0x00,0x00,0x00,0x00,0x28 /*   2  19 tokens Used by 3 states [49-51]               */
+  ,0x41,0x0c,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x28 /*   3   6 tokens Used by 9 states [52-57,145,147,149]   */
+  ,0x41,0x04,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x28 /*   4   5 tokens Used by 1 state  [58]                  */
+  ,0xa0,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00 /*   5   2 tokens Used by 1 state  [59]                  */
+  ,0x40,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x20 /*   6   2 tokens Used by 2 states [65,70]               */
+  ,0xe1,0xec,0x07,0x00,0x00,0x00,0x00,0x00,0x00,0x28 /*   7  14 tokens Used by 2 states [73-74]               */
+  ,0x0e,0x13,0x18,0xfe,0xff,0xff,0xff,0xff,0xff,0x17 /*   8  59 tokens Used by 3 states [77,142-143]          */
+  ,0xe1,0xec,0xff,0x01,0x00,0x00,0x00,0x00,0x00,0x28 /*   9  20 tokens Used by 15 states [79-80,83-86,140,144,146,148,150,154,156-158]*/
+  ,0xf1,0xec,0xff,0x01,0x00,0x00,0x00,0x00,0x00,0x28 /*  10  21 tokens Used by 1 state  [139]                 */
 }; // Size of table:112(x86)/112(x64) bytes.
 
-#define _sc0000 0x00000000 /*                                                       */
-#define _sc0001 0x00977fff /* function        Goto   75 No check (  1 state )       */
-#define _sc0002 0x00000000 /* final_expr      stateArray    0, newStateArray    0   */
-#define _sc0003 0x00477fff /* assignStmtList  Goto   35 No check (  1 state )       */
-#define _sc0004 0x00248013 /* expr            Split(_ss0000,_ss0001)                */
-#define _sc0005 0x00420023 /* boolExpr        stateArray    2, newStateArray    2   */
-#define _sc0006 0x00520000 /* assignStmt      stateArray    0, newStateArray    3   */
-#define _sc0007 0x0056002c /* assign          stateArray    3, newStateArray    4   */
-#define _sc0008 0x00288015 /* name            Split(_ss0002,_ss0003)                */
-#define _sc0009 0x009f7fff /* unary           Goto   79 No check ( 36 states)       */
-#define _sc0010 0x00a17fff /* number          Goto   80 No check ( 36 states)       */
-#define _sc0011 0x00a37fff /* function1       Goto   81 No check ( 36 states)       */
-#define _sc0012 0x00a57fff /* function2       Goto   82 No check ( 36 states)       */
-#define _sc0013 0x00a77fff /* conditionalExpr Goto   83 No check ( 36 states)       */
-#define _sc0014 0x00a97fff /* sumExpr         Goto   84 No check ( 36 states)       */
-#define _sc0015 0x00ab7fff /* productExpr     Goto   85 No check ( 36 states)       */
-#define _sc0016 0x00ad7fff /* polyExpr        Goto   86 No check ( 36 states)       */
-#define _sc0017 0x01337fff /* exprList        Goto  153 No check (  1 state )       */
-#define _ss0000 0x00598000 /* Goto   44 on states in succStateBitSet[0]            Used by ntIndex   [4]*/
-#define _ss0001 0x00040003 /* stateArray    1, newStateArray    1                  Used by ntIndex   [4]*/
-#define _ss0002 0x01218005 /* Goto  144 on states in succStateBitSet[1]            Used by ntIndex   [8]*/
-#define _ss0003 0x005e002c /* stateArray    3, newStateArray    5                  Used by ntIndex   [8]*/
+#define _nc0000 0x00000000 /*                                                       */
+#define _nc0001 0x00977fff /* function        Shift to   75 No check (1 state )     */
+#define _nc0002 0x00000000 /* final_expr      stateArray    0, newStateArray    0   */
+#define _nc0003 0x00477fff /* assignStmtList  Shift to   35 No check (1 state )     */
+#define _nc0004 0x00248013 /* expr            Split(_ns0000,_ns0001)                */
+#define _nc0005 0x00420023 /* boolExpr        stateArray    2, newStateArray    2   */
+#define _nc0006 0x00520000 /* assignStmt      stateArray    0, newStateArray    3   */
+#define _nc0007 0x0056002c /* assign          stateArray    3, newStateArray    4   */
+#define _nc0008 0x00288015 /* name            Split(_ns0002,_ns0003)                */
+#define _nc0009 0x009f7fff /* unary           Shift to   79 No check (36 states)    */
+#define _nc0010 0x00a17fff /* number          Shift to   80 No check (36 states)    */
+#define _nc0011 0x00a37fff /* function1       Shift to   81 No check (36 states)    */
+#define _nc0012 0x00a57fff /* function2       Shift to   82 No check (36 states)    */
+#define _nc0013 0x00a77fff /* conditionalExpr Shift to   83 No check (36 states)    */
+#define _nc0014 0x00a97fff /* sumExpr         Shift to   84 No check (36 states)    */
+#define _nc0015 0x00ab7fff /* productExpr     Shift to   85 No check (36 states)    */
+#define _nc0016 0x00ad7fff /* polyExpr        Shift to   86 No check (36 states)    */
+#define _nc0017 0x01337fff /* exprList        Shift to  153 No check (1 state )     */
+#define _ns0000 0x00598000 /* Shift to   44 on states in succStateBitSet[0]        Used by 1 ntIndex   [expr]*/
+#define _ns0001 0x00040003 /* stateArray    1, newStateArray    1                  Used by 1 ntIndex   [expr]*/
+#define _ns0002 0x01218005 /* Shift to  144 on states in succStateBitSet[1]        Used by 1 ntIndex   [name]*/
+#define _ns0003 0x005e002c /* stateArray    3, newStateArray    5                  Used by 1 ntIndex   [name]*/
 
 static const unsigned int succCodeArray[22] = {
-   _sc0000,_sc0001,_sc0002,_sc0003,_sc0004,_sc0005,_sc0006,_sc0007,_sc0008,_sc0009
-  ,_sc0010,_sc0011,_sc0012,_sc0013,_sc0014,_sc0015,_sc0016,_sc0017
-  ,_ss0000,_ss0001,_ss0002,_ss0003
+   _nc0000,_nc0001,_nc0002,_nc0003,_nc0004,_nc0005,_nc0006,_nc0007,_nc0008,_nc0009
+  ,_nc0010,_nc0011,_nc0012,_nc0013,_nc0014,_nc0015,_nc0016,_nc0017
+  ,_ns0000,_ns0001,_ns0002,_ns0003
 }; // Size of table:88(x86)/88(x64) bytes.
 
 static const unsigned char succFromStateArrayTable[49] = {
-     2,  34,  35                                                                                             /*   0 Used by ntIndices [2,6]                           */
-  , 31,   0,   1,   2,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,  15,  16,  19,  20,  21,  22,  24   /*   1 Used by ntIndex   [4]                             */
+     2,  34,  35                                                                                             /*   0 Used by 2 ntIndices [final_expr assignStmt]       */
+  , 31,   0,   1,   2,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,  15,  16,  19,  20,  21,  22,  24   /*   1 Used by 1 ntIndex   [expr]                        */
       ,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35
-  ,  8,   0,   3,   4,  17,  18,  23,  34,  35                                                               /*   2 Used by ntIndex   [5]                             */
-  ,  4,  34,  35,  45,  46                                                                                   /*   3 Used by ntIndices [7-8]                           */
+  ,  8,   0,   3,   4,  17,  18,  23,  34,  35                                                               /*   2 Used by 1 ntIndex   [boolExpr]                    */
+  ,  4,  34,  35,  45,  46                                                                                   /*   3 Used by 2 ntIndices [assign name]                 */
 }; // Size of table:52(x86)/56(x64) bytes.
 
 static const unsigned char succToStateArrayTable[51] = {
-     76, 141                                                                                                 /*   0 Used by ntIndex   [2]                             */
-  ,  39,  41,  42,  47,  48,  49,  50,  51, 146,  52,  53,  54,  55,  56,  57,  59,  60,  61,  62,  65       /*   1 Used by ntIndex   [4]                             */
+     76, 141                                                                                                 /*   0 Used by 1 ntIndex   [final_expr]                  */
+  ,  39,  41,  42,  47,  48,  49,  50,  51, 146,  52,  53,  54,  55,  56,  57,  59,  60,  61,  62,  65       /*   1 Used by 1 ntIndex   [expr]                        */
   ,  66,  67,  68,  69,  70,  71,  72,  73,  74,  36,  36
-  ,  40,  43, 145, 147,  58,  63,  37,  37                                                                   /*   2 Used by ntIndex   [5]                             */
-  ,  77, 142                                                                                                 /*   3 Used by ntIndex   [6]                             */
-  ,  78,  78, 151, 152                                                                                       /*   4 Used by ntIndex   [7]                             */
-  ,  38,  38,  64,  64                                                                                       /*   5 Used by ntIndex   [8]                             */
+  ,  40,  43, 145, 147,  58,  63,  37,  37                                                                   /*   2 Used by 1 ntIndex   [boolExpr]                    */
+  ,  77, 142                                                                                                 /*   3 Used by 1 ntIndex   [assignStmt]                  */
+  ,  78,  78, 151, 152                                                                                       /*   4 Used by 1 ntIndex   [assign]                      */
+  ,  38,  38,  64,  64                                                                                       /*   5 Used by 1 ntIndex   [name]                        */
 }; // Size of table:52(x86)/56(x64) bytes.
 
 static const unsigned char succStateBitSetTable[10] = { /* range:[0-33], bytes in bitset=5 */
-   0x18,0x00,0x86,0x00,0x00 /*   0   5 states Used by ntIndex   [4]                  */
-  ,0xff,0xff,0xff,0xff,0x03 /*   1  34 states Used by ntIndex   [8]                  */
+   0x18,0x00,0x86,0x00,0x00 /*   0   5 states Used by 1 ntIndex   [expr]             */
+  ,0xff,0xff,0xff,0xff,0x03 /*   1  34 states Used by 1 ntIndex   [name]             */
 }; // Size of table:12(x86)/16(x64) bytes.
 
 /************************************************************************************\
@@ -643,7 +646,7 @@ static const char *symbolNames = {
   " exprList"                                         /* NT  101 ntIndex=17    */
 }; // Size of string:620(x86)/624(x64) bytes
 
-static const ParserTablesTemplateTransShift<102,84,94,159,2556,2648,34,78,0,75,0,34
+static const ParserTablesTemplateTransShift<102,84,94,159,2564,2656,34,78,0,75,0,34
                                           ,unsigned char
                                           ,unsigned char
                                           ,unsigned char
@@ -658,5 +661,5 @@ static const ParserTablesTemplateTransShift<102,84,94,159,2556,2648,34,78,0,75,0
 const AbstractParserTables *ExpressionParser::ExpressionTables = &ExpressionTables_s;
 // Size of ExpressionTables_s: 68(x86)/128(x64) bytes. Size of ExpressionTables:4(x86)/8(x64) bytes
 
-// Total size of table data:2.556(x86)/2.648(x64) bytes.
+// Total size of table data:2.564(x86)/2.656(x64) bytes.
 }; // namespace Expr

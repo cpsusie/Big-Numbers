@@ -529,12 +529,12 @@ void CParserDemoDlg::OnRunStartDebugGo() {
   UINT errorCount = (UINT)m_errorPos.size();
   updateBreakFlags();
   while(!m_parser.done()) {
-    int action = m_parser.getNextAction();
+    const Action action = m_parser.getNextAction();
     if(m_breakFlags) {
-      if(m_breakOnError       && (m_errorPos.size() > errorCount || (action == AbstractParserTables::_ParserError))) {
+      if(m_breakOnError       && (m_errorPos.size() > errorCount || action.isParserError())) {
         break;
       }
-      if(m_breakOnProduction  && (action <= 0) && m_breakProductions->contains(-action)) {
+      if(m_breakOnProduction  && action.isReduceAction() && m_breakProductions->contains(action.getReduceProduction())) {
         break;
       }
       if(m_breakOnState       && m_breakStates->contains(m_parser.state())) {

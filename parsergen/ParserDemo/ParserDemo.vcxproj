@@ -290,9 +290,12 @@
   <ItemGroup>
     <ClCompile Include="..\parsergen\Grammar.cpp" />
     <ClCompile Include="..\ParserGen\GrammarDump.cpp" />
+    <ClCompile Include="..\ParserGen\GrammarResult.cpp" />
+    <ClCompile Include="..\ParserGen\NTermNewStatePairArray.cpp" />
     <ClCompile Include="..\ParserGen\Options.cpp" />
-    <ClCompile Include="..\ParserGen\ParserActionArray.cpp" />
-    <ClCompile Include="..\ParserGen\SuccessorStateArray.cpp" />
+    <ClCompile Include="..\ParserGen\StateResult.cpp" />
+    <ClCompile Include="..\ParserGen\SymbolDataPair.cpp" />
+    <ClCompile Include="..\ParserGen\TermActionPairArray.cpp" />
     <ClCompile Include="ErrorsDlg.cpp" />
     <ClCompile Include="FindDlg.cpp" />
     <ClCompile Include="GotoDlg.cpp" />
@@ -324,8 +327,11 @@
     <ResourceCompile Include="ParserDemo.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\ParserGen\BasicTypes.h" />
     <ClInclude Include="..\parsergen\Grammar.h" />
+    <ClInclude Include="..\ParserGen\GrammarResult.h" />
     <ClInclude Include="..\ParserGen\Options.h" />
+    <ClInclude Include="..\ParserGen\StateResult.h" />
     <ClInclude Include="ErrorsDlg.h" />
     <ClInclude Include="FindDlg.h" />
     <ClInclude Include="GotoDlg.h" />
