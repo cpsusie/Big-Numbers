@@ -1,148 +1,148 @@
 State 0:
- (  0)K start           -> .S[EOI]
- (  1)  S               -> .a b A E[EOI]
- (  2)  S               -> .a b B x[EOI]
- (  3)  S               -> .a D[EOI]
- (  4)  S               -> .A z[EOI]
- (  5)  S               -> .B x[EOI]
- (  6)  A               -> .d[z]
- (  7)  B               -> .d[x]
+ (  0)K start           -> .S
+ (  1)  S               -> .a b A E
+ (  2)  S               -> .a b B x
+ (  3)  S               -> .a D
+ (  4)  S               -> .A z
+ (  5)  S               -> .B x
+ (  6)  A               -> .d
+ (  7)  B               -> .d
 
-   shift to 2 on a
-   shift to 5 on d
-   goto 1 on S
-   goto 3 on A
-   goto 4 on B
+   Shift to     1 on a
+   Shift to     8 on d
+   Goto     5 on S
+   Goto     6 on A
+   Goto     7 on B
 
 State 1:
- (  0)K start           -> S .[EOI]
+ (  1)K S               -> a .b A E
+ (  2)K S               -> a .b B x
+ (  3)K S               -> a .D
+ (  8)  D               -> .f A
+ (  9)  D               -> .f B x
+ ( 10)  D               -> .f a D
 
-   accept on EOI
+   Shift to     2 on b
+   Shift to     3 on f
+   Goto     9 on D
 
 State 2:
- (  1)K S               -> a .b A E[EOI]
- (  2)K S               -> a .b B x[EOI]
- (  3)K S               -> a .D[EOI]
- (  8)  D               -> .f A[EOI]
- (  9)  D               -> .f B x[EOI]
- ( 10)  D               -> .f a D[EOI]
+ (  1)K S               -> a b .A E
+ (  2)K S               -> a b .B x
+ (  6)  A               -> .d
+ (  7)  B               -> .d
 
-   shift to 6 on b
-   shift to 8 on f
-   goto 7 on D
+   Shift to     8 on d
+   Goto    12 on A
+   Goto    13 on B
 
 State 3:
- (  4)K S               -> A .z[EOI]
+ (  8)K D               -> f .A
+ (  9)K D               -> f .B x
+ ( 10)K D               -> f .a D
+ (  6)  A               -> .d
+ (  7)  B               -> .d
 
-   shift to 9 on z
+   Shift to     4 on a
+   Shift to     8 on d
+   Goto    14 on A
+   Goto    15 on B
 
 State 4:
- (  5)K S               -> B .x[EOI]
+ ( 10)K D               -> f a .D
+ (  8)  D               -> .f A
+ (  9)  D               -> .f B x
+ ( 10)  D               -> .f a D
 
-   shift to 10 on x
+   Shift to     3 on f
+   Goto    20 on D
 
 State 5:
- (  6)K A               -> d .[EOI z]
- (  7)K B               -> d .[x]
+ (  0)K start           -> S .
 
-   reduce by 6 on EOI
-   reduce by 6 on z
-   reduce by 7 on x
+   Accept on EOI
 
 State 6:
- (  1)K S               -> a b .A E[EOI]
- (  2)K S               -> a b .B x[EOI]
- (  6)  A               -> .d[EOI z]
- (  7)  B               -> .d[x]
+ (  4)K S               -> A .z
 
-   shift to 5 on d
-   goto 11 on A
-   goto 12 on B
+   Shift to    10 on z
 
 State 7:
- (  3)K S               -> a D .[EOI]
+ (  5)K S               -> B .x
 
-   reduce by 3 on EOI
+   Shift to    11 on x
 
 State 8:
- (  8)K D               -> f .A[EOI]
- (  9)K D               -> f .B x[EOI]
- ( 10)K D               -> f .a D[EOI]
- (  6)  A               -> .d[EOI]
- (  7)  B               -> .d[x]
+ (  6)K A               -> d .
+ (  7)K B               -> d .
 
-   shift to 15 on a
-   shift to 5 on d
-   goto 13 on A
-   goto 14 on B
+   Reduce by    6 on EOI
+   Reduce by    6 on z
+   Reduce by    7 on x
 
 State 9:
- (  4)K S               -> A z .[EOI]
+ (  3)K S               -> a D .
 
-   reduce by 4 on EOI
+   Reduce by    3 on EOI
 
 State 10:
- (  5)K S               -> B x .[EOI]
+ (  4)K S               -> A z .
 
-   reduce by 5 on EOI
+   Reduce by    4 on EOI
 
 State 11:
- (  1)K S               -> a b A .E[EOI]
- ( 11)  E               -> .[EOI]
- ( 12)  E               -> .z[EOI]
+ (  5)K S               -> B x .
 
-   reduce by 11 on EOI
-   shift to 17 on z
-   goto 16 on E
+   Reduce by    5 on EOI
 
 State 12:
- (  2)K S               -> a b B .x[EOI]
+ (  1)K S               -> a b A .E
+ ( 11)  E               -> .
+ ( 12)  E               -> .z
 
-   shift to 18 on x
+   Reduce by   11 on EOI
+   Shift to    17 on z
+   Goto    16 on E
 
 State 13:
- (  8)K D               -> f A .[EOI]
+ (  2)K S               -> a b B .x
 
-   reduce by 8 on EOI
+   Shift to    18 on x
 
 State 14:
- (  9)K D               -> f B .x[EOI]
+ (  8)K D               -> f A .
 
-   shift to 19 on x
+   Reduce by    8 on EOI
 
 State 15:
- ( 10)K D               -> f a .D[EOI]
- (  8)  D               -> .f A[EOI]
- (  9)  D               -> .f B x[EOI]
- ( 10)  D               -> .f a D[EOI]
+ (  9)K D               -> f B .x
 
-   shift to 8 on f
-   goto 20 on D
+   Shift to    19 on x
 
 State 16:
- (  1)K S               -> a b A E .[EOI]
+ (  1)K S               -> a b A E .
 
-   reduce by 1 on EOI
+   Reduce by    1 on EOI
 
 State 17:
- ( 12)K E               -> z .[EOI]
+ ( 12)K E               -> z .
 
-   reduce by 12 on EOI
+   Reduce by   12 on EOI
 
 State 18:
- (  2)K S               -> a b B x .[EOI]
+ (  2)K S               -> a b B x .
 
-   reduce by 2 on EOI
+   Reduce by    2 on EOI
 
 State 19:
- (  9)K D               -> f B x .[EOI]
+ (  9)K D               -> f B x .
 
-   reduce by 9 on EOI
+   Reduce by    9 on EOI
 
 State 20:
- ( 10)K D               -> f a D .[EOI]
+ ( 10)K D               -> f a D .
 
-   reduce by 10 on EOI
+   Reduce by   10 on EOI
 
 
    7	terminals
@@ -150,7 +150,7 @@ State 20:
   13	productions
   21	LALR(1) states
   46	items
-380(x86)/464(x64) bytes	 required for parsertables
+352(x86)/440(x64) bytes	 required for parsertables
 
    0	shift/reduce  conflicts
    0	reduce/reduce conflicts

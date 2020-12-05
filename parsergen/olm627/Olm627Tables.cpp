@@ -4,173 +4,71 @@
 #include "Olm627Parser.h"
 #line 36 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
 #include <ParserTablesTemplate.h>
-/************************************************************************************\
-* The 4 arrays actionCodeArray, termArrayTable, actionArrayTable and termBitSetTable *
-* holds a compressed action-matrix, used by LRParser to find                         *
-* action = getAction(S,T), where S is current state, T is next terminal on input     *
-*                                                                                    *
-* The interpretation of action is:                                                   *
-*   action <  0 - Reduce by production p, p == -action.                              *
-*   action == 0 - Accept. Reduce by production 0.                                    *
-*   action >  0 - Shift to newstate (=action),                                       *
-*                 ie. push(newstate), set current state=newstate                     *
-*                 and advance input 1 symbol.                                        *
-*   action == _ParserError - Unexpected input. Do some recovery, to try to           *
-*                 synchronize input and stack, in order to continue parse.           *
-*                 (See LRParser::recover() in LRParser.cpp)                          *
-*                                                                                    *
-* For each state S, a #define is generated and used as element S in array            *
-* actionCode. Each define looks as:                                                  *
-*                                                                                    *
-* #define _acDDDD Code                                                               *
-*                                                                                    *
-* where DDDD is the statenumber S and Code is an unsigned int with the following     *
-* format:                                                                            *
-*            0         1         2         3                                         *
-* Bit index: 01234567890123456789012345678901                                        *
-* Code     : tttttttttttttttCCaaaaaaaaaaaaaaa                                        *
-*                                                                                    *
-* t        : Bit[ 0-14] : unsigned short                                             *
-* a        : Bit[17-31] : signed short                                               *
-* CC       : Bit[15-16] : Indicates how to interpret t and a:                        *
-*                                                                                    *
-* CC==0: CompCodeBinSearch                                                           *
-*     t: Index into array termArrayTable, pointing at the first element of           *
-*        termArray                                                                   *
-*     a: Index into array actionArrayTable, pointing at the first element of         *
-*        actionArray                                                                 *
-*                                                                                    *
-*     n                  : termArrayTable[t] = number of elements in termArray.      *
-*     termArray[0..n-1]  : termArrayTable[t+1..t+n]                                  *
-*                          Ordered list of legal terminal symbols                    *
-*     actionArray[0..n-1]: actionArrayTable[a..a+n-1] (same length as termArray).    *
-*                                                                                    *
-*     To get action, find index k in termArray, so termArray[k] == T,k=[0..n-1]      *
-*     and set action = actionArray[k].                                               *
-*     If T is not found, set action = _ParseError.                                   *
-*     Note that both termArray and actionArray may be shared by several states.      *
-*                                                                                    *
-* CC==1: CompCodeSplitNode                                                           *
-*     t and a are both indices to 2 child entries in actionCodeArray, which can be   *
-*     another _acNNNN or an extra node, _asNNNN, whichever is needed (values are     *
-*     reused as much as possible, ie. if _asNNNN equals some _acNNNN then no         *
-*     _asNNNN is added, but parent entry will point to _acNNNN instead.              *
-*     Recursive tree search, with max-recursion level specified in                   *
-*     parsergen +c<level> option. Search childnodes until an action != _ParseError   *
-*     is returned, or no more nodes to search.                                       *
-*                                                                                    *
-* CC==2: CompCodeImmediate, used if there is only 1 legal terminal in the state      *
-*     t: Legal terminal.                                                             *
-*     a: Action.                                                                     *
-*     If terminal T != t, set action = _ParseError, else use a as action             *
-*                                                                                    *
-* CC==3: CompCodeBitSet (always reduce by same reduce production P = -a)             *
-*     t: Index into termBitSetTable, pointing at the first element of termBitSet     *
-*     a: Action.                                                                     *
-*                                                                                    *
-*     termBitSetTable is an array of termBitSet, each with same number of bits,      *
-*     capacity, 1-bits for legal terminals, 0-bits for illegal terminals.            *
-*                                                                                    *
-*     b                  : Number of bytes in each termBitSet=(capacity-1)/8+1       *
-*     termBitSet[0..b-1] : termBitSetTable[t..t+b-1]                                 *
-*                                                                                    *
-*     The value of capacity is minimized, capacity <= termCount                      *
-*     As for other node types, the same check for existence is done. If terminal T   *
-*     is not present in termBitSet, or T >= capacity, set action = _ParseError.      *
-*     Note that each termBitSet may be shared by several states.                     *
-\************************************************************************************/
+#define _tc0000 0x00000000 /*                                                           */
+#define _tc0001 0x00050000 /* a   Shift to    2 from    0                               */
+#define _tc0002 0x00070000 /* b   Shift to    3 from    0                               */
+#define _tc0003 0x00000000 /* c   shiftFromStateArray    0, shiftToStateArrayTable    0 */
+#define _tc0004 0x00040003 /* d   shiftFromStateArray    1, shiftToStateArrayTable    1 */
+#define _tc0005 0x00080006 /* f   shiftFromStateArray    2, shiftToStateArrayTable    2 */
 
-#define _ac0000 0x00000000 /* termArray    0, actionArray    0                      */
-#define _ac0001 0x00010000 /* Reduce by    0 (Accept) on EOI                        */
-#define _ac0002 0x000b0005 /* Shift  to    5 on f                                   */
-#define _ac0003 0x000f0005 /* Shift  to    7 on f                                   */
-#define _ac0004 0x00110004 /* Shift  to    8 on d                                   */
-#define _ac0005 0x00040003 /* termArray    1, actionArray    1                      */
-#define _ac0006 0x00150003 /* Shift  to   10 on c                                   */
-#define _ac0007 0x00080003 /* termArray    1, actionArray    2                      */
-#define _ac0008 0xffff0000 /* Reduce by    1 on EOI                                 */
-#define _ac0009 0xfffd0000 /* Reduce by    2 on EOI                                 */
-#define _ac0010 0xfffb0000 /* Reduce by    3 on EOI                                 */
-#define _ac0011 0xfff90000 /* Reduce by    4 on EOI                                 */
+static const unsigned int shiftCodeArray[6] = {
+   _tc0000,_tc0001,_tc0002,_tc0003,_tc0004,_tc0005
+}; // Size of table:24(x86)/24(x64) bytes.
 
-static const unsigned int actionCodeArray[12] = {
-   _ac0000,_ac0001,_ac0002,_ac0003,_ac0004,_ac0005,_ac0006,_ac0007,_ac0008,_ac0009
-  ,_ac0010,_ac0011
+static const unsigned char shiftFromStateArrayTable[9] = {
+     2,   5,   6                                                                                             /*   0 Used by 1 terminal  [c]                           */
+  ,  2,   4,   7                                                                                             /*   1 Used by 1 terminal  [d]                           */
+  ,  2,   2,   3                                                                                             /*   2 Used by 1 terminal  [f]                           */
+}; // Size of table:12(x86)/16(x64) bytes.
+
+static const unsigned char shiftToStateArrayTable[6] = {
+      9,  10                                                                                                 /*   0 Used by 1 terminal  [c]                           */
+  ,   8,  11                                                                                                 /*   1 Used by 1 terminal  [d]                           */
+  ,   5,   7                                                                                                 /*   2 Used by 1 terminal  [f]                           */
+}; // Size of table:8(x86)/8(x64) bytes.
+
+#define shiftStateBitSetTable nullptr
+
+#define _rc0000 0x00037fff /*                                                       */
+#define _rc0001 0x00010000 /* Reduce by    0 (Accept) on EOI                        */
+#define _rc0002 0x00037fff /*                                                       */
+#define _rc0003 0x00037fff /*                                                       */
+#define _rc0004 0x00037fff /*                                                       */
+#define _rc0005 0x000b0004 /* Reduce by    5 on d                                   */
+#define _rc0006 0x00037fff /*                                                       */
+#define _rc0007 0x000b0003 /* Reduce by    5 on c                                   */
+#define _rc0008 0x00030000 /* Reduce by    1 on EOI                                 */
+#define _rc0009 0x00050000 /* Reduce by    2 on EOI                                 */
+#define _rc0010 0x00070000 /* Reduce by    3 on EOI                                 */
+#define _rc0011 0x00090000 /* Reduce by    4 on EOI                                 */
+
+static const unsigned int reduceCodeArray[12] = {
+   _rc0000,_rc0001,_rc0002,_rc0003,_rc0004,_rc0005,_rc0006,_rc0007,_rc0008,_rc0009
+  ,_rc0010,_rc0011
 }; // Size of table:48(x86)/48(x64) bytes.
 
-static const unsigned char termArrayTable[6] = {
-     2,   1,   2                                                                                             /*   0 Used by state  [0]                                */
-  ,  2,   3,   4                                                                                             /*   1 Used by states [5,7]                              */
-}; // Size of table:8(x86)/8(x64) bytes.
-
-static const char actionArrayTable[6] = {
-      2,   3                                                                                                 /*   0 Used by state  [0]                                */
-  ,   9,  -5                                                                                                 /*   1 Used by state  [5]                                */
-  ,  -5,  11                                                                                                 /*   2 Used by state  [7]                                */
-}; // Size of table:8(x86)/8(x64) bytes.
+#define termArrayTable   nullptr
+#define reduceArrayTable nullptr
 
 #define termBitSetTable nullptr
 
-/************************************************************************************\
-* The 3 arrays successorCodeArray, ntIndexArrayTable , newStateArrayTable            *
-* compressed succesor-matrix, used by LRParser to find newstate = successor(S,A)     *
-* as last part of a reduction with production P, A -> alfa.                          *
-* A reduction by production P goes as follows:                                       *
-*   Pop L elements from stack, where L = length of alfa;                             *
-*   S = state on stacktop;                                                           *
-*   A = leftside of the reduce production P;                                         *
-*   newstate = successor(S,A);                                                       *
-*   push(newstate), and set current state = newstate.                                *
-*                                                                                    *
-* For each relevant state S, a #define is generated and used as element S in array   *
-* successorCodeArray. Each define has the format:                                    *
-*                                                                                    *
-* #define _scDDDD Code                                                               *
-*                                                                                    *
-* where DDDD is the statenumber S and Code is an unsigned int with the following     *
-* format:                                                                            *
-*            0         1         2         3                                         *
-* Bit index: 01234567890123456789012345678901                                        *
-* Code       iiiiiiiiiiiiiiiCCsssssssssssssss                                        *
-*                                                                                    *
-* i          : Bit[ 0-14]  : unsigned short                                          *
-* s          : Bit[17-31]  : unsigned short                                          *
-* CC         : Bit[15-16]  : Indicates how to interpret i and s.                     *
-*                                                                                    *
-* CC has the same meaning as for actionCodeArray, but only CC={0,2} are used.        *
-* CC==0: CompCodeBinSearch                                                           *
-*     i: Index into array ntIndexArrayTable, pointing at the first element of        *
-*        ntIndexArray                                                                *
-*     s: Index into array newStateArrayTable, pointing at the first element of       *
-*        newStateArray                                                               *
-*                                                                                    *
-*     n                    : ntIndexArrayTable[i]=number of elements in ntIndexArray *
-*     ntIndexArray[0..n-1] : ntIndexArrayTable[i+1..i+n]                             *
-*                            Ordered list of possible nonterminal-indices.           *
-*     newStateArray[0..n-1]: newStateArrayTable[s..s+n-1], length = n                *
-*                                                                                    *
-*     To get newstate, find k so ntIndexArray[k] == A', k=[0..n-1] and set           *
-*     newstate = newStateArray[k].                                                   *
-*     A' = (A - termCount) will always exist.                                        *
-*     Note that both ntIndexArray and newStateArray may be shared by several states. *
-* CC==2: CompCodeImmediate, used if there is only 1 possible newstate.               *
-*     i: Index A' of nonterminal A, A' = (A - termCount).                            *
-*     s: New state.                                                                  *
-*                                                                                    *
-\************************************************************************************/
+#define _nc0000 0x00000000 /*                                                       */
+#define _nc0001 0x00037fff /* S     Shift to    1 No check (1 state )               */
+#define _nc0002 0x00000000 /* A     stateArray    0, newStateArray    0             */
 
-#define _su0000 0x00030001 /* Goto 1 on S                                           */
-#define _su0002 0x00090002 /* Goto 4 on A                                           */
-#define _su0003 0x000d0002 /* Goto 6 on A                                           */
+static const unsigned int succCodeArray[3] = {
+   _nc0000,_nc0001,_nc0002
+}; // Size of table:12(x86)/16(x64) bytes.
 
-#define nil (unsigned int)-1
-static const unsigned int successorCodeArray[12] = {
-   _su0000,nil    ,_su0002,_su0003,nil    ,nil    ,nil    ,nil    ,nil    ,nil
-  ,nil    ,nil
-}; // Size of table:48(x86)/48(x64) bytes.
+static const unsigned char succFromStateArrayTable[3] = {
+     2,   2,   3                                                                                             /*   0 Used by 1 ntIndex   [A]                           */
+}; // Size of table:4(x86)/8(x64) bytes.
 
-#define ntIndexArrayTable  nullptr
-#define newStateArrayTable nullptr
+static const unsigned char succToStateArrayTable[2] = {
+      4,   6                                                                                                 /*   0 Used by 1 ntIndex   [A]                           */
+}; // Size of table:4(x86)/8(x64) bytes.
+
+#define succStateBitSetTable nullptr
 
 /************************************************************************************\
 * The prodLengthArray[] is indexed by production number and holds the number of      *
@@ -220,18 +118,19 @@ static const char *symbolNames = {
   " A"                                                /* NT    8 ntIndex=2     */
 }; // Size of string:24(x86)/24(x64) bytes
 
-static const ParserTablesTemplate<9,6,6,12,240,304,6
-                                 ,unsigned char
-                                 ,unsigned char
-                                 ,unsigned char
-                                 ,char
-                                 ,unsigned char> Olm627Tables_s(prodLengthArray   , leftSideArray
-                                                               ,rightSideTable    , symbolNames
-                                                               ,actionCodeArray   , termArrayTable    , actionArrayTable, termBitSetTable
-                                                               ,successorCodeArray, ntIndexArrayTable , newStateArrayTable
-                                                               );
+static const ParserTablesTemplateTransShift<9,6,6,12,240,320,0,6,0,12,0,12
+                                          ,unsigned char
+                                          ,unsigned char
+                                          ,unsigned char
+                                          ,char
+                                          ,unsigned char> Olm627Tables_s(prodLengthArray   , leftSideArray
+                                                                        ,rightSideTable    , symbolNames
+                                                                        ,shiftCodeArray    , shiftFromStateArrayTable, shiftToStateArrayTable, shiftStateBitSetTable
+                                                                        ,reduceCodeArray   , termArrayTable          , reduceArrayTable      , termBitSetTable
+                                                                        ,succCodeArray     , succFromStateArrayTable , succToStateArrayTable , succStateBitSetTable
+                                                                        );
 
 const AbstractParserTables *Olm627Parser::Olm627Tables = &Olm627Tables_s;
 // Size of Olm627Tables_s: 68(x86)/128(x64) bytes. Size of Olm627Tables:4(x86)/8(x64) bytes
 
-// Total size of table data:240(x86)/304(x64) bytes.
+// Total size of table data:240(x86)/320(x64) bytes.

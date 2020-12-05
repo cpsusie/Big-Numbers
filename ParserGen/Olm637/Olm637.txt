@@ -5,14 +5,14 @@ State 0:
  (  3)  S               -> .b A c[EOI]
  (  4)  S               -> .b B d[EOI]
 
-   shift to 2 on a
-   shift to 3 on b
-   goto 1 on S
+   Shift to     2 on a
+   Shift to     3 on b
+   Goto     1 on S
 
 State 1:
  (  0)K start           -> S .[EOI]
 
-   accept on EOI
+   Accept on EOI
 
 State 2:
  (  1)K S               -> a .A d[EOI]
@@ -20,9 +20,9 @@ State 2:
  (  5)  A               -> .f[d]
  (  6)  B               -> .f[c]
 
-   shift to 6 on f
-   goto 4 on A
-   goto 5 on B
+   Shift to     6 on f
+   Goto     4 on A
+   Goto     5 on B
 
 State 3:
  (  3)K S               -> b .A c[EOI]
@@ -30,57 +30,57 @@ State 3:
  (  5)  A               -> .f[c]
  (  6)  B               -> .f[d]
 
-   shift to 6 on f
-   goto 7 on A
-   goto 8 on B
+   Shift to     6 on f
+   Goto     7 on A
+   Goto     8 on B
 
 State 4:
  (  1)K S               -> a A .d[EOI]
 
-   shift to 9 on d
+   Shift to     9 on d
 
 State 5:
  (  2)K S               -> a B .c[EOI]
 
-   shift to 10 on c
+   Shift to    10 on c
 
 State 6:
  (  5)K A               -> f .[c d]
  (  6)K B               -> f .[c d]
 
-   reduce by 5 on c
-   reduce by 5 on d
+   Reduce by    5 on c
+   Reduce by    5 on d
 
 warning --- Reduce/reduce conflict on [c d] between prod 5 and prod 6. Choose prod 5.
 State 7:
  (  3)K S               -> b A .c[EOI]
 
-   shift to 11 on c
+   Shift to    11 on c
 
 State 8:
  (  4)K S               -> b B .d[EOI]
 
-   shift to 12 on d
+   Shift to    12 on d
 
 State 9:
  (  1)K S               -> a A d .[EOI]
 
-   reduce by 1 on EOI
+   Reduce by    1 on EOI
 
 State 10:
  (  2)K S               -> a B c .[EOI]
 
-   reduce by 2 on EOI
+   Reduce by    2 on EOI
 
 State 11:
  (  3)K S               -> b A c .[EOI]
 
-   reduce by 3 on EOI
+   Reduce by    3 on EOI
 
 State 12:
  (  4)K S               -> b B d .[EOI]
 
-   reduce by 4 on EOI
+   Reduce by    4 on EOI
 
 
    6	terminals
@@ -88,7 +88,7 @@ State 12:
    7	productions
   13	LALR(1) states
   24	items
-256(x86)/352(x64) bytes	 required for parsertables
+252(x86)/344(x64) bytes	 required for parsertables
 
    0	shift/reduce  conflicts
    0	reduce/reduce conflicts
