@@ -269,10 +269,10 @@ ByteCount OptimizedBitSetPermutation2::getSavedBytesByOptimizedBitSets(UINT Acou
 void OptimizedBitSetPermutation2::validate() const {
   __super::validate();
   for(UINT i = 0; i < ARRAYSIZE(m_interval); i++) {
-    const BitSetInterval &v = getInterval(i);
+    const BitSetInterval &v        = getInterval(i);
     const UINT            capacity = v.getCapacity();
-    if((capacity == 0) || (capacity > getOldCapacity())) {
-      throwException(_T("%s: bitSetInterval[%u]:%s, capacity(=%u) must be in range [1..%u]")
+    if(capacity > getOldCapacity()) {
+      throwException(_T("%s:bitSetInterval[%u]:%s, capacity(=%u) must be in range [0..%u]")
                     ,__TFUNCTION__, i, v.toString().cstr(), capacity, getOldCapacity());
     }
   }

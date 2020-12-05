@@ -31,8 +31,9 @@ typedef BitSet    StateSet;   // capacity always #states
 typedef BitSet    NTIndexSet; // capacity always #non-terminals
 
 // Return number of bytes neccessary to have a bitSet ranging from [0..capacity-1]
+// if capacity=0, return 0
 inline UINT getSizeofBitSet(UINT capacity) {
-  return (capacity - 1) / 8 + 1;
+  return (capacity) ? ((capacity - 1) / 8 + 1) : 0;
 }
 
 inline int stringCmp(const String &s1, const String &s2) {
