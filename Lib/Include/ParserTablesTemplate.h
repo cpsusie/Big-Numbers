@@ -222,22 +222,22 @@ private:
   inline const  BYTE        *getStateBitSet(     UINT code) const {
     return m_stateBitSetTable  + (code & 0x7fff);
   }
-  inline        UINT getSuccessorBinSearch(      UINT code, UINT state) const {
+  inline        int getSuccessorBinSearch(      UINT code, UINT state) const {
     const int index = findArrayIndex(getStateArray(code), state);
-    return (index >= 0) ? m_newStateArrayTable[(code >> 17) + index] : _ParserError;
+    return (index >= 0) ? m_newStateArrayTable[(code >> 17) + index] : -1;
   }
-  inline        UINT getSuccessorSplitNode(      UINT code, UINT state) const {
-    const UINT a = getSuccessorFromCode(leftChild(m_successorCodeArray, code), state);
-    return (a != _ParserError) ? a : getSuccessorFromCode(rightChild(m_successorCodeArray, code), state);
+  inline        int getSuccessorSplitNode(      UINT code, UINT state) const {
+    const int a = getSuccessorFromCode(leftChild(m_successorCodeArray, code), state);
+    return (a >= 0) ? a : getSuccessorFromCode(rightChild(m_successorCodeArray, code), state);
   }
-  static inline UINT getSuccessorImmediate(      UINT code, UINT state) {
+  static inline int getSuccessorImmediate(      UINT code, UINT state) {
     const UINT fromState = code & 0x7fff;
-    return ((fromState == _NoFromStateCheck) || (state == fromState)) ? (code >> 17) : _ParserError;
+    return ((fromState == _NoFromStateCheck) || (state == fromState)) ? (code >> 17) : -1;
   }
-  inline        UINT getSuccessorBitSet(         UINT code, UINT state) const {
-    return bitsetContains(getStateBitSet(code), succStateIntervalCapacity, state-succStateIntervalFrom) ? (code >> 17) : _ParserError;
+  inline        int getSuccessorBitSet(         UINT code, UINT state) const {
+    return bitsetContains(getStateBitSet(code), succStateIntervalCapacity, state-succStateIntervalFrom) ? (code >> 17) : -1;
   }
-  inline        UINT getSuccessorFromCode(       UINT code, UINT state) const {
+  inline        int getSuccessorFromCode(       UINT code, UINT state) const {
     switch(getCompressionCode(code)) {
     case CompCodeBinSearch : return getSuccessorBinSearch(code, state);
     case CompCodeSplitNode : return getSuccessorSplitNode(code, state);
@@ -245,7 +245,7 @@ private:
     case CompCodeBitSet    : return getSuccessorBitSet(   code, state);
     default                : __assume(0);
     }
-    return 0;
+    return -1;
   }
 
 // ----------------------------- shift functions ---------------------------------------
@@ -255,22 +255,22 @@ private:
   inline const  BYTE        *getShiftStateBitSet(     UINT code) const {
     return m_shiftStateBitSetTable  + (code & 0x7fff);
   }
-  inline        UINT getShiftBinSearch(      UINT code, UINT state) const {
+  inline        int getShiftBinSearch(      UINT code, UINT state) const {
     const int index = findArrayIndex(getShiftFromStateArray(code), state);
-    return (index >= 0) ? m_shiftToStateArrayTable[(code >> 17) + index] : _ParserError;
+    return (index >= 0) ? m_shiftToStateArrayTable[(code >> 17) + index] : -1;
   }
-  inline        UINT getShiftSplitNode(      UINT code, UINT state) const {
-    const UINT a = getShiftFromCode(leftChild(m_shiftCodeArray, code), state);
-    return (a != _ParserError) ? a : getShiftFromCode(rightChild(m_shiftCodeArray, code), state);
+  inline        int getShiftSplitNode(      UINT code, UINT state) const {
+    const int a = getShiftFromCode(leftChild(m_shiftCodeArray, code), state);
+    return (a >= 0) ? a : getShiftFromCode(rightChild(m_shiftCodeArray, code), state);
   }
-  static inline UINT getShiftImmediate(      UINT code, UINT state) {
+  static inline int getShiftImmediate(      UINT code, UINT state) {
     const UINT fromState = code & 0x7fff;
-    return ((fromState == _NoFromStateCheck) || (state == fromState)) ? (code >> 17) : _ParserError;
+    return ((fromState == _NoFromStateCheck) || (state == fromState)) ? (code >> 17) : -1;
   }
-  inline        UINT getShiftBitSet(         UINT code, UINT state) const {
-    return bitsetContains(getShiftStateBitSet(code), shiftStateIntervalCapacity, state-shiftStateIntervalFrom) ? (code >> 17) : _ParserError;
+  inline        int getShiftBitSet(         UINT code, UINT state) const {
+    return bitsetContains(getShiftStateBitSet(code), shiftStateIntervalCapacity, state-shiftStateIntervalFrom) ? (code >> 17) : -1;
   }
-  inline        UINT getShiftFromCode(       UINT code, UINT state) const {
+  inline        int getShiftFromCode(       UINT code, UINT state) const {
     switch(getCompressionCode(code)) {
     case CompCodeBinSearch : return getShiftBinSearch(code, state);
     case CompCodeSplitNode : return getShiftSplitNode(code, state);
@@ -278,7 +278,7 @@ private:
     case CompCodeBitSet    : return getShiftBitSet(   code, state);
     default                : __assume(0);
     }
-    return 0;
+    return -1;
   }
 
   // ----------------------------------- reduce functions ---------------------------------
@@ -292,17 +292,17 @@ private:
 // --------------------------- getReduce -------------------------------------
   inline        int getReduceBinSearch(          UINT code, UINT term) const {
     const int index = findArrayIndex(getTermArray(code), term);
-    return (index >= 0) ? m_reduceArrayTable[(code >> 17) + index] : _ParserError;
+    return (index >= 0) ? m_reduceArrayTable[(code >> 17) + index] : -1;
   }
   inline        int getReduceSplitNode(          UINT code, UINT term) const {
     const int a = getReduceFromCode(leftChild(m_reduceCodeArray, code), term);
-    return (a != _ParserError) ? a : getReduceFromCode(rightChild(m_reduceCodeArray, code), term);
+    return (a >= 0) ? a : getReduceFromCode(rightChild(m_reduceCodeArray, code), term);
   }
   static inline int getReduceImmediate(          UINT code, UINT term)       {
-    return ((code & 0x7fff) == term)        ? ((signed int)code >> 17) : _ParserError;
+    return ((code & 0x7fff) == term)        ? (code >> 17) : -1;
   }
   inline        int getReduceBitSet(             UINT code, UINT term) const {
-    return bitsetContains(getTermBitSet(code), termBitSetCapacity, term) ? ((signed int)code >> 17) : _ParserError;
+    return bitsetContains(getTermBitSet(code), termBitSetCapacity, term) ? (code >> 17) : -1;
   }
   inline        int getReduceFromCode(           UINT code, UINT term) const {
     switch(getCompressionCode(code)) {
@@ -321,22 +321,25 @@ public:
   }
   // term is a terminal-symbol.
   // Return action
-  //   action >  0 : Shift to state = action
-  //   action <  0 : Reduce by production p = -action;
-  //   action == 0 : Accept, ie. reduce by production 0
-  //   _ParserError: Unexpected term
-  int getAction(          UINT state, UINT term     ) const final {
+  //   action.getType() = PA_SHIFT : Shift to state action.getNewState()
+  //   action.getType() = PA_REDUCE: Reduce by production action.getReduceProduction()
+  //   action.getType() = PA_ERROR : Unexpected term...Invalid input in the given state
+  //   if action.getType() = PA_REDUCE and reduceProduction() = 0, then Accept input, unless errors has been detected at some earlier stage
+  Action getAction(      UINT state, UINT term     ) const final {
     assert(state < stateCount);
-    assert(term  < termCount );
-    const int action = getShiftFromCode(m_shiftCodeArray[term], state);
-    return (action != _ParserError) ? action : getReduceFromCode(m_reduceCodeArray[state], term);
+    assert(isTerminal(term));
+    const int nextState = getShiftFromCode(m_shiftCodeArray[term], state);
+    if(nextState  >= 0) return Action(PA_SHIFT, nextState);
+    const int reduceProd = getReduceFromCode(m_reduceCodeArray[state], term);
+    if(reduceProd >= 0) return Action(PA_REDUCE, reduceProd);
+    return Action();
   }
 
   // nterm is nonterminal
-  UINT getSuccessor(      UINT state, UINT nterm    ) const final {
+  int getSuccessor(      UINT state, UINT nterm    ) const final {
     assert( state < stateCount);
-    assert((nterm >= termCount) && (nterm < symbolCount));
-    return getSuccessorFromCode(m_successorCodeArray[nterm-termCount], state);
+    assert(isNonTerminal(nterm));
+    return getSuccessorFromCode(m_successorCodeArray[NTermToNTIndex(nterm)], state);
   }
 
 #pragma warning(pop)

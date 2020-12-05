@@ -1,7 +1,8 @@
 #include "stdafx.h"
+#include <MarginFile.h>
 #include "GrammarTables.h"
-#include "TemplateWriter.h"
 #include "GrammarCode.h"
+#include "TemplateWriter.h"
 
 void TablesWriter::handleKeyword(TemplateWriter &writer, String &line) const {
   const GrammarTables tables(m_coder);

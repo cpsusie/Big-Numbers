@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "Grammar.h"
+#include "GrammarResult.h"
 
 static String getModifierString(SymbolModifier modifier) {
   switch(modifier) {
@@ -37,6 +39,21 @@ const TCHAR *GrammarSymbol::getTypeString() const {
   case TERMINAL            : return _T("terminal"   );
   }
   return _T("?");
+}
+
+const TCHAR *RightSideSymbol::getModifierString(SymbolModifier modifier) { // static
+  switch(modifier) {
+  case NO_MODIFIER: return EMPTYSTRING;
+  case ZEROORONE  : return _T("?");
+  case ZEROORMANY : return _T("*");
+  case ONEORMANY  : return _T("+");
+  default         : throwInvalidArgumentException(__TFUNCTION__,_T("modifier=%u"), modifier);
+  }
+  return EMPTYSTRING;
+}
+
+String RightSideSymbol::toString(const AbstractSymbolNameContainer &nameContainer) const {
+  return nameContainer.getSymbolName(m_index) + getModifierString();
 }
 
 static inline bool equalCore(const LR1Item &i1, const LR1Item &i2) {
@@ -117,7 +134,9 @@ Grammar::Grammar()
 , m_termPermutationDone(  false)
 , m_termBitSetCapacity(       0)
 , m_statePermutationDone( false)
+, m_result(             nullptr)
 {
+  m_result = new GrammarResult(); TRACE_NEW(m_result);
 }
 
 Grammar::Grammar(const AbstractParserTables &src)
@@ -130,7 +149,10 @@ Grammar::Grammar(const AbstractParserTables &src)
 , m_termPermutationDone(   true)
 , m_termBitSetCapacity(       0)
 , m_statePermutationDone(  true)
+, m_result(             nullptr)
 {
+  m_result = new GrammarResult(); TRACE_NEW(m_result);
+
   SourcePosition dummyPos;
   for(UINT t = 0; t < src.getTermCount(); t++) {
     addTerm(src.getSymbolName(t), TERMINAL, 0, dummyPos);
@@ -149,8 +171,8 @@ Grammar::Grammar(const AbstractParserTables &src)
   }
 }
 
-void Grammar::setName(const String &name) {
-  m_name = name;
+Grammar::~Grammar() {
+  SAFEDELETE(m_result);
 }
 
 int Grammar::getSymbolIndex(const String &name) const {
@@ -551,9 +573,12 @@ void Grammar::generateStates() {
     computeSuccessors(m_states[unfinishedState]);
   }
 
-  verbose(2, _T("Checking consistensy\n"));
+  checkAllStates();
+}
 
-  m_result.clear(getStateCount());
+void Grammar::checkAllStates() {
+  verbose(2, _T("Checking consistensy\n"));
+  m_result->clear(getStateCount());
   for(UINT s = 0; s < getStateCount(); s++) {
     checkStateIsConsistent(s);
   }
@@ -577,8 +602,8 @@ ConflictSolution Grammar::resolveShiftReduceConflict(const GrammarSymbol &termin
 
 void Grammar::checkStateIsConsistent(UINT stateIndex) {
   const LR1State &state = m_states[stateIndex];
-  m_result.m_stateResult.add(StateResult(stateIndex));
-  StateResult &sr = m_result.m_stateResult[stateIndex];
+  m_result->m_stateResult.add(StateResult(stateIndex));
+  StateResult &sr = m_result->m_stateResult[stateIndex];
 
   TermSet symbolsDone(getSymbolCount());
   const UINT itemCount = (UINT)state.m_items.size();
@@ -599,27 +624,27 @@ void Grammar::checkStateIsConsistent(UINT stateIndex) {
           const GrammarSymbol &terminal = getSymbol(t);
           switch(resolveShiftReduceConflict(terminal, item1)) {
           case CONFLICT_NOT_RESOLVED:
-            m_result.addSRError(_T("Shift/reduce conflict. Shift or reduce by prod %-3u (prec=%d) on '%s' (prec=%d, %s).")
-                                  ,item1.m_prod
-                                  ,getProduction(item1.m_prod).m_precedence
-                                  ,terminal.m_name.cstr()
-                                  ,terminal.m_precedence
-                                  ,terminal.getTypeString());
+            m_result->addSRError(_T("Shift/reduce conflict. Shift or reduce by prod %-3u (prec=%d) on '%s' (prec=%d, %s).")
+                                ,item1.m_prod
+                                 ,getProduction(item1.m_prod).m_precedence
+                                 ,terminal.m_name.cstr()
+                                 ,terminal.m_precedence
+                                 ,terminal.getTypeString());
             break;
           case CHOOSE_SHIFT:
-            sr.m_actions.add(ParserAction(t, item.getSuccessor()));
+            sr.m_termActionArray.add(TermActionPair(t, PA_SHIFT, item.getSuccessor()));
             symbolsDone += t;
-            m_result.addWarning(_T("Shift/reduce conflict on %s (prec=%d, %s). Choose shift instead of reduce by prod %u (prec=%d).")
-                               ,terminal.m_name.cstr()
-                               ,terminal.m_precedence
-                               ,terminal.getTypeString()
-                               ,item1.m_prod
-                               ,getProduction(item1.m_prod).m_precedence);
+            m_result->addWarning(_T("Shift/reduce conflict on %s (prec=%d, %s). Choose shift instead of reduce by prod %u (prec=%d).")
+                                ,terminal.m_name.cstr()
+                                ,terminal.m_precedence
+                                ,terminal.getTypeString()
+                                ,item1.m_prod
+                                ,getProduction(item1.m_prod).m_precedence);
             break;
           case CHOOSE_REDUCE:
-            sr.m_actions.add(ParserAction(t, -((int)(item1.m_prod))));
+            sr.m_termActionArray.add(TermActionPair(t, PA_REDUCE, item1.m_prod));
             symbolsDone += t;
-            m_result.addWarning(_T("Shift/reduce conflict on %s (prec=%d, %s). Choose reduce by prod %u (prec=%d).")
+            m_result->addWarning(_T("Shift/reduce conflict on %s (prec=%d, %s). Choose reduce by prod %u (prec=%d).")
                                 ,terminal.m_name.cstr()
                                 ,terminal.m_precedence
                                 ,terminal.getTypeString()
@@ -631,7 +656,7 @@ void Grammar::checkStateIsConsistent(UINT stateIndex) {
       }
       if(!symbolsDone.contains(t)) {
         if(item.m_succ >= 0) {
-          sr.m_actions.add(ParserAction(t, item.getSuccessor()));
+          sr.m_termActionArray.add(TermActionPair(t, PA_SHIFT, item.getSuccessor()));
         }
         symbolsDone += t;
         continue;
@@ -644,7 +669,7 @@ void Grammar::checkStateIsConsistent(UINT stateIndex) {
     if(isReduceItem(itemi)) {
       TermSet tokensReducedByOtherItems(getTermCount());
       if(isAcceptItem(itemi)) {  // check if this is start -> S . [EOI]
-        sr.m_actions.add(ParserAction(0, 0));
+        sr.m_termActionArray.add(TermActionPair(0, PA_REDUCE, 0));
         if(symbolsDone.contains(0)) {
           throwException(_T("Token EOI already done in state %u while generating Acceptitem"), state.m_index);
         }
@@ -661,11 +686,11 @@ void Grammar::checkStateIsConsistent(UINT stateIndex) {
           if(!intersection.isEmpty()) {
             if(itemj.m_prod < itemi.m_prod) {
               tokensReducedByOtherItems += intersection;
-              m_result.addWarning(_T("Reduce/reduce conflict on %s between prod %u and prod %u. Choose prod %u.")
-                                 ,symbolSetToString(intersection).cstr()
-                                 ,itemj.m_prod
-                                 ,itemi.m_prod
-                                 ,itemj.m_prod);
+              m_result->addWarning(_T("Reduce/reduce conflict on %s between prod %u and prod %u. Choose prod %u.")
+                                   ,symbolSetToString(intersection).cstr()
+                                   ,itemj.m_prod
+                                   ,itemi.m_prod
+                                   ,itemj.m_prod);
             }
           }
         }
@@ -674,7 +699,7 @@ void Grammar::checkStateIsConsistent(UINT stateIndex) {
       for(auto it = itemTokens.getIterator(); it.hasNext(); ) {
         const UINT t = (UINT)it.next();
         if(!symbolsDone.contains(t)) {
-          sr.m_actions.add(ParserAction(t, -(int)(itemi.m_prod)));
+          sr.m_termActionArray.add(TermActionPair(t, PA_REDUCE, itemi.m_prod));
           symbolsDone += t;
         }
       }
@@ -687,34 +712,13 @@ void Grammar::checkStateIsConsistent(UINT stateIndex) {
       const UINT nt = getShiftSymbol(itemi);
       if(!symbolsDone.contains(nt)) {
         if(itemi.getSuccessor() >= 0) {
-          sr.m_succs.add(SuccessorState((USHORT)nt, (USHORT)itemi.getSuccessor()));
+          sr.m_ntermNewStateArray.add(NTermNewStatePair((USHORT)nt, (USHORT)itemi.getSuccessor()));
         }
         symbolsDone += nt;
       }
     }
   } // for
   sr.sortArrays();
-}
-
-void GrammarResult::addSRError(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
-  va_list argptr;
-  va_start(argptr, format);
-  m_stateResult.last().m_errors.add(vformat(format, argptr));
-  va_end(argptr);
-  m_SRconflicts++;
-}
-
-void GrammarResult::addWarning(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
-  va_list argptr;
-  va_start(argptr, format);
-  m_stateResult.last().m_warnings.add(vformat(format, argptr));
-  va_end(argptr);
-  m_warningCount++;
-}
-
-void StateResult::sortArrays() {
-  m_actions.sortByTerm(); // sort actions by symbolnumber (terminal   )
-  m_succs.sortByNTerm();  // sort result  by symbolnumber (nonTerminal)
 }
 
 UINT Grammar::getItemCount() const {

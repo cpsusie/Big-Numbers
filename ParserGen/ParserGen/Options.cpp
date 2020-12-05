@@ -20,9 +20,9 @@ Options::Options() : Singleton(__TFUNCTION__) {
   MatrixOptimizeParameters &optReduce = getOptimizeParameters(OPTPARAM_REDUCE);
   MatrixOptimizeParameters &optSucc   = getOptimizeParameters(OPTPARAM_SUCC  );
 
-  optShift.m_enabled  = true ; optShift.m_pruneBitSet  = false;
-  optReduce.m_enabled = true ; optReduce.m_pruneBitSet = false;
-  optSucc.m_enabled   = true ; optSucc.m_pruneBitSet   = true ;
+  optShift.m_pruneBitSet  = false;
+  optReduce.m_pruneBitSet = false;
+  optSucc.m_pruneBitSet   = true ;
 }
 
 String Options::toString() const {

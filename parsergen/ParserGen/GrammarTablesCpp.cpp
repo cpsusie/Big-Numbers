@@ -308,7 +308,7 @@ ByteCount GrammarTables::printCppParserTablesTemplateTransShift(MarginFile &outp
 
 // return size in bytes
 ByteCount GrammarTables::printCompressedTransShiftMatrixCpp(MarginFile &output) const {
-  return TransposedShiftMatrixCompression::CompressedTransShiftMatrix(m_grammar).print(output);
+  return CompressedTransShiftMatrix(m_grammar).print(output);
 }
 
 ByteCount GrammarTables::printProdLengthArrayCpp(MarginFile &output) const {

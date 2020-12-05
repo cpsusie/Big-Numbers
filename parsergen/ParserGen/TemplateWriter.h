@@ -1,7 +1,11 @@
 #pragma once
 
 #include <HashMap.h>
+#include <SourcePosition.h>
 #include "KeywordHandler.h"
+#include "SourceText.h"
+
+class MarginFile;
 
 class KeywordTrigger {
 private:
@@ -53,14 +57,8 @@ public:
   void addKeywordHandler(const String &keyword, KeywordHandler &handler, const String &verboseString=EMPTYSTRING);
   void addMacro(const String &macro, const String &value);
   void generateOutput();
-  void incrLeftMargin(int incr) {
-    const int old = getOutput().getLeftMargin();
-    getOutput().setLeftMargin(old+incr);
-  }
-  void decrLeftMargin(int decr) {
-    const int old = getOutput().getLeftMargin();
-    getOutput().setLeftMargin(old-decr);
-  }
+  void incrLeftMargin(int incr);
+  void decrLeftMargin(int decr);
   static       String                  createTempFileName(const String &ext);
   void                                 openOutput(const String &fileName);
   void                                 printf(_In_z_ _Printf_format_string_  TCHAR const * const format,...);

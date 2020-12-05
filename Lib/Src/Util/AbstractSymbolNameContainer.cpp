@@ -39,14 +39,22 @@ UINT AbstractSymbolNameContainer::getMaxSymbolNameLength() const {
 class SymbolStringifier: public AbstractStringifier<size_t> {
 private:
   const AbstractSymbolNameContainer &m_nameContainer;
+  const UINT                         m_offset;
 public:
-  inline SymbolStringifier(const AbstractSymbolNameContainer &nameContainer) : m_nameContainer(nameContainer) {
+  inline SymbolStringifier(const AbstractSymbolNameContainer &nameContainer, bool ntIndex = false)
+    : m_nameContainer(nameContainer)
+    , m_offset(ntIndex ? nameContainer.getTermCount() : 0)
+  {
   }
   String toString(const size_t &symbolIndex) override {
-    return m_nameContainer.getSymbolName((UINT)symbolIndex);
+    return m_nameContainer.getSymbolName((UINT)symbolIndex + m_offset);
   }
 };
 
 String AbstractSymbolNameContainer::symbolSetToString(const BitSet &set) const {
   return set.toString(SymbolStringifier(*this), _T(" "), BT_BRACKETS);
+}
+
+String AbstractSymbolNameContainer::NTIndexSetToString(const BitSet &set) const {
+  return set.toString(SymbolStringifier(*this, true), _T(" "), BT_BRACKETS);
 }

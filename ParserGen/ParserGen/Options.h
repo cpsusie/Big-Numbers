@@ -17,7 +17,7 @@ public:
                             // if true, SymbolNode::allocateNode will generate a Don't care node, which skips check on symbol- or stateset
                             // which is only allowed when handling check successor-matrix
   MatrixOptimizeParameters()
-    : m_enabled(false)
+    : m_enabled(true)
     , m_maxRecursion(defaultRecurseLevel)
     , m_minBitSetSize(2)
     , m_pruneBitSet(false)
@@ -66,7 +66,7 @@ public:
 
   static constexpr UINT maxTabSize          = 16;
   static constexpr UINT defaultTabSize      = 4;
-  static constexpr UINT maxVerboseLevel     = 2;
+  static constexpr UINT maxVerboseLevel     = 3;
   static constexpr UINT defaultVerboseLevel = 1;
   static constexpr UINT maxRecursiveCalls   = 8;
 

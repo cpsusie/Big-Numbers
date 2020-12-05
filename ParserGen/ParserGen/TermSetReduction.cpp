@@ -1,41 +1,31 @@
 #include "stdafx.h"
+#include "Grammar.h"
+#include "TermActionPairArray.h"
 #include "TermSetReduction.h"
 
-TermSetReduction::operator ParserActionArray() const {
-  ParserActionArray result(getLegalTermCount());
-  const short action = -(int)m_prod;
+TermSetReduction::TermSetReduction(const Grammar &grammar, UINT prod, UINT term0)
+  : m_grammar(grammar                )
+  , m_termSet(grammar.getTermCount() )
+  , m_prod(   prod                   )
+  , m_setSize(0                      )
+{
+  addTerm(term0);
+}
+
+
+TermSetReduction::operator TermActionPairArray() const {
+  TermActionPairArray result(getLegalTermCount());
+  const Action        action(PA_REDUCE, m_prod);
   for(auto it = m_termSet.getIterator(); it.hasNext();) {
-    result.add(ParserAction((USHORT)it.next(), action));
+    result.add(TermActionPair((UINT)it.next(), action));
   }
   return result;
 }
 
 String TermSetReduction::toString() const {
-  return format(_T("Reduce by %u on %s (%u terminals)"), m_prod, m_grammar.symbolSetToString(m_termSet).cstr(), m_setSize);
-}
-
-UINT TermSetReductionArray::getLegalTermCount() const {
-  UINT sum = 0;
-  for(auto it = getIterator(); it.hasNext();) {
-    sum += it.next().getLegalTermCount();
-  }
-  return sum;
-}
-
-static inline int legalTermCountReverseCmp(const TermSetReduction &i1, const TermSetReduction &i2) {
-  return (int)i2.getLegalTermCount() - (int)i1.getLegalTermCount();
-}
-
-void TermSetReductionArray::sortByLegalTermCount() {
-  if(size() > 1) {
-    sort(legalTermCountReverseCmp);
-  }
-}
-
-String TermSetReductionArray::toString() const {
-  String result;
-  for(auto it = getIterator(); it.hasNext();) {
-    result += format(_T("   %s\n"), it.next().toString().cstr());
-  }
-  return result;
+  return format(_T("Reduce by %4u on %s (%u terminals)")
+               ,m_prod
+               ,m_grammar.symbolSetToString(m_termSet).cstr()
+               ,getLegalTermCount()
+               );
 }

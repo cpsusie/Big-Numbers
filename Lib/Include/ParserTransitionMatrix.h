@@ -23,7 +23,7 @@ protected:
     BitSet result(n);
     for(UINT c = 0; c < n; c++) {
       const T v = (*this)(row, c);
-      if(v != (T)AbstractParserTables::_ParserError) {
+      if(isValid(v)) {
         result.add(c);
       }
     }
@@ -35,30 +35,41 @@ protected:
     BitSet result(n);
     for(UINT r = 0; r < n; r++) {
       const T v = (*this)(r, column);
-      if(v != (T)AbstractParserTables::_ParserError) {
+      if(isValid(v)) {
         result.add(r);
       }
     }
     return result;
   }
+  virtual bool isValid(const T &v) const = 0;
 };
 
-class FullActionMatrix : public ParserTransitionMatrix<SHORT> {
+inline String toString(const Action &a) {
+  return a.toString();
+}
+
+class FullActionMatrix : public ParserTransitionMatrix<Action> {
 public:
   FullActionMatrix(const AbstractParserTables &tables);
   String getLegalTermString(UINT state) const {
     return m_nameContainer.symbolSetToString(getLegalColumns(state));
   }
   String toString() const override;
+  bool isValid(const Action &a) const final {
+    return !a.isParserError();
+  }
 };
 
-// SuccessorMatrix[state][NTindex] contains newstate or _ParserError if invalid combination
+// SuccessorMatrix[state][NTindex] contains newstate or -1 if invalid combination
 // state   = [0..m_stateCount-1]
 // NTIndex = [0..m_NTCount-1   ]
-class FullSuccessorMatrix : public ParserTransitionMatrix<USHORT> {
+class FullSuccessorMatrix : public ParserTransitionMatrix<SHORT> {
 public:
   FullSuccessorMatrix(const AbstractParserTables &tables);
   String toString() const override;
+  bool isValid(const SHORT &v) const final {
+    return v >= 0;
+  }
 };
 
 class StatePair {

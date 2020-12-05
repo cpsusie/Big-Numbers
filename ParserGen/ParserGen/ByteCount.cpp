@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "Grammar.h"
 #include "ByteCount.h"
 
 const ByteCount ByteCount::s_pointerSize(4,8);

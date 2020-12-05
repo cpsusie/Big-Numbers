@@ -47,10 +47,6 @@ void LRparser::setStackSize(UINT newSize) {
   m_errorCount++;
 }
 
-int LRparser::getNextAction() const {
-  return done() ? (accept() ? 0 : AbstractParserTables::_ParserError) : m_tables.getAction(m_state, m_input);
-}
-
 void LRparser::stackOverflow() {
   if(m_debug) {
     debug(_T("Stackoverflow"));
@@ -83,7 +79,7 @@ bool LRparser::recover() {
 
   const UINT startHeight  = getStackHeight();
   do {
-    while(!stackEmpty() && m_tables.getAction(getParserStackTop().m_state, m_input) == AbstractParserTables::_ParserError) {
+    while(!stackEmpty() && m_tables.getAction(getParserStackTop().m_state, m_input).isParserError()) {
       parserStackPop(1);
     }
 
@@ -136,28 +132,13 @@ int LRparser::parseStep() { // return 0 on continue, != 0 terminate parse
   if(m_done) {
     return -1; // parse has been terminated. Dont try to continue
   }
-  const int action = m_tables.getAction(m_state,m_input);
+  const Action action = m_tables.getAction(m_state,m_input);
   if(m_suppressError) {
      m_suppressError--;
   }
-  if(action == AbstractParserTables::_ParserError) {
-
-    if(m_debug) {
-      debug(_T("Error in state %u. Input=%s ('%s')"), m_state, getSymbolName(m_input).cstr(), m_scanner->getText());
-    }
-
-    if(!recover()) {
-      m_done = true;
-
-      if(m_debug) {
-        debug(_T("Recover failed"));
-        debug(_T("Dont accept"));
-      }
-      return -1;
-    }
-    m_suppressError = m_cascadeCount;
-  } else if(action > 0) { // shift
-    m_state = action;
+  switch(action.getType()) {
+  case PA_SHIFT:
+    m_state = action.getNewState();
     m_pos   = m_scanner->getPreviousPos();
 
     if(m_debug) {
@@ -177,69 +158,91 @@ int LRparser::parseStep() { // return 0 on continue, != 0 terminate parse
     if(m_debug) {
       dumpState();
     }
-  } else if(action <= 0) { // reduce by production (= -action)
-    const UINT reduceProduction = -action;
-    m_productionLength   = m_tables.getProductionLength(reduceProduction);
+    break;
+  case PA_REDUCE:
+    { const UINT reduceProduction = action.getReduceProduction();
+      m_productionLength   = m_tables.getProductionLength(reduceProduction);
 
-    if(m_debug) {
-      debug(_T("Reduce by %-3u :%s -> %s.")
-           ,reduceProduction
-           ,m_tables.getLeftSymbolName(reduceProduction).cstr()
-           ,m_tables.getRightString(reduceProduction).cstr());
-    }
+      if(m_debug) {
+        debug(_T("Reduce by %-3u :%s -> %s.")
+             ,reduceProduction
+             ,m_tables.getLeftSymbolName(reduceProduction).cstr()
+             ,m_tables.getRightString(reduceProduction).cstr());
+      }
 
-    defaultReduce(reduceProduction);    // $$ = $1
-    TCHAR termchar;
-    bool gotptoken;
-    m_pos = m_scanner->getPreviousPos();
-    if(m_text = (TCHAR*)m_scanner->getPreviousText()) {
-      m_textLength = (int)m_scanner->getPreviousLength();
-      termchar     = m_text[m_textLength];
-      m_text[m_textLength] = 0;
-      gotptoken    = true;
+      defaultReduce(reduceProduction);    // $$ = $1
+      TCHAR termchar;
+      bool gotptoken;
+      m_pos = m_scanner->getPreviousPos();
+      if(m_text = (TCHAR*)m_scanner->getPreviousText()) {
+        m_textLength = (int)m_scanner->getPreviousLength();
+        termchar     = m_text[m_textLength];
+        m_text[m_textLength] = 0;
+        gotptoken    = true;
 //      printf(_T("<%s> at (%d,%d)\n"),m_yyText,m_yyPos.m_lineno,m_yyPos.m_col);
-    } else { // no previous token
-      m_text       = EMPTYSTRING;
-      m_textLength = 0;
-      gotptoken    = false;
-    }
+      } else { // no previous token
+        m_text       = EMPTYSTRING;
+        m_textLength = 0;
+        gotptoken    = false;
+      }
 
-    const int c = reduceAction(reduceProduction);
-    if(gotptoken) {
-      m_text[m_textLength] = termchar;
-    }
-    if(c) {
-      m_done = true;
+      const int c = reduceAction(reduceProduction);
+      if(gotptoken) {
+        m_text[m_textLength] = termchar;
+      }
+      if(c) {
+        m_done = true;
+
+        if(m_debug) {
+          debug(_T("reduceAction returned nonzero (%d). Terminate parse."), c);
+        }
+        return c;
+      }
+
+      const SourcePosition &pos = getPos(1);
+
+      parserStackPop(m_productionLength);
+      userStackPopSymbols(m_productionLength);
+      userStackShiftLeftSide();
+
+      if(action.isAcceptAction()) {
+        const UINT nt = m_tables.getLeftSymbol(reduceProduction);
+        parserStackShift(m_state, nt, pos);
+        m_done = true;
+        if(m_debug) {
+          debug(_T("%s"),accept() ? _T("Accept"):_T("Dont accept"));
+        }
+      } else {
+        m_state = getParserStackTop().m_state;
+        const UINT nt = m_tables.getLeftSymbol(reduceProduction);
+        m_state = m_tables.getSuccessor(m_state,nt);
+        assert(m_state >= 0);
+        parserStackShift(m_state, nt, pos);
+      }
 
       if(m_debug) {
-        debug(_T("reduceAction returned nonzero (%d). Terminate parse."), c);
+        dumpState();
       }
-      return c;
     }
-
-    const SourcePosition &pos = getPos(1);
-
-    parserStackPop(m_productionLength);
-    userStackPopSymbols(m_productionLength);
-    userStackShiftLeftSide();
-
-    if(reduceProduction == 0) {
-      const UINT nt = m_tables.getLeftSymbol(reduceProduction);
-      parserStackShift(m_state, nt, pos);
-      m_done = true;
-      if(m_debug) {
-        debug(_T("%s"),accept() ? _T("Accept"):_T("Dont accept"));
-      }
-    } else {
-      m_state = getParserStackTop().m_state;
-      const UINT nt = m_tables.getLeftSymbol(reduceProduction);
-      m_state = m_tables.getSuccessor(m_state,nt);
-      parserStackShift(m_state, nt, pos);
-    }
-
+    break;
+  case PA_ERROR:
     if(m_debug) {
-      dumpState();
+      debug(_T("Error in state %u. Input=%s ('%s')"), m_state, getSymbolName(m_input).cstr(), m_scanner->getText());
     }
+
+    if(!recover()) {
+      m_done = true;
+
+      if(m_debug) {
+        debug(_T("Recover failed"));
+        debug(_T("Dont accept"));
+      }
+      return -1;
+    }
+    m_suppressError = m_cascadeCount;
+    break;
+  default:
+    throwException(_T("%s:Unknown actiontype:%u"), __TFUNCTION__, action.getType());
   }
   return 0;
 }

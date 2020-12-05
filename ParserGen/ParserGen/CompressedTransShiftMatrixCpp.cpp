@@ -1,11 +1,11 @@
 #include "stdafx.h"
-#include <CompactHashMap.h>
 #include "GrammarCode.h"
+#include "TermActionPairArray.h"
+#include "StatePairBitSet.h"
+#include "TermSetReduction.h"
 #include "CompressEncoding.h"
 #include "StatePairMatrix.h"
 #include "CompressedTransShiftMatrixCpp.h"
-
-namespace TransposedShiftMatrixCompression {
 
 CompressedTransShiftMatrix::CompressedTransShiftMatrix(const Grammar &grammar)
   : m_grammar(                 grammar                                            )
@@ -13,14 +13,14 @@ CompressedTransShiftMatrix::CompressedTransShiftMatrix(const Grammar &grammar)
   , m_maxTermNameLength(       grammar.getMaxTermNameLength()                     )
   , m_transSuccMatrix(         grammar                                            )
   , m_shiftMacroMap(           grammar                                            )
-  , m_shiftUsedByParam(        grammar.getBitSetParam(TERM_BITSET )               )
+  , m_shiftUsedByParam(        grammar.getBitSetParam(ETYPE_TERM)                 )
   , m_shiftStateBitSetInterval(grammar.getShiftStateBitSetInterval()              )
   , m_fromStateArraySize(      0                                                  )
   , m_newStateArraySize(       0                                                  )
   , m_shiftSplitNodeCount(     0                                                  )
   , m_shiftNodeArray(          TransposedShiftMatrix(grammar)                     )
   , m_reduceMacroMap(          grammar                                            )
-  , m_reduceUsedByParam(       grammar.getBitSetParam(STATE_BITSET)               )
+  , m_reduceUsedByParam(       grammar.getBitSetParam(ETYPE_STATE)                )
   , m_sizeofTermBitSet(        getSizeofBitSet(grammar.getTermBitSetCapacity())   )
   , m_termArraySize(           0                                                  )
   , m_reduceArraySize(         0                                                  )
@@ -98,12 +98,12 @@ void CompressedTransShiftMatrix::generateCompressedFormShift() {
       const String comment = macro.getComment();
       m_shiftMacroMap.addMacro(macro.setComment(format(_T("%-*s %s"), m_maxTermNameLength, m_grammar.getSymbolName(term).cstr(), comment.cstr()))
                      .setIndex(term)
-                     .setName(format(_T("_pc%04u"), term))
+                     .setName(format(_T("_tc%04u"), term))
               );
     }
   }
   for(UINT term : undefinedTermEntries) {
-    m_shiftMacroMap.addMacro(Macro(m_shiftUsedByParam, term, _T("0x00000000"), _T("")).setIndex(term).setName(format(_T("_pc%04u"), term)));
+    m_shiftMacroMap.addMacro(Macro(m_shiftUsedByParam, term, _T("0x00000000"), _T("")).setIndex(term).setName(format(_T("_tc%04u"), term)));
   }
   m_byteCountMap.m_splitNodeCount = m_shiftSplitNodeCount;
 }
@@ -169,7 +169,7 @@ Macro CompressedTransShiftMatrix::doShiftNodeSplit(const SymbolNode &node) {
     mpL->addUsedByValue(term);
     indexL = mpL->getIndex();
   } else {
-    const String         name           = format(_T("_ps%04u"), m_shiftSplitNodeCount);
+    const String         name           = format(_T("_ts%04u"), m_shiftSplitNodeCount);
     indexL = m_shiftMacroMap.getTermCount() + m_shiftSplitNodeCount++;
     m_shiftMacroMap.addMacro(macroL.setIndex(indexL).setName(name));
     mpL = &macroL;
@@ -181,7 +181,7 @@ Macro CompressedTransShiftMatrix::doShiftNodeSplit(const SymbolNode &node) {
     mpR->addUsedByValue(term);
     indexR = mpR->getIndex();
   } else {
-    const String         name           = format(_T("_ps%04u"), m_shiftSplitNodeCount);
+    const String         name           = format(_T("_ts%04u"), m_shiftSplitNodeCount);
     indexR = m_shiftMacroMap.getTermCount() + m_shiftSplitNodeCount++;
     m_shiftMacroMap.addMacro(macroR.setIndex(indexR).setName(name));
     mpR = &macroR;
@@ -261,11 +261,11 @@ Macro CompressedTransShiftMatrix::doReduceNode(const ReduceNode &node) {
 }
 
 Macro CompressedTransShiftMatrix::doReduceNodeBinSearch(const ReduceNode &node) {
-  const UINT              state      = node.getState();
-  const ParserActionArray &paa       = node.getParserActionArray();
-  const TermSet           termSet    = paa.getLegalTermSet(getTermCount());
-  IndexMapValue          *imvp       = m_termArrayMap.get(termSet);
-  UINT                    termArrayIndex, termArrayCount;
+  const UINT                 state           = node.getState();
+  const TermActionPairArray &termActionArray = node.getTermActionPairArray();
+  const TermSet              termSet         = termActionArray.getLegalTermSet(getTermCount());
+  IndexMapValue             *imvp            = m_termArrayMap.get(termSet);
+  UINT                       termArrayIndex, termArrayCount;
 
   if(imvp != nullptr) {
     termArrayIndex = imvp->m_arrayIndex;
@@ -278,8 +278,8 @@ Macro CompressedTransShiftMatrix::doReduceNodeBinSearch(const ReduceNode &node) 
     m_termArraySize += (UINT)termSet.size() + 1;
   }
 
-  const ActionArray actionList = paa.getActionArray();
-  imvp = m_reduceArrayMap.get(actionList);
+  const ActionArray reduceProdList = termActionArray.getActionArray();
+  imvp = m_reduceArrayMap.get(reduceProdList);
   UINT              reduceArrayIndex, reduceArrayCount;
   if(imvp != nullptr) {
     reduceArrayIndex = imvp->m_arrayIndex;
@@ -288,8 +288,8 @@ Macro CompressedTransShiftMatrix::doReduceNodeBinSearch(const ReduceNode &node) 
   } else {
     reduceArrayIndex = m_reduceArraySize;
     reduceArrayCount = m_reduceArrayMap.getCount();
-    m_reduceArrayMap.put(actionList, IndexMapValue(m_reduceUsedByParam, state, reduceArrayIndex));
-    m_reduceArraySize += (UINT)actionList.size();
+    m_reduceArrayMap.put(reduceProdList, IndexMapValue(m_reduceUsedByParam, state, reduceArrayIndex));
+    m_reduceArraySize += (UINT)reduceProdList.size();
   }
   const String            macroValue = encodeMacroValue(CompCodeBinSearch, reduceArrayIndex, termArrayIndex);
   const String            comment    = format(_T("termArray %4u, reduceArray %4u"), termArrayCount, reduceArrayCount);
@@ -333,14 +333,14 @@ Macro CompressedTransShiftMatrix::doReduceNodeSplit(const ReduceNode &node) {
 
 Macro CompressedTransShiftMatrix::doReduceNodeImmediate(const ReduceNode &node) {
   const UINT              state      = node.getState();
-  const ParserAction      pa         = node.getParserAction();
-  const int               action     = pa.m_action;
-  assert(action <= 0);
-  const UINT              term       = pa.m_term;
-  const String            macroValue = encodeMacroValue(CompCodeImmediate, action, term);
-  const String            comment    = pa.isAcceptAction()
-                                     ? format(_T("Reduce by %4u (Accept) on %s"), action, m_grammar.getSymbolName(pa.m_term).cstr())
-                                     : format(_T("Reduce by %4u on %s"), -action, m_grammar.getSymbolName(pa.m_term).cstr())
+  const TermActionPair    tap        = node.getTermActionPair();
+  assert(tap.isReduceAction());
+  const UINT              term       = tap.getTerm();
+  const UINT              prod       = tap.getReduceProduction();
+  const String            macroValue = encodeMacroValue(CompCodeImmediate, prod, term);
+  const String            comment    = tap.isAcceptAction()
+                                     ? format(_T("Reduce by %4u (Accept) on %s"), prod, m_grammar.getSymbolName(term).cstr())
+                                     : format(_T("Reduce by %4u on %s")         , prod, m_grammar.getSymbolName(term).cstr())
                                      ;
   return Macro(m_reduceUsedByParam, state, macroValue, comment);
 }
@@ -363,9 +363,8 @@ Macro CompressedTransShiftMatrix::doReduceNodeBitSet(const ReduceNode &node) {
     byteIndex    = termSetCount * m_sizeofTermBitSet;
     m_termBitSetMap.put(termSet, IndexMapValue(m_reduceUsedByParam, state, byteIndex));
   }
-  const int               prod       = tsr.getProduction();
-  const int               action     = -prod;
-  const String            macroValue = encodeMacroValue(CompCodeBitSet, action, byteIndex);
+  const UINT              prod       = tsr.getProduction();
+  const String            macroValue = encodeMacroValue(CompCodeBitSet, prod, byteIndex);
   const String            comment    = format(_T("Reduce by %4u on tokens in termBitSet[%u]"), prod, termSetCount);
   return Macro(m_reduceUsedByParam, state, macroValue, comment);
 }
@@ -411,7 +410,7 @@ void CompressedTransShiftMatrix::printMacroesAndShiftCodeArray(MarginFile &outpu
     const UINT commentLen = m_shiftMacroMap.getMaxCommentLength() + 1;
     macroes.sort(macroCmpByName);
     for(auto it = macroes.getIterator(); it.hasNext();) {
-      it.next().print(output, commentLen);
+      it.next().print(output, commentLen, &m_grammar);
     }
     output.printf(_T("\n"));
   }
@@ -461,7 +460,7 @@ void CompressedTransShiftMatrix::printStatePairArrayTables(MarginFile &output) c
     outputBeginArrayDefinition(output, _T("shiftFromStateArrayTable"   ), stateType, stateArrayTable.getElementCount(true));
     for(auto it = stateArrayTable.getIterator();   it.hasNext();) {
       const IndexArrayEntry<StateSet>    &e                  = it.next();
-      String                              comment            = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment().cstr());
+      String                              comment            = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment(&m_grammar).cstr());
       const UINT                          n                  = (UINT)e.m_key.size();
       UINT                                counter            = 0;
       output.setLeftMargin(2);
@@ -486,7 +485,7 @@ void CompressedTransShiftMatrix::printStatePairArrayTables(MarginFile &output) c
     outputBeginArrayDefinition(output, _T("shiftToStateArrayTable") , stateType, newStateArrayTable.getElementCount(false));
     for(auto it = newStateArrayTable.getIterator(); it.hasNext();) {
       const IndexArrayEntry<StateArray>  &e                  = it.next();
-      String                              comment            = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment().cstr());
+      String                              comment            = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment(&m_grammar).cstr());
       const UINT                          n                  = (UINT)e.m_key.size();
       UINT                                counter            = 0;
       for(auto it1 = e.m_key.getIterator(); it1.hasNext(); counter++, delim = ',') {
@@ -515,7 +514,7 @@ void CompressedTransShiftMatrix::printStateBitSetTable(MarginFile &output) const
     const UINT               arraySize   = outputBeginBitSetTableDefinition(output, _T("shiftStateBitSetTable"), interval, bitSetCount);
     for(auto it = bitSetArray.getIterator(); it.hasNext();) {
       const IndexArrayEntry<StateSet>    &e                 = it.next();
-      String                              comment           = format(_T("%3u %3u states %s"), e.m_commentIndex, (UINT)e.m_key.size(), e.getUsedByComment().cstr());
+      String                              comment           = format(_T("%3u %3u states %s"), e.m_commentIndex, (UINT)e.m_key.size(), e.getUsedByComment(&m_grammar).cstr());
       const ByteArray                     ba                = bitSetToByteArray(e.m_key, interval);
       for(BYTE b : ba) {
         output.printf(_T("%c0x%02x"), delim, b);
@@ -662,5 +661,3 @@ void CompressedTransShiftMatrix::printSucc(MarginFile &output) const {
   m_transSuccMatrix.print(output);
   m_byteCountMap += m_transSuccMatrix.getByteCountMap();
 }
-
-}; // namespace TransposedShiftMatrixCompression

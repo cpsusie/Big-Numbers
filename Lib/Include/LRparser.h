@@ -34,7 +34,7 @@ private:
   // Topelement of stack = parserStack[m_stackTop-1]
   UINT                m_stackTop;
   // Dont give errormessage when > 0. Decremented on every parsecycle
-  // and set to m_cascadecount when PAaction return _ParserError
+  // and set to m_cascadecount when PAaction return ParserError
   UINT                m_suppressError;
   // Suppress the next m_cascadecount parsererrors
   UINT                m_cascadeCount;
@@ -126,7 +126,6 @@ public:
   inline       UINT                  getProductionLength(UINT prod    ) const { return m_tables.getProductionLength(prod); }
   inline const String               &getSymbolName(      UINT symbol  ) const { return m_tables.getSymbolName(symbol);     }
   inline const AbstractParserTables &getParserTables()                  const { return m_tables;                           }
-  int                                getNextAction()                    const;
   inline       Scanner              *getScanner()                       const { return m_scanner;                          }
   inline       void                  setDebug(           bool newValue)       { m_debug = newValue;                        }
   inline       bool                  done()                             const { return m_done;                             }

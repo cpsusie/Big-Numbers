@@ -3,6 +3,7 @@
 #include "GrammarScanner.h"
 
 class Grammar;
+class Production;
 
 class GrammarParser {
 private:

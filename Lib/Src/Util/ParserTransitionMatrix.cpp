@@ -6,8 +6,16 @@ FullActionMatrix::FullActionMatrix(const AbstractParserTables &tables)
 {
   for(UINT state = 0; state < m_stateCount; state++) {
     for(UINT term = 0; term < m_termCount; term++) {
-      const int action = tables.getAction(state, term);
-      (*this)(state, term) = action;
+      const Action a = tables.getAction(state, term);
+      switch(a.getType()) {
+      case PA_SHIFT  :
+      case PA_REDUCE :
+      case PA_ERROR  :
+        (*this)(state, term) = tables.getAction(state, term);
+        break;
+      default:
+        throwException(_T("%s:Invalid actiontype(=%u) returned from tables.getAction(state=%u,term=%u)"), __TFUNCTION__, a.getType(), state, term);
+      }
     }
   }
 }
@@ -16,7 +24,7 @@ String FullActionMatrix::toString() const {
   String              result;
   result = _T("     | ");
   for(UINT term = 0; term < m_termCount; term++) {
-    result += format(_T("%4u "), term);
+    result += format(_T("%5u "), term);
   }
 
   result += '\n';
@@ -27,11 +35,16 @@ String FullActionMatrix::toString() const {
     String line;
     line = format(_T("%4u | "), state);
     for(UINT term = 0; term < m_termCount; term++) {
-      const int action = (*this)(state, term);
-      if(action == AbstractParserTables::_ParserError) {
-        line += _T("   E ");
-      } else {
-        line += format(_T("%4d "), action);
+      const Action &a = (*this)(state, term);
+      switch(a.getType()) {
+      case PA_ERROR : line += _T("   E "); break;
+      case PA_SHIFT : line += format(_T("%5s "), format(_T("S%u"), a.getNewState()).cstr());
+      case PA_REDUCE:
+        if(a.isAcceptAction()) {
+          line += _T("Accept");
+        } else {
+          line += format(_T("%5s "), format(_T("R%u"), a.getReduceProduction()).cstr());
+        }
       }
     }
     result += line;
@@ -44,10 +57,8 @@ FullSuccessorMatrix::FullSuccessorMatrix(const AbstractParserTables &tables)
 : ParserTransitionMatrix(tables, MatrixDimension(tables.getStateCount(), tables.getNTermCount()))
 {
   for(UINT state = 0; state < m_stateCount; state++) {
-    for(UINT NTindex = 0; NTindex < m_ntermCount; NTindex++) {
-      const UINT nterm    = m_termCount + NTindex;
-      const UINT newState = tables.getSuccessor(state, nterm);
-      (*this)(state, NTindex) = newState;
+    for(UINT ntIndex = 0; ntIndex < m_ntermCount; ntIndex++) {
+      (*this)(state, ntIndex) = tables.getSuccessor(state, tables.NTIndexToSymbolIndex(ntIndex));
     }
   }
 }
@@ -64,9 +75,9 @@ String FullSuccessorMatrix::toString() const {
   for(UINT state = 0; state < m_stateCount; state++) {
     String line;
     line = format(_T("%4u | "), state);
-    for(UINT NTindex = 0; NTindex < m_ntermCount; NTindex++) {
-      const USHORT v = (*this)(state, NTindex);
-      if(v == AbstractParserTables::_ParserError) {
+    for(UINT ntIndex = 0; ntIndex < m_ntermCount; ntIndex++) {
+      const SHORT v = (*this)(state, ntIndex);
+      if(!isValid(v)) {
         line += _T("   E ");
       } else {
         line += format(_T("%4u "), v);
@@ -134,10 +145,9 @@ TransposedShiftMatrix::TransposedShiftMatrix(const AbstractParserTables &tables)
   const FullActionMatrix am(tables);
   for(UINT state = 0; state < m_stateCount; state++) {
     for(UINT term = 0; term < m_termCount; term++) {
-      const int action = am(state, term);
-      if((action > 0) && (action != AbstractParserTables::_ParserError)) { // shift action
-        const UINT newState = action;
-        (*this)[term].add(StatePair(state, newState));
+      const Action action = am(state, term);
+      if(action.isShiftAction()) {
+        (*this)[term].add(StatePair(state, action.getNewState()));
       }
     }
   }
@@ -161,10 +171,10 @@ String TransposedShiftMatrix::toString() const {
 TransposedSuccessorMatrix::TransposedSuccessorMatrix(const AbstractParserTables &tables): AbstractStatePairMatrix(tables,tables.getNTermCount()) {
   const FullSuccessorMatrix sm(tables);
   for(UINT state = 0; state < m_stateCount; state++) {
-    for(UINT NTindex = 0; NTindex < m_ntermCount; NTindex++) {
-      const int newState = sm(state, NTindex);
-      if(newState != AbstractParserTables::_ParserError) {
-        (*this)[NTindex].add(StatePair(state, newState));
+    for(UINT ntIndex = 0; ntIndex < m_ntermCount; ntIndex++) {
+      const SHORT v = sm(state, ntIndex);
+      if(sm.isValid(v)) {
+        (*this)[ntIndex].add(StatePair(state, v));
       }
     }
   }

@@ -1,49 +1,12 @@
 #include "stdafx.h"
-#include "SymbolNode.h"
-
-MixedStatePairArray::MixedStatePairArray(const SymbolNodeBase &base, const StatePairArray &statePairArray)
-: SymbolNodeBase(base)
-{
-  CompactUIntHashMap<UINT, 256>  sameNewStateMap(241); // map from newState -> index into m_statePairBitSetArray
-  for(const StatePair sp : statePairArray) {
-    const UINT  newState = sp.m_newState;
-    const UINT *indexp   = sameNewStateMap.get(newState);
-    if(indexp) {
-      m_statePairBitSetArray[*indexp].addFromState(sp.m_fromState);
-    } else {
-      const UINT index = (UINT)m_statePairBitSetArray.size();
-      m_statePairBitSetArray.add(StatePairBitSet(getGrammar(), newState, sp.m_fromState, true));
-      sameNewStateMap.put(newState, index);
-    }
-  }
-  m_statePairBitSetArray.sortBySetSize();
-}
-
-StatePairArray MixedStatePairArray::mergeAll() const {
-  StatePairArray result(getFromStateCount());
-  result.addAll(m_statePairArray);
-  if(!m_statePairBitSetArray.isEmpty()) {
-    for(auto it = m_statePairBitSetArray.getIterator(); it.hasNext();) {
-      result.addAll((StatePairArray)it.next());
-    }
-    if(result.size() > 1) {
-      result.sortByFromState();
-    }
-  }
-  return result;
-}
-
-SymbolNode::SymbolNode(const SymbolNode *parent, const SymbolNodeBase &base, UINT fromStateCount, CompressionMethod compressMethod)
-  : SymbolNodeBase(  base                                    )
-  , m_parent(        parent                                  )
-  , m_fromStateCount(fromStateCount                          )
-  , m_recurseLevel(  parent?(parent->getRecurseLevel()+1) : 0)
-  , m_compressMethod(compressMethod                          )
-{
-}
+#include "MixedStatePairArray.h"
+#include "SymbolNodeBinSearch.h"
+#include "SymbolNodeSplit.h"
+#include "SymbolNodeImmediate.h"
+#include "SymbolNodeBitSet.h"
 
 SymbolNode *SymbolNode::allocateSymbolNode(const Grammar &grammar, UINT symbol, const StatePairArray &statePairArray, const MatrixOptimizeParameters &opt) {
-  const SymbolNodeBase base(grammar, symbol, opt);
+  const SymbolNodeBase base(grammar, opt, symbol);
   if(!opt.m_enabled) {
     return new SymbolNodeBinSearch(nullptr, base, statePairArray);
   } else {
@@ -83,7 +46,8 @@ SymbolNode *SymbolNode::allocateImmediateDontCareNode(const SymbolNode *parent, 
   const UINT   newStateCount       = newStateCountArray + newStateCountBitSet;
   assert(newStateCount == 1);
   const UINT   newState            = (newStateCountArray == 1) ? msp.m_statePairArray.first().m_newState : msp.m_statePairBitSetArray.first().getNewState();
-  SymbolNode *p                    = new SymbolNodeImmediate(parent, msp, newState, msp.getFromStateCount()); TRACE_NEW(p);
+  const UINT   fromStateCount      = msp.getFromStateCount();
+  SymbolNode *p                    = new SymbolNodeImmediate(parent, msp, newState, fromStateCount); TRACE_NEW(p);
   return p;
 }
 
@@ -117,18 +81,6 @@ SymbolNode *SymbolNode::allocateStatePairBitSetNode(const SymbolNode *parent, co
   return p;
 }
 
-SymbolNodeSplit::~SymbolNodeSplit() {
-  SAFEDELETE(m_child[0]);
-  SAFEDELETE(m_child[1]);
-}
-
-SymbolNodeSplit &SymbolNodeSplit::setChild(BYTE index, SymbolNode *child) {
-  assert(index < 2);
-  assert(m_child[index] == nullptr);
-  m_child[index] = child;
-  return *this;
-}
-
 String SymbolNode::toString() const {
   if(isTerminal()) {
     return format(_T("%u - term %u %s %-20s (From states:%u)\n")
@@ -149,25 +101,34 @@ String SymbolNode::toString() const {
   }
 }
 
-String SymbolNodeBinSearch::toString() const {
-  const String result = __super::toString()  + indentString(m_statePairArray.toString(), 4);
-  return indentString(result, m_recurseLevel * 2);
+const StatePairArray &SymbolNode::getStatePairArray() const {
+  throwUnsupportedOperationException(__TFUNCTION__);
+  __assume(0);
+  return *new StatePairArray(); // should never come here
 }
 
-String SymbolNodeSplit::toString() const {
-  const String cstr0  = indentString(getChild(0).toString(),2);
-  const String cstr1  = indentString(getChild(1).toString(),2);
-  const String result = __super::toString() + indentString(format(_T("Child 0:\n%s\nChild 1:\n%s"), cstr0.cstr(), cstr1.cstr()), 4);
-  return indentString(result, m_recurseLevel * 2);
+const SymbolNode &SymbolNode::getChild(BYTE index) const {
+  throwUnsupportedOperationException(__TFUNCTION__);
+  __assume(0);
+  return *this; // should never come here
 }
 
-String SymbolNodeImmediate::toString() const {
-  const String result = __super::toString() + indentString(m_statePair.toString(), 4);
-  return indentString(result, m_recurseLevel * 2);
+// Call only if getCompressionMethod() == CompCodeImmediate
+const StatePair &SymbolNode::getStatePair() const {
+  throwUnsupportedOperationException(__TFUNCTION__);
+  __assume(0);
+  return *new StatePair(); // should never come here
 }
 
-String SymbolNodeBitSet::toString() const {
-  const String result = __super::toString() + indentString(m_statePairBitSet.toString(), 4);
-  return indentString(result, m_recurseLevel * 2);
+bool SymbolNode::isDontCareNode() const {
+  throwUnsupportedOperationException(__TFUNCTION__);
+  __assume(0);
+  return false; // should never come here
 }
 
+// Call only if getCompressionMethod() == CompCodeBitSet
+const StatePairBitSet &SymbolNode::getStatePairBitSet() const {
+  throwUnsupportedOperationException(__TFUNCTION__);
+  __assume(0);
+  return *new StatePairBitSet(getGrammar(), 0,0, isTerminal()); // should never come here
+}

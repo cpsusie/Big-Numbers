@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "Grammar.h"
+#include "GrammarResult.h"
 #include "GrammarCode.h"
 #include "GrammarTables.h"
 
@@ -24,20 +26,20 @@ void GrammarTables::initCompressibleStateSet() {
 
 // Returns true if actionArray.size == 1 or all actions in the specified state is reduce by the same production
 bool GrammarTables::calcIsCompressibleState(UINT state) const {
-  const ParserActionArray &paa   = getGrammarResult().m_stateResult[state].m_actions;
-  const UINT               count = paa.getLegalTermCount();
+  const TermActionPairArray &termActionArray = getGrammarResult().m_stateResult[state].m_termActionArray;
+  const UINT                 count           = termActionArray.getLegalTermCount();
   switch(count) {
   case 0 :
-    throwException(_T("ActionArray for state %u has size 0"), state);
+    throwException(_T("%s:No actions for state %u"), __TFUNCTION__, state);
   case 1 :
     return true;
   default:
-    { const int action = paa[0].m_action;
-      if(action >= 0) {
+    { const Action ar0 = termActionArray.first().getAction();
+      if(ar0.isShiftAction()) {
         return false;
       }
       for(UINT i = 1; i < count; i++) {
-        if(paa[i].m_action != action) {
+        if(termActionArray[i].getAction() != ar0) {
           return false;
         }
       }
@@ -89,12 +91,12 @@ UINT GrammarTables::getLeftSymbol(UINT prod) const {
   return getGrammar().getProduction(prod).m_leftSide;
 }
 
-int GrammarTables::getAction(UINT state, UINT term) const {
-  return getGrammarResult().m_stateResult[state].m_actions.getAction(term);
+Action GrammarTables::getAction(UINT state, UINT term) const {
+  return getGrammarResult().m_stateResult[state].m_termActionArray.getAction(term);
 }
 
-UINT GrammarTables::getSuccessor(UINT state, UINT nterm) const {
-  return getGrammarResult().m_stateResult[state].m_succs.getSuccessor(nterm);
+int GrammarTables::getSuccessor(UINT state, UINT nterm) const {
+  return getGrammarResult().m_stateResult[state].m_ntermNewStateArray.getNewState(nterm);
 }
 
 void GrammarTables::print(MarginFile &output) const {

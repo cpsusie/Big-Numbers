@@ -106,7 +106,7 @@
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
       <StringPooling>true</StringPooling>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
     <Link>
@@ -139,7 +139,7 @@
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
       <StringPooling>true</StringPooling>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <OmitFramePointers>false</OmitFramePointers>
     </ClCompile>
@@ -228,13 +228,26 @@
     </Xdcmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Lib\Include\AbstractParserTables.h" />
+    <ClInclude Include="..\..\Lib\Include\AbstractSymbolNameContainer.h" />
     <ClInclude Include="..\..\Lib\Include\LRparser.h" />
+    <ClInclude Include="ActionArray.h" />
+    <ClInclude Include="AllTemplateTypes.h" />
+    <ClInclude Include="BasicTypes.h" />
+    <ClInclude Include="BitSetInterval.h" />
+    <ClInclude Include="BitSetParameters.h" />
     <ClInclude Include="ByteCount.h" />
     <ClInclude Include="CompressedTransShiftMatrixCpp.h" />
     <ClInclude Include="CompressedTransSuccMatrixCpp.h" />
+    <ClInclude Include="CompressNodeBase.h" />
+    <ClInclude Include="GrammarResult.h" />
     <ClInclude Include="IndexMap.h" />
+    <ClInclude Include="IndexToSymbolConverter.h" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="MacroMap.h" />
+    <ClInclude Include="MixedReduceArray.h" />
+    <ClInclude Include="MixedStatePairArray.h" />
+    <ClInclude Include="OptimizedBitSetPermutation.h" />
     <ClInclude Include="Options.h" />
     <ClInclude Include="CompressEncoding.h" />
     <ClInclude Include="Grammar.h" />
@@ -243,29 +256,78 @@
     <ClInclude Include="GrammarScanner.h" />
     <ClInclude Include="GrammarTables.h" />
     <ClInclude Include="KeywordHandler.h" />
+    <ClInclude Include="ReduceNodeBase.h" />
+    <ClInclude Include="ReduceNodeBinSearch.h" />
+    <ClInclude Include="ReduceNodeBitSet.h" />
+    <ClInclude Include="ReduceNodeImmediate.h" />
+    <ClInclude Include="ReduceNodeSplit.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SourceText.h" />
     <ClInclude Include="ReduceNode.h" />
     <ClInclude Include="ReduceNodeArray.h" />
+    <ClInclude Include="StateArray.h" />
     <ClInclude Include="StatePair.h" />
+    <ClInclude Include="StatePairArray.h" />
+    <ClInclude Include="StatePairBitSet.h" />
+    <ClInclude Include="StatePairBitSetArray.h" />
     <ClInclude Include="StatePairMatrix.h" />
+    <ClInclude Include="StateResult.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StringCollector.h" />
+    <ClInclude Include="NTermNewStatePair.h" />
+    <ClInclude Include="NTermNewStatePairArray.h" />
+    <ClInclude Include="NTermNewStatePairMatrix.h" />
+    <ClInclude Include="SymbolDataPair.h" />
     <ClInclude Include="SymbolNodeArray.h" />
     <ClInclude Include="SymbolNodeBase.h" />
+    <ClInclude Include="SymbolNodeBinSearch.h" />
+    <ClInclude Include="SymbolNodeBitSet.h" />
+    <ClInclude Include="SymbolNodeImmediate.h" />
+    <ClInclude Include="SymbolNodeSplit.h" />
+    <ClInclude Include="TableTypeByteCountMap.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TemplateWriter.h" />
     <ClInclude Include="SymbolNode.h" />
+    <ClInclude Include="TermActionPair.h" />
+    <ClInclude Include="TermActionPairArray.h" />
+    <ClInclude Include="TermActionPairMatrix.h" />
     <ClInclude Include="TermSetReduction.h" />
+    <ClInclude Include="TermSetReductionArray.h" />
+    <ClInclude Include="UsedByBitSet.h" />
     <ClInclude Include="Wizard.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AllTemplateTypes.cpp" />
+    <ClCompile Include="BitSetInterval.cpp" />
     <ClCompile Include="CompressedTransShiftMatrixCpp.cpp" />
     <ClCompile Include="CompressedTransSuccMatrixCpp.cpp" />
+    <ClCompile Include="ElementName.cpp" />
     <ClCompile Include="GrammarPermutation.cpp" />
+    <ClCompile Include="GrammarResult.cpp" />
+    <ClCompile Include="IndexToSymbolConverter.cpp" />
+    <ClCompile Include="MixedReduceArray.cpp" />
+    <ClCompile Include="MixedStatePairArray.cpp" />
     <ClCompile Include="OptimizedBitSetPermutation.cpp" />
+    <ClCompile Include="SymbolDataPair.cpp" />
+    <ClCompile Include="ReduceNodeBinSearch.cpp" />
+    <ClCompile Include="ReduceNodeBitSet.cpp" />
+    <ClCompile Include="ReduceNodeImmediate.cpp" />
+    <ClCompile Include="ReduceNodeSplit.cpp" />
+    <ClCompile Include="StatePairArray.cpp" />
+    <ClCompile Include="StatePairBitSet.cpp" />
+    <ClCompile Include="StatePairBitSetArray.cpp" />
+    <ClCompile Include="StateResult.cpp" />
+    <ClCompile Include="NTermNewStatePairMatrix.cpp" />
+    <ClCompile Include="SymbolNodeBase.cpp" />
+    <ClCompile Include="SymbolNodeBinSearch.cpp" />
+    <ClCompile Include="SymbolNodeBitSet.cpp" />
+    <ClCompile Include="SymbolNodeImmediate.cpp" />
+    <ClCompile Include="SymbolNodeSplit.cpp" />
+    <ClCompile Include="TableTypeByteCountMap.cpp" />
+    <ClCompile Include="TermActionPairArray.cpp" />
+    <ClCompile Include="TermActionPairMatrix.cpp" />
+    <ClCompile Include="TermSetReductionArray.cpp" />
     <ClCompile Include="TransposedSuccessorMatrix.cpp" />
-    <ClCompile Include="ParserActionArray.cpp" />
     <ClCompile Include="ActionsWriter.cpp" />
     <ClCompile Include="ByteCount.cpp" />
     <ClCompile Include="Macro.cpp" />
@@ -294,7 +356,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="StringCollector.cpp" />
-    <ClCompile Include="SuccessorStateArray.cpp" />
+    <ClCompile Include="NTermNewStatePairArray.cpp" />
     <ClCompile Include="SymbolNodeArray.cpp" />
     <ClCompile Include="SymbolsWriter.cpp" />
     <ClCompile Include="TablesWriter.cpp" />
@@ -302,6 +364,7 @@
     <ClCompile Include="SymbolNode.cpp" />
     <ClCompile Include="TransposedShiftMatrix.cpp" />
     <ClCompile Include="TermSetReduction.cpp" />
+    <ClCompile Include="UsedByBitSet.cpp" />
     <ClCompile Include="Wizard.cpp" />
   </ItemGroup>
   <ItemGroup>

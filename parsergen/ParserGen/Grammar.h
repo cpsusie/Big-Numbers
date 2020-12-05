@@ -1,11 +1,11 @@
 #pragma once
 
 #include <HashMap.h>
-#include <CompactHashMap.h>
 #include <MarginFile.h>
-#include <AbstractParserTables.h>
 #include "ByteCount.h"
 #include "SourceText.h"
+#include "BitSetParameters.h"
+#include "BitSetInterval.h"
 
 typedef enum {
   LEFTASSOC_TERMINAL  // %left
@@ -20,84 +20,6 @@ typedef enum {
  ,CHOOSE_REDUCE
  ,CONFLICT_NOT_RESOLVED
 } ConflictSolution;
-
-
-typedef BitSet    SymbolSet;
-typedef SymbolSet TermSet;    // capacity always #terminals
-typedef BitSet    StateSet;   // capacity always #states
-typedef BitSet    NTIndexSet; // capacity always #non-terminals
-
-// Must match elements in BitSetParam::s_elementName
-typedef enum {
-  SYMBOL_BITSET
- ,TERM_BITSET
- ,NTINDEX_BITSET
- ,PRODUCTION_BITSET
- ,STATE_BITSET
-} BitSetType;
-
-class BitSetParam {
-private:
-  static const TCHAR *s_elementName[][2];
-  const BitSetType m_type;
-  const UINT       m_capacity;
-public:
-  BitSetParam(BitSetType type, UINT capacity)
-    : m_type(       type       )
-    , m_capacity(   capacity   )
-  {
-  }
-  inline BitSetType getType() const {
-    return m_type;
-  }
-  inline UINT getCapacity() const {
-    return m_capacity;
-  }
-  static inline const TCHAR *getElementName(BitSetType type, bool plur) {
-    return s_elementName[type][plur?1:0];
-  }
-  inline const TCHAR *getElementName(bool plur) const {
-    return getElementName(getType(), plur);
-  }
-};
-
-// Return number of bytes neccessary to have a bitSet ranging from [0..capacity-1]
-inline UINT getSizeofBitSet(UINT capacity) {
-  return (capacity - 1) / 8 + 1;
-}
-
-class UsedByBitSet : public BitSet {
-private:
-  const BitSetType m_type;
-public:
-  UsedByBitSet(const BitSetParam &param) : BitSet(param.getCapacity()), m_type(param.getType()) {
-  }
-  String toString() const;
-};
-
-class BitSetInterval : public UIntInterval {
-public:
-  BitSetInterval() : UIntInterval(0,0) {
-  }
-  BitSetInterval(const UIntInterval &src) : UIntInterval(src) {
-  }
-  BitSetInterval(UINT minValue, UINT capacity) : UIntInterval(minValue, minValue+capacity) {
-  }
-  inline UINT getCapacity() const {
-    return getLength();
-  }
-  inline UINT getSizeofBitSet() const {
-    return ::getSizeofBitSet(getCapacity());
-  }
-  // Return true, if set doesn't contain any 1-bits at positions outside range [getFrom()..getTo()-1],
-  // else return false
-  bool checkBitSetValues(const BitSet &set) const;
-  // Return a BitSet, with all 1-bits in range getFrom()..getTo()-1, and capacity = max(1,getTo())
-  BitSet createBitSetMask() const;
-  String toString() const {
-    return format(_T("[%u-%u]"), getFrom(), getTo() - 1);
-  }
-};
 
 class GrammarSymbol {
 public:
@@ -130,6 +52,11 @@ public:
   inline operator UINT() const {
     return m_index;
   }
+  static const TCHAR *getModifierString(SymbolModifier modifier);
+  inline const TCHAR *getModifierString() const {
+    return getModifierString(m_modifier);
+  }
+  String toString(const AbstractSymbolNameContainer &nameContainer) const;
 };
 
 class Production {
@@ -150,6 +77,8 @@ public:
   inline UINT getLength() const {
     return (UINT)m_rightSide.size();
   }
+  String getRightSideString(const AbstractSymbolNameContainer &nameContainer) const;
+  String toString(          const AbstractSymbolNameContainer &nameContainer) const;
 };
 
 class LR1Item {  // item = A -> alfa . beta {m_la}, then production[m_prod] = A -> alfa beta, and m_dot = length(alfa)
@@ -197,183 +126,6 @@ public:
   void sortItems();
 };
 
-class ParserAction {
-public:
-  USHORT m_term;
-  SHORT  m_action; // <  0 reduce by production n. n == -m_action
-                   // == 0 accept. reduce by production 0
-                   // >  0 shift to state n. n == action
-
-  inline ParserAction() : m_term(0), m_action(0) {
-  }
-  inline ParserAction(USHORT term, SHORT action) : m_term(term), m_action(action) {
-  }
-  inline ULONG hashCode() const {
-    return *(ULONG*)(&m_term);
-  }
-  inline bool operator==(const ParserAction &a) const {
-    return hashCode() == a.hashCode();
-  }
-  inline bool operator!=(const ParserAction &a) const {
-    return !(*this == a);
-  }
-  inline bool isAcceptAction() const {
-    return (m_action == 0) && (m_term == 0);
-  }
-  inline bool isShift() const {
-    return m_action > 0;
-  }
-  String toString(const AbstractSymbolNameContainer &nameContainer) const;
-};
-
-typedef CompactShortArray ActionArray;
-
-class SuccessorState {
-public:
-  USHORT m_nterm;
-  USHORT m_newState;
-
-  inline SuccessorState() : m_nterm(0), m_newState(0) {
-  }
-  inline SuccessorState(USHORT nterm, USHORT newState) : m_nterm(nterm), m_newState(newState) {
-  }
-  inline ULONG hashCode() const {
-    return *(ULONG*)(&m_nterm);
-  }
-  inline bool operator==(const SuccessorState &a) const {
-    return hashCode() == a.hashCode();
-  }
-  inline bool operator!=(const SuccessorState &a) const {
-    return !(*this == a);
-  }
-  String toString(const AbstractSymbolNameContainer &nameContainer) const;
-};
-
-typedef CompactUShortArray StateArray;
-
-inline int compactShortArrayCmp(const CompactShortArray &a1, const CompactShortArray &a2) {
-  const size_t n = a1.size();
-  int          c = sizetHashCmp(n, a2.size());
-  if(c) return c;
-  return n ? memcmp(a1.begin(), a2.begin(), n * sizeof(short)) : 0;
-}
-
-inline int actionArrayCmp(const ActionArray &a1, const ActionArray &a2) {
-  return compactShortArrayCmp((const CompactShortArray&)a1, (const CompactShortArray&)a2);
-}
-
-inline int stateArrayCmp(const StateArray &a1, const StateArray &a2) {
-  return compactShortArrayCmp((const CompactShortArray&)a1, (const CompactShortArray&)a2);
-}
-
-inline int parserActionCompareTerm(const ParserAction &p1, const ParserAction &p2) {
-  return (int)p1.m_term - (int)p2.m_term;
-}
-
-inline int stringCmp(const String &s1, const String &s2) {
-  return _tcscmp(s1.cstr(), s2.cstr());
-}
-
-class ParserActionArray : public CompactArray<ParserAction> {
-public:
-  ParserActionArray() {
-  }
-  ParserActionArray(UINT capacity) : CompactArray(capacity) {
-  }
-  inline ParserActionArray &sortByTerm() {
-    sort(parserActionCompareTerm);
-    return *this;
-  }
-  // Return all legal terminals in array as a BitSet
-  TermSet        getLegalTermSet(UINT terminalCount) const;
-  // Return all actions (no neccessary distinct) actions in array
-  ActionArray    getActionArray()                    const;
-  // = size() = number of different terminal symbols in array
-  inline UINT    getLegalTermCount()                 const {
-    return(UINT)size();
-  }
-  int            getAction(UINT term)                const {
-    const ParserAction key(term, 0);
-    intptr_t index = binarySearch(key, parserActionCompareTerm);
-    return (index < 0) ? AbstractParserTables::_ParserError : (*this)[index].m_action;
-  }
-  String         toString(const AbstractSymbolNameContainer &nameContainer) const;
-};
-
-inline int successorStateCompareNTerm(const SuccessorState &s1, const SuccessorState &s2) {
-  return (int)s1.m_nterm - (int)s2.m_nterm;
-}
-
-class SuccessorStateArray : public CompactArray<SuccessorState> {
-public:
-  SuccessorStateArray() {
-  }
-  SuccessorStateArray(UINT capacity) : CompactArray(capacity) {
-  }
-  inline SuccessorStateArray &sortByNTerm() {
-    sort(successorStateCompareNTerm);
-    return *this;
-  }
-  NTIndexSet     getNTIndexSet(UINT termCount, UINT symbolCount) const;
-  inline UINT    getLegalNTermCount()                const {
-    return(UINT)size();
-  }
-  StateArray     getStateArray()                     const;
-  inline UINT    getNewStateCount()                  const {
-    return(UINT)size();
-  }
-  UINT           getSuccessor(UINT nterm)            const {
-    const SuccessorState  key(nterm, 0);
-    intptr_t index = binarySearch(key, successorStateCompareNTerm);
-    return (index < 0) ? AbstractParserTables::_ParserError : (*this)[index].m_newState;
-  }
-  String         toString(const AbstractSymbolNameContainer &nameContainer) const;
-};
-
-class StateResult {
-public:
-  UINT                m_index;
-  StringArray         m_errors, m_warnings;
-  ParserActionArray   m_actions;
-  SuccessorStateArray m_succs;
-  inline StateResult(UINT index) : m_index(index) {
-  }
-  void sortArrays();
-};
-
-inline int stateResultCmpByIndex(const StateResult &sr1, const StateResult &sr2) {
-  return (int)sr1.m_index - (int)sr2.m_index;
-}
-
-class GrammarResult {
-public:
-  Array<StateResult> m_stateResult;
-  UINT               m_SRconflicts, m_RRconflicts;         // only for doc-file
-  UINT               m_warningCount;
-  GrammarResult()
-    : m_SRconflicts(0)
-    , m_RRconflicts(0)
-    , m_warningCount(0)
-  {
-  }
-  GrammarResult &clear(UINT capacity) {
-    m_SRconflicts = m_RRconflicts = m_warningCount = 0;
-    m_stateResult.clear(capacity);
-    return *this;
-  }
-  inline bool    allStatesConsistent() const {
-    return (m_SRconflicts == 0) && (m_RRconflicts == 0);
-  }
-  inline UINT    getStateCount() const {
-    return (UINT)m_stateResult.size();
-  }
-  void           sortStateResult() {
-    m_stateResult.sort(stateResultCmpByIndex);
-  }
-  void addSRError(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
-  void addWarning(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
-};
-
 class OptimizedBitSetPermutation;
 class OptimizedBitSetPermutation2;
 
@@ -393,6 +145,9 @@ public:
 #define DUMP_ALL        DUMP_SHIFTITEMS | DUMP_LOOKAHEAD  | DUMP_SUCC
 #define DUMP_DOCFORMAT  DUMP_SHIFTITEMS | DUMP_ACTIONS    | DUMP_ERRORS | DUMP_WARNINGS
 
+class AbstractParserTables;
+class GrammarResult;
+
 class Grammar : public AbstractSymbolNameContainer {
   friend class GrammarParser;
 private:
@@ -409,9 +164,11 @@ private:
   bool                         m_statePermutationDone;
   BitSetInterval               m_shiftStateSetInterval, m_succStateSetInterval;
   SourceText                   m_header, m_driverHead, m_driverTail; // programtext between %{ and %}
-  GrammarResult                m_result;
+  GrammarResult               *m_result;
 
-  void        setName(              const String        &name  );
+  void        setName(              const String        &name  ) {
+    m_name = name;
+  }
   UINT        addSymbol(            const GrammarSymbol &symbol);
   bool        canTerminate(         const Production    &prod  ) const;
   bool        deriveEpsilon(        const Production    &prod  ) const;
@@ -447,76 +204,73 @@ private:
   // Add terminal symbol to symboltable
   // Assume that no symbol with specified name alrady exist in symboltable
   // Return index, which can be found by getSymbolIndex
-  UINT        addTerm(              const String &name, SymbolType type, int precedence, const SourcePosition &pos);
+  UINT             addTerm(             const String     &name, SymbolType type, int precedence, const SourcePosition &pos);
   // Add non-terminal symbol to symboltable
   // Assume that no symbol with specified name alrady exist in symboltable
   // Return index, which can be found by getSymbolIndex
-  UINT         addNTerm(            const String &name, const SourcePosition &pos);
-  void         addProduction(       const Production &production);
-  void         addClosureProductions();
+  UINT             addNTerm(            const String     &name, const SourcePosition &pos);
+  void             addProduction(       const Production &production);
+  void             addClosureProductions();
 
   // find all symbols that are reachable from startsymbol
-  void         findReachable();
+  void             findReachable();
   // find all symbols that can terminate
-  void         findTerminate();
+  void             findTerminate();
 
   void             checkStateIsConsistent(UINT stateIndex);
   ConflictSolution resolveShiftReduceConflict(const GrammarSymbol &terminal, const LR1Item &item) const;
-
+  void             checkAllStates();
 public:
   Grammar();
   Grammar(const AbstractParserTables &src);
-  ~Grammar() {
-  }
+  virtual ~Grammar();
 
-  void                        generateStates();
-  inline UINT                 getSymbolCount()                const final { return (UINT)m_symbolArray.size();            }
-  inline UINT                 getTermCount()                  const final { return m_termCount;                           }
-  const  String              &getSymbolName(UINT symbolIndex) const final {
+  void                         generateStates();
+  inline UINT                  getSymbolCount()                const final { return (UINT)m_symbolArray.size();            }
+  inline UINT                  getTermCount()                  const final { return m_termCount;                           }
+  const  String               &getSymbolName(UINT symbolIndex) const final {
     return getSymbol(symbolIndex).m_name;
   }
-  inline UINT                 getProductionCount()            const       { return (UINT)m_productions.size();            }
-  inline UINT                 getStateCount()                 const       { return (UINT)m_states.size();                 }
-  inline bool                 isTerminal(   UINT symbolIndex) const       { return symbolIndex < m_termCount;             }
-  inline bool                 isNonTerminal(UINT symbolIndex) const       { return symbolIndex >= m_termCount;            }
-  inline       GrammarSymbol &getSymbol(    UINT symbolIndex)             { return m_symbolArray[symbolIndex];            }
-  inline const GrammarSymbol &getSymbol(    UINT symbolIndex) const       { return m_symbolArray[symbolIndex];            }
-  inline const Production    &getProduction(UINT index      ) const       { return m_productions[index];                  }
-  inline const LR1State      &getState(     UINT index      ) const       { return m_states[index];                       }
+  inline UINT                  getProductionCount()            const       { return (UINT)m_productions.size();            }
+  inline UINT                  getStateCount()                 const       { return (UINT)m_states.size();                 }
+  inline       GrammarSymbol  &getSymbol(    UINT symbolIndex)             { return m_symbolArray[symbolIndex];            }
+  inline const GrammarSymbol  &getSymbol(    UINT symbolIndex) const       { return m_symbolArray[symbolIndex];            }
+  inline const Production     &getProduction(UINT index      ) const       { return m_productions[index];                  }
+  inline const LR1State       &getState(     UINT index      ) const       { return m_states[index];                       }
 
   // Return index of symbol (terminal or non-terminal) with specified name if it exist
   // or -1, if not found
-  int                         getSymbolIndex(    const String &name) const;
+  int                          getSymbolIndex(    const String &name) const;
 
 // ------------------------------------- helper functions for code generation ---------------------------------
 
-  const String                &getName()                      const { return m_name;                   }
-  inline const GrammarResult  &getResult()                    const { return m_result;                 }
-  inline UINT                  getStartSymbol()               const { return m_startSymbol;            }
-  inline UINT                  getStartState()                const { return m_startState;             }
-  inline const SourceText     &getHeader()                    const { return m_header;                 }
-  inline const SourceText     &getDriverHead()                const { return m_driverHead;             }
-  inline const SourceText     &getDriverTail()                const { return m_driverTail;             }
+  const  String               &getName()                       const { return m_name;                   }
+  const  GrammarResult        &getResult()                     const { return *m_result;                }
+         GrammarResult        &getResult()                           { return *m_result;                }
+  inline UINT                  getStartSymbol()                const { return m_startSymbol;            }
+  inline UINT                  getStartState()                 const { return m_startState;             }
+  inline const SourceText     &getHeader()                     const { return m_header;                 }
+  inline const SourceText     &getDriverHead()                 const { return m_driverHead;             }
+  inline const SourceText     &getDriverTail()                 const { return m_driverTail;             }
 
-  BitSetParam                  getBitSetParam(BitSetType type) const;
+  BitSetParameters             getBitSetParam(ElementType type) const;
 
   void                         reorderTerminals(const OptimizedBitSetPermutation  &permutation);
   void                         reorderStates(   const OptimizedBitSetPermutation2 &permutation);
-  void                         disableReorderTerminals()            { m_termPermutationDone  = true;   }
-  void                         disableReorderStates()               { m_statePermutationDone = true;   }
-  bool                         getTermReorderingDone()        const { return m_termPermutationDone;    }
-  bool                         getStateReorderingDone()       const { return m_statePermutationDone;   }
-  inline UINT                  getTermBitSetCapacity()        const { return m_termBitSetCapacity;     }
-  const BitSetInterval        &getShiftStateBitSetInterval()  const { return m_shiftStateSetInterval;  }
-  const BitSetInterval        &getSuccStateBitSetInterval()   const { return m_succStateSetInterval;   }
+  void                         disableReorderTerminals()             { m_termPermutationDone  = true;   }
+  void                         disableReorderStates()                { m_statePermutationDone = true;   }
+  bool                         getTermReorderingDone()         const { return m_termPermutationDone;    }
+  bool                         getStateReorderingDone()        const { return m_statePermutationDone;   }
+  inline UINT                  getTermBitSetCapacity()         const { return m_termBitSetCapacity;     }
+  const BitSetInterval        &getShiftStateBitSetInterval()   const { return m_shiftStateSetInterval;  }
+  const BitSetInterval        &getSuccStateBitSetInterval()    const { return m_succStateSetInterval;   }
 
   // Convert symbolset to String
-  String itemToString(     const LR1Item   &item , int flags = DUMP_LOOKAHEAD) const; // flags any combination of {DUMP_LOOKAHEAD,DUMP_SUCC}
-  String stateToString(    const LR1State  &state, int flags = DUMP_ALL      ) const; // flags any combination of {DUMP_KERNELONLY,DUMP_SHIFTITEMS,DUMP_ACTIONS} + {flags for itemToString}
+  String                       itemToString(     const LR1Item   &item , int flags = DUMP_LOOKAHEAD) const; // flags any combination of {DUMP_LOOKAHEAD,DUMP_SUCC}
+  String                       stateToString(    const LR1State  &state, int flags = DUMP_ALL      ) const; // flags any combination of {DUMP_KERNELONLY,DUMP_SHIFTITEMS,DUMP_ACTIONS} + {flags for itemToString}
 
-  String getRightSide(       UINT prod) const;
-  String getProductionString(UINT prod) const;
-  UINT   getItemCount()                 const; // return total number of generated LALR(1) items
+  inline String                getProductionString(UINT prod) const { return getProduction(prod).toString(*this); }
+  UINT                         getItemCount()                 const; // return total number of generated LALR(1) items
 
   void   dump(             const SymbolSet  &set  ,                             MarginFile *f = tostdout) const;
   void   dump(             const Production &prod ,                             MarginFile *f = tostdout) const;
@@ -525,20 +279,4 @@ public:
   void   dumpStates(                                int flags = DUMP_DOCFORMAT, MarginFile *f = tostdout) const; // flags as for dump(const LR1State &state...)
   void   dump(                                                                  MarginFile *f = tostdout) const;
   void   dumpFirst1Sets(FILE *f) const;
-};
-
-class ActionMatrix : public Array<ParserActionArray> {
-public:
-  ActionMatrix(const Grammar &grammar);
-  inline UINT getRowCount() const {
-    return (UINT)size();
-  }
-};
-
-class SuccessorMatrix : public Array<SuccessorStateArray> {
-public:
-  SuccessorMatrix(const Grammar &grammar);
-  inline UINT getRowCount() const {
-    return (UINT)size();
-  }
 };

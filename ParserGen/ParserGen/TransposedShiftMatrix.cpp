@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "Grammar.h"
+#include "GrammarResult.h"
 #include "StatePairMatrix.h"
 
 TransposedShiftMatrix::TransposedShiftMatrix(const Grammar &grammar) : StatePairMatrix(grammar, true, OPTPARAM_SHIFT) {
@@ -7,10 +9,10 @@ TransposedShiftMatrix::TransposedShiftMatrix(const Grammar &grammar) : StatePair
   const GrammarResult &r          = grammar.getResult();
 
   for(UINT state = 0; state < stateCount; state++) {
-    const ParserActionArray &actionArray = r.m_stateResult[state].m_actions;
-    for(ParserAction pa : actionArray) {
-      if(pa.isShift()) {
-        (*this)[pa.m_term].add(StatePair(state, pa.m_action, true));
+    const TermActionPairArray &termActionArray = r.m_stateResult[state].m_termActionArray;
+    for(TermActionPair tap : termActionArray) {
+      if(tap.isShiftAction()) {
+        (*this)[tap.getTerm()].add(StatePair(state, tap.getNewState(), true));
       }
     }
   }

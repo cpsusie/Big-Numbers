@@ -1,18 +1,19 @@
 #include "stdafx.h"
+#include "TermActionPairMatrix.h"
 #include "ReduceNodeArray.h"
-
-namespace TransposedShiftMatrixCompression {
 
 ReduceNodeArray::ReduceNodeArray(const Grammar &grammar, const MatrixOptimizeParameters &opt)
 : m_grammar(grammar)
 {
-  const UINT          stateCount = grammar.getStateCount();
-  const ActionMatrix  actionMatrix(grammar);
-  setCapacity(stateCount);
-//  redirectDebugLog();
-  for(UINT state = 0; state < stateCount; state++) {
-    add(ReduceNode::allocateReduceNode(grammar, state, actionMatrix[state], opt));
-//    debugLog(_T("%s"), last()->toString().cstr());
+  const TermActionPairMatrix rm(grammar, TermActionPairMatrix::SELECT_REDUCEACTIONS);
+  const UINT         rowCount = rm.getRowCount();
+  setCapacity(rowCount);
+  for(UINT r = 0; r < rowCount; r++) {
+    const TermActionPairArray &row = rm[r];
+    add(row.isEmpty() ? nullptr : ReduceNode::allocateReduceNode(grammar, r, row, opt));
+  }
+  if(Options::getInstance().m_verboseLevel >= 3) {
+    verbose(3, _T("%s"), toString().cstr());
   }
 }
 
@@ -28,13 +29,16 @@ void ReduceNodeArray::clear() {
   __super::clear();
 }
 
+String ReduceNodeArray::getNullString(UINT index) const {
+  return format(_T("0 State %4u - null\n"), index);
+}
+
 String ReduceNodeArray::toString() const {
   String result;
-  for(auto it = getIterator(); it.hasNext();) {
-    result += it.next()->toString();
-    result += '\n';
+  UINT   index = 0;
+  for(auto it = getIterator(); it.hasNext(); index++) {
+    const ReduceNode *n = it.next();
+    result += n ? n->toString() : getNullString(index);
   }
   return result;
 }
-
-}; // namespace TransposedShiftMatrixCompression

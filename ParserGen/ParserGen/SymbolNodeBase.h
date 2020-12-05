@@ -1,38 +1,21 @@
 #pragma once
 
-class SymbolNodeBase {
+#include "CompressNodeBase.h"
+
+class SymbolNodeBase : public CompressNodeBase {
 private:
-  const Grammar                 &m_grammar;
-  const UINT                     m_symbol;
-  const MatrixOptimizeParameters m_opt;
+  const UINT m_symbol;
 public:
-  SymbolNodeBase(const Grammar &grammar, UINT symbol, const MatrixOptimizeParameters &opt)
-    : m_grammar(  grammar  )
-    , m_symbol(   symbol   )
-    , m_opt(      opt      )
+  SymbolNodeBase(const Grammar &grammar, const MatrixOptimizeParameters &opt, UINT symbol)
+    : CompressNodeBase(grammar,opt)
+    , m_symbol(        symbol   )
   {
   }
-  const Grammar &getGrammar() const {
-    return m_grammar;
-  }
-  inline UINT getSymbol() const {
+  inline UINT getSymbol()       const {
     return m_symbol;
   }
-  inline UINT getNTIndex() const {
-    assert(!isTerminal());
-    return m_symbol - m_grammar.getTermCount();
-  }
-  inline UINT getTerm() const {
-    assert(isTerminal());
-    return m_symbol;
-  }
-  inline bool isTerminal() const {
-    return m_grammar.isTerminal(m_symbol);
-  }
-  inline const String &getSymbolName() const {
-    return m_grammar.getSymbolName(m_symbol);
-  }
-  inline const MatrixOptimizeParameters &getOptimizeParam() const {
-    return m_opt;
-  }
+  UINT          getNTIndex()    const;
+  UINT          getTerm()       const;
+  bool          isTerminal()    const;
+  const String &getSymbolName() const;
 };

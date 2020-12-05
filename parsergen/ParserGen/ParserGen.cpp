@@ -4,6 +4,8 @@
 #include <ProcessTools.h>
 #include <FileNameSplitter.h>
 #include "GrammarParser.h"
+#include "Grammar.h"
+#include "GrammarResult.h"
 #include "GrammarCode.h"
 #include "Wizard.h"
 
@@ -18,19 +20,19 @@ static void usage() {
        "      Applies only to c++-code.\n"
        " -n : Generate nonterminalsymbols in XXXSymbol.h/XXXSymbol.java).\n"
        " -h : Write lookahead symbols in docfile.\n"
-       " [-c|+c[,t][,r<maxlevel>]: Disable or enable parser tables compression. If enabled, level specifies max number of recursive calls\n"
-       "                 to determine parseraction. level=[0..%u]. Default is +c%u\n"
-       " -T[,p][,r<maxlevel>][,m<minBitSetSize>]"
-       "    : Compress successor matrix with same technique as action-matrix compression, but on the transposed successor-matrix.\n"
-       "      p               : Prune matrix, if there only 1 newstate for all possible from-states to a given nterm. ie no check is done.\n"
-       "      r<maxLevel>     : Max recurse level when following splitnodes, actually a linked list\n"
-       "      m<minBitSetSize>: Make only stateBitSets which will contain at least the specified number of 1-bits. Must be >= 2. Default minbitsetsize=2\n"
-       " -F : Find optimal compression parameters (max recurse levels, minimal bitsetsize,use transpose/non transpose successormatrix,etc.\n"
+       " -C[comperess options...]"
+       "  where compress option is a comma separated list, each beginning with a selector, 'R,S or N\n"
+       "      R = Reduce Matrix, S = Shift Matrix, N = Next state matrix\n"
+       "      and each matrix has 2 parameters:\n"
+       "        r<recurseLevel> (recurselevel=[0..%u], default recurselevel=%u)\n"
+       "        s<minBitSetSize>\n"
+       " -F : Find optimal compression parameters (max recurse levels, minimal bitsetsize\n"
        "      Does not generate a parser or tables, but print memoryusage for parsertables to stdout for various combinations of compress-parameters\n"
        " -v[level]:verbose.\n"
        "     level = 0 -> silence.\n"
        "     level = 1 -> write main steps in process.\n"
        "     level = 2 -> write warnings to stdout.\n"
+       "     level = 3 -> write compression node trees to stdout.\n"
        "     Default level is -v%u.\n"
        " -ffile :dump first1-sets to file.\n"
        " -wS: Parsergen-wizard. write template grammar-file with classname S to stdout.\n"
@@ -45,23 +47,6 @@ static void usage() {
   );
   exit(-1);
 }
-
-/*
-void checkhas2reduce(Grammar &g) {
-  for(unsigned int i = 0; i < g.m_stateactions.size(); i++) {
-    actionlist &l = g.m_stateactions[i];
-    for(unsigned int j = 0; j < l.size(); j++) {
-      parseraction &p1 = l[j];
-      if(p1.m_action < 0) {
-        for(unsigned int k = j; k < l.size();  k++) {
-          if(l[k].m_action < 0 && l[k].m_action != p1.m_action)
-            printf("state:%d\n", i);
-        }
-      }
-    }
-  }
-}
-*/
 
 static UINT parseUINT(TCHAR *&cp) {
   TCHAR *endp = nullptr;
@@ -94,9 +79,7 @@ int _tmain(int argc, TCHAR **argv) {
                 case 'R': optParam = &options.getOptimizeParameters(OPTPARAM_REDUCE); continue;
                 case 'S': optParam = &options.getOptimizeParameters(OPTPARAM_SHIFT ); continue;
                 case 'N': optParam = &options.getOptimizeParameters(OPTPARAM_SUCC  ); continue;
-                case 'e':         CHECKOPT().m_enabled       = true;                  continue;
                 case 'r': cp1++;  CHECKOPT().m_maxRecursion  = parseUINT(cp1);        break;
-                case 'p':         CHECKOPT().m_pruneBitSet   = true;                  continue;
                 case 's': cp1++;  CHECKOPT().m_minBitSetSize = parseUINT(cp1);        break;
                 default : usage();
                 }

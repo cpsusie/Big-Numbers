@@ -111,12 +111,6 @@
     <ClInclude Include="CompressedTransShiftMatrixCpp.h">
       <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedShiftMatrix\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ReduceNode.h">
-      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedShiftMatrix\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ReduceNodeArray.h">
-      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedShiftMatrix\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TermSetReduction.h">
       <Filter>Source Files\GrammarOutput\Header Files</Filter>
     </ClInclude>
@@ -133,6 +127,123 @@
       <Filter>Source Files\GrammarOutput\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SymbolNodeArray.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StatePairArray.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StatePairBitSet.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StatePairBitSetArray.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MixedStatePairArray.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SymbolNodeBinSearch.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SymbolNodeBitSet.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SymbolNodeSplit.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SymbolNodeImmediate.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReduceNodeBase.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReduceNode.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReduceNodeArray.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MixedReduceArray.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TermSetReductionArray.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReduceNodeBinSearch.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReduceNodeBitSet.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReduceNodeImmediate.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReduceNodeSplit.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StateResult.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GrammarResult.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StateArray.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicTypes.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BitSetInterval.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UsedByBitSet.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BitSetParameters.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TableTypeByteCountMap.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AllTemplateTypes.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexToSymbolConverter.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OptimizedBitSetPermutation.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TermActionPair.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TermActionPairArray.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TermActionPairMatrix.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionArray.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NTermNewStatePair.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NTermNewStatePairMatrix.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NTermNewStatePairArray.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CompressNodeBase.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SymbolDataPair.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Lib\Include\AbstractParserTables.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Lib\Include\AbstractSymbolNameContainer.h">
       <Filter>Source Files\GrammarOutput\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -200,12 +311,6 @@
     <ClCompile Include="MacroMap.cpp">
       <Filter>Source Files\GrammarOutput</Filter>
     </ClCompile>
-    <ClCompile Include="ParserActionArray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SuccessorStateArray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GrammarTables.cpp">
       <Filter>Source Files\GrammarOutput</Filter>
     </ClCompile>
@@ -219,12 +324,6 @@
       <Filter>Source Files\GrammarOutput</Filter>
     </ClCompile>
     <ClCompile Include="CompressedTransShiftMatrixCpp.cpp">
-      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedShiftMatrix</Filter>
-    </ClCompile>
-    <ClCompile Include="ReduceNode.cpp">
-      <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedShiftMatrix</Filter>
-    </ClCompile>
-    <ClCompile Include="ReduceNodeArray.cpp">
       <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedShiftMatrix</Filter>
     </ClCompile>
     <ClCompile Include="TermSetReduction.cpp">
@@ -249,6 +348,96 @@
       <Filter>Source Files\GrammarOutput\MatrixCompression\TransposedSuccessorMatrix</Filter>
     </ClCompile>
     <ClCompile Include="GrammarPermutation.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="StatePairArray.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="StatePairBitSet.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="StatePairBitSetArray.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="MixedStatePairArray.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="SymbolNodeBinSearch.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="SymbolNodeBitSet.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="SymbolNodeSplit.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="SymbolNodeImmediate.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="ReduceNode.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="ReduceNodeArray.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="MixedReduceArray.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="TermSetReductionArray.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="ReduceNodeBinSearch.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="ReduceNodeBitSet.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="ReduceNodeImmediate.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="ReduceNodeSplit.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="StateResult.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="GrammarResult.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="BitSetInterval.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="UsedByBitSet.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="TableTypeByteCountMap.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="AllTemplateTypes.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="SymbolNodeBase.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexToSymbolConverter.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="ElementName.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="TermActionPairArray.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="TermActionPairMatrix.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="NTermNewStatePairArray.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="NTermNewStatePairMatrix.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="SymbolDataPair.cpp">
       <Filter>Source Files\GrammarOutput</Filter>
     </ClCompile>
   </ItemGroup>

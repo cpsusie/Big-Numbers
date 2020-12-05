@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Grammar.h"
 #include "GrammarCode.h"
 #include "TemplateWriter.h"
 

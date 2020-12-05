@@ -1,7 +1,11 @@
 #pragma once
 
 #include "KeywordHandler.h"
+#include "ByteCount.h"
 
+class MarginFile;
+class BitSetInterval;
+class Grammar;
 class TemlateWriter;
 
 class GrammarCode {

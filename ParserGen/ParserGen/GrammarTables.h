@@ -1,8 +1,13 @@
 #pragma once
 
+#include <AbstractParserTables.h>
 #include "CompressEncoding.h"
+#include "AllTemplateTypes.h"
 
+class MarginFile;
+class Grammar;
 class GrammarCode;
+class GrammarResult;
 
 class GrammarTables : public AbstractParserTables {
 private:
@@ -45,13 +50,12 @@ public:
   UINT           getStateCount()                                    const final;
   UINT           getStartState()                                    const final;
   const String  &getSymbolName(         UINT symbolIndex          ) const final;
-  int            getAction(             UINT state, UINT term     ) const final;
-  UINT           getSuccessor(          UINT state, UINT nterm    ) const final;
+  Action         getAction(             UINT state, UINT term     ) const final;
+  int            getSuccessor(          UINT state, UINT nterm    ) const final;
   UINT           getProductionLength(   UINT prod                 ) const final;
   UINT           getLeftSymbol(         UINT prod                 ) const final;
   void           getRightSide(          UINT prod, UINT *dst      ) const final;
   UINT           getTableByteCount(     Platform platform         ) const final { return m_countTableBytes.getByteCount(platform); }
-
-  ByteCount                     getTotalSizeInBytes()     const;
+  ByteCount      getTotalSizeInBytes()                              const;
   void print(MarginFile &output) const;
 };

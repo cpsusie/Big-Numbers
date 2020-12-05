@@ -1,6 +1,7 @@
 #include "stdafx.h"
-#include "TemplateWriter.h"
+#include "Grammar.h"
 #include "GrammarCode.h"
+#include "TemplateWriter.h"
 
 void SymbolsWriter::handleKeyword(TemplateWriter &writer, String &line) const {
   const Options &options = Options::getInstance();

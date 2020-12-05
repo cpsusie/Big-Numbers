@@ -1,7 +1,11 @@
 #pragma once
 
 #include <TreeMap.h>
-#include "Grammar.h"
+#include "StateArray.h"
+#include "ActionArray.h"
+#include "BitSetInterval.h"
+#include "UsedByBitSet.h"
+#include "ByteCount.h"
 
 class ArrayIndex {
 public:
@@ -15,14 +19,14 @@ class IndexMapValue : public ArrayIndex {
 private:
   UsedByBitSet m_usedBySet;
 public:
-  IndexMapValue(const BitSetParam &usedByParam, UINT usedByV0, UINT arrayIndex) : ArrayIndex(arrayIndex), m_usedBySet(usedByParam) {
+  IndexMapValue(const BitSetParameters &usedByParam, UINT usedByV0, UINT arrayIndex) : ArrayIndex(arrayIndex), m_usedBySet(usedByParam) {
     addUsedByValue(usedByV0);
   }
   void addUsedByValue(UINT v) {
     m_usedBySet.add(v);
   }
-  String getUsedByComment() const {
-    return m_usedBySet.toString();
+  String getUsedByComment(const AbstractSymbolNameContainer *nameContainer = nullptr) const {
+    return m_usedBySet.toString(nameContainer);
   }
 };
 
@@ -126,72 +130,3 @@ public:
 };
 
 typedef IndexArray<StateArray> StateArrayIndexArray;
-
-class UIntPermutation : public CompactUIntArray {
-protected:
-  UIntPermutation(size_t capacity);
-  UIntPermutation();
-  // Make an array, with size and capacity = capacity, all elements set to -1
-  void init(UINT capacity);
-public:
-  inline UINT getOldCapacity() const {
-    return (UINT)size();
-  }
-  // Find index of the specified element. throw exception if invalid argument or not found
-  UINT findIndex(UINT v) const;
-  // Check that all elements are distinct, and in range [0..size-1]
-  // throw exception, if not
-  virtual void validate() const;
-};
-
-// find permutation of elements in this, so that all 1-bits will be put first in bitset
-class OptimizedBitSetPermutation : public UIntPermutation {
-private:
-  UINT m_newCapacity;
-  // Return this
-  OptimizedBitSetPermutation &addSet(const BitSet &s, UINT &v);
-  OptimizedBitSetPermutation &setNewCapacity(UINT v);
-public:
-  OptimizedBitSetPermutation() : m_newCapacity(0) {
-  }
-  OptimizedBitSetPermutation(const BitSet &bitSet);
-  inline UINT getNewCapacity() const {
-    return m_newCapacity;
-  }
-  ByteCount getSavedBytesByOptimizedBitSets(UINT bitSetCount) const;
-  void validate() const override;
-};
-
-class OptimizedBitSetPermutation2 : public UIntPermutation {
-private:
-  BitSetInterval m_interval[2];
-  BitSetInterval &getInterval(BYTE index);
-  // Return this
-  OptimizedBitSetPermutation2 &addSet(const BitSet &s, UINT &v             );
-  // Return this
-  OptimizedBitSetPermutation2 &setStart(   BYTE index, UINT start          );
-  // Return this
-  OptimizedBitSetPermutation2 &setEnd(     BYTE index, UINT end            );
-  // Return this
-  OptimizedBitSetPermutation2 &setInterval(BYTE index, UINT start, UINT end);
-public:
-  OptimizedBitSetPermutation2() {
-  }
-  // Find permutation of elements.
-  // Assume A.capacity == B.capacity
-  // First find S0 = A - B, S1 = A & B, S2 = B - A, S3 = not(A | B). notice: S0..3 are all mutually disjoint, and union(S0..3) == {0,1,...capacity-1}
-  // If S0 is empty, put elements from S1, then S2,S4
-  // If S2 is empty, put elements from S1, then S0,S4
-  // If S3 is empty, no permutation is done because no space can be saved...all bits are used somewhere
-  // If all are non-empty, put elements S0 first, then elements S1,S2,S3
-  OptimizedBitSetPermutation2(const BitSet &A, const BitSet &B);
-  inline const BitSetInterval &getInterval(BYTE index) const {
-    assert(index < ARRAYSIZE(m_interval));
-    return m_interval[index];
-  }
-  inline UINT getCapacity(BYTE index) const {
-    return getInterval(index).getCapacity();
-  }
-  ByteCount getSavedBytesByOptimizedBitSets(UINT Acount, UINT Bcount) const;
-  void validate() const override;
-};

@@ -1,7 +1,21 @@
 #include "pch.h"
 #include <AbstractParserTables.h>
 
+String Action::toString() const {
+  switch(getType()) {
+  case PA_SHIFT   : return format(_T("Shift to  %4u"), getNewState());
+  case PA_NEWSTATE: return format(_T("Goto  %4u"    ), getNewState());
+  case PA_REDUCE  : return isAcceptAction()
+                         ?        _T("Accept"       )
+                         : format(_T("Reduce by %4u"), getReduceProduction());
+  case PA_ERROR : return          _T("Error"        );
+  }
+  throwException(_T("%s:Unknown type:%u"), __TFUNCTION__, getType());
+  return EMPTYSTRING;
+}
+
 String AbstractParserTables::getRightString(UINT prod) const {
+  assert(prod < getProductionCount());
   const UINT length = getProductionLength(prod);
   if(length == 0) {
     return _T("epsilon");
@@ -25,14 +39,13 @@ String AbstractParserTables::getRightString(UINT prod) const {
   }
 }
 
-  UINT AbstractParserTables::getNewState(UINT symbol, UINT state  ) const {
+  int AbstractParserTables::getNewState(UINT symbol, UINT state  ) const {
     assert(symbol < getSymbolCount());
     assert(state  < getStateCount());
 
-    const UINT termCount = getTermCount();
-    if(symbol < termCount) { // symbol is a terminal
-      const int action = getAction(state, symbol);
-      return (action > 0) ? action : _ParserError;
+    if(isTerminal(symbol)) {
+      const Action action = getAction(state, symbol);
+      return action.isShiftAction() ? action.getNewState() : -1;
     } else {
       return getSuccessor(state, symbol);
     }

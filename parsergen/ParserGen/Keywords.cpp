@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <CompactHashMap.h>
 #include "GrammarScanner.h"
 
 typedef struct {

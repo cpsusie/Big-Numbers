@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GrammarCode.h"
+#include "UsedByBitSet.h"
 
 class Macro {
 private:
@@ -10,15 +11,7 @@ private:
   String               m_name, m_comment;
   const String         m_value;
 public:
-  Macro(const BitSetParam &usedByParam, UINT usedByV0, const String &value, const String &comment)
-    : m_usedBySet(usedByParam)
-    , m_usedByCount(0        )
-    , m_index(  -1           )
-    , m_value(  value        )
-    , m_comment(comment      )
-  {
-    addUsedByValue(usedByV0);
-  }
+  Macro(const BitSetParameters &usedByParam, UINT usedByV0, const String &value, const String &comment);
   inline int getIndex() const {
     return m_index;
   }
@@ -41,7 +34,7 @@ public:
     return *this;
   }
   // commentWidth1 = min width of comment excl usedBy-string
-  String getComment(bool includeUsedBy = false, UINT commentWidth1 = 0) const;
+  String getComment(bool includeUsedBy = false, UINT commentWidth1 = 0, const AbstractSymbolNameContainer *nameContainer = nullptr) const;
   inline const UsedByBitSet &getUsedBySet() const {
     return m_usedBySet;
   }
@@ -52,7 +45,7 @@ public:
     m_usedBySet.add(usedBy);
     m_usedByCount++;
   }
-  void print(MarginFile &f, UINT commentWidth1 = 0) const;
+  void print(MarginFile &f, UINT commentWidth1 = 0, const AbstractSymbolNameContainer *nameContainer = nullptr) const;
 };
 
 inline bool operator==(const Macro &m1, const Macro &m2) {

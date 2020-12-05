@@ -1,5 +1,9 @@
 #include "stdafx.h"
+#include "Grammar.h"
+#include "GrammarResult.h"
+#include "StateResult.h"
 #include "IndexMap.h"
+#include "OptimizedBitSetPermutation.h"
 
 static int symbolCmpByIndex(const GrammarSymbol &s1, const GrammarSymbol &s2) {
   return (int)s1.m_index - (int)s2.m_index;
@@ -71,13 +75,17 @@ void Grammar::reorderTerminals(const OptimizedBitSetPermutation &permutation) {
     }
   }
 
-  for(auto it = m_result.m_stateResult.getIterator(); it.hasNext();) {
+  UINT state = 0;
+  for(auto it = m_result->m_stateResult.getIterator(); it.hasNext();state++) {
     StateResult &sr = it.next();
-    for(auto it1 = sr.m_actions.getIterator(); it1.hasNext();) {
-      ParserAction &pa = it1.next();
-      pa.m_term = permutation[pa.m_term];
+    assert(sr.m_index == state);
+    TermActionPairArray &termActionArray = sr.m_termActionArray;
+    const size_t         n               = termActionArray.size();
+    for(UINT i = 0; i < n; i++) {
+      TermActionPair &tap = termActionArray[i];
+      tap.setTerm(permutation[tap.getTerm()], *this);
     }
-    sr.m_actions.sortByTerm();
+    termActionArray.sortByTerm();
   }
 }
 
@@ -102,6 +110,7 @@ void Grammar::reorderStates(const OptimizedBitSetPermutation2 &permutation) {
 
   for(auto it = m_states.getIterator(); it.hasNext();) {
     LR1State &state = it.next();
+    const UINT oldIndex = state.m_index;
     state.m_index   = permutation[state.m_index];
     for(auto it1 = state.m_items.getIterator(); it1.hasNext();) {
       LR1Item &item = it1.next();
@@ -110,23 +119,24 @@ void Grammar::reorderStates(const OptimizedBitSetPermutation2 &permutation) {
       }
     }
     UINT *indexp = m_stateMap.get(&state);
+    assert(*indexp == oldIndex);
     *indexp = permutation[*indexp];
   }
   m_states.sort(stateCmpByIndex);
   m_startState = permutation[m_startState];
-  for(auto it = m_result.m_stateResult.getIterator(); it.hasNext();) {
+  for(auto it = m_result->m_stateResult.getIterator(); it.hasNext();) {
     StateResult &sr = it.next();
     sr.m_index = permutation[sr.m_index];
-    for(auto it1 = sr.m_actions.getIterator(); it1.hasNext();) {
-      ParserAction &pa = it1.next();
-      if(pa.m_action > 0) {
-        pa.m_action = permutation[pa.m_action];
+    for(auto it1 = sr.m_termActionArray.getIterator(); it1.hasNext();) {
+      TermActionPair &tap = it1.next();
+      if(tap.isShiftAction()) {
+        tap.setNewState(permutation[tap.getNewState()]);
       }
     }
-    for(auto it1 = sr.m_succs.getIterator(); it1.hasNext();) {
-      SuccessorState &ss = it1.next();
-      ss.m_newState = permutation[ss.m_newState];
+    for(auto it1 = sr.m_ntermNewStateArray.getIterator(); it1.hasNext();) {
+      NTermNewStatePair &ntns = it1.next();
+      ntns.setNewState(permutation[ntns.getNewState()]);
     }
   }
-  m_result.sortStateResult();
+  m_result->sortStateResult();
 }

@@ -3,6 +3,8 @@
 #include "TemplateWriter.h"
 #include "CompressedTransSuccMatrixCpp.h"
 #include "CompressedTransShiftMatrixCpp.h"
+#include "Grammar.h"
+#include "GrammarResult.h"
 #include "GrammarCode.h"
 
 GrammarCode::GrammarCode(Grammar &grammar)
@@ -22,7 +24,7 @@ GrammarCode::GrammarCode(Grammar &grammar)
     exit(0);
   }
   if(options.getOptParam(OPTPARAM_SHIFT).m_enabled) {
-    TransposedShiftMatrixCompression::CompressedTransShiftMatrix sm(m_grammar);
+    CompressedTransShiftMatrix sm(m_grammar);
     if(sm.getSavedBytesByOptimizedStateBitSets().getByteCount(PLATFORM_X64) > 20) {
       m_grammar.reorderStates(sm.getStateBitSetPermutation());
     }
@@ -101,8 +103,6 @@ static constexpr UINT splitNodeCountWidth = 14;
 static constexpr UINT bitSetCapacityWidth = 14;
 static constexpr UINT minBitSetSizeWidth  = 14;
 static constexpr UINT minBitSetRangeWidth = 14;
-
-using namespace TransposedShiftMatrixCompression;
 
 void GrammarCode::listCompressionCombination() {
   MatrixOptimizeParameters bestShiftParam, bestSuccParam;
@@ -226,4 +226,3 @@ void newLine(MarginFile &output, String &comment, int minColumn) { // static
     output.printf(_T("\n"));
   }
 }
-

@@ -7,10 +7,6 @@
 #include "MacroMap.h"
 #include "CompressedTransSuccMatrixCpp.h"
 
-namespace TransposedShiftMatrixCompression {
-
-using namespace TransposedSuccessorMatrixCompression;
-
 class CompressedTransShiftMatrix {
 private:
   const Grammar                      &m_grammar;
@@ -19,7 +15,7 @@ private:
   const CompressedTransSuccMatrix     m_transSuccMatrix;
 
   MacroMap                            m_shiftMacroMap;
-  const BitSetParam                   m_shiftUsedByParam;
+  const BitSetParameters              m_shiftUsedByParam;
   const BitSetInterval                m_shiftStateBitSetInterval;
   UINT                                m_fromStateArraySize , m_newStateArraySize, m_shiftSplitNodeCount;
   SymbolNodeArray                     m_shiftNodeArray;
@@ -30,7 +26,7 @@ private:
   mutable TableTypeByteCountMap       m_byteCountMap;
 
   MacroMap                            m_reduceMacroMap;
-  const BitSetParam                   m_reduceUsedByParam;
+  const BitSetParameters              m_reduceUsedByParam;
   const UINT                          m_sizeofTermBitSet;
   UINT                                m_termArraySize , m_reduceArraySize, m_reduceSplitNodeCount;
   ReduceNodeArray                     m_reduceNodeArray;
@@ -109,5 +105,3 @@ public:
 
   static TableTypeByteCountMap findTablesByteCount(const Grammar &grammar);
 };
-
-}; // namespace TransposedShiftMatrixCompression

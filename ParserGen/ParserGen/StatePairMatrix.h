@@ -1,31 +1,26 @@
 #pragma once
 
-#include "StatePair.h"
+#include "StatePairArray.h"
+#include "IndexToSymbolConverter.h"
 
-class StatePairMatrix : public Array<StatePairArray> {
+class Grammar;
+class StatePairMatrix : public Array<StatePairArray>, public IndexToSymbolConverter {
 private:
   const Grammar               &m_grammar;
-  const bool                   m_rowsIndexedByTerminal;
   const OptimizationParameters m_optParam;
 protected:
   StatePairMatrix(const Grammar &grammar, bool rowsIndexedByTerminal, OptimizationParameters optParam);
   // sort all rows by newState
   void sortAllRows();
 public:
-  inline bool getRowsIndexByTerminal() const {
-    return m_rowsIndexedByTerminal;
-  }
   inline const Grammar &getGrammar() const {
     return m_grammar;
   }
+  inline const MatrixOptimizeParameters &getOptimizeParameters() const {
+    return Options::getOptParam(m_optParam);
+  }
   inline UINT getRowCount() const {
     return (UINT)size();
-  }
-  UINT rowToSymbol(UINT row) const;
-  UINT symbolToRow(UINT symbol) const;
-
-  const MatrixOptimizeParameters &getOptimizeParameters() const {
-    return Options::getOptParam(m_optParam);
   }
 };
 

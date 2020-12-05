@@ -1,13 +1,16 @@
 #include "stdafx.h"
+#include <MarginFile.h>
+#include "TermActionPairArray.h"
 #include "GrammarTables.h"
 
-static void printUncompressedActionArrayJava(MarginFile &output, const TCHAR *tableType, const int index, const ParserActionArray &actions) {
+static void printUncompressedActionArrayJava(MarginFile &output, const TCHAR *tableType, const int index, const TermActionPairArray &actions) {
   const int actionCount = (int)actions.size();
   output.setLeftMargin(4);
   output.printf(_T("%s act%04d[] = { 0"), tableType, index);
   for(int a = 0; a < actionCount; a++) {
-    const ParserAction &pa = actions[a];
-    output.printf(_T(",%4d,%4d"), pa.m_term, pa.m_action);
+    const TermActionPair &tap = actions[a];
+    const int action = tap.isShiftAction() ? tap.getNewState() : -(int)tap.getReduceProduction();
+    output.printf(_T(",%4u,%4d"), tap.getTerm(), action);
     if(a % 5 == 4 && a != actionCount-1) {
       output.printf(_T("\n"));
       output.setLeftMargin(46);
@@ -16,19 +19,21 @@ static void printUncompressedActionArrayJava(MarginFile &output, const TCHAR *ta
   output.printf(_T("};\n"));
 }
 
-static void printCompressedActionArrayJava(MarginFile &output, const TCHAR *tableType, const int index, const ParserActionArray &actions) {
+static void printCompressedActionArrayJava(MarginFile &output, const TCHAR *tableType, const int index, const TermActionPairArray &actions) {
   const int actionCount = (int)actions.size();
   output.setLeftMargin(4);
   output.printf(_T("%s act%04d[] = { 1"), tableType, index);
+  const TermActionPair &pa0 = actions.first();
   for(int a = 0; a < actionCount; a++) {
-    const ParserAction &pa = actions[a];
-    output.printf(_T(",%4d"), pa.m_term);
+    const TermActionPair &tap = actions[a];
+    output.printf(_T(",%4u"), tap.getTerm());
     if(a % 10 == 9) {
       output.printf(_T("\n"));
       output.setLeftMargin(46);
     }
   }
-  output.printf(_T(",%4d};\n"), actions[0].m_action);
+  const int action = pa0.isShiftAction() ? pa0.getNewState() : -(int)pa0.getReduceProduction();
+  output.printf(_T(",%4d};\n"), action);
 }
 
 void GrammarTables::printJava(MarginFile &output) const {
@@ -71,7 +76,7 @@ void GrammarTables::printJava(MarginFile &output) const {
   const TCHAR   *tableType       = _T("private static final short");
 
   for(UINT s = 0; s < stateCount; s++) {
-    const ParserActionArray &actions = m_grammarResult.m_stateResult[s].m_actions;
+    const TermActionPairArray &actions = m_grammarResult.m_stateResult[s].m_actions;
     if(options.getOptParam(OPTPARAM_ACTION).m_enabled && isCompressibleState(s)) {
       printCompressedActionArrayJava(output, tableType, s, actions);
     } else {
@@ -109,14 +114,14 @@ void GrammarTables::printJava(MarginFile &output) const {
          );
   StateSet hasSuccessor(stateCount);
   for(UINT s = 0; s < stateCount; s++) {
-    const SuccessorStateArray &succlist = m_grammarResult.m_stateResult[s].m_succs;
+    const NTermNewStatePairArray &succlist = m_grammarResult.m_stateResult[s].m_succs;
     const UINT                 count    = (UINT)succlist.size();
     if(count > 0) {
       output.setLeftMargin(4);
       output.printf(_T("%s succ%04d[] = {"), tableType, s);
       TCHAR *delim = EMPTYSTRING;
       for(UINT a = 0; a < count; a++, delim=_T(",")) {
-        const SuccessorState &ss = succlist[a];
+        const NTermNewStatePair &ss = succlist[a];
         output.printf(_T("%s%4u,%4d"), delim, ss.m_nterm, ss.m_newState);
         if((a % 5 == 4) && (a != count-1)) {
           output.printf(_T("\n"));

@@ -4,14 +4,14 @@
 #include "SymbolNodeArray.h"
 #include "IndexMap.h"
 #include "MacroMap.h"
-
-namespace TransposedSuccessorMatrixCompression {
+#include "TableTypeByteCountMap.h"
+#include "OptimizedBitSetPermutation.h"
 
 class CompressedTransSuccMatrix : public MacroMap {
 private:
   const Grammar                     &m_grammar;
   const GrammarResult               &m_grammarResult;
-  const BitSetParam                  m_usedByParam;
+  const BitSetParameters             m_usedByParam;
   const BitSetInterval               m_bitSetInterval;
   const UINT                         m_maxNTermNameLength;
   UINT                               m_fromStateArraySize;
@@ -61,4 +61,3 @@ public:
   ByteCount print(MarginFile &output) const;
 };
 
-}; // namespace TransposedSuccessorMatrixCompression
