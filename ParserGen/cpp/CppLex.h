@@ -9,6 +9,7 @@
 #include <Scanner.h>
 #include <lrparser.h>
 
+using namespace LRParsing;
 
 class CppLex : public Scanner {
 private:

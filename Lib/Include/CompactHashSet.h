@@ -304,9 +304,9 @@ public:
       m_next   = nullptr;
     }
 
-    inline void checkUpdateCount() const {
+    inline void checkUpdateCount(const TCHAR *method) const {
       if(m_updateCount != m_set.m_updateCount) {
-        concurrentModificationError(_T("CompactSetIterator"));
+        concurrentModificationError(method);
       }
     }
 
@@ -322,10 +322,10 @@ public:
     }
     void             *next()             override {
       if(m_next == nullptr) {
-        noNextElementError(_T("CompactSetIterator"));
+        noNextElementError(__TFUNCTION__);
       }
       __assume(m_next);
-      checkUpdateCount();
+      checkUpdateCount(__TFUNCTION__);
       m_current = m_next;
       if((m_next = m_next->m_next) == nullptr) {
         for(auto p = m_bufp; ++p < m_endBuf;) {
@@ -340,10 +340,10 @@ public:
     }
     void remove()                        override {
       if(m_current == nullptr) {
-        noCurrentElementError(_T("CompactSetIterator"));
+        noCurrentElementError(__TFUNCTION__);
       }
       __assume(m_current);
-      checkUpdateCount();
+      checkUpdateCount(__TFUNCTION__);
       m_set.remove(m_current->m_e.m_key);
       m_current     = nullptr;
       m_updateCount = m_set.m_updateCount;

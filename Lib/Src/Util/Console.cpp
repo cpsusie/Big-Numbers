@@ -23,7 +23,7 @@ void Console::checkSysCall(BOOL  c, int line) {
 
 #define CHECK(f) checkSysCall(f, __LINE__)
 
-HANDLE Console::getHandle(int fileNo) { // static
+HANDLE Console::getHandle(DWORD fileNo) { // static
   switch(fileNo) {
   case STD_INPUT_HANDLE : return s_hStdIn;
   case STD_OUTPUT_HANDLE: return s_hStdOut;
@@ -54,21 +54,21 @@ static void setHeight(SMALL_RECT &r, int height) {
   r.Bottom = r.Top + height - 1;
 }
 
-void Console::setBufferSize(int width, int height, int fileNo) {
+void Console::setBufferSize(int width, int height, DWORD fileNo) {
   COORD size;
   size.X = width;
   size.Y = height;
   setBufferSize(size, fileNo);
 }
 
-void Console::getBufferSize(int &width, int &height, int fileNo) {
+void Console::getBufferSize(int &width, int &height, DWORD fileNo) {
   /* Get display screen's text row and column information. */
   COORD size = getBufferSize(fileNo);
   width  = size.X;
   height = size.Y;
 }
 
-void  Console::setBufferSize(const COORD &size, int fileNo) {
+void  Console::setBufferSize(const COORD &size, DWORD fileNo) {
   COORD winSize = getWindowSize();
   if(size.X < winSize.X || size.Y < winSize.Y) {
     setWindowSize(min(size.X, winSize.X), min(size.Y, winSize.Y), fileNo);
@@ -79,31 +79,31 @@ void  Console::setBufferSize(const COORD &size, int fileNo) {
   }
 }
 
-COORD Console::getBufferSize(int fileNo) {
+COORD Console::getBufferSize(DWORD fileNo) {
   /* Get display screen's text row and column information. */
   CONSOLE_SCREEN_BUFFER_INFO csbi;
   CHECK(GetConsoleScreenBufferInfo(getHandle(fileNo), &csbi));
   return csbi.dwSize;
 }
 
-void Console::setWindowSize(int width, int height, int fileNo) {
+void Console::setWindowSize(int width, int height, DWORD fileNo) {
   SMALL_RECT r = getWindowRect(fileNo);
   setWidth( r,width);
   setHeight(r,height);
   setWindowRect(r, fileNo);
 }
 
-void Console::getWindowSize(int &width, int &height, int fileNo) {
+void Console::getWindowSize(int &width, int &height, DWORD fileNo) {
   SMALL_RECT r = getWindowRect(fileNo);
   width  = abs(getWidth(r));
   height = abs(getHeight(r));
 }
 
-void  Console::setWindowSize(const COORD &size, int fileNo) {
+void  Console::setWindowSize(const COORD &size, DWORD fileNo) {
   setWindowSize(size.X, size.Y, fileNo);
 }
 
-COORD Console::getWindowSize(int fileNo) {
+COORD Console::getWindowSize(DWORD fileNo) {
   int width, height;
   getWindowSize(width, height, fileNo);
   COORD result;
@@ -112,7 +112,7 @@ COORD Console::getWindowSize(int fileNo) {
   return result;
 }
 
-void Console::setWindowRect(int left, int top, int right, int bottom, int fileNo) {
+void Console::setWindowRect(int left, int top, int right, int bottom, DWORD fileNo) {
   SMALL_RECT r;
   r.Left   = left;
   r.Top    = top;
@@ -121,7 +121,7 @@ void Console::setWindowRect(int left, int top, int right, int bottom, int fileNo
   setWindowRect(r, fileNo);
 }
 
-void Console::setWindowRect(const SMALL_RECT &r, int fileNo) {
+void Console::setWindowRect(const SMALL_RECT &r, DWORD fileNo) {
   int bufWidth, bufHeight;
   getBufferSize(bufWidth, bufHeight, fileNo);
 
@@ -141,13 +141,13 @@ HWND Console::getWindow() {
   return GetConsoleWindow();
 }
 
-SMALL_RECT Console::getWindowRect(int fileNo) {
+SMALL_RECT Console::getWindowRect(DWORD fileNo) {
   CONSOLE_SCREEN_BUFFER_INFO csbi;
   CHECK(GetConsoleScreenBufferInfo(getHandle(fileNo), &csbi));
   return csbi.srWindow;
 }
 
-void Console::setWindowAndBufferSize(int left, int top, int right, int bottom, int fileNo) {
+void Console::setWindowAndBufferSize(int left, int top, int right, int bottom, DWORD fileNo) {
   int winWidth, winHeight, bufWidth, bufHeight;
   getWindowSize(winWidth, winHeight, fileNo);
   getBufferSize(bufWidth, bufHeight, fileNo);
@@ -214,19 +214,19 @@ void Console::setFontSize(const COORD &fontSize) {
   CHECK(SetCurrentConsoleFontEx(s_hStdOut, FALSE, &info));
 }
 
-void Console::clear(WORD attr, int fileNo) {
+void Console::clear(WORD attr, DWORD fileNo) {
   int w,h;
   getBufferSize(w,h, fileNo);
   clearRect(0, 0, w-1, h-1, attr, fileNo);
 }
 
-void Console::clearLine(int line, WORD attr, int fileNo) {
+void Console::clearLine(int line, WORD attr, DWORD fileNo) {
   int w, h;
   getBufferSize(w, h, fileNo);
   clearRect(0, line, w-1, line, attr, fileNo);
 }
 
-void Console::clearRect(int left, int top, int right, int bottom, WORD attr, int fileNo) {
+void Console::clearRect(int left, int top, int right, int bottom, WORD attr, DWORD fileNo) {
   const int width = right - left + 1;
 
   WORD attrs[1000];
@@ -327,11 +327,11 @@ void Console::cprintf(int x, int y, WORD color, _In_z_ _Printf_format_string_ TC
   va_end(argptr);
 }
 
-void Console::setColor(WORD color, int fileNo) {
+void Console::setColor(WORD color, DWORD fileNo) {
   CHECK(SetConsoleTextAttribute(getHandle(fileNo), color));
 }
 
-void Console::setColor(int x, int y, WORD color, int fileNo) {
+void Console::setColor(int x, int y, WORD color, DWORD fileNo) {
   COORD coord;
   coord.X = x;
   coord.Y = y;
@@ -339,7 +339,7 @@ void Console::setColor(int x, int y, WORD color, int fileNo) {
   CHECK(WriteConsoleOutputAttribute(getHandle(fileNo), &color, 1, coord, &res));
 }
 
-WORD Console::getColor(int x, int y, int fileNo) {
+WORD Console::getColor(int x, int y, DWORD fileNo) {
   WORD attr;
   COORD coord;
   coord.X = x;
@@ -349,7 +349,7 @@ WORD Console::getColor(int x, int y, int fileNo) {
   return attr;
 }
 
-void Console::setColor(int left, int top, int right, int bottom, WORD color, int fileNo) {
+void Console::setColor(int left, int top, int right, int bottom, WORD color, DWORD fileNo) {
   COORD coord;
   WORD  attrs[1000];
   int width = right - left + 1;
@@ -366,30 +366,30 @@ void Console::setColor(int left, int top, int right, int bottom, WORD color, int
   s_gate.notify();
 }
 
-void Console::setCursorPos(int x, int y, int fileNo) {
+void Console::setCursorPos(int x, int y, DWORD fileNo) {
   COORD p;
   p.X = x;
   p.Y = y;
   setCursorPos(p, fileNo);
 }
 
-void Console::getCursorPos(int &x, int &y, int fileNo) {
+void Console::getCursorPos(int &x, int &y, DWORD fileNo) {
   COORD p = getCursorPos(fileNo);
   x = p.X;
   y = p.Y;
 }
 
-void Console::setCursorPos(const COORD &p, int fileNo) {
+void Console::setCursorPos(const COORD &p, DWORD fileNo) {
   CHECK(SetConsoleCursorPosition(getHandle(fileNo), p));
 }
 
-COORD Console::getCursorPos(int fileNo) {
+COORD Console::getCursorPos(DWORD fileNo) {
   CONSOLE_SCREEN_BUFFER_INFO info;
   CHECK(GetConsoleScreenBufferInfo(getHandle(fileNo), &info));
   return info.dwCursorPosition;
 }
 
-void Console::setCursorSize(int percent, int fileNo) {
+void Console::setCursorSize(int percent, DWORD fileNo) {
   HANDLE h = getHandle(fileNo);
   CONSOLE_CURSOR_INFO info;
   CHECK(GetConsoleCursorInfo(h, &info));
@@ -397,13 +397,13 @@ void Console::setCursorSize(int percent, int fileNo) {
   CHECK(SetConsoleCursorInfo(h, &info));
 }
 
-int Console::getCursorSize(int fileNo) {
+int Console::getCursorSize(DWORD fileNo) {
   CONSOLE_CURSOR_INFO info;
   CHECK(GetConsoleCursorInfo(getHandle(fileNo), &info));
   return info.dwSize;
 }
 
-void Console::showCursor(bool on, int fileNo) {
+void Console::showCursor(bool on, DWORD fileNo) {
   HANDLE h = getHandle(fileNo);
   CONSOLE_CURSOR_INFO info;
   CHECK(GetConsoleCursorInfo(h, &info));
@@ -411,13 +411,13 @@ void Console::showCursor(bool on, int fileNo) {
   CHECK(SetConsoleCursorInfo(h, &info));
 }
 
-bool Console::isCursorVisible(int fileNo) {
+bool Console::isCursorVisible(DWORD fileNo) {
   CONSOLE_CURSOR_INFO info;
   CHECK(GetConsoleCursorInfo(getHandle(fileNo), &info));
   return info.bVisible ? true : false;
 }
 
-void Console::getLargestConsoleWindowSize(int &maxWidth, int &maxHeight, int fileNo) {
+void Console::getLargestConsoleWindowSize(int &maxWidth, int &maxHeight, DWORD fileNo) {
   COORD coord = GetLargestConsoleWindowSize(getHandle(fileNo));
   maxWidth  = coord.X;
   maxHeight = coord.Y;

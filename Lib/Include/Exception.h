@@ -33,14 +33,12 @@ void throwEmptyArrayException(               const TCHAR *method);
 void throwEmptySetException(                 const TCHAR *method);
 void throwEmptyMapException(                 const TCHAR *method);
 void throwEmptyContainerException(           const TCHAR *method, const TCHAR *containerName);
-void throwMethodException(const TCHAR *className, TCHAR const * const method, _In_z_ _Printf_format_string_ const TCHAR * const format, ...);
 
 void throwErrNoOnNameException(const String &name);
 void throwErrNoOnSysCallException(const TCHAR *method);
 
 void throwLastErrorOnSysCallNameException(const String &name);
-void throwLastErrorOnSysCallException(const TCHAR *method);
-void throwMethodLastErrorOnSysCallException(const TCHAR *className, const TCHAR *method);
+void throwLastErrorOnSysCallException(const TCHAR *method, const TCHAR *syscall);
 
 bool getDebuggerPresent();
 

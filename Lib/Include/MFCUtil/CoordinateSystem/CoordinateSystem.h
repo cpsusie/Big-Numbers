@@ -52,7 +52,6 @@ public:
 
 class CCoordinateSystem : public CStatic {
 private:
-  DECLARECLASSNAME;
   friend class SystemPainter;
 
   Viewport2D                            m_vp;

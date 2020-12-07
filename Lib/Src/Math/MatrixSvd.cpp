@@ -311,8 +311,6 @@ static Vector svdSolve(const Matrix &u, const Vector &d, const Matrix &v, const 
   return result;
 }
 
-DEFINECLASSNAME(SVDDecomposition);
-
 SVDDecomposition::SVDDecomposition(const Matrix &a) : m_u(a) {
   const int c = (int)a.getColumnCount();
   m_d.setDimension(c);

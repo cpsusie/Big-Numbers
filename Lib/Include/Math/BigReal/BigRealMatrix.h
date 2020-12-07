@@ -5,12 +5,12 @@
 #include "BigReal.h"
 
 #define _USEDEFAULTALLOCATORIFNULL() _SELECTPOINTER(digitPool, DEFAULT_DIGITPOOL)
+#define _CHECKPRECISION(prec) checkPrecision(prec, __TFUNCTION__)
 
 class BigRealVector : public VectorTemplate<BigReal> {
 private:
-  DECLARECLASSNAME;
   UINT m_digits;
-  void checkPrecision(UINT digits);
+  void checkPrecision(UINT digits, const TCHAR *method) const;
 protected:
 public:
   explicit BigRealVector(DigitPool *digitPool = nullptr);
@@ -62,28 +62,26 @@ inline BigReal        operator*(const BigRealVector &lts, const BigRealVector &r
 }
 
 class BigRealMatrix : public MatrixTemplate<BigReal> {
-private:
-  DECLARECLASSNAME;
 protected:
   UINT m_digits;
-  void checkPrecision(UINT digits);
+  void checkPrecision(UINT digits, const TCHAR *method) const;
 public:
   BigRealMatrix(DigitPool *digitPool = nullptr) : MatrixTemplate<BigReal>(_USEDEFAULTALLOCATORIFNULL()), m_digits(16) {
     assert(getDigitPool());
-    checkPrecision(m_digits);
+    _CHECKPRECISION(m_digits);
   }
   BigRealMatrix(size_t rows, size_t cols, UINT digits = 16, DigitPool *digitPool = nullptr)
     : MatrixTemplate<BigReal>(rows, cols, _USEDEFAULTALLOCATORIFNULL())
     , m_digits(digits) {
     assert(getDigitPool());
-    checkPrecision(m_digits);
+    _CHECKPRECISION(digits);
   }
   explicit BigRealMatrix(const MatrixDimension &dim, UINT digits = 16, DigitPool *digitPool = nullptr)
     : MatrixTemplate<BigReal>(dim, _USEDEFAULTALLOCATORIFNULL())
     , m_digits(digits)
   {
     assert(getDigitPool());
-    checkPrecision(m_digits);
+    _CHECKPRECISION(digits);
   }
   BigRealMatrix(const BigRealMatrix &m, DigitPool *digitPool = nullptr)
     : MatrixTemplate<BigReal>(m, _SELECTPOINTER(digitPool, m.getDigitPool()))

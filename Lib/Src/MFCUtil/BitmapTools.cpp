@@ -18,7 +18,7 @@ BITMAPINFOHEADER getBitmapInfoHeader(HBITMAP bm) {
     ZeroMemory(&infoHeader, sizeof(infoHeader));
     infoHeader.biSize = sizeof(infoHeader);
     if(!GetDIBits(hdc, bm, 0, info.bmHeight, nullptr, (LPBITMAPINFO)&infoHeader, DIB_RGB_COLORS)) {
-      throwLastErrorOnSysCallException(_T("GetDIBits"));
+      throwLastErrorOnSysCallException(__TFUNCTION__,_T("GetDIBits"));
     }
     DeleteDC(hdc);
     return infoHeader;

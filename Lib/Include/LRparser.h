@@ -3,6 +3,10 @@
 #include "AbstractParserTables.h"
 #include "SourcePosition.h"
 
+class Scanner;
+
+namespace LRParsing {
+
 class ParserStackElement {
 public:
   USHORT         m_state;
@@ -20,8 +24,6 @@ public:
   {
   }
 };
-
-class Scanner;
 
 class LRparser {
 private:
@@ -155,3 +157,5 @@ public:
   virtual void verror(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
   virtual void vdebug(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
 };
+
+}; // namespace LRParsing

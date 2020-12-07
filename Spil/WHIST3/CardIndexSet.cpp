@@ -59,7 +59,6 @@ int CardIndexSet::size() const {
 
 class CardIndexSetIterator : public AbstractIterator {
 private:
-  DECLARECLASSNAME;
   const CardIndexSet &m_set;
   int                 m_next;
   int                 m_current;
@@ -71,8 +70,6 @@ public:
   void *next()                    override;
   void  remove()                  override;
 };
-
-DEFINECLASSNAME(CardIndexSetIterator);
 
 Iterator<int> CardIndexSet::getIterator() const {
   return Iterator<int>(new CardIndexSetIterator(*this));
@@ -101,7 +98,7 @@ void CardIndexSetIterator::first() {
 
 void *CardIndexSetIterator::next() { // throw Exception if no more
   if(m_next < 0) {
-    noNextElementError(s_className);
+    noNextElementError(__TFUNCTION__);
   }
   m_current = m_next;
   for(m_next++; m_next < 13; m_next++) {

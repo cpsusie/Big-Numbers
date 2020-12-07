@@ -3,8 +3,9 @@
 
 #include <LRparser.h>
 
-#line 5 "C:\\Mytools2015\\ParserGen\\Olm641\\Olm641.y"
 #include "olm641symbol.h"
+
+using namespace LRParsing;
 
 class Olm641Parser : public LRparser {
 public:
@@ -22,4 +23,3 @@ private:
   int  reduceAction(        UINT prod  ) override;
 };
 
-#line 17 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"

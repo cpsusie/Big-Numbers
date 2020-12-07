@@ -5,12 +5,11 @@
 
 class HashSetIterator : public AbstractIterator {
 private:
-  DECLARECLASSNAME;
   HashSetImpl        &m_set;
   HashSetNode        *m_next, *m_current;
   size_t              m_updateCount;
 
-  void checkUpdateCount() const;
+  void checkUpdateCount(const TCHAR *method) const;
 protected:
   HashSetImpl &getSet() const {
     return m_set;

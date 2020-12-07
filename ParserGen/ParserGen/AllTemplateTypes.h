@@ -2,7 +2,6 @@
 
 #include "ByteCount.h"
 
-class AbstractParserTables;
 class Grammar;
 
 class AllTemplateTypes {

@@ -16,7 +16,7 @@ static void usage() {
        " -l : Suppress #line directives in output.\n"
        " -b : Suppress break-statements in output.\n"
        " -a : No reduceactions generated.\n"
-       " -Nnamespace: Wrappes everything into a namespace with the given name.\n"
+       " -Nnamespace: Wraps everything into a namespace with the given name.\n"
        "      Applies only to c++-code.\n"
        " -n : Generate nonterminalsymbols in XXXSymbol.h/XXXSymbol.java).\n"
        " -h : Write lookahead symbols in docfile.\n"

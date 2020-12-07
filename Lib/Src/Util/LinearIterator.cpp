@@ -3,7 +3,6 @@
 
 class _LinearIterator : public AbstractIterator {
 private:
-  DECLARECLASSNAME;
   const DoubleInterval m_interval;
   const UINT           m_steps;
   UINT                 m_stepCounter;
@@ -29,8 +28,6 @@ public:
   }
 };
 
-DEFINECLASSNAME(_LinearIterator);
-
 _LinearIterator::_LinearIterator(const DoubleInterval &interval, UINT steps)
 : m_interval(interval)
 , m_steps(steps)
@@ -43,7 +40,7 @@ _LinearIterator::_LinearIterator(const DoubleInterval &interval, UINT steps)
 
 void *_LinearIterator::next() {
   if(!hasNext()) {
-    noNextElementError(s_className);
+    noNextElementError(__TFUNCTION__);
   }
   if(++m_stepCounter >= m_steps) {
     m_iteratorValue = m_interval.getTo();
@@ -58,7 +55,6 @@ LinearIterator::LinearIterator(const DoubleInterval &interval, UINT steps)
 : Iterator<double>(new _LinearIterator(interval, steps))
 {
 }
-
 
 LinearIterator::LinearIterator(double from, double to, UINT steps)
 : Iterator<double>(new _LinearIterator(DoubleInterval(from, to), steps))

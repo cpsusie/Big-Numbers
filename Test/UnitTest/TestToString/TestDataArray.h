@@ -34,7 +34,6 @@ public:
 
 class AbstractTestElementIterator : public AbstractIterator {
 private:
-  DECLARECLASSNAME;
   TestValueArray                  &m_valueArray;
   const StreamSize                 m_maxWidth, m_maxPrecision;
   Iterator<TestValueArrayElement>  m_valueIterator;

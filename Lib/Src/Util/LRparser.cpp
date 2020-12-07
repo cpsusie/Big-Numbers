@@ -4,6 +4,8 @@
 #include <Scanner.h>
 #include <LRparser.h>
 
+namespace LRParsing {
+
 LRparser::LRparser(const AbstractParserTables &tables, Scanner *scanner, UINT stackSize) : m_tables(tables), m_scanner(scanner) {
   m_parserStack   = nullptr;
   parserStackCreate(stackSize);
@@ -317,3 +319,5 @@ void LRparser::vdebug(_In_z_ _Printf_format_string_ TCHAR const * const format, 
   _vtprintf(format, argptr);
   _tprintf(_T("\n"));
 }
+
+}; // namespace LRParsing

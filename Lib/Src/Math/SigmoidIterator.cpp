@@ -4,7 +4,6 @@
 
 class _SigmoidIterator : public AbstractIterator {
 private:
-  DECLARECLASSNAME;
   const LinearTransformation m_tr;
   const UINT                 m_steps;
   double                     m_current, m_iteratorValue;
@@ -36,8 +35,6 @@ public:
   }
 };
 
-DEFINECLASSNAME(_SigmoidIterator);
-
 _SigmoidIterator::_SigmoidIterator(const DoubleInterval &interval, UINT steps)
 : m_tr(DoubleInterval(sigmoid(startValue(steps)), sigmoid(endValue(steps))), interval)
 , m_steps(steps)
@@ -55,7 +52,7 @@ double _SigmoidIterator::sigmoid(double x) { // static
 
 void *_SigmoidIterator::next() {
   if(!hasNext()) {
-    noNextElementError(s_className);
+    noNextElementError(__TFUNCTION__);
   }
   if(++m_stepCounter == m_steps) {
     m_iteratorValue = m_tr.getToInterval().getTo();

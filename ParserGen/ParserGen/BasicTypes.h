@@ -6,6 +6,8 @@
 #include <AbstractParserTables.h>
 #include "Options.h"
 
+using namespace LRParsing;
+
 // Must match elements in BitSetParameters::s_elementName
 typedef enum {
   ETYPE_SYMBOL

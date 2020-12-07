@@ -4,6 +4,8 @@
 #include "MatrixTemplate.h"
 #include "AbstractParserTables.h"
 
+namespace LRParsing {
+
 template<typename T> class ParserTransitionMatrix : public MatrixTemplate<T> {
 protected:
   const AbstractSymbolNameContainer &m_nameContainer;
@@ -120,3 +122,5 @@ public:
   TransposedSuccessorMatrix(const AbstractParserTables &tables);
   String toString() const;
 };
+
+}; // namespace LRParsing

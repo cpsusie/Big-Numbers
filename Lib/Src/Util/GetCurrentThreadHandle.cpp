@@ -9,7 +9,7 @@ HANDLE getCurrentThreadHandle() {
   HANDLE threadHandle  = GetCurrentThread();
   HANDLE result;
   if(!DuplicateHandle(processHandle, threadHandle, processHandle, &result, 0, true, DUPLICATE_SAME_ACCESS)) {
-    throwLastErrorOnSysCallException(__TFUNCTION__);
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("DuplicateHandle"));
   }
   return result;
 }

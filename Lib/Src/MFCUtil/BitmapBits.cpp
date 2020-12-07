@@ -15,7 +15,7 @@ ByteArray &getBitmapBits(HBITMAP bm, ByteArray &bytes, BITMAPINFO &bmInfo) {
   HDC       hdc        = getScreenDC();
   try {
     if(!GetDIBits(hdc, bm, 0, info.bmHeight, byteArray, &bmInfo, DIB_RGB_COLORS)) {
-      throwLastErrorOnSysCallException(_T("GetDIBits"));
+      throwLastErrorOnSysCallException(__TFUNCTION__,_T("GetDIBits"));
     }
     bytes.clear();
     bytes.setData(byteArray, byteCount);
@@ -33,7 +33,7 @@ void setBitmapBits(HBITMAP bm, const ByteArray &bytes, const BITMAPINFO &bmInfo)
   HDC hdc = getScreenDC();
   if(!SetDIBits(hdc, bm, 0, bmInfo.bmiHeader.biHeight, bytes.getData(), &bmInfo, DIB_RGB_COLORS)) {
     DeleteDC(hdc);
-    throwLastErrorOnSysCallException(_T("SetDIBits"));
+    throwLastErrorOnSysCallException(__TFUNCTION__,_T("SetDIBits"));
   }
   DeleteDC(hdc);
 }

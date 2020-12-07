@@ -28,7 +28,7 @@ void setSystemCursor(int id, HCURSOR cursor) {
 HCURSOR createCursor(const ByteArray &bytes) {
   HCURSOR cursor = (HCURSOR)CreateIconFromResource((BYTE*)bytes.getData(), (DWORD)bytes.size(), FALSE, 0x00030000);
   if(cursor == nullptr) {
-    throwLastErrorOnSysCallException(_T("CreateIconFromResource"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("CreateIconFromResource"));
   }
   return cursor;
 }

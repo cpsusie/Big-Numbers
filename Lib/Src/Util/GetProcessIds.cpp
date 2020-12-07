@@ -8,7 +8,7 @@ CompactArray<DWORD> getProcessIds() {
   DWORD dwSize;
 
   if(!EnumProcesses(processArray, sizeof(processArray), &dwSize)) {
-    throwLastErrorOnSysCallException(_T("EnumProcesses"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("EnumProcesses"));
   }
   const int count = dwSize / sizeof(DWORD);
   CompactArray<DWORD> result;

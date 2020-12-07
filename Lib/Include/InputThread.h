@@ -8,7 +8,6 @@ typedef SynchronizedQueue<String> MessageQueue;
 
 class InputThread : public Thread {
 private:
-  DECLARECLASSNAME;
   MessageQueue m_inputQueue;
   bool         m_eoi;
   bool         m_verbose;

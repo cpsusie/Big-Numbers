@@ -160,8 +160,6 @@ public:
 ComplexVector findEigenValues(const Matrix &a, QRTracer *tracer=nullptr);
 
 class SVDDecomposition {                           // Singular Value Decomposition
-private:
-  DECLARECLASSNAME;
 public:
   Matrix m_u,m_v;
   Vector m_d;                                      // Diagonal matrix is represented as a vector

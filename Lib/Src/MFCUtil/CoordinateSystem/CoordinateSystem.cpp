@@ -9,8 +9,6 @@
 #define new DEBUG_NEW
 #endif
 
-DEFINECLASSNAME(CCoordinateSystem);
-
 const Viewport2D &CoordinateSystemObject::getViewport() const {
   return getSystem().getViewport();
 }

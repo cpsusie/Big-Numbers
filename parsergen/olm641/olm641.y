@@ -4,6 +4,8 @@
 
 #include "olm641symbol.h"
 
+using namespace LRParsing;
+
 class Olm641Parser : public LRparser {
 public:
   static const AbstractParserTables *Olm641Tables;

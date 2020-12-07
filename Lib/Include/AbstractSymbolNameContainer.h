@@ -5,6 +5,8 @@
 
 class BitSet;
 
+namespace LRParsing {
+
 class AbstractSymbolNameContainer {
 private:
   mutable UINT m_maxTermNameLength, m_maxNTermNameLength;
@@ -45,3 +47,5 @@ public:
   // Assume max(set) < getNTermCount, add termCount to each index before adding symbolName
   String                NTIndexSetToString(const BitSet &set)    const;
 };
+
+}; // namespace LRParsing

@@ -3,11 +3,9 @@
 
 // Implementation of basic BigRealVector-operations
 
-DEFINECLASSNAME(BigRealVector);
-
-void BigRealVector::checkPrecision(UINT digits) {
+void BigRealVector::checkPrecision(UINT digits, const TCHAR *method) const {
   if(digits == 0) {
-    throwBigRealException(_T("%s:Precision = 0 not allowed"), s_className);
+    throwBigRealException(_T("%s:Precision = 0 not allowed"), method);
   }
 }
 
@@ -23,7 +21,7 @@ BigRealVector::BigRealVector(size_t dim, UINT digits, DigitPool *digitPool)
   , m_digits(digits)
 {
   assert(getDigitPool());
-  checkPrecision(digits);
+  _CHECKPRECISION(digits);
 }
 
 BigRealVector::BigRealVector(const BigRealVector &v, DigitPool *digitPool)
@@ -38,11 +36,11 @@ BigRealVector::BigRealVector(const VectorTemplate<BigReal> &v, UINT digits, Digi
   , m_digits(digits)
 {
   assert(getDigitPool());
-  checkPrecision(digits);
+  _CHECKPRECISION(digits);
 }
 
 UINT BigRealVector::setPrecision(UINT digits) {
-  checkPrecision(digits);
+  _CHECKPRECISION(digits);
   const UINT oldDigits = m_digits;
   m_digits = digits;
   return oldDigits;

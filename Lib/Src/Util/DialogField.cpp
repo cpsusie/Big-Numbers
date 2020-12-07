@@ -139,7 +139,7 @@ void DialogField::copyToClipboard() {
       if(EmptyClipboard()) {
         HLOCAL buf = LocalAlloc(0,s.length() + 1);
         if(buf == nullptr) {
-          throwLastErrorOnSysCallException(_T("LocalAlloc"));
+          throwLastErrorOnSysCallException(__TFUNCTION__,_T("LocalAlloc"));
         }
         __assume(buf);
         memcpy(buf,s.cstr(),s.length());

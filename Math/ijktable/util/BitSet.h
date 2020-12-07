@@ -225,7 +225,6 @@ public:
 
 class BitSetIterator : public AbstractBitSetIterator {
 private:
-  DECLARECLASSNAME;
   void first(size_t start, size_t end);
 public:
   BitSetIterator(BitSet &set, size_t start=0, size_t end=-1)
@@ -236,13 +235,12 @@ public:
   AbstractIterator *clone() override;
   void *next()              override;
   void  remove()            override {
-    AbstractBitSetIterator::remove(s_className);
+    AbstractBitSetIterator::remove(__FUNCTION__);
   }
 };
 
 class BitSetReverseIterator : public AbstractBitSetIterator {
 private:
-  DECLARECLASSNAME;
   void first(size_t start, size_t end);
 public:
   AbstractIterator *clone();
@@ -253,7 +251,7 @@ public:
   }
   void *next();
   void remove() {
-    AbstractBitSetIterator::remove(s_className);
+    AbstractBitSetIterator::remove(__FUNCTION__);
   }
 };
 

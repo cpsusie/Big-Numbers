@@ -4,7 +4,7 @@
 void setThreadPriority(ThreadPriority priority, HANDLE hThread) {
   if(hThread == INVALID_HANDLE_VALUE) hThread = GetCurrentThread();
   if(!SetThreadPriority(hThread, (int)priority)) {
-    throwLastErrorOnSysCallException(__TFUNCTION__);
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("SetThreadPriority"));
   }
 }
 
@@ -13,7 +13,7 @@ ThreadPriority getThreadPriority(HANDLE hThread) {
   if(hThread == INVALID_HANDLE_VALUE) hThread = GetCurrentThread();
   const int result = GetThreadPriority(hThread);
   if(result == THREAD_PRIORITY_ERROR_RETURN) {
-    throwLastErrorOnSysCallException(__TFUNCTION__);
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("GetThreadPriority"));
   }
   return (ThreadPriority)result;
 }

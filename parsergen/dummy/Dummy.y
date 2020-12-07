@@ -5,6 +5,8 @@
 #include "dummysymbol.h"
 #include "dummylex.h"
 
+using namespace LRParsing;
+
 #ifndef YYSTYPE
 #define YYSTYPE int
 #endif

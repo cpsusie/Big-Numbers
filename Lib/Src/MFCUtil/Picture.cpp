@@ -360,7 +360,7 @@ void CPicture::loadAsCursor(const String &fileName) {
 HICON CPicture::loadIcon(const String &fileName) { // static
   HICON icon = (HICON)LoadImage(0, fileName.cstr(), IMAGE_ICON, 0, 0, LR_LOADFROMFILE);
   if(icon == nullptr) {
-    throwLastErrorOnSysCallException(_T("LoadImage"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("LoadImage"));
   }
   return icon;
 }
@@ -368,7 +368,7 @@ HICON CPicture::loadIcon(const String &fileName) { // static
 HICON CPicture::loadCursor(const String &fileName) { // static
   HICON icon = (HICON)LoadImage(0, fileName.cstr(), IMAGE_CURSOR, 0, 0, LR_LOADFROMFILE);
   if(icon == nullptr) {
-    throwLastErrorOnSysCallException(_T("LoadImage"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("LoadImage"));
   }
   return icon;
 }
@@ -383,7 +383,7 @@ void CPicture::createPictureFromBitmap(HBITMAP bitmap) {
   desc.bmp.hpal       = nullptr;
   HRESULT hr;
   if((hr = OleCreatePictureIndirect(&desc, IID_IPicture, true, (LPVOID*)&m_IPicture)) != S_OK) {
-    throwLastErrorOnSysCallException(_T("OleCreatePictureIndirect"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("OleCreatePictureIndirect"));
   } else if(m_IPicture != nullptr) {
     TRACE_CREATE(m_IPicture);
     setSize();
@@ -410,11 +410,11 @@ CPicture::operator HBITMAP() const {
     screenDC = getScreenDC();
     bm = CreateCompatibleBitmap(screenDC, m_size.cx, m_size.cy);
     if(bm == nullptr) {
-      throwLastErrorOnSysCallException(_T("CreateCompatibleBitmap"));
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("CreateCompatibleBitmap"));
     }
     dc = CreateCompatibleDC(screenDC);
     if(dc == nullptr) {
-      throwLastErrorOnSysCallException(_T("CreateCompatibleDC"));
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("CreateCompatibleDC"));
     }
     HGDIOBJ oldGDI = SelectObject(dc, bm);
     show(dc);
@@ -438,7 +438,7 @@ void CPicture::createPictureFromIcon(HICON icon) {
   desc.icon.hicon     = icon;
   HRESULT hr;
   if((hr = OleCreatePictureIndirect(&desc, IID_IPicture, true, (LPVOID*)&m_IPicture)) != S_OK) {
-    throwLastErrorOnSysCallException(_T("OleCreatePictureIndirect"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("OleCreatePictureIndirect"));
   } else if(m_IPicture != nullptr) {
     TRACE_CREATE(m_IPicture);
     setSize();
@@ -464,13 +464,13 @@ void CPicture::loadPictureData(const BYTE *pBuffer, int size) {
   HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, size);
 
   if(hGlobal == nullptr) {
-    throwException(_T("GlobalAlloc failed"));
+    throwException(_T("%s:GlobalAlloc failed"), __TFUNCTION__);
   }
   __assume(hGlobal);
   void *pData = GlobalLock(hGlobal);
   if(pData == nullptr) {
     FreeResource(hGlobal);
-    throwLastErrorOnSysCallException(_T("GlobalLock"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("GlobalLock"));
   }
   __assume(pData);
   memcpy(pData, pBuffer, size);
@@ -606,18 +606,18 @@ void CPicture::showBitmapResource(HDC hdc, int resId, const CPoint &p) { // stat
 
   CBitmap bm;
   if(!bm.LoadBitmap(resId)) {
-	  throwException(_T("Cannot find bitmap resource:%d"), resId);
+    throwException(_T("%s:Cannot find bitmap resource:%d"), __TFUNCTION__, resId);
   }
   const BITMAP bmInfo = getBitmapInfo(bm);
   HDC srcDC = nullptr;
   try {
     srcDC = CreateCompatibleDC(hdc);
     if(srcDC == nullptr) {
-      throwLastErrorOnSysCallException(_T("CreateCompatibleDC"));
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("CreateCompatibleDC"));
     }
     HGDIOBJ oldGDI = SelectObject(srcDC, bm);
     if(!BitBlt(hdc, p.x, p.y, bmInfo.bmWidth, bmInfo.bmHeight, srcDC, 0, 0, SRCCOPY)) {
-      throwLastErrorOnSysCallException(_T("BitBlt"));
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("BitBlt"));
     }
     SelectObject(srcDC, oldGDI);
     DeleteDC(srcDC);
@@ -636,7 +636,7 @@ void CPicture::updateSizeOnDC(CDC *pDC) {
   }
 
   if(isLoaded()) {
-    throwException(_T("No picture"));
+    throwException(_T("%s:No picture"), __TFUNCTION__);
   }
 
   OLE_XSIZE_HIMETRIC width;

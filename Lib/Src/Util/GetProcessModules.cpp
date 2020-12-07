@@ -8,7 +8,7 @@ CompactArray<HMODULE> getModules(HANDLE hProcess) {
   DWORD   dwSize;
 
   if(EnumProcessModules(hProcess, moduleArray, sizeof(moduleArray), &dwSize) == 0) {
-    throwLastErrorOnSysCallException(_T("EnumProcessModules"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("EnumProcessModules"));
   }
   const int count = dwSize / sizeof(HMODULE);
   CompactArray<HMODULE> result;

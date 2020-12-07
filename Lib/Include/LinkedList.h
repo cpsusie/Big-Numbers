@@ -13,7 +13,6 @@ public:
 
 class ListImpl : public AbstractCollection {
 private:
-  DECLARECLASSNAME;
   AbstractObjectManager    *m_objectManager;
   HeapObjectPool<ListNode>  m_nodePool;
   ListNode                 *m_first, *m_last;

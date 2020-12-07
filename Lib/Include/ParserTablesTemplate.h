@@ -3,6 +3,8 @@
 #include "StringArray.h"
 #include "AbstractParserTables.h"
 
+namespace LRParsing {
+
 template<UINT     symbolCount
         ,UINT     termCount
         ,UINT     productionCount
@@ -380,3 +382,5 @@ public:
   {
   }
 };
+
+}; // namespace LRParsing

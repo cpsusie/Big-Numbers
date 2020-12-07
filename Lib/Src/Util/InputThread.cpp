@@ -2,8 +2,6 @@
 #include <MyUtil.h>
 #include <InputThread.h>
 
-DEFINECLASSNAME(InputThread);
-
 InputThread::InputThread(FILE *input, bool verbose)
 : Thread(format(_T("InputThread fileno=%d"), _fileno(input)))
 , m_input(input)
@@ -56,7 +54,7 @@ UINT InputThread::run() {
         }
         break;
       case WAIT_FAILED:
-        throwMethodLastErrorOnSysCallException(s_className, _T("WaitForMultipleObjects"));
+        throwLastErrorOnSysCallException(__TFUNCTION__, _T("WaitForMultipleObjects"));
       }
     }
   } catch(Exception e) {

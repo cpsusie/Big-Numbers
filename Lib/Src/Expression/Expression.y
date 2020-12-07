@@ -6,6 +6,8 @@
 
 $PUSHNAMESPACE$
 
+using namespace LRParsing;
+
 class ExpressionParser : public LRparser {
 private:
   static const AbstractParserTables *ExpressionTables;

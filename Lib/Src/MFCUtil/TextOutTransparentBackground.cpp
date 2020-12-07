@@ -3,7 +3,7 @@
 void textOutTransparentBackground(HDC hdc, const CPoint &p, const String &s, CFont &font, COLORREF color) {
   const int oldMode = SetBkMode(hdc, TRANSPARENT);
   if(oldMode == 0) {
-    throwLastErrorOnSysCallException(_T("SetBkMode"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("SetBkMode"));
   }
   HGDIOBJ  oldFont  = SelectObject(hdc, font );
   COLORREF oldColor = SetTextColor(hdc, color);

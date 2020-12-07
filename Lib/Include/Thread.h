@@ -29,7 +29,6 @@ class Thread : public Runnable {
   friend class         ThreadMap;
   friend class         ThreadPool;
 private:
-  DECLARECLASSNAME;
   friend UINT          threadStartup(Thread *thread);
   static PropertyContainer        *s_propertySource;
   static UncaughtExceptionHandler *s_defaultUncaughtExceptionHandler;

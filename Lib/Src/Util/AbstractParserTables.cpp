@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <AbstractParserTables.h>
 
+namespace LRParsing {
+
 String Action::toString() const {
   switch(getType()) {
   case PA_SHIFT   : return format(_T("Shift to  %4u"), getNewState());
@@ -39,14 +41,16 @@ String AbstractParserTables::getRightString(UINT prod) const {
   }
 }
 
-  int AbstractParserTables::getNewState(UINT symbol, UINT state  ) const {
-    assert(symbol < getSymbolCount());
-    assert(state  < getStateCount());
+int AbstractParserTables::getNewState(UINT symbol, UINT state  ) const {
+  assert(symbol < getSymbolCount());
+  assert(state  < getStateCount());
 
-    if(isTerminal(symbol)) {
-      const Action action = getAction(state, symbol);
-      return action.isShiftAction() ? action.getNewState() : -1;
-    } else {
-      return getSuccessor(state, symbol);
-    }
+  if(isTerminal(symbol)) {
+    const Action action = getAction(state, symbol);
+    return action.isShiftAction() ? action.getNewState() : -1;
+  } else {
+    return getSuccessor(state, symbol);
   }
+}
+
+}; // namespace LRParsing

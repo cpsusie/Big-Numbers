@@ -1,7 +1,5 @@
 #pragma once
 
-class AbstractSymbolNameContainer;
-
 class IndexToSymbolConverter {
   const bool m_rowsIndexedByTerminal;
   const UINT m_startSymbol;

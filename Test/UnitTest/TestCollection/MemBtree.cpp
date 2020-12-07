@@ -484,7 +484,6 @@ AbstractCollection *BTreeSetImpl::clone(bool cloneData) const {
 
 class BTreeIteratorStackElement {
 public:
-  DECLARECLASSNAME;
   const BTreePage *m_page;
   int              m_index;
   bool             m_childDone;
@@ -500,7 +499,6 @@ public:
 
 class BTreeSetIterator : public AbstractIterator {
 private:
-  DECLARECLASSNAME;
   BTreeSetImpl                           &m_tree;
   CompactStack<BTreeIteratorStackElement> m_stack;
   const BTreePageItem                    *m_next, *m_current;
@@ -532,8 +530,6 @@ public:
   }
 };
 
-DEFINECLASSNAME(BTreeSetIterator);
-
 void BTreeSetIterator::push(const BTreePage *page, int index, bool childDone) {
   m_stack.push(BTreeIteratorStackElement(page,index,childDone));
 }
@@ -550,10 +546,10 @@ BTreeSetIterator::BTreeSetIterator(const BTreeSetImpl &tree) : m_tree((BTreeSetI
 
 const BTreePageItem *BTreeSetIterator::nextNode() {
   if(m_next == nullptr) {
-    noNextElementError(s_className);
+    noNextElementError(__TFUNCTION__);
   }
   if(m_updateCount != m_tree.m_updateCount) {
-    concurrentModificationError(s_className);
+    concurrentModificationError(__TFUNCTION__);
   }
   m_current = m_next;
   m_next    = findNext();
@@ -619,7 +615,7 @@ BTreePageItem *BTreeSetIterator::findPath(void *key) {
 
 void BTreeSetIterator::remove() {
   if(m_current == nullptr) {
-    noCurrentElementError(s_className);
+    noCurrentElementError(__TFUNCTION__);
   }
   void *nextKey = nullptr;
   if(m_next != nullptr) {

@@ -4,12 +4,13 @@
 #include <CompactHashMap.h>
 #include <PropertyContainer.h>
 #include <SourcePosition.h>
+#include <AbstractParserTables.h>
 #include "ExpressionSymbol.h"
 #include "SNode.h"
 
-class AbstractParserTables;
-
 namespace Expr {
+
+using namespace LRParsing;
 
 typedef enum {
   PP_STATE                 // ParserTreeState

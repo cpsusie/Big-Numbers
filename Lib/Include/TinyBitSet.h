@@ -201,7 +201,7 @@ public:
     }
     void             *next()          override {
       if(!m_hasNext) {
-        noNextElementError(_T("TinyBitSetIterator"));
+        noNextElementError(__TFUNCTION__);
       }
       if((m_current = m_next++) >= m_end) {
         m_hasNext = false;
@@ -263,7 +263,7 @@ public:
     }
     void             *next()          override {
       if(!m_hasNext) {
-        noNextElementError(_T("TinyBitSetReverseIterator"));
+        noNextElementError(__TFUNCTION__);
       }
       if((m_current = m_next) <= m_end) {
         m_hasNext = false;

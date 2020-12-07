@@ -36,24 +36,24 @@ public:
 NtDllLoader::NtDllLoader() {
   m_module = LoadLibrary(_T("ntdll.dll"));
   if(m_module == nullptr) {
-    throwLastErrorOnSysCallException(__TFUNCTION__);
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("LoadLibrary"));
   }
   m_func = (pNtQueryInformationProcess)GetProcAddress(m_module, "NtQueryInformationProcess");
   if(m_func == nullptr) {
-    throwLastErrorOnSysCallException(__TFUNCTION__);
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("GetProcAddress"));
   }
 }
 
 NtDllLoader::~NtDllLoader() {
 }
 
-static void checkBoolResult(const TCHAR *func, BOOL ok) {
+static void checkBoolResult(const TCHAR *method, const TCHAR *expr, BOOL ok) {
   if(ok != TRUE) {
-    throwLastErrorOnSysCallException(func);
+    throwLastErrorOnSysCallException(method, expr);
   }
 }
 
-#define V(result) checkBoolResult(_T(#result), result)
+#define V(expr) checkBoolResult(__TFUNCTION__, _T(#expr), expr)
 
 String getProcessCommandLine(HANDLE hProcess) {
   static NtDllLoader ntdll;
@@ -145,9 +145,9 @@ void enableTokenPrivilege(LPCTSTR privilege, bool enable) {
     DWORD dwSize = 0, bufferLength = getPreviousStatebufferSize(token, false, tp);
     previousState = (PTOKEN_PRIVILEGES)new BYTE[bufferLength]; TRACE_NEW(previousState);
     if(AdjustTokenPrivileges(token, FALSE, &tp, bufferLength, previousState, &dwSize) == 0) {
-      throwLastErrorOnSysCallException(_T("AdjustTokenPrivileges"));
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("AdjustTokenPrivileges"));
     } else if(GetLastError() != ERROR_SUCCESS) {
-      throwLastErrorOnSysCallException(_T("AdjustTokenPrivileges"));
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("AdjustTokenPrivileges"));
     }
   } catch(...) {
     SAFEDELETEARRAY(previousState);

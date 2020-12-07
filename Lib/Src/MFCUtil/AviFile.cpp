@@ -67,7 +67,7 @@ void CAviFile::releaseMemory() {
 void CAviFile::allocateHeapAndBuffer(size_t size) {
   m_heap = HeapCreate(HEAP_NO_SERIALIZE, size, 0);
   if(m_heap==nullptr) {
-    throwLastErrorOnSysCallException(_T("HeapCreate"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("HeapCreate"));
   }
 
   m_lpBits = HeapAlloc(m_heap, HEAP_ZERO_MEMORY | HEAP_NO_SERIALIZE, size);
@@ -90,7 +90,7 @@ void CAviFile::releaseHeapAndBuffer() {
 void CAviFile::allocateDC() {
   m_dc = CreateCompatibleDC(nullptr);
   if(m_dc == nullptr) {
-    throwLastErrorOnSysCallException(_T("CreateCompatibleDC"));
+    throwLastErrorOnSysCallException(__TFUNCTION__,_T("CreateCompatibleDC"));
   }
 }
 
@@ -215,7 +215,7 @@ HBITMAP CAviFile::readFrame() {
   ZeroMemory(&bmInfo, sizeof(BITMAPINFO));
   bmInfo.bmiHeader = m_bitmapInfoHeader;
   if(SetDIBits(m_dc, m_bitmap, 0, m_bitmapInfoHeader.biHeight, m_lpBits,&bmInfo, DIB_RGB_COLORS) == 0) {
-    throwLastErrorOnSysCallException(_T("SetDIBits"));
+    throwLastErrorOnSysCallException(__TFUNCTION__,_T("SetDIBits"));
   }
   return m_bitmap;
 }
@@ -224,7 +224,7 @@ void CAviFile::appendFrameFirstTime(HBITMAP bm) {
   checkIsWriteMode();
   BITMAP info;
   if(GetObject(bm, sizeof(BITMAP), &info) == 0) {
-    throwLastErrorOnSysCallException(_T("GetObject"));
+    throwLastErrorOnSysCallException(__TFUNCTION__,_T("GetObject"));
   }
 
   initMovieCreation(info.bmWidth,info.bmHeight,info.bmBitsPixel);
@@ -240,11 +240,11 @@ void CAviFile::appendFrameUsual(HBITMAP bm) {
   bmpInfo.bmiHeader.biSize     = sizeof(BITMAPINFOHEADER);
 
   if(GetDIBits(m_dc, bm, 0,0,nullptr, &bmpInfo, DIB_RGB_COLORS) == 0) {
-    throwLastErrorOnSysCallException(_T("GetDIBits"));
+    throwLastErrorOnSysCallException(__TFUNCTION__,_T("GetDIBits"));
   }
   bmpInfo.bmiHeader.biCompression = BI_COMPRESSION;
   if(GetDIBits(m_dc, bm, 0, bmpInfo.bmiHeader.biHeight, m_lpBits, &bmpInfo, DIB_RGB_COLORS) == 0) {
-    throwLastErrorOnSysCallException(_T("GetDIBits"));
+    throwLastErrorOnSysCallException(__TFUNCTION__,_T("GetDIBits"));
   }
 
   LONG samplesWritten, bytesWritten;

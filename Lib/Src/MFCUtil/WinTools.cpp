@@ -216,7 +216,7 @@ CSize getScreenSize(bool includeTaskBar) {
 HDC getScreenDC() {
   HDC screenDC = CreateDC(_T("DISPLAY"), nullptr, nullptr, nullptr);
   if(screenDC == nullptr) {
-    throwLastErrorOnSysCallException(_T("CreateDC"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("CreateDC"));
   }
   return screenDC;
 };

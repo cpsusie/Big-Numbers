@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "TreeSetIterator.h"
 
-DEFINECLASSNAME(TreeSetIterator);
-
 enum IteratorState {
   LEFT_DONE
  ,LEFT_FOR
@@ -18,9 +16,9 @@ TreeSetIterator::TreeSetIterator(const TreeSetImpl *set) : m_set(*(TreeSetImpl*)
 
 TreeSetNode *TreeSetIterator::nextNode() {
   if(m_next == nullptr) {
-    noNextElementError(s_className);
+    noNextElementError(__TFUNCTION__);
   }
-  checkUpdateCount();
+  checkUpdateCount(__TFUNCTION__);
   m_current = m_next;
   m_next    = findNext();
   return m_current;
@@ -92,10 +90,10 @@ TreeSetNode *TreeSetIterator::findNext() {
 
 void TreeSetIterator::remove() {
   if(m_current == nullptr) {
-    noCurrentElementError(s_className);
+    noCurrentElementError(__TFUNCTION__);
   }
   __assume(m_current);
-  checkUpdateCount();
+  checkUpdateCount(__TFUNCTION__);
   m_set.remove(m_current->key());
   m_current = nullptr;
   if(m_next != nullptr) {
@@ -104,9 +102,9 @@ void TreeSetIterator::remove() {
   m_updateCount = m_set.m_updateCount;
 }
 
-void TreeSetIterator::checkUpdateCount() const {
+void TreeSetIterator::checkUpdateCount(const TCHAR *method) const {
   if(m_updateCount != m_set.m_updateCount) {
-    concurrentModificationError(s_className);
+    concurrentModificationError(method);
   }
 }
 

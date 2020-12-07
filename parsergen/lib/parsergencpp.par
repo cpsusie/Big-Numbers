@@ -36,5 +36,8 @@ $NEWFILE$=$GRAMMARNAME$Tables.cpp
 $CLASSHEAD$
 #include <ParserTablesTemplate.h>
 $PUSHNAMESPACE$
+
+using namespace LRParsing;
+
 $TABLES$
 $POPNAMESPACE$

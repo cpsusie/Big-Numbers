@@ -60,18 +60,18 @@ FileVersion::FileVersion(const String &filename) {
   _tcscpy(filename1, filename.cstr()); // take a copy. Used for windows-functions which are not const.
   int fvsize = GetFileVersionInfoSize(filename1, &dummyhandle);
   if(fvsize == 0) {
-    throwLastErrorOnSysCallException(_T("GetFileVersionInfoSize"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("GetFileVersionInfoSize"));
   }
   __assume(dummyhandle);
   BYTE *data = new BYTE[fvsize]; TRACE_NEW(data);
   try {
     if(GetFileVersionInfo(filename1,dummyhandle,fvsize,data) == 0) {
-      throwLastErrorOnSysCallException(_T("GetFileVersionInfo"));
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("GetFileVersionInfo"));
     }
     void *p;
     UINT pulen;
     if(VerQueryValue(data,_T("\\"),&p,&pulen) == 0) {
-      throwException(_T("No rootelement in ressource"));
+      throwException(_T("%s:No rootelement in ressource"), __TFUNCTION__);
     }
     m_fixedFileInfo = *(VS_FIXEDFILEINFO*)p;
 

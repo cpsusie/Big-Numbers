@@ -5,7 +5,6 @@
 
 class BitMatrixIterator : public BitSetIterator {
 private:
-  DECLARECLASSNAME;
   BitMatrix  &m_matrix;
   MatrixIndex m_p;
   inline bool hasCurrent() const {
@@ -26,7 +25,6 @@ public:
 
 class BitMatrixRowIterator : public BitSetIterator {
 private:
-  DECLARECLASSNAME;
   BitMatrix  &m_matrix;
   MatrixIndex m_p;
   static inline size_t firstIndex(const BitMatrix *m, size_t r) {
@@ -55,7 +53,6 @@ public:
 
 class BitMatrixColumnIterator : public AbstractIterator {
 private:
-  DECLARECLASSNAME;
   BitMatrix  &m_matrix;
   MatrixIndex m_p, m_next;
   bool        m_hasNext;

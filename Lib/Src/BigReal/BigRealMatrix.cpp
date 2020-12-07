@@ -3,16 +3,14 @@
 
 // Implementation of basic matrix-operations
 
-DEFINECLASSNAME(BigRealMatrix);
-
-void BigRealMatrix::checkPrecision(UINT digits) {
+void BigRealMatrix::checkPrecision(UINT digits,const TCHAR *method) const {
   if(digits == 0) {
-    throwBigRealException(_T("%s:Precision = 0 not allowed"), s_className);
+    throwBigRealException(_T("%s:Precision = 0 not allowed"), method);
   }
 }
 
 UINT BigRealMatrix::setPrecision(UINT digits) {
-  checkPrecision(digits);
+  _CHECKPRECISION(digits);
   const UINT oldDigits = m_digits;
   m_digits = digits;
   return oldDigits;

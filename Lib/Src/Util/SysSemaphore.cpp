@@ -7,13 +7,13 @@
 
 SysSemaphore::SysSemaphore(const String &name, UINT initialCount, UINT maxWait) {
   if((m_sem = CreateSemaphore(nullptr, initialCount, maxWait, name.cstr())) == nullptr) {
-    throwLastErrorOnSysCallException(_T("CreateSemaphore"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("CreateSemaphore"));
   }
 }
 
 SysSemaphore::SysSemaphore(UINT initialCount, UINT maxWait) {
   if((m_sem = CreateSemaphore(nullptr,initialCount,maxWait,nullptr)) == nullptr) {
-    throwLastErrorOnSysCallException(_T("CreateSemaphore"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("CreateSemaphore"));
   }
 }
 
@@ -29,7 +29,7 @@ bool SysSemaphore::wait(UINT timeout) {
   case WAIT_TIMEOUT :
     return false;
   case WAIT_FAILED  :
-    throwLastErrorOnSysCallException(_T("WaitForSingleObject"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("WaitForSingleObject"));
   default           :
     throwException(_T("%s:Unexpected returncode:%d"), __TFUNCTION__, ret);
     return false;
@@ -38,7 +38,7 @@ bool SysSemaphore::wait(UINT timeout) {
 
 void SysSemaphore::notify() {
   if(!ReleaseSemaphore(m_sem, 1, nullptr)) {
-    throwLastErrorOnSysCallException(_T("ReleaseSemaphore"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("ReleaseSemaphore"));
   }
 }
 

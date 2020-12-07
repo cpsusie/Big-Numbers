@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#define CHECK(sysf) if(!sysf) throwLastErrorOnSysCallException(__TFUNCTION__)
+#define CHECK(syscall) if(!syscall) throwLastErrorOnSysCallException(__TFUNCTION__,_T(#syscall))
 
 WINDOWPLACEMENT getWindowPlacement(HWND hwnd) {
   WINDOWPLACEMENT wpl;

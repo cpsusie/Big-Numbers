@@ -39,14 +39,14 @@ size_t ExecutableByteArray::getCapacityCeil(size_t capacity) const {
 BYTE *ExecutableByteArray::allocateBytes(size_t size) {
   void *result = VirtualAlloc(nullptr, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
   if(result == nullptr) {
-    throwLastErrorOnSysCallException(__TFUNCTION__);
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("VirtualAlloc"));
   }
   return (BYTE*)result;
 }
 
 void  ExecutableByteArray::deallocateBytes(BYTE *buffer) {
   if(!VirtualFree(buffer, 0, MEM_RELEASE)) {
-    throwLastErrorOnSysCallException(__TFUNCTION__);
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("VirtualFree"));
   }
 }
 
@@ -62,6 +62,6 @@ size_t ExecutableByteArray::getSystemPageSize() { // static
 
 void ExecutableByteArray::flushInstructionCache() {
   if(!FlushInstructionCache(GetCurrentProcess(), getData(), getCapacity())) {
-    throwLastErrorOnSysCallException(__TFUNCTION__);
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("FlushInstructionCache"));
   }
 }

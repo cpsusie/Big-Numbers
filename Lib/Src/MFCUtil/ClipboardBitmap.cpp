@@ -37,15 +37,15 @@ HBITMAP getClipboardBitmap() {
 
 void putClipboard(HWND hwnd, HBITMAP bitmap) {
   if(!OpenClipboard(hwnd)) {
-    throwLastErrorOnSysCallException(_T("OpenClipboard"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("OpenClipboard"));
   }
 
   try {
     if(!EmptyClipboard()) {
-      throwLastErrorOnSysCallException(_T("EmptyClipboard"));
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("EmptyClipboard"));
     }
     if(::SetClipboardData(CF_BITMAP, bitmap) == nullptr) {
-      throwLastErrorOnSysCallException(_T("SetClipboardData"));
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("SetClipboardData"));
     }
     CloseClipboard();
   } catch(...) {

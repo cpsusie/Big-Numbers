@@ -4,12 +4,12 @@
 
 void clipboardDropFiles(HWND hwnd, StringArray &fnames) {
   if(!OpenClipboard(hwnd)) {
-    throwLastErrorOnSysCallException(_T("OpenClipboard"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("OpenClipboard"));
   }
 
   try {
     if(!EmptyClipboard()) {
-      throwLastErrorOnSysCallException(_T("EmptyClipboard"));
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("EmptyClipboard"));
     }
 
     DROPFILES df;
@@ -29,12 +29,12 @@ void clipboardDropFiles(HWND hwnd, StringArray &fnames) {
 
     HLOCAL buf = LocalAlloc(0, nbytes);
     if(buf == nullptr) {
-      throwLastErrorOnSysCallException(_T("LocalAlloc"));
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("LocalAlloc"));
     }
     memcpy(buf, &df, sizeof(df));
     memcpy(((char*)buf)+sizeof(df), str.cstr(), strLength*sizeof(TCHAR));
     if(SetClipboardData(CF_HDROP, buf) == nullptr) {
-      throwLastErrorOnSysCallException(_T("SetClipboardData"));
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("SetClipboardData"));
     }
     CloseClipboard();
   } catch(...) {

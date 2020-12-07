@@ -33,28 +33,28 @@ private:
   static void checkSysCall(BOOL  c, int line);
 
 public:
-  static HANDLE getHandle(int fileNo);
-  static void  setBufferSize(int  width, int  height, int fileNo = STD_OUTPUT_HANDLE);
-  static void  getBufferSize(int &width, int &height, int fileNo = STD_OUTPUT_HANDLE);
-  static void  setWindowSize(int  width, int  height, int fileNo = STD_OUTPUT_HANDLE);
-  static void  getWindowSize(int &width, int &height, int fileNo = STD_OUTPUT_HANDLE);
-  static void  setBufferSize(const COORD &size,       int fileNo = STD_OUTPUT_HANDLE);
-  static COORD getBufferSize(                         int fileNo = STD_OUTPUT_HANDLE);
-  static void  setWindowSize(const COORD &size,       int fileNo = STD_OUTPUT_HANDLE);
-  static COORD getWindowSize(                         int fileNo = STD_OUTPUT_HANDLE);
-  static void  setWindowRect(const SMALL_RECT &r,     int fileNo = STD_OUTPUT_HANDLE);
-  static SMALL_RECT getWindowRect(                    int fileNo = STD_OUTPUT_HANDLE);
+  static HANDLE getHandle(DWORD fileNo);
+  static void  setBufferSize(int  width, int  height, DWORD fileNo = STD_OUTPUT_HANDLE);
+  static void  getBufferSize(int &width, int &height, DWORD fileNo = STD_OUTPUT_HANDLE);
+  static void  setWindowSize(int  width, int  height, DWORD fileNo = STD_OUTPUT_HANDLE);
+  static void  getWindowSize(int &width, int &height, DWORD fileNo = STD_OUTPUT_HANDLE);
+  static void  setBufferSize(const COORD &size,       DWORD fileNo = STD_OUTPUT_HANDLE);
+  static COORD getBufferSize(                         DWORD fileNo = STD_OUTPUT_HANDLE);
+  static void  setWindowSize(const COORD &size,       DWORD fileNo = STD_OUTPUT_HANDLE);
+  static COORD getWindowSize(                         DWORD fileNo = STD_OUTPUT_HANDLE);
+  static void  setWindowRect(const SMALL_RECT &r,     DWORD fileNo = STD_OUTPUT_HANDLE);
+  static SMALL_RECT getWindowRect(                    DWORD fileNo = STD_OUTPUT_HANDLE);
   static HWND getWindow();
-  static void setWindowRect(         int left, int top, int right, int bottom,  int fileNo = STD_OUTPUT_HANDLE);
-  static void setWindowAndBufferSize(int left, int top, int right, int bottom,  int fileNo = STD_OUTPUT_HANDLE);
+  static void setWindowRect(         int left, int top, int right, int bottom,  DWORD fileNo = STD_OUTPUT_HANDLE);
+  static void setWindowAndBufferSize(int left, int top, int right, int bottom,  DWORD fileNo = STD_OUTPUT_HANDLE);
   static void setTitle(const String &title);
   static String getTitle();
   static CONSOLE_FONT_INFOEX getFont();
   static COORD               getFontSize();
   static void setFontSize(const COORD &fontSize);
-  static void clear(                                                WORD attr = NORMALVIDEO, int fileNo = STD_OUTPUT_HANDLE);
-  static void clearLine(int line,                                   WORD attr = NORMALVIDEO, int fileNo = STD_OUTPUT_HANDLE);
-  static void clearRect(int left,   int top, int right, int bottom, WORD attr = NORMALVIDEO, int fileNo = STD_OUTPUT_HANDLE);
+  static void clear(                                                WORD attr = NORMALVIDEO, DWORD fileNo = STD_OUTPUT_HANDLE);
+  static void clearLine(int line,                                   WORD attr = NORMALVIDEO, DWORD fileNo = STD_OUTPUT_HANDLE);
+  static void clearRect(int left,   int top, int right, int bottom, WORD attr = NORMALVIDEO, DWORD fileNo = STD_OUTPUT_HANDLE);
   static void rectangle(int left,   int top, int right, int bottom, FrameType type = SINGLE_FRAME, WORD color = NORMALVIDEO);
   static void printf(   int x   ,   int y,             _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   static void printf(   int x   ,   int y, WORD color, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
@@ -64,20 +64,20 @@ public:
   static void vprintf(  int x   ,   int y, WORD color, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
   static void vcprintf( int x   ,   int y,             _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr); // caret not moved
   static void vcprintf( int x   ,   int y, WORD color, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr); // caret not moved
-  static void setColor( WORD color,                                             int fileNo = STD_OUTPUT_HANDLE);
-  static void setColor( int x   ,   int y, WORD color,                          int fileNo = STD_OUTPUT_HANDLE);
-  static void setColor( int left,   int top, int right, int bottom, WORD color, int fileNo = STD_OUTPUT_HANDLE);
-  static WORD getColor( int x   ,   int y,                                      int fileNo = STD_OUTPUT_HANDLE);
-  static void setCursorPos(int  x, int  y, int fileNo = STD_OUTPUT_HANDLE);
-  static void setCursorPos(const COORD &p, int fileNo = STD_OUTPUT_HANDLE);
-  static void getCursorPos(int &x, int &y, int fileNo = STD_OUTPUT_HANDLE);
-  static COORD getCursorPos(               int fileNo = STD_OUTPUT_HANDLE);
-  static void setCursorSize(int percent,   int fileNo = STD_OUTPUT_HANDLE);
-  static int  getCursorSize(               int fileNo = STD_OUTPUT_HANDLE);
-  static void getLargestConsoleWindowSize(int &maxWidth, int &maxHeight, int fileNo = STD_OUTPUT_HANDLE);
+  static void setColor( WORD color,                                             DWORD fileNo = STD_OUTPUT_HANDLE);
+  static void setColor( int x   ,   int y, WORD color,                          DWORD fileNo = STD_OUTPUT_HANDLE);
+  static void setColor( int left,   int top, int right, int bottom, WORD color, DWORD fileNo = STD_OUTPUT_HANDLE);
+  static WORD getColor( int x   ,   int y,                                      DWORD fileNo = STD_OUTPUT_HANDLE);
+  static void setCursorPos(int  x, int  y, DWORD fileNo = STD_OUTPUT_HANDLE);
+  static void setCursorPos(const COORD &p, DWORD fileNo = STD_OUTPUT_HANDLE);
+  static void getCursorPos(int &x, int &y, DWORD fileNo = STD_OUTPUT_HANDLE);
+  static COORD getCursorPos(               DWORD fileNo = STD_OUTPUT_HANDLE);
+  static void setCursorSize(int percent,   DWORD fileNo = STD_OUTPUT_HANDLE);
+  static int  getCursorSize(               DWORD fileNo = STD_OUTPUT_HANDLE);
+  static void getLargestConsoleWindowSize(int &maxWidth, int &maxHeight, DWORD fileNo = STD_OUTPUT_HANDLE);
 
-  static void showCursor(bool on,          int fileNo = STD_OUTPUT_HANDLE);
-  static bool isCursorVisible(             int fileNo = STD_OUTPUT_HANDLE);
+  static void showCursor(bool on,          DWORD fileNo = STD_OUTPUT_HANDLE);
+  static bool isCursorVisible(             DWORD fileNo = STD_OUTPUT_HANDLE);
   static int  getKey();      // returns ascii
   static int  getKeyEvent(); // returns event
   static bool keyPressed();

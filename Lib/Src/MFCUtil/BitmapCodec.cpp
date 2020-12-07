@@ -107,7 +107,7 @@ HBITMAP decodeToBitmap(const ByteArray &bytes, PLPicDecoder &decoder, bool &hasA
 
       bitmap = CreateDIBitmap(dc,  (BITMAPINFOHEADER*)&bmHeader, CBM_INIT, winBmp.GetBits(), &bmInfo, DIB_RGB_COLORS);
       if(bitmap == nullptr) {
-        throwLastErrorOnSysCallException(_T("CreateDIBitmap"));
+        throwLastErrorOnSysCallException(__TFUNCTION__, _T("CreateDIBitmap"));
       }
       DeleteDC(dc);
       hasAlpha = winBmp.HasAlpha();

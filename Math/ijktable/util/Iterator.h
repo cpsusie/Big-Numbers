@@ -4,10 +4,10 @@
 
 class AbstractIterator {
 protected:
-  void noNextElementError(         const char *className) const;
-  void concurrentModificationError(const char *className) const;
-  void noCurrentElementError(      const char *className) const;
-  void unsupportedOperationError(  const char *method   ) const;
+  void noNextElementError(         const char *method) const;
+  void concurrentModificationError(const char *method) const;
+  void noCurrentElementError(      const char *method) const;
+  void unsupportedOperationError(  const char *method) const;
 
 public:
   virtual AbstractIterator *clone() = 0;

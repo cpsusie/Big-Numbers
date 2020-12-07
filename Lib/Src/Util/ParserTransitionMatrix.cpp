@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <ParserTransitionMatrix.h>
 
+namespace LRParsing {
+
 FullActionMatrix::FullActionMatrix(const AbstractParserTables &tables)
 : ParserTransitionMatrix(tables, MatrixDimension(tables.getStateCount(), tables.getTermCount()))
 {
@@ -194,3 +196,5 @@ String TransposedSuccessorMatrix::toString() const {
   }
   return result;
 }
+
+}; // namespace LRParsing

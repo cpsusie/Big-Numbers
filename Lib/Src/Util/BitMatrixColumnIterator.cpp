@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "BitMatrixIterator.h"
 
-DEFINECLASSNAME(BitMatrixColumnIterator);
-
 void BitMatrixColumnIterator::first(size_t c) {
   m_next.c = m_p.c = c;
   setCurrentUndefined();
@@ -20,7 +18,7 @@ AbstractIterator *BitMatrixColumnIterator::clone() {
 }
 
 void *BitMatrixColumnIterator::next() {
-  if(!hasNext()) noNextElementError(s_className);
+  if(!hasNext()) noNextElementError(__TFUNCTION__);
   for(m_p.r = m_next.r++; m_next.r < m_matrix.getRowCount(); m_next.r++) {
     if(m_matrix.get(m_next)) return &m_p;
   }
@@ -29,7 +27,7 @@ void *BitMatrixColumnIterator::next() {
 }
 
 void BitMatrixColumnIterator::remove() {
-  if(!hasCurrent()) noCurrentElementError(s_className);
+  if(!hasCurrent()) noCurrentElementError(__TFUNCTION__);
   m_matrix.set(m_p, false);
   setCurrentUndefined();
 }

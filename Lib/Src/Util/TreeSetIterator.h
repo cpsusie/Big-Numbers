@@ -18,7 +18,6 @@ public:
 
 class TreeSetIterator : public AbstractIterator {
 private:
-  DECLARECLASSNAME;
   TreeSetImpl                              &m_set;
   CompactStack<TreeSetIteratorStackElement> m_stack;
   TreeSetNode                              *m_next, *m_current;
@@ -36,7 +35,7 @@ private:
   TreeSetNode      *findFirst();
   void              findPath(const void *key);
   TreeSetNode      *findNext();
-  void              checkUpdateCount() const;
+  void              checkUpdateCount(const TCHAR *method) const;
 protected:
   TreeSetNode      *nextNode();
 public:

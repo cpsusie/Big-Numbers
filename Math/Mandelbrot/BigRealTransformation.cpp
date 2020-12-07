@@ -86,8 +86,6 @@ const BigRealInterval &BigRealIntervalTransformation::zoom(const BigReal &x, con
   return setFromInterval(BigRealInterval(inverseTranslate(tFrom), inverseTranslate(tTo),dp));
 }
 
-DEFINECLASSNAME(BigRealRectangleTransformation);
-
 BigRealIntervalTransformation *BigRealRectangleTransformation::allocateTransformation(const BigRealInterval &from, const BigRealInterval &to, IntervalScale scale) const {
   switch(scale) {
   case LINEAR             : return new BigRealLinearTransformation(from, to, AUTOPRECISION, getDigitPool());

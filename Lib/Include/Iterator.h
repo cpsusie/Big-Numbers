@@ -4,10 +4,10 @@
 
 class AbstractIterator {
 protected:
-  void noNextElementError(         const TCHAR *className) const;
-  void concurrentModificationError(const TCHAR *className) const;
-  void noCurrentElementError(      const TCHAR *className) const;
-  void unsupportedOperationError(  const TCHAR *method   ) const;
+  static void noNextElementError(         const TCHAR *method);
+  static void concurrentModificationError(const TCHAR *method);
+  static void noCurrentElementError(      const TCHAR *method);
+  static void unsupportedOperationError(  const TCHAR *method);
 
 public:
   virtual ~AbstractIterator() {};
@@ -126,7 +126,7 @@ public:
   }
 };
 
-template<typename T> class Iterator: public ConstIterator<T> {
+template<typename T> class Iterator : public ConstIterator<T> {
 public:
   inline Iterator() {
     m_it = nullptr;

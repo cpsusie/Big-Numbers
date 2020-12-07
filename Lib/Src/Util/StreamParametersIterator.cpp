@@ -43,7 +43,6 @@ void AllFormatFlagsArray::dumpAllFormats() const {
 
 class AbstractStreamParametersIterator : public AbstractIterator {
 private:
-  DECLARECLASSNAME;
   const StreamSizeInterval         m_widthInterval, m_precisionInterval;
   const AllFormatFlagsArray        m_formatFlagsArray;
   const FormatFlags               *m_firstFormatFlags, *m_lastformatFlags;
@@ -104,8 +103,6 @@ public:
   }
 };
 
-DEFINECLASSNAME(AbstractStreamParametersIterator);
-
 AbstractStreamParametersIterator::AbstractStreamParametersIterator(const AbstractStreamParametersIterator &src)
 : m_widthInterval(    src.m_widthInterval    )
 , m_precisionInterval(src.m_precisionInterval)
@@ -143,7 +140,7 @@ void AbstractStreamParametersIterator::reset() {
 }
 
 void *AbstractStreamParametersIterator::next() {
-  if(!m_hasNext) noNextElementError(s_className);
+  if(!m_hasNext) noNextElementError(__TFUNCTION__);
   m_value = StreamParameters(m_precision, m_width, *m_formatFlags, *m_fillChar);
   if(hasNextFormatFlags()) {
     nextFormatFlags();

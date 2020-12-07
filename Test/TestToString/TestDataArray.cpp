@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "TestDataArray.h"
 
-DEFINECLASSNAME(AbstractTestElementIterator);
-
 TestIterator::TestIterator(TestDataArray *array, StreamSize maxWidth, StreamSize maxPrecision)
 : Iterator<TestElement>(new AbstractTestElementIterator(*array, maxWidth, maxPrecision))
 {
@@ -42,7 +40,7 @@ void AbstractTestElementIterator::nextValue() {
 }
 
 void *AbstractTestElementIterator::next() {
-  if(!m_hasNext) noNextElementError(s_className);
+  if(!m_hasNext) noNextElementError(__TFUNCTION__);
   m_buf = m_next;
   if(m_paramIterator.hasNext()) {
     m_next.m_param = m_paramIterator.next();

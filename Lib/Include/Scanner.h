@@ -22,7 +22,6 @@ public:
 
 class ByteQueue : private ByteArray {
 private:
-  DECLARECLASSNAME;
   bool         m_firstRead;
   TextFormat   m_textFormat;
   bool hasFullLine() const;
@@ -49,8 +48,6 @@ public:
 };
 
 class CharQueue : private String {
-private:
-  DECLARECLASSNAME;
 public:
   CharQueue() {
   }
@@ -73,7 +70,6 @@ public:
 
 class LexFileStream : public LexStream {
 private:
-  DECLARECLASSNAME;
   FILE        *m_f;
   int          m_oldMode;
 

@@ -12,8 +12,6 @@ Iterator<size_t> BitSet::getReverseIterator(size_t start, size_t end) {
 
 // -----------------------------------------------------------------------
 
-DEFINECLASSNAME(BitSetIterator);
-
 AbstractIterator *BitSetIterator::clone() {
   return new BitSetIterator(*this);
 }
@@ -137,7 +135,7 @@ End:
 }
 
 void *BitSetIterator::next() { // throw Exception if no more
-  if(!m_hasNext) noNextElementError(s_className);
+  if(!m_hasNext) noNextElementError(__FUNCTION__);
   if((m_current = m_next++) >= m_end) {
     m_hasNext = false;
     return &m_current;
@@ -263,8 +261,6 @@ End:
 
 // ---------------------------------------------------------------------
 
-DEFINECLASSNAME(BitSetReverseIterator);
-
 AbstractIterator *BitSetReverseIterator::clone() {
   return new BitSetReverseIterator(*this);
 }
@@ -384,7 +380,7 @@ End:
 }
 
 void *BitSetReverseIterator::next() { // Actually previous. throw Exception if no next element
-  if(!hasNext()) noNextElementError(s_className);
+  if(!hasNext()) noNextElementError(__FUNCTION__);
   if((m_current = m_next--) <= m_end) {
     m_hasNext = false;
     return &m_current;

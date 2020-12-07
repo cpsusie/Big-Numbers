@@ -2,21 +2,18 @@
 
 #include <Iterator.h>
 
-void AbstractIterator::noNextElementError(const TCHAR *className) const {
-  throwMethodException(className, _T("next"), _T("No such element"));
+void AbstractIterator::noNextElementError(const TCHAR *method) {          // static
+  throwException(_T("%s:No such element"), method);
 }
 
-void AbstractIterator::concurrentModificationError(const TCHAR *className) const {
-  throwMethodException(className, _T("next"), _T("Concurrent modification"));
+void AbstractIterator::concurrentModificationError(const TCHAR *method) { // static
+  throwException(_T("%s:Concurrent modification"),method);
 }
 
-void AbstractIterator::noCurrentElementError(const TCHAR *className) const {
-  throwMethodException(className, _T("remove"), _T("No current element"));
+void AbstractIterator::noCurrentElementError(const TCHAR *method) {       // static
+  throwException(_T("%s:No current element"),method);
 }
 
-void AbstractIterator::unsupportedOperationError(const TCHAR *method) const {
+void AbstractIterator::unsupportedOperationError(const TCHAR *method) {   // static
   throwUnsupportedOperationException(method);
 }
-
-const TCHAR *_compactArrayIteratorClassName = _T("CompactArrayIterator");
-const TCHAR *_compactArrayClassName         = _T("CompactArray");

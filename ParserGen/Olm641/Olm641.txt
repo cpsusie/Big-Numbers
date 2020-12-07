@@ -1,12 +1,12 @@
 State 0:
- (  0)K start           -> .S
- (  1)  S               -> .a b A E
- (  2)  S               -> .a b B x
- (  3)  S               -> .a D
- (  4)  S               -> .A z
- (  5)  S               -> .B x
- (  6)  A               -> .d
- (  7)  B               -> .d
+ (  0)K start           -> .S[EOI]
+ (  1)  S               -> .a b A E[EOI]
+ (  2)  S               -> .a b B x[EOI]
+ (  3)  S               -> .a D[EOI]
+ (  4)  S               -> .A z[EOI]
+ (  5)  S               -> .B x[EOI]
+ (  6)  A               -> .d[z]
+ (  7)  B               -> .d[x]
 
    Shift to     1 on a
    Shift to     8 on d
@@ -15,33 +15,33 @@ State 0:
    Goto     7 on B
 
 State 1:
- (  1)K S               -> a .b A E
- (  2)K S               -> a .b B x
- (  3)K S               -> a .D
- (  8)  D               -> .f A
- (  9)  D               -> .f B x
- ( 10)  D               -> .f a D
+ (  1)K S               -> a .b A E[EOI]
+ (  2)K S               -> a .b B x[EOI]
+ (  3)K S               -> a .D[EOI]
+ (  8)  D               -> .f A[EOI]
+ (  9)  D               -> .f B x[EOI]
+ ( 10)  D               -> .f a D[EOI]
 
    Shift to     2 on b
    Shift to     3 on f
    Goto     9 on D
 
 State 2:
- (  1)K S               -> a b .A E
- (  2)K S               -> a b .B x
- (  6)  A               -> .d
- (  7)  B               -> .d
+ (  1)K S               -> a b .A E[EOI]
+ (  2)K S               -> a b .B x[EOI]
+ (  6)  A               -> .d[EOI z]
+ (  7)  B               -> .d[x]
 
    Shift to     8 on d
    Goto    12 on A
    Goto    13 on B
 
 State 3:
- (  8)K D               -> f .A
- (  9)K D               -> f .B x
- ( 10)K D               -> f .a D
- (  6)  A               -> .d
- (  7)  B               -> .d
+ (  8)K D               -> f .A[EOI]
+ (  9)K D               -> f .B x[EOI]
+ ( 10)K D               -> f .a D[EOI]
+ (  6)  A               -> .d[EOI]
+ (  7)  B               -> .d[x]
 
    Shift to     4 on a
    Shift to     8 on d
@@ -49,98 +49,98 @@ State 3:
    Goto    15 on B
 
 State 4:
- ( 10)K D               -> f a .D
- (  8)  D               -> .f A
- (  9)  D               -> .f B x
- ( 10)  D               -> .f a D
+ ( 10)K D               -> f a .D[EOI]
+ (  8)  D               -> .f A[EOI]
+ (  9)  D               -> .f B x[EOI]
+ ( 10)  D               -> .f a D[EOI]
 
    Shift to     3 on f
    Goto    20 on D
 
 State 5:
- (  0)K start           -> S .
+ (  0)K start           -> S .[EOI]
 
    Accept on EOI
 
 State 6:
- (  4)K S               -> A .z
+ (  4)K S               -> A .z[EOI]
 
    Shift to    10 on z
 
 State 7:
- (  5)K S               -> B .x
+ (  5)K S               -> B .x[EOI]
 
    Shift to    11 on x
 
 State 8:
- (  6)K A               -> d .
- (  7)K B               -> d .
+ (  6)K A               -> d .[EOI z]
+ (  7)K B               -> d .[x]
 
    Reduce by    6 on EOI
    Reduce by    6 on z
    Reduce by    7 on x
 
 State 9:
- (  3)K S               -> a D .
+ (  3)K S               -> a D .[EOI]
 
    Reduce by    3 on EOI
 
 State 10:
- (  4)K S               -> A z .
+ (  4)K S               -> A z .[EOI]
 
    Reduce by    4 on EOI
 
 State 11:
- (  5)K S               -> B x .
+ (  5)K S               -> B x .[EOI]
 
    Reduce by    5 on EOI
 
 State 12:
- (  1)K S               -> a b A .E
- ( 11)  E               -> .
- ( 12)  E               -> .z
+ (  1)K S               -> a b A .E[EOI]
+ ( 11)  E               -> .[EOI]
+ ( 12)  E               -> .z[EOI]
 
    Reduce by   11 on EOI
    Shift to    17 on z
    Goto    16 on E
 
 State 13:
- (  2)K S               -> a b B .x
+ (  2)K S               -> a b B .x[EOI]
 
    Shift to    18 on x
 
 State 14:
- (  8)K D               -> f A .
+ (  8)K D               -> f A .[EOI]
 
    Reduce by    8 on EOI
 
 State 15:
- (  9)K D               -> f B .x
+ (  9)K D               -> f B .x[EOI]
 
    Shift to    19 on x
 
 State 16:
- (  1)K S               -> a b A E .
+ (  1)K S               -> a b A E .[EOI]
 
    Reduce by    1 on EOI
 
 State 17:
- ( 12)K E               -> z .
+ ( 12)K E               -> z .[EOI]
 
    Reduce by   12 on EOI
 
 State 18:
- (  2)K S               -> a b B x .
+ (  2)K S               -> a b B x .[EOI]
 
    Reduce by    2 on EOI
 
 State 19:
- (  9)K D               -> f B x .
+ (  9)K D               -> f B x .[EOI]
 
    Reduce by    9 on EOI
 
 State 20:
- ( 10)K D               -> f a D .
+ ( 10)K D               -> f a D .[EOI]
 
    Reduce by   10 on EOI
 

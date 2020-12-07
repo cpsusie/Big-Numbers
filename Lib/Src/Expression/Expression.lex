@@ -5,6 +5,8 @@
 
 $PUSHNAMESPACE$
 
+using namespace LRParsing;
+
 class ExpressionLex : public Scanner {
 private:
   LRparser *m_parser; // if set, redirect errors to parsers verror-routine

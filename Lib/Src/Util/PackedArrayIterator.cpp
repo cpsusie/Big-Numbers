@@ -3,7 +3,6 @@
 
 class PackedArrayIterator : public AbstractIterator {
 private:
-  DECLARECLASSNAME;
   PackedArray &m_a;
   UINT         m_currentValue;
   UINT64       m_next;
@@ -17,9 +16,9 @@ private:
     , m_updateCount( src->m_updateCount )
   {
   }
-  void checkUpdateCount() const {
+  inline void checkUpdateCount(const TCHAR *method) const {
     if(m_updateCount != m_a.getUpdateCount()) {
-      concurrentModificationError(s_className);
+      concurrentModificationError(method);
     }
   }
 public:
@@ -39,22 +38,20 @@ public:
   void              remove()        override;
 };
 
-DEFINECLASSNAME(PackedArrayIterator);
-
 void *PackedArrayIterator::next() {
   if(m_next >= m_a.size()) {
-    noNextElementError(s_className);
+    noNextElementError(__TFUNCTION__);
   }
-  checkUpdateCount();
+  checkUpdateCount(__TFUNCTION__);
   m_currentValue = m_a.get(m_current = m_next++);
   return &m_currentValue;
 }
 
 void PackedArrayIterator::remove() {
   if(m_current < 0) {
-    noCurrentElementError(s_className);
+    noCurrentElementError(__TFUNCTION__);
   }
-  checkUpdateCount();
+  checkUpdateCount(__TFUNCTION__);
   m_a.remove(m_current,1);
   m_current     = -1;
   m_updateCount = m_a.getUpdateCount();
@@ -69,7 +66,6 @@ ConstIterator<UINT> PackedArray::getIterator() const {
 
 class PackedArrayReverseIterator : public AbstractIterator {
 private:
-  DECLARECLASSNAME;
   PackedArray &m_a;
   UINT         m_currentValue;
   INT64        m_next;
@@ -83,9 +79,9 @@ private:
     , m_updateCount( src->m_updateCount )
   {
   }
-  void checkUpdateCount() const {
+  inline void checkUpdateCount(const TCHAR *method) const {
     if(m_updateCount != m_a.getUpdateCount()) {
-      concurrentModificationError(s_className);
+      concurrentModificationError(method);
     }
   }
 public:
@@ -105,22 +101,20 @@ public:
   void               remove()       override;
 };
 
-DEFINECLASSNAME(PackedArrayReverseIterator);
-
 void *PackedArrayReverseIterator::next() {
   if(m_next < 0) {
-    noNextElementError(s_className);
+    noNextElementError(__TFUNCTION__);
   }
-  checkUpdateCount();
+  checkUpdateCount(__TFUNCTION__);
   m_currentValue = m_a.get(m_current = m_next--);
   return &m_currentValue;
 }
 
 void PackedArrayReverseIterator::remove() {
   if(m_current < 0) {
-    noCurrentElementError(s_className);
+    noCurrentElementError(__TFUNCTION__);
   }
-  checkUpdateCount();
+  checkUpdateCount(__TFUNCTION__);
   m_a.remove(m_current,1);
   m_current     = -1;
   m_updateCount = m_a.getUpdateCount();

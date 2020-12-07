@@ -5,7 +5,7 @@ static BOOL CALLBACK childWindowArrayEnumerationProc(_In_ HWND wnd, _In_ LPARAM 
   if(a.m_recursive || (GetParent(wnd) == a.m_parent)) {
     const int id = GetDlgCtrlID(wnd);
     if(id == 0) {
-      throwLastErrorOnSysCallException(__TFUNCTION__);
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("GetDlgCtrlID"));
     }
     a.add((int)id);
   }

@@ -35,9 +35,6 @@ typedef unsigned __int64 uint64;
 
 #define EMPTYSTRING ""
 
-#define DECLARECLASSNAME            static char const* const s_className
-#define DEFINECLASSNAME(className)  char const* const className::s_className = #className
-
 #ifdef ARRAYSIZE
 #undef ARRAYSIZE
 #endif

@@ -5,6 +5,8 @@
 
 #include <LRParser.h>
 
+using namespace LRParsing;
+
 class ResourceLex : public Scanner {
 private:
   LRparser *m_parser; // if set, redirect errors to parsers verror-routine

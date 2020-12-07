@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "BitMatrixIterator.h"
 
-DEFINECLASSNAME(BitMatrixIterator);
-
 AbstractIterator *BitMatrixIterator::clone() {
   return new BitMatrixIterator(*this);
 }
@@ -13,7 +11,7 @@ void *BitMatrixIterator::next() {
 }
 
 void BitMatrixIterator::remove() {
-  if(!hasCurrent()) noCurrentElementError(s_className);
+  if(!hasCurrent()) noCurrentElementError(__TFUNCTION__);
   m_matrix.set(m_p, false);
   setCurrentUndefined();
 }

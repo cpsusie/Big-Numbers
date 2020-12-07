@@ -4,6 +4,8 @@
 
 #include "Olm637symbol.h"
 
+using namespace LRParsing;
+
 #define YYSTYPE int
 class Olm637Parser : public LRparser {
 private:

@@ -175,7 +175,6 @@ void IndexedMap::convertIndex() {
 
 class IndexedMapKeyIterator : public AbstractIterator {
 private:
-  DECLARECLASSNAME;
   IndexedMap                 &m_map;
   const EndGameKeyDefinition &m_keydef;
   EndGameResult              *m_firstElement, *m_lastElement;
@@ -193,8 +192,6 @@ public:
   void *next()                    override;
   void remove()                   override;
 };
-
-DEFINECLASSNAME(IndexedMapKeyIterator);
 
 IndexedMapKeyIterator::IndexedMapKeyIterator(IndexedMap &map)
 : m_map(map)
@@ -215,7 +212,7 @@ void IndexedMapKeyIterator::first() {
 
 void *IndexedMapKeyIterator::next() {
   if(!hasNext()) {
-    noNextElementError(s_className);
+    noNextElementError(__TFUNCTION__);
   }
   m_returnKey = m_keydef.indexToKey((m_current++) - m_firstElement);
   while(m_current <= m_lastElement && !m_current->exists()) {

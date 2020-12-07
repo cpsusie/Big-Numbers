@@ -13,8 +13,6 @@
 #define __TFUNCSIG__                _T(__FUNCSIG__ )
 
 #define DEFINEMETHODNAME            static TCHAR const* const method = __TFUNCTION__
-#define DECLARECLASSNAME            static TCHAR const* const s_className
-#define DEFINECLASSNAME(className)  TCHAR const* const className::s_className = _T(#className)
 
 #if !defined(UNICODE)
 

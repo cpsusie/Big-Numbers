@@ -6,6 +6,8 @@
 #line 5 "C:\\Mytools2015\\ParserGen\\Olm627\\Olm627.y"
 #include "Olm627symbol.h"
 
+using namespace LRParsing;
+
 class Olm627Parser : public LRparser {
 private:
   static const AbstractParserTables *Olm627Tables;

@@ -8,8 +8,6 @@
 #include <CompactHashMap.h>
 #include <eh.h>
 
-DEFINECLASSNAME(Thread);
-
 #if defined(TRACE_THREAD)
 
 void threadTrace(const TCHAR *function, const TCHAR *format, ...) {
@@ -90,7 +88,11 @@ public:
 
 typedef Entry<CompactUIntKeyType, Thread*> ThreadMapEntry;
 
-ThreadMap::ThreadMap() : Singleton(__TFUNCTION__), m_blockNewThreads(false) {
+ThreadMap::ThreadMap()
+  : Singleton(__TFUNCTION__)
+  , m_blockNewThreads(false)
+  , m_threadsRunning(false)
+{
   THREAD_ENTER;
   Thread::s_propertySource = this;
   Thread::s_defaultUncaughtExceptionHandler = new DefaultExceptionHandler; TRACE_NEW(Thread::s_defaultUncaughtExceptionHandler);
@@ -241,7 +243,7 @@ void Thread::init(const String &description, Runnable *target, size_t stackSize)
   m_uncaughtExceptionHandler = nullptr;
   m_threadHandle             = CreateThread(nullptr, stackSize,(LPTHREAD_START_ROUTINE)threadStartup, this, CREATE_SUSPENDED, &m_threadId);
   if(m_threadHandle == nullptr) {
-    throwMethodLastErrorOnSysCallException(s_className, _T("CreateThread"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("CreateThread"));
   }
   setDescription(description);
   THREAD_TRACE("Thread(%u) desc=%s, created", m_threadId, description.cstr());

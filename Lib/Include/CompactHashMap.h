@@ -263,9 +263,9 @@ public:
       m_next   = nullptr;
     }
 
-    inline void checkUpdateCount() const {
+    inline void checkUpdateCount(const TCHAR *method) const {
       if(m_updateCount != m_map.m_updateCount) {
-        concurrentModificationError(_T("CompactMapEntryIterator"));
+        concurrentModificationError(method);
       }
     }
   protected:
@@ -283,10 +283,10 @@ public:
     }
     void             *next()          override {
       if(m_next == nullptr) {
-        noNextElementError(_T("CompactMapEntryIterator"));
+        noNextElementError(__TFUNCTION__);
       }
       __assume(m_next);
-      checkUpdateCount();
+      checkUpdateCount(__TFUNCTION__);
       m_current = m_next;
       if((m_next = m_next->m_next) == nullptr) {
         for(auto p = m_bufp; ++p < m_endBuf;) {
@@ -303,9 +303,9 @@ public:
 
     void              remove()        override {
       if(m_current == nullptr) {
-        noCurrentElementError(_T("CompactMapEntryIterator"));
+        noCurrentElementError(__TFUNCTION__);
       }
-      checkUpdateCount();
+      checkUpdateCount(__TFUNCTION__);
       __assume(m_current);
       m_map.remove(m_current->m_e.m_key);
       m_current = nullptr;

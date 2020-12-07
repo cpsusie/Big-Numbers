@@ -74,7 +74,7 @@ String FileContent::converToString(UINT codePage) const {
     codePage  = CP_UTF8;
     requiredSize = MultiByteToWideChar(codePage, MB_ERR_INVALID_CHARS, (char*)data, byteCount, nullptr, 0);
     if(requiredSize == 0) {
-      throwLastErrorOnSysCallException(_T("MultiByteToWideChar"));
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("MultiByteToWideChar"));
     }
   } else {
     for(int i = 0; i < ARRAYSIZE(legalCodePages); i++) {
@@ -83,7 +83,7 @@ String FileContent::converToString(UINT codePage) const {
         break;
       }
       if(GetLastError() != ERROR_NO_UNICODE_TRANSLATION) {
-        throwLastErrorOnSysCallException(_T("MultiByteToWideChar"));
+        throwLastErrorOnSysCallException(__TFUNCTION__, _T("MultiByteToWideChar"));
       } else {
         codePage = legalCodePages[i];
       }
@@ -99,7 +99,7 @@ String FileContent::converToString(UINT codePage) const {
     TCHAR *buffer = new TCHAR[bufferSize]; TRACE_NEW(buffer);
     const int ret = MultiByteToWideChar(codePage, MB_ERR_INVALID_CHARS, (char*)data, byteCount, buffer, requiredSize);
     if(ret == 0) {
-      throwLastErrorOnSysCallException(_T("MultiByteToWideChar"));
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("MultiByteToWideChar"));
     }
     buffer[requiredSize] = 0;
     const String result = buffer;

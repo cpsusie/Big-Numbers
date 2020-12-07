@@ -2,6 +2,8 @@
 
 #include "AbstractSymbolNameContainer.h"
 
+namespace LRParsing {
+
 typedef enum {
   PLATFORM_X86 = 0
  ,PLATFORM_X64 = 1
@@ -58,6 +60,11 @@ public:
   String toString() const;
 };
 
+inline std::wostream &operator<<(std::wostream &out, const Action &a) {
+  out << a.toString();
+  return out;
+}
+
 class AbstractParserTables : public AbstractSymbolNameContainer {
 public:
   virtual Action        getAction(           UINT state, UINT term    ) const = 0;
@@ -94,3 +101,5 @@ public:
   // special value for fromState, indicating always goto newState, no matter which state we come from
   static constexpr UINT              _NoFromStateCheck = 0x7fff;
 };
+
+}; // namespace LRParsing

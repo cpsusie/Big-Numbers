@@ -217,7 +217,6 @@ public:
 
 class BigRealRectangleTransformation {
 private:
-  DECLARECLASSNAME;
   DigitPool                     *m_digitPool;
   BigRealIntervalTransformation *m_xtransform, *m_ytransform;
 

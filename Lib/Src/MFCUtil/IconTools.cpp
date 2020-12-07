@@ -7,11 +7,11 @@ static HICON createImageHandle(HINSTANCE hInstance, bool isIcon, int colorResId,
   try {
     colorBitmap = LoadBitmap(hInstance, MAKEINTRESOURCE(colorResId));
     if(colorBitmap == nullptr) {
-      throwLastErrorOnSysCallException(_T("LoadBitmap"));
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("LoadBitmap"));
     }
     HBITMAP maskBitmap = LoadBitmap(hInstance, MAKEINTRESOURCE(maskResId));
     if(maskBitmap == nullptr) {
-      throwLastErrorOnSysCallException(_T("LoadBitmap"));
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("LoadBitmap"));
     }
 
     ICONINFO iconInfo;
@@ -23,7 +23,7 @@ static HICON createImageHandle(HINSTANCE hInstance, bool isIcon, int colorResId,
     HICON icon = CreateIconIndirect(&iconInfo);
 
     if(icon == nullptr) {
-      throwLastErrorOnSysCallException(_T("CreateIconIndirect"));
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("CreateIconIndirect"));
     }
     DeleteObject(colorBitmap);
     DeleteObject(maskBitmap);
@@ -53,7 +53,7 @@ HICON createIcon(HINSTANCE hInstance, int colorResId, int maskResId) {
 HICON createIcon(const ByteArray &bytes) {
   HICON icon = CreateIconFromResource((BYTE*)bytes.getData(), (DWORD)bytes.size(), TRUE, 0x00030000);
   if(icon == nullptr) {
-    throwLastErrorOnSysCallException(_T("CreateIconFromResource"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("CreateIconFromResource"));
   }
   return icon;
 }

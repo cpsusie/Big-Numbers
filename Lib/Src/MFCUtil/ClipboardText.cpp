@@ -44,12 +44,12 @@ String getClipboardText() {
 
 void putClipboard(HWND hwnd, const String &s) {
   if(!OpenClipboard(hwnd)) {
-    throwLastErrorOnSysCallException(_T("OpenClipboard"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("OpenClipboard"));
   }
 
   try {
     if(!EmptyClipboard()) {
-      throwLastErrorOnSysCallException(_T("EmptyClipboard"));
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("EmptyClipboard"));
     }
 
     String tmp(s);
@@ -58,12 +58,12 @@ void putClipboard(HWND hwnd, const String &s) {
     const int nbytes = sizeof(TCHAR) * characterCount;
     HLOCAL buf = LocalAlloc(0,nbytes);
     if(buf == nullptr) {
-      throwLastErrorOnSysCallException(_T("LocalAlloc"));
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("LocalAlloc"));
     }
     memcpy(buf, tmp.cstr(), nbytes);
 
     if(SetClipboardData(CF_TEXTFORMAT, buf) == nullptr) {
-      throwLastErrorOnSysCallException(_T("SetClipboardData"));
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("SetClipboardData"));
     }
     CloseClipboard();
   } catch(...) {

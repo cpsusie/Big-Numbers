@@ -55,10 +55,6 @@ void throwLastErrorOnSysCallNameException(const String &name) {
   throwException(_T("%s:%s"), name.cstr(), getLastErrorText().cstr());
 }
 
-void throwLastErrorOnSysCallException(const TCHAR *function) {
-  throwException(_T("%s failed. %s"), function, getLastErrorText().cstr());
-}
-
-void throwMethodLastErrorOnSysCallException(const TCHAR *className, const TCHAR *method) {
-  throwException(_T("%s::%s failed. %s"), className, method, getLastErrorText().cstr());
+void throwLastErrorOnSysCallException(const TCHAR *method, const TCHAR *syscall) {
+  throwException(_T("%s:%s failed. %s"), method, syscall, getLastErrorText().cstr());
 }

@@ -272,7 +272,6 @@ ImageArray::ImageArray(const AlignedImage *img1, va_list argptr) {
 
 class ExpressionPainter {
 private:
-  DECLARECLASSNAME;
   static FontCache             s_fontCache;
   static const SymbolStringMap s_stringMap;
   const NumberFormat           m_numberFormat;
@@ -346,7 +345,6 @@ public:
   void clear();
 };
 
-DEFINECLASSNAME(ExpressionPainter);
 FontCache             ExpressionPainter::s_fontCache;
 const SymbolStringMap ExpressionPainter::s_stringMap;
 

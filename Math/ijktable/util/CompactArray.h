@@ -2,8 +2,6 @@
 
 #include "Iterator.h"
 
-extern const char *_compactArrayIteratorClassName;
-
 template <typename T> class CompactArray {
 private:
   size_t  m_capacity;
@@ -276,11 +274,9 @@ public:
   inline bool isEmpty() const {
     return m_size == 0;
   };
-
   inline size_t size() const {
     return m_size;
   }
-
   inline const T *getBuffer() const { // can return NULL
     return m_array;
   }
@@ -337,9 +333,9 @@ public:
     size_t           m_next;
     intptr_t         m_current;
     size_t           m_updateCount;
-    void checkUpdateCount() const {
+    void checkUpdateCount(const char *method) const {
       if(m_updateCount != m_a.getUpdateCount()) {
-        concurrentModificationError(_compactArrayIteratorClassName);
+        concurrentModificationError(method);
       }
     }
   public:
@@ -351,25 +347,23 @@ public:
     AbstractIterator *clone() {
       return new CompactArrayIterator(*this);
     }
-
     inline bool hasNext() const {
       return m_next < m_a.size();
     }
-
     void *next() {
       if(m_next >= m_a.size()) {
-        noNextElementError(_compactArrayIteratorClassName);
+        noNextElementError(__FUNCTION__);
       }
-      checkUpdateCount();
+      checkUpdateCount(__FUNCTION__);
       m_current = m_next++;
       return &m_a[m_current];
     }
 
     void remove() {
       if(m_current < 0) {
-        noCurrentElementError(_compactArrayIteratorClassName);
+        noCurrentElementError(__FUNCTION__);
       }
-      checkUpdateCount();
+      checkUpdateCount(__FUNCTION__);
       m_a.remove(m_current,1);
       m_current     = -1;
       m_updateCount = m_a.getUpdateCount();
@@ -380,7 +374,6 @@ public:
     return Iterator<T>(new CompactArrayIterator(this));
   }
 };
-
 
 typedef CompactArray<char*>  CompactStrArray;
 typedef CompactArray<char>   CompaccharArray;
@@ -395,4 +388,3 @@ typedef CompactArray<UINT64> CompactUInt64Array;
 typedef CompactArray<float>  CompactFloatArray;
 typedef CompactArray<double> CompactDoubleArray;
 typedef CompactArray<size_t> CompactSizetArray;
-

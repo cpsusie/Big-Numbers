@@ -5,6 +5,9 @@
 
 #line 36 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
 #include <ParserTablesTemplate.h>
+
+using namespace LRParsing;
+
 #define _tc0000 0x00000000 /*                                                                  */
 #define _tc0001 0x0094804b /* STRING     Split(_ts0000,_ts0001)                                */
 #define _tc0002 0x01518000 /* ICON       Shift to  168 on states in shiftStateBitSet[0]        */

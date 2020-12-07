@@ -5,8 +5,7 @@
 #include "Exception.h"
 #include "StreamParameters.h"
 
-
-template <typename T> class VectorTemplate {
+template<typename T> class VectorTemplate {
 private:
   AbstractVectorAllocator<T> *m_va;
   T                          *m_e;
@@ -41,6 +40,38 @@ private:
     SAFEDELETEARRAY(m_e);
   }
 
+  class VectorIterator : public AbstractIterator {
+  private:
+    VectorTemplate &m_v;
+    const size_t    m_dim;
+    size_t          m_next;
+    intptr_t        m_current;
+  public:
+    VectorIterator(const VectorTemplate *v)
+      : m_v(*(VectorTemplate*)v)
+      , m_dim(v->getDimension())
+    {
+      m_next        =  0;
+      m_current     = -1;
+    }
+    AbstractIterator *clone()          override {
+      return new VectorIterator(*this);
+    }
+    bool hasNext()               const override {
+      return m_next < m_dim;
+    }
+    void *next()                       override {
+      assert(m_dim == m_v.getDimension());
+      if(m_next >= m_dim) {
+        noNextElementError(__TFUNCTION__);
+      }
+      return &m_v[m_current = m_next++];
+    }
+    void remove()                      override {
+      unsupportedOperationError(__TFUNCTION__);
+    }
+  };
+
 protected:
   void init(size_t dim, bool initialize) {
     m_e   = allocate(dim, initialize);
@@ -62,10 +93,12 @@ public:
     init(dim, true);
   }
 
-  VectorTemplate(const VectorTemplate<T> &src, AbstractVectorAllocator<T> *va = nullptr) : m_va(va) {
+  VectorTemplate(const VectorTemplate &src, AbstractVectorAllocator<T> *va = nullptr) : m_va(va) {
     init(src.m_dim, false);
-    for(size_t i = 0; i < m_dim; i++) {
-      m_e[i] = src.m_e[i];
+    if(m_dim) {
+      for(T *dstp = m_e, *endp = dstp + m_dim, *srcp = src.m_e; dstp < endp;) {
+        *(dstp++) = *(srcp++);
+      }
     }
   }
 
@@ -76,7 +109,7 @@ public:
     }
   }
 
-  VectorTemplate<T> &operator=(const VectorTemplate<T> &src) {
+  VectorTemplate &operator=(const VectorTemplate &src) {
     if(this == &src) {
       return *this;
     }
@@ -84,8 +117,10 @@ public:
       cleanup();
       init(src.m_dim, false);
     }
-    for(size_t i = 0; i < m_dim; i++) {
-      m_e[i] = src.m_e[i];
+    if(m_dim) {
+      for(T *dstp = m_e, *endp = dstp + m_dim, *srcp = src.m_e; dstp < endp;) {
+        *(dstp++) = *(srcp++);
+      }
     }
     return *this;
   }
@@ -100,12 +135,12 @@ public:
     }
   }
 
-  VectorTemplate<T> &setDimension(size_t dim) {
+  VectorTemplate &setDimension(size_t dim) {
     if(dim != m_dim) {
       T *newe = allocate(dim, true);
-      size_t copyCount = __min(dim, m_dim);
-      for(size_t i = 0; i < copyCount; i++) {
-        newe[i] = m_e[i];
+      const size_t copyCount = __min(dim, m_dim);
+      for(T *dstp = newe, *endp = dstp + copyCount, *srcp = m_e; dstp < endp;) {
+        *(dstp++) = *(srcp++);
       }
       cleanup();
       m_dim = dim;
@@ -118,101 +153,117 @@ public:
     return (UINT)m_dim;
   }
 
-  friend VectorTemplate<T> operator*(const T &d, const VectorTemplate<T> &rhs) {
-    const size_t n = rhs.m_dim;
-    VectorTemplate<T> result(n);
-    for(size_t i = 0; i < n; i++) {
-      result.m_e[i] = rhs.m_e[i] * d;
+  friend VectorTemplate operator*(const T &d, const VectorTemplate &rhs) {
+    VectorTemplate result(rhs.getDimension());
+    if(result.m_dim) {
+      for(T *dstp = result.m_e, *endp = dstp + result.m_dim, *rhsp = rhs.m_e; dstp < endp;) {
+        *(dstp++) = *(rhsp++) * d;
+      }
     }
     return result;
   }
 
-  VectorTemplate<T> operator*(const T &d) const {
-    const size_t n = m_dim;
-    VectorTemplate<T> result(n);
-    for(size_t i = 0; i < n; i++) {
-      result.m_e[i] = m_e[i] * d;
+  VectorTemplate operator*(const T &d) const {
+    VectorTemplate result(m_dim);
+    if(m_dim) {
+      for(T *dstp = result.m_e, *endp = dstp + m_dim, *srcp = m_e; dstp < endp;) {
+        *(dstp++) = *(srcp++) * d;
+      }
     }
     return result;
   }
 
-  VectorTemplate<T> operator/(const T &d) const {
-    const size_t n = m_dim;
-    VectorTemplate<T> result(n);
-    for(size_t i = 0; i < n; i++) {
-      result.m_e[i] = m_e[i] / d;
+  template<typename S> VectorTemplate operator/(const S &d) const {
+    VectorTemplate result(m_dim);
+    if(m_dim) {
+      for(T *dstp = result.m_e, *endp = dstp + m_dim, *srcp = m_e; dstp < endp;) {
+        *(dstp++) = *(srcp++) / d;
+      }
     }
     return result;
   }
 
-  friend VectorTemplate<T> operator+(const VectorTemplate<T> &lts, const VectorTemplate<T> &rhs) {
+  friend VectorTemplate operator+(const VectorTemplate &lts, const VectorTemplate &rhs) {
     lts.checkSameDimension(__TFUNCSIG__, rhs);
     const size_t n = lts.m_dim;
-    VectorTemplate<T> result(n);
-    for(size_t i = 0; i < n; i++) {
-      result.m_e[i] = lts.m_e[i] + rhs.m_e[i];
+    VectorTemplate result(n);
+    if(n) {
+      for(T *dstp = result.m_e, *endp = dstp + n, *lp = lts.m_e, *rp = rhs.m_e; dstp < endp;) {
+        *(dstp++) = *(lp++) + *(rp++);
+      }
     }
     return result;
   }
 
-  friend VectorTemplate<T> operator-(const VectorTemplate<T> &lts, const VectorTemplate<T> &rhs) {
+  friend VectorTemplate operator-(const VectorTemplate &lts, const VectorTemplate &rhs) {
     lts.checkSameDimension(__TFUNCSIG__, rhs);
-    const size_t n = lts.m_dim;
-    VectorTemplate<T> result(n);
-    for(size_t i = 0; i < n; i++) {
-      result.m_e[i] = lts.m_e[i] - rhs.m_e[i];
+    const size_t   n = lts.m_dim;
+    VectorTemplate result(n);
+    if(n) {
+      for(T *dstp = result.m_e, *endp = dstp + n, *lp = lts.m_e, *rp = rhs.m_e; dstp < endp;) {
+        *(dstp++) = *(lp++) - *(rp++);
+      }
     }
     return result;
   }
 
-  friend VectorTemplate<T> operator-(const VectorTemplate<T> &v) {
+  friend VectorTemplate operator-(const VectorTemplate &v) {
     const size_t n = v.m_dim;
-
-    VectorTemplate<T> result(n);
-    for(size_t i = 0; i < n; i++) {
-      result.m_e[i] = -v.m_e[i];
+    VectorTemplate result(n);
+    if(n) {
+      for(T *dstp = result.m_e, *endp = dstp + n, *srscp = v.m_e; dstp < endp;) {
+        *(dstp++) = -(*(srcp++));
+      }
     }
     return result;
   }
 
-  friend T operator*(const VectorTemplate<T> &lts, const VectorTemplate<T> &rhs) {
+  friend T operator*(const VectorTemplate &lts, const VectorTemplate &rhs) {
     lts.checkSameDimension(__TFUNCSIG__, rhs);
     const size_t n = lts.m_dim;
     T sum = 0;
-    T *lts_e = lts.m_e;
-    T *rhs_e = rhs.m_e;
-    for(size_t i = 0; i < n; i++) {
-      sum += *(lts_e++) * *(rhs_e++);
+    if(n) {
+      for(T *lp = lts.m_e, *endp = lp + n, *rp = rhs.m_e; lp < endp;) {
+        sum += *(lp++) * *(rp++);
+      }
     }
     return sum;
   }
 
-  VectorTemplate<T> &operator*=(const T &d) {
-    for(size_t i = 0; i < m_dim; i++) {
-      m_e[i] *= d;
+  template<typename S> VectorTemplate &operator*=(const S &d) {
+    if(m_dim) {
+      for(T *vp = m_e, *endp = vp + m_dim; vp < endp;) {
+        *(vp++) *= d;
+      }
     }
     return *this;
   }
 
-  VectorTemplate<T> &operator/=(const T &d) {
-    for(size_t i = 0; i < m_dim; i++) {
-      m_e[i] /= d;
+  template<typename S> VectorTemplate &operator/=(const S &d) {
+    if(m_dim) {
+      for(T *vp = m_e, *endp = vp + m_dim; vp < endp;) {
+        *(vp++) /= d;
+      }
     }
     return *this;
   }
 
-  VectorTemplate<T> &operator+=(const VectorTemplate<T> &rhs) {
+  VectorTemplate &operator+=(const VectorTemplate &rhs) {
     checkSameDimension(__TFUNCSIG__, rhs);
-    for(size_t i = 0; i < m_dim; i++) {
-      m_e[i] += rhs.m_e[i];
+    if(m_dim) {
+      for(T *dstp = m_e, *endp = dstp + m_dim, *srcp = rhs.m_e; dstp < endp;) {
+        *(dstp++) += *(srcp++);
+      }
     }
     return *this;
   }
 
-  VectorTemplate<T> &operator-=(const VectorTemplate<T> &rhs) {
+  VectorTemplate &operator-=(const VectorTemplate &rhs) {
     checkSameDimension(__TFUNCSIG__, rhs);
-    for(size_t i = 0; i < m_dim; i++) {
-      m_e[i] -= rhs.m_e[i];
+    if(m_dim) {
+      for(T *dstp = m_e, *endp = dstp + m_dim, *srcp = rhs.m_e; dstp < endp;) {
+        *(dstp++) -= *(srcp++);
+      }
     }
     return *this;
   }
@@ -246,40 +297,57 @@ public:
 
   T length() const {
     T sum = 0;
-    for(size_t i = 0; i < m_dim; i++) {
-      sum += m_e[i] * m_e[i];
+    if(m_dim) {
+      for(T *vp = m_e, *endp = vp + m_dim; vp < endp; vp++) {
+        sum += *vp * *vp;
+      }
     }
     return sqrt(sum);
   }
 
-  bool operator==(const VectorTemplate<T> &v) const {
-    if(this == &v) {
+  ConstIterator<T> getIterator() const {
+    return ConstIterator<T>(new VectorIterator(this));
+  }
+  Iterator<T>      getIterator() {
+    return Iterator<T>(new VectorIterator(this));
+  }
+
+  bool operator==(const VectorTemplate &rhs) const {
+    if(this == &rhs) {
       return true;
     }
-    if(m_dim != v.m_dim) {
+    if(m_dim != rhs.m_dim) {
       return false;
     }
-    for(size_t i = 0; i < m_dim; i++) {
-      if(m_e[i] != v.m_e[i]) {
-        return false;
+    if(m_dim) {
+      for(const T *lp = m_e, *endp = lp + m_dim, *rp = rhs.m_e; lp < endp;) {
+        if(!(*(lp++) == *(rp++))) {
+          return false;
+        }
       }
     }
     return true;
   }
 
-  inline bool operator!=(const VectorTemplate<T> &v) const {
+  inline bool operator!=(const VectorTemplate &v) const {
     return !(*this == v);
   }
 
-  virtual String toString() const {
-    String result;
-    for(size_t i = 0; i < m_dim; i++) {
-      if(i > 0) {
-        result += _T(" ");
-      }
-      result += ::toString(m_e[i]);
-    }
-    return result;
+  inline T        *begin() {
+    return m_e;
+  }
+  inline T        *end() {
+    return m_e + m_dim;
+  }
+  inline const T  *begin()       const {
+    return m_e;
+  }
+  inline const T  *end()         const {
+    return m_e + m_dim;
+  }
+
+  virtual String toString(const TCHAR *delimiter = _T(" "), BracketType bracketType = BT_NOBRACKETS) const {
+    return getIterator().toString(delimiter, bracketType);
   }
 
   inline String getDimensionString() const {

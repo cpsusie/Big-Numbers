@@ -369,7 +369,6 @@ public:
 
 class CodeArray : public ExecutableByteArray {
 private:
-  DECLARECLASSNAME;
   static UINT             s_emitCount;
   static void checkKeyboard();
   int addBytes(const void *bytes, int count) {

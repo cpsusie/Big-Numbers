@@ -5,8 +5,6 @@
 #include "CollectionBase.h"
 #include "Random.h"
 
-extern const TCHAR *_compactArrayIteratorClassName;
-
 template <typename T> class CompactArray : public CollectionBase<T> {
 private:
   size_t  m_capacity;
@@ -550,9 +548,9 @@ public:
     size_t           m_next;
     intptr_t         m_current;
     size_t           m_updateCount;
-    void checkUpdateCount() const {
+    inline void checkUpdateCount(const TCHAR *method) const {
       if(m_updateCount != m_a.getUpdateCount()) {
-        concurrentModificationError(_compactArrayIteratorClassName);
+        concurrentModificationError(method);
       }
     }
   public:
@@ -569,17 +567,17 @@ public:
     }
     void *next()                       override {
       if(m_next >= m_a.size()) {
-        noNextElementError(_compactArrayIteratorClassName);
+        noNextElementError(__TFUNCTION__);
       }
-      checkUpdateCount();
+      checkUpdateCount(__TFUNCTION__);
       m_current = m_next++;
       return &m_a[m_current];
     }
     void remove()                      override {
       if(m_current < 0) {
-        noCurrentElementError(_compactArrayIteratorClassName);
+        noCurrentElementError(__TFUNCTION__);
       }
-      checkUpdateCount();
+      checkUpdateCount(__TFUNCTION__);
       m_a.remove(m_current,1);
       m_current     = -1;
       m_updateCount = m_a.getUpdateCount();

@@ -160,8 +160,6 @@ void KeyFileWrapper::load(ByteInputStream &s) {
   m_size = m_file->getKeyCount();
 }
 
-DEFINECLASSNAME(FileHashMapKeyIterator);
-
 FileHashMapKeyIterator::FileHashMapKeyIterator(KeyFileWrapper &keyFile)
   : m_keyFile(keyFile)
   , m_keyCursor(keyFile.getFile(), RELOP_TRUE, nullptr, 0, RELOP_TRUE, nullptr, 0, SORT_ASCENDING)
@@ -179,7 +177,7 @@ bool FileHashMapKeyIterator::hasNext() const {
 
 void *FileHashMapKeyIterator::next() {
   if(!hasNext()) {
-    noNextElementError(s_className);
+    noNextElementError(__TFUNCTION__);
   }
   m_keyCursor.next(m_buffer);
   m_hasElement = true;
@@ -188,13 +186,11 @@ void *FileHashMapKeyIterator::next() {
 
 void FileHashMapKeyIterator::remove() {
   if(!m_hasElement) {
-    noCurrentElementError(s_className);
+    noCurrentElementError(__TFUNCTION__);
   }
   m_hasElement = false;
   m_keyFile.remove(&m_buffer);
 }
-
-DEFINECLASSNAME(FileHashMapEntryIterator);
 
 void FileHashMapEntryIterator::flush() {
   if(memcmp(m_buffer.m_value, m_fileValue, m_valueSize) != 0) {
@@ -260,7 +256,7 @@ bool FileHashMapEntryIterator::hasNext() const {
 
 void *FileHashMapEntryIterator::next() {
   if(!hasNext()) {
-    noNextElementError(s_className);
+    noNextElementError(__TFUNCTION__);
   }
   flush();
   m_keyCursor.next(m_key);
@@ -271,7 +267,7 @@ void *FileHashMapEntryIterator::next() {
 
 void FileHashMapEntryIterator::remove() {
   if(!m_hasElement) {
-    noCurrentElementError(s_className);
+    noCurrentElementError(__TFUNCTION__);
   }
   m_keyFile->remove(m_fileKey.m_data);
   m_hasElement = false;

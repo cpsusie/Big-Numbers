@@ -282,7 +282,7 @@ void CTestMouseDlg::OnLoadAnimatedCursor() {
     m_createdCursor = (HCURSOR)CreateIconFromResourceEx((BYTE*)cursorData.getData(), (DWORD)cursorData.size(), FALSE, 0x00030000, 0, 0, LR_DEFAULTSIZE);
 //    m_createdCursor = (HCURSOR)CreateIconFromResource((BYTE*)cursorData.getData(), cursorData.size(), FALSE, 0x00030000);
     if (m_createdCursor == nullptr) {
-      throwLastErrorOnSysCallException(__TFUNCTION__);
+      throwLastErrorOnSysCallException(__TFUNCTION__, _T("CreateIconFromResourceEx"));
     }
     setWindowCursor(this, m_createdCursor);
   } catch(Exception e) {

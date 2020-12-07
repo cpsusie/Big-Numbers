@@ -3,14 +3,13 @@
 
 class ArrayIterator : public AbstractIterator {
 private:
-  DECLARECLASSNAME;
   ArrayImpl          &m_a;
   size_t              m_next;
   intptr_t            m_current;
   size_t              m_updateCount;
-  inline void checkUpdateCount() const {
+  inline void checkUpdateCount(const TCHAR *method) const {
     if(m_updateCount != m_a.m_updateCount) {
-      concurrentModificationError(s_className);
+      concurrentModificationError(method);
     }
   }
 
@@ -21,8 +20,6 @@ public:
   void             *next()          override;
   void              remove()        override;
 };
-
-DEFINECLASSNAME(ArrayIterator);
 
 ArrayIterator::ArrayIterator(const ArrayImpl *a) : m_a(*(ArrayImpl*)a) {
   m_updateCount = m_a.m_updateCount;
@@ -40,18 +37,18 @@ bool ArrayIterator::hasNext() const {
 
 void *ArrayIterator::next() {
   if(m_next >= m_a.size()) {
-    noNextElementError(s_className);
+    noNextElementError(__TFUNCTION__);
   }
-  checkUpdateCount();
+  checkUpdateCount(__TFUNCTION__);
   m_current = m_next++;
   return m_a.getElement(m_current);
 }
 
 void ArrayIterator::remove() {
   if(m_current < 0) {
-    noCurrentElementError(s_className);
+    noCurrentElementError(__TFUNCTION__);
   }
-  checkUpdateCount();
+  checkUpdateCount(__TFUNCTION__);
   m_a.removeIndex(m_current,1);
   m_current     = -1;
   m_updateCount = m_a.m_updateCount;

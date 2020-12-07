@@ -5,7 +5,7 @@ String getUserName() {
   TCHAR result[UNLEN+1];
   DWORD size = ARRAYSIZE(result);
   if(GetUserName(result, &size) == 0) {
-    throwLastErrorOnSysCallException(_T("GetUserName"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("GetUserName"));
   }
   return result;
 }

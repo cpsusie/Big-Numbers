@@ -1,7 +1,5 @@
 #pragma once
 
-#include "AbstractParserTables.h"
-
 typedef enum {
   TYPE_CHAR     // [CHAR_MIN..CHAR_MAX ]
  ,TYPE_UCHAR    // [       0..UCHAR_MAX]

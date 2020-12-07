@@ -3,9 +3,10 @@
 
 #pragma once
 
-#include <LRparser.h>
 #include "Java5Symbol.h"
 #include "Java5Lex.h"
+
+using namespace LRParsing;
 
 class Java5Parser : public LRparser {
 public:

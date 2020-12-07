@@ -777,7 +777,6 @@ String RegistryValueInfo::typeName(ULONG type) { // static
 
 class SubKeyIterator : public AbstractIterator {
 private:
-  DECLARECLASSNAME;
   RegistryKey         m_key;
   ULONG               m_subKeyCount;
   ULONG               m_maxNameLength;
@@ -802,8 +801,6 @@ public:
   void *next()                    override;
   void remove()                   override;
 };
-
-DEFINECLASSNAME(SubKeyIterator);
 
 SubKeyIterator::SubKeyIterator(const RegistryKey &key) : m_key(key) {
   m_index = 0;
@@ -861,7 +858,7 @@ void *SubKeyIterator::next() {
   bool done = false;
   while(!done) {
     if(!hasNext()) {
-      noNextElementError(s_className);
+      noNextElementError(__TFUNCTION__);
     }
 
     ULONG nameBufferSize = getNameBufferSize();
@@ -876,7 +873,7 @@ void *SubKeyIterator::next() {
       break;
 
     case ERROR_NO_MORE_ITEMS:
-      noNextElementError(s_className);
+      noNextElementError(__TFUNCTION__);
       break;
 
     case ERROR_MORE_DATA: // Size has changed since we started
@@ -894,7 +891,7 @@ void *SubKeyIterator::next() {
 
 void SubKeyIterator::remove() {
   if(m_resultBuffer.length() == 0) {
-    noCurrentElementError(s_className);
+    noCurrentElementError(__TFUNCTION__);
   }
   m_key.deleteKey(m_resultBuffer);
   m_resultBuffer = EMPTYSTRING;
@@ -912,7 +909,6 @@ Iterator<String> RegistryKey::getSubKeyIterator() const {
 
 class RegValueIterator : public AbstractIterator {
 private:
-  DECLARECLASSNAME;
   RegistryKey         m_key;
   ULONG               m_valueCount;
   ULONG               m_maxNameLength;
@@ -943,8 +939,6 @@ public:
   void *next()                    override;
   void remove()                   override;
 };
-
-DEFINECLASSNAME(RegValueIterator);
 
 RegValueIterator::RegValueIterator(const RegistryKey &key) : m_key(key) {
   m_index = 0;
@@ -1008,7 +1002,7 @@ void *RegValueIterator::next() {
   bool done = false;
   while(!done) {
     if(!hasNext()) {
-      noNextElementError(s_className);
+      noNextElementError(__TFUNCTION__);
     }
 
     ULONG nameBufferSize  = getNameBufferSize();
@@ -1029,7 +1023,7 @@ void *RegValueIterator::next() {
       break;
 
     case ERROR_NO_MORE_ITEMS:
-      noNextElementError(s_className);
+      noNextElementError(__TFUNCTION__);
       break;
 
     case ERROR_MORE_DATA:                // Size has changed since we started
@@ -1047,7 +1041,7 @@ void *RegValueIterator::next() {
 
 void RegValueIterator::remove() {
   if(m_resultBuffer.type() == REG_NONE) {
-    noCurrentElementError(s_className);
+    noCurrentElementError(__TFUNCTION__);
   }
   m_key.deleteValue(m_resultBuffer.name());
   m_resultBuffer.reset();

@@ -3,8 +3,6 @@
 #include <MyUtil.h>
 #include <Scanner.h>
 
-DEFINECLASSNAME(LexFileStream);
-
 #if !defined(UNICODE)
 
 LexFileStream::LexFileStream() {
@@ -102,8 +100,6 @@ bool LexFileStream::eof() {
 
 // -------------------------------------------------------------------
 
-DEFINECLASSNAME(ByteQueue);
-
 bool ByteQueue::hasFullLine() const {
   return findLastNewLine() != nullptr;
 }
@@ -165,7 +161,7 @@ String ByteQueue::getConvertedString(size_t count) {
     }
     break;
   case TF_ASCII16_BE:
-    throwException(_T("%s:Textformat TF_ASCII16_BE not implemented yet"), s_className);
+    throwException(_T("%s:Textformat TF_ASCII16_BE not implemented yet"), __TFUNCTION__);
     break;
   case TF_ASCII16_LE:
     { if(count & 1) {  // make sure count is even, or we'll get an infinite loop
@@ -193,7 +189,7 @@ String ByteQueue::getConvertedString(size_t count) {
     try {
       const int requiredSize = MultiByteToWideChar(CP_UTF8, 0, (char*)getData(), (int)count, nullptr, 0);
       if(requiredSize == 0) {
-        throwMethodLastErrorOnSysCallException(s_className, _T("MultiByteToWideChar"));
+        throwLastErrorOnSysCallException(__TFUNCTION__, _T("MultiByteToWideChar"));
       }
       if((UINT)requiredSize + 1 > bufferSize) {
         if(buffer != tmp) {
@@ -204,7 +200,7 @@ String ByteQueue::getConvertedString(size_t count) {
       }
       const int ret = MultiByteToWideChar(CP_UTF8, 0, (char*)getData(), (int)count, buffer, requiredSize);
       if(ret == 0) {
-        throwMethodLastErrorOnSysCallException(s_className, _T("MultiByteToWideChar"));
+        throwLastErrorOnSysCallException(__TFUNCTION__, _T("MultiByteToWideChar"));
       }
       buffer[requiredSize] = 0;
       result = buffer;
@@ -224,8 +220,6 @@ String ByteQueue::getConvertedString(size_t count) {
 }
 
 // --------------------------------------------------------------------------------------------
-
-DEFINECLASSNAME(CharQueue);
 
 intptr_t CharQueue::get(_TUCHAR *dst, size_t n) {
   n = min(length(), n);

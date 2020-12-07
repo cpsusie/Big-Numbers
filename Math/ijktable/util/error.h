@@ -20,12 +20,11 @@ void throwInvalidArgumentException(     const char *method, _In_z_ _Printf_forma
 void throwUnsupportedOperationException(const char *method);
 void throwIndexOutOfRangeException(     const char *method, uint64 index, uint64 size);
 void throwIndexOutOfRangeException(     const char *method, uint64 index, uint64 count, uint64 size);
-void throwMethodException(              const char *className, char const * const method, _In_z_ _Printf_format_string_ const char * const format, ...);
 void throwPROCEDURE_ERROR(              const char *method, const string &msg);
 void throwPROCEDURE_ERROR(              const char *method, _In_z_ _Printf_format_string_ char const * const format, ...);
 
-void throwErrNoOnNameException(const string &name);
-void throwErrNoOnSysCallException(const char *method);
+void throwErrNoOnNameException(   const string &name);
+void throwErrNoOnSysCallException(const char   *method);
 
 #ifdef _DEBUG
 void xassert(const char *fileName, int line, const char *exp);

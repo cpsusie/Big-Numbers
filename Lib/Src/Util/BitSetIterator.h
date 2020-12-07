@@ -15,8 +15,8 @@ protected:
   inline void setCurrentUndefined() {
     m_current = -1;
   }
-  inline void remove(const TCHAR *className) {
-    if(!hasCurrent()) noCurrentElementError(className);
+  inline void remove(const TCHAR *method) {
+    if(!hasCurrent()) noCurrentElementError(method);
     m_s.remove(m_current);
     setCurrentUndefined();
   }
@@ -29,7 +29,6 @@ public:
 
 class BitSetIterator : public AbstractBitSetIterator {
 private:
-  DECLARECLASSNAME;
   void first(size_t start, size_t end);
 public:
   BitSetIterator(const BitSet *set, size_t start=0, size_t end=-1) : AbstractBitSetIterator(set) {
@@ -38,13 +37,12 @@ public:
   AbstractIterator *clone()  override;
   void             *next()   override;
   void              remove() override {
-    __super::remove(s_className);
+    __super::remove(__TFUNCTION__);
   }
 };
 
 class BitSetReverseIterator : public AbstractBitSetIterator {
 private:
-  DECLARECLASSNAME;
   void first(size_t start, size_t end);
 public:
   BitSetReverseIterator(const BitSet *set, size_t start=-1, size_t end=0)  : AbstractBitSetIterator(set) {
@@ -53,6 +51,6 @@ public:
   AbstractIterator *clone()  override;
   void             *next()   override;
   void              remove() override {
-    __super::remove(s_className);
+    __super::remove(__TFUNCTION__);
   }
 };

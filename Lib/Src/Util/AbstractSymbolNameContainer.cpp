@@ -2,6 +2,8 @@
 #include <BitSet.h>
 #include <AbstractSymbolNameContainer.h>
 
+namespace LRParsing {
+
 UINT AbstractSymbolNameContainer::getMaxTermNameLength() const {
   if(m_maxTermNameLength == 0) {
     const UINT n = getTermCount();
@@ -58,3 +60,5 @@ String AbstractSymbolNameContainer::symbolSetToString(const BitSet &set) const {
 String AbstractSymbolNameContainer::NTIndexSetToString(const BitSet &set) const {
   return set.toString(SymbolStringifier(*this, true), _T(" "), BT_BRACKETS);
 }
+
+}; // namespace LRParsing

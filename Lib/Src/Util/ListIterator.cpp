@@ -3,7 +3,6 @@
 
 class ListIterator : public AbstractIterator {
 private:
-  DECLARECLASSNAME;
   ListImpl  &m_list;
   ListNode  *m_next;
   ListNode  *m_current;
@@ -20,8 +19,6 @@ public:
   void              remove()        override;
 };
 
-DEFINECLASSNAME(ListIterator);
-
 ListIterator::ListIterator(const ListImpl *list) : m_list(*(ListImpl*)list) {
   m_updateCount = m_list.m_updateCount;
   m_next        = m_list.m_first;
@@ -30,11 +27,11 @@ ListIterator::ListIterator(const ListImpl *list) : m_list(*(ListImpl*)list) {
 
 void *ListIterator::next() {
   if(m_next == nullptr) {
-    noNextElementError(s_className);
+    noNextElementError(__TFUNCTION__);
   }
   __assume(m_next);
   if(m_updateCount != m_list.m_updateCount) {
-    concurrentModificationError(s_className);
+    concurrentModificationError(__TFUNCTION__);
   }
   m_current = m_next;
   m_next    = m_current->m_next;
@@ -43,7 +40,7 @@ void *ListIterator::next() {
 
 void ListIterator::remove() {
   if(m_current == nullptr) {
-    noCurrentElementError(s_className);
+    noCurrentElementError(__TFUNCTION__);
   }
   m_list.removeNode(m_current);
   m_current     = nullptr;

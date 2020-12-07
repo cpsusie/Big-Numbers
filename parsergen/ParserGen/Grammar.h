@@ -145,7 +145,6 @@ public:
 #define DUMP_ALL        DUMP_SHIFTITEMS | DUMP_LOOKAHEAD  | DUMP_SUCC
 #define DUMP_DOCFORMAT  DUMP_SHIFTITEMS | DUMP_ACTIONS    | DUMP_ERRORS | DUMP_WARNINGS
 
-class AbstractParserTables;
 class GrammarResult;
 
 class Grammar : public AbstractSymbolNameContainer {

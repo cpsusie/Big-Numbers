@@ -101,14 +101,14 @@ const Language &Language::getBestSupportedLanguage(LANGID langID) { // static
 void Language::setLanguageForThread(LANGID langID) {
   const Language &language = getBestSupportedLanguage(langID);
   if(!SetThreadUILanguage(language.m_langID)) {
-    throwLastErrorOnSysCallException(_T("SetThreadUILanguage"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("SetThreadUILanguage"));
   }
 }
 
 static void setLanguageForProcess(LANGID langID) {
   const Language &language = Language::getBestSupportedLanguage(langID);
   if(!SetThreadUILanguage(MAKELCID(language.m_langID, SORT_DEFAULT))) {
-    throwException(getLastErrorText());
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("SetThreadUILanguage"));
   }
 }
 

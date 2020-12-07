@@ -44,13 +44,13 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Java5Lex.h">
-      <Filter>Source Files\Grammar</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Java5Parser.h">
-      <Filter>Source Files\Grammar</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Java5Symbol.h">
-      <Filter>Source Files\Grammar</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

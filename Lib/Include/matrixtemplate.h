@@ -4,36 +4,35 @@
 #include "VectorTemplate.h"
 #include "MatrixDimension.h"
 
-template <typename T> class MatrixTemplate {
+template<typename T> class MatrixTemplate {
 private:
   AbstractVectorAllocator<T> *m_va;
   T                          *m_a;
   MatrixDimension             m_dim;
 
-  static void vthrowMatrixException(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
-    throwException(_T("MatrixTemplate:%s."), vformat(format, argptr).cstr());
-  }
-
-  static void throwMatrixException(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
-    va_list argptr;
-    va_start(argptr, format);
-    vthrowMatrixException(format, argptr);
-    va_end(argptr);
-  }
-
-  void throwIndexException(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) const {
+  static void throwMatrixException(const TCHAR *method, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
     va_list argptr;
     va_start(argptr, format);
     const String msg = vformat(format, argptr);
     va_end(argptr);
-    throwMatrixException(_T("%s. %s"), msg.cstr(), getDimensionString().cstr());
+    throwException(_T("%s:%s"), method, msg.cstr());
   }
 
-  void checkIndex(size_t r, size_t c) const {
+  void throwIndexException(const TCHAR *method, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) const {
+    va_list argptr;
+    va_start(argptr, format);
+    const String msg = vformat(format, argptr);
+    va_end(argptr);
+    throwMatrixException(method, _T("%s. %s"), msg.cstr(), getDimensionString().cstr());
+  }
+
+  void checkIndex(const TCHAR *method, size_t r, size_t c) const {
     if(!m_dim.isLegalIndex(r,c)) {
-      throwIndexException(_T("Index (%s, %s) out of range")
+      throwIndexException(method
+                         ,_T("Index (%s, %s) out of range")
                          ,formatSize(r).cstr()
-                         ,formatSize(c).cstr());
+                         ,formatSize(c).cstr()
+                         );
     }
   }
 
@@ -75,13 +74,17 @@ protected:
 
   void checkRowIndex(const TCHAR *method, size_t row) const {
     if(row >= getRowCount()) {
-      throwIndexException(_T("%s:Row %s out of range"), method, formatSize(row).cstr());
+      throwIndexException(method
+                         ,_T("Row %s out of range")
+                         ,formatSize(row).cstr());
     }
   }
 
   void checkColumnIndex(const TCHAR *method, size_t column) const {
     if(column >= getColumnCount()) {
-      throwIndexException(_T("%s:Column %s out of range"), formatSize(column).cstr());
+      throwIndexException(method
+                         ,_T("Column %s out of range")
+                         ,formatSize(column).cstr());
     }
   }
 
@@ -102,7 +105,7 @@ public:
     init(dim.rowCount, dim.columnCount, true);
   }
 
-  MatrixTemplate(const MatrixTemplate<T> &src, AbstractVectorAllocator<T> *va = nullptr) : m_va(va) {
+  MatrixTemplate(const MatrixTemplate &src, AbstractVectorAllocator<T> *va = nullptr) : m_va(va) {
     init(src.getRowCount(), src.getColumnCount(), false);
     T       *dp = m_a;
     const T *sp = src.m_a, *last = sp + m_dim.getElementCount();
@@ -117,17 +120,17 @@ public:
     }
   }
 
-  void checkSameDimension(const TCHAR *function, const MatrixTemplate<T> &m) const {
+  void checkSameDimension(const TCHAR *method, const MatrixTemplate &m) const {
     if(!hasSameDimension(m)) {
-      throwMatrixException(_T("%s:Invalid dimension. Left.%s. Right.%s")
-                           ,function
-                           ,getDimensionString().cstr()
-                           ,m.getDimensionString().cstr()
-      );
+      throwMatrixException(method
+                          ,_T("Invalid dimension. Left.%s. Right.%s")
+                          ,getDimensionString().cstr()
+                          ,m.getDimensionString().cstr()
+                          );
     }
   }
 
-  MatrixTemplate<T> &operator=(const MatrixTemplate<T> &src) {
+  MatrixTemplate &operator=(const MatrixTemplate &src) {
     if(this == &src) {
       return *this;
     }
@@ -152,10 +155,10 @@ public:
     while(p < last) *(p++) = z;
   }
 
-  MatrixTemplate<T> &setDimension(const MatrixDimension &dim) {
+  MatrixTemplate &setDimension(const MatrixDimension &dim) {
     if(dim != m_dim) {
       T *newa = allocate(dim.rowCount, dim.columnCount, true);
-      const size_t copyr = __min(dim.rowCount   , getRowCount());
+      const size_t copyr = __min(dim.rowCount   , getRowCount()   );
       const size_t copyc = __min(dim.columnCount, getColumnCount());
       for(size_t r = 0, t = 0; r < copyr; r++, t += dim.columnCount) {
         for(T *dp = newa + t, *sp = m_a + index(r, 0), *last = sp + copyc; sp < last;) {
@@ -169,12 +172,12 @@ public:
     return *this;
   }
 
-  MatrixTemplate<T> &setDimension(size_t rowCount, size_t columnCount) {
+  MatrixTemplate &setDimension(size_t rowCount, size_t columnCount) {
     return setDimension(MatrixDimension(rowCount, columnCount));
   }
 
   // make it square
-  MatrixTemplate<T> &setDimension(size_t dim) {
+  MatrixTemplate &setDimension(size_t dim) {
     return setDimension(dim, dim);
   }
 
@@ -190,7 +193,7 @@ public:
     return m_dim;
   }
 
-  inline bool hasSameDimension(const MatrixTemplate<T> &m) const {
+  inline bool hasSameDimension(const MatrixTemplate &m) const {
     return m_dim == m.m_dim;
   }
 
@@ -214,14 +217,14 @@ public:
 
   inline T &operator()(size_t r, size_t c) {
 #if defined(_DEBUG)
-    checkIndex(r, c);
+    checkIndex(__TFUNCTION__, r, c);
 #endif
     return m_a[index(r,c)];
   }
 
   inline const T &operator()(size_t r, size_t c) const {
 #if defined(_DEBUG)
-    checkIndex(r, c);
+    checkIndex(__TFUNCTION__, r, c);
 #endif
     return m_a[index(r,c)];
   }
@@ -235,14 +238,14 @@ public:
   // row must be [1..getRowCount()-1]
   T &subDiagonal(size_t row) {
     _VALIDATEISSQUAREMATRIX(*this);
-    checkIndex(row, row-1);
+    checkIndex(__TFUNCTION__, row, row-1);
     return m_a[index(row,row-1)];
   }
 
   // row must be [1..getRowCount()-1]
   const T &subDiagonal(size_t row) const {
     _VALIDATEISSQUAREMATRIX(*this);
-    checkIndex(row, row-1);
+    checkIndex(__TFUNCTION__, row, row-1);
     return m_a[index(row,row-1)];
   }
 
@@ -269,12 +272,14 @@ public:
     return result;
   }
 
-  MatrixTemplate<T> &setRow(size_t row, const VectorTemplate<T> &v) {
+  MatrixTemplate &setRow(size_t row, const VectorTemplate<T> &v) {
     checkRowIndex(__TFUNCTION__, row);
     const size_t cn = getColumnCount();
     if(v.getDimension() != cn) {
-      throwMatrixException(_T("setRow:Invalid dimension. %s. Vector.%s")
-                          ,getDimensionString().cstr(), v.getDimensionString().cstr());
+      throwMatrixException(__TFUNCTION__
+                          ,_T("Invalid dimension. %s. Vector.%s")
+                          ,getDimensionString().cstr()
+                          ,v.getDimensionString().cstr());
     }
 
     T *p = m_a + index(row,0);
@@ -284,13 +289,16 @@ public:
     return *this;
   }
 
-  MatrixTemplate<T> &setColumn(size_t column, const VectorTemplate<T> &v) {
+  MatrixTemplate &setColumn(size_t column, const VectorTemplate<T> &v) {
     checkColumnIndex(__TFUNCTION__, column);
     const size_t rn = getRowCount();
     const size_t cn = getColumnCount();
     if(v.getDimension() != rn) {
-      throwMatrixException(_T("setColumn:Invalid dimension. %s. Vector.%s")
-                          ,getDimensionString().cstr(), v.getDimensionString().cstr());
+      throwMatrixException(__TFUNCTION__
+                          ,_T("Invalid dimension. %s. Vector.%s")
+                          ,getDimensionString().cstr()
+                          ,v.getDimensionString().cstr()
+                          );
     }
     T *p = m_a + index(0, column);
     for(size_t r = 0; r < rn; p += cn) {
@@ -299,9 +307,12 @@ public:
     return *this;
   }
 
-  MatrixTemplate<T> &setRow(size_t row, const T &v) {
+  MatrixTemplate &setRow(size_t row, const T &v) {
     if(row >= getRowCount()) {
-      throwIndexException(_T("setRow:Row %s out of range"), formatSize(row).cstr());
+      throwIndexException(__TFUNCTION__
+                         ,_T("Row %s out of range")
+                         ,formatSize(row).cstr()
+                         );
     }
     T *p = m_a + index(row,0);
     const T *endp = p + getColumnCount();
@@ -311,10 +322,13 @@ public:
     return *this;
   }
 
-  MatrixTemplate<T> &setColumn(size_t column, const T &v) {
+  MatrixTemplate &setColumn(size_t column, const T &v) {
     const size_t cn  = getColumnCount();
     if(column >= cn) {
-      throwIndexException(_T("setColumn:Column %s out of range"), formatSize(column).cstr());
+      throwIndexException(__TFUNCTION__
+                         ,_T("Column %s out of range")
+                         ,formatSize(column).cstr()
+                         );
     }
     T *p = m_a + index(0, column);
     const T     *end = m_a + index(getRowCount(), column);
@@ -324,23 +338,25 @@ public:
     return *this;
   }
 
-  MatrixTemplate<T> &setValue(size_t row, size_t column, size_t rowCount, size_t columnCount, const T &v) {
+  MatrixTemplate &setValue(size_t row, size_t column, size_t rowCount, size_t columnCount, const T &v) {
     const size_t cn = getColumnCount();
     if(row + rowCount > getRowCount()) {
-      throwMatrixException(_T("setValue:Cannot set value from offset (%s,%s) with dimension(%s,%s). RowCount=%s")
-                          , formatSize(row).cstr()
-                          , formatSize(column).cstr()
-                          , formatSize(rowCount).cstr()
-                          , formatSize(columnCount).cstr()
-                          , formatSize(getRowCount()).cstr());
+      throwMatrixException(__TFUNCTION__
+                          ,_T("Cannot set value from offset (%s,%s) with dimension(%s,%s). RowCount=%s")
+                          ,formatSize(row).cstr()
+                          ,formatSize(column).cstr()
+                          ,formatSize(rowCount).cstr()
+                          ,formatSize(columnCount).cstr()
+                          ,formatSize(getRowCount()).cstr());
     }
     if(column + columnCount > cn) {
-      throwMatrixException(_T("setValue:Cannot set value from offset (%s,%s) with dimension(%s,%s). ColumnCount=%s")
-                          , formatSize(row).cstr()
-                          , formatSize(column).cstr()
-                          , formatSize(rowCount).cstr()
-                          , formatSize(columnCount).cstr()
-                          , formatSize(cn).cstr());
+      throwMatrixException(__TFUNCTION__
+                          ,_T("Cannot set value from offset (%s,%s) with dimension(%s,%s). ColumnCount=%s")
+                          ,formatSize(row).cstr()
+                          ,formatSize(column).cstr()
+                          ,formatSize(rowCount).cstr()
+                          ,formatSize(columnCount).cstr()
+                          ,formatSize(cn).cstr());
     }
 
 
@@ -354,12 +370,18 @@ public:
     return *this;
   }
 
-  MatrixTemplate<T> &swapRows(size_t r1, size_t r2) {
+  MatrixTemplate &swapRows(size_t r1, size_t r2) {
     if(r1 >= getRowCount()) {
-      throwIndexException(_T("swapRows:r1=%s out of range"), formatSize(r1).cstr());
+      throwIndexException(__TFUNCTION__
+                         ,_T("r1=%s out of range")
+                         ,formatSize(r1).cstr()
+                         );
     }
     if(r2 >= getRowCount()) {
-      throwIndexException(_T("swapRows:r2=%s out of range"), formatSize(r2).cstr());
+      throwIndexException(__TFUNCTION__
+                         ,_T("r2=%s out of range")
+                         ,formatSize(r2).cstr()
+                         );
     }
     if(r1 != r2) {
       T *p1 = m_a + index(r1, 0);
@@ -382,28 +404,30 @@ public:
     return result;
   }
 
-  MatrixTemplate<T> getSubMatrix(size_t row, size_t column, size_t rowCount, size_t columnCount) const {
+  MatrixTemplate getSubMatrix(size_t row, size_t column, size_t rowCount, size_t columnCount) const {
     const size_t rn = getRowCount();
     const size_t cn = getColumnCount();
 
     if(row + rowCount > rn) {
-      throwMatrixException(_T("getSubMatrix:Cannot get subMatrix from offset (%s,%s) with dimension(%s,%s). RowCount=%s")
-                          , formatSize(row).cstr()
-                          , formatSize(column).cstr()
-                          , formatSize(rowCount).cstr()
-                          , formatSize(columnCount).cstr()
-                          , formatSize(rn).cstr());
+      throwMatrixException(__TFUNCTION__
+                          ,_T("Cannot get subMatrix from offset (%s,%s) with dimension(%s,%s). RowCount=%s")
+                          ,formatSize(row).cstr()
+                          ,formatSize(column).cstr()
+                          ,formatSize(rowCount).cstr()
+                          ,formatSize(columnCount).cstr()
+                          ,formatSize(rn).cstr());
     }
     if(column + columnCount > cn) {
-      throwMatrixException(_T("getSubMatrix:Cannot get subMatrix from offset (%s,%s) with dimension(%s,%s). ColumnCount=%s")
-                          , formatSize(row).cstr()
-                          , formatSize(column).cstr()
-                          , formatSize(rowCount).cstr()
-                          , formatSize(columnCount).cstr()
-                          , formatSize(cn).cstr());
+      throwMatrixException(__TFUNCTION__
+                          ,_T("Cannot get subMatrix from offset (%s,%s) with dimension(%s,%s). ColumnCount=%s")
+                          ,formatSize(row).cstr()
+                          ,formatSize(column).cstr()
+                          ,formatSize(rowCount).cstr()
+                          ,formatSize(columnCount).cstr()
+                          ,formatSize(cn).cstr());
     }
 
-    MatrixTemplate<T> result(rowCount, columnCount);
+    MatrixTemplate result(rowCount, columnCount);
     T *dstLeftp = result.m_a, *dstLastp = result.m_a + result.index(rowCount,0);
     const T *srcLeftp = m_a + index(row,column), *srcRightp = srcLeftp + columnCount;
     for(;dstLeftp < dstLastp; dstLeftp += columnCount, srcLeftp += cn, srcRightp += cn) {
@@ -415,31 +439,33 @@ public:
     return result;
   }
 
-  MatrixTemplate<T> getSubMatrix(size_t  row, size_t  column) const {
+  MatrixTemplate getSubMatrix(size_t  row, size_t  column) const {
     return getSubMatrix(row, column, getRowCount()-row, getColumnCount()-column);
   }
 
   // Return *this
-  MatrixTemplate<T> &setSubMatrix(size_t  row, size_t  column, const MatrixTemplate<T> &src) {
+  MatrixTemplate &setSubMatrix(size_t  row, size_t  column, const MatrixTemplate &src) {
     const size_t rn          = getRowCount();
     const size_t cn          = getColumnCount();
     const size_t srcRowCount = src.getRowCount();
     const size_t srcColCount = src.getColumnCount();
     if(row + srcRowCount > rn) {
-      throwMatrixException(_T("setSubMatrix:Cannot set subMatrix at offset (%s,%s) with dimension(%s,%s). RowCount=%s")
-                           , formatSize(row).cstr()
-                           , formatSize(column).cstr()
-                           , formatSize(srcRowCount).cstr()
-                           , formatSize(srcColCount).cstr()
-                           , formatSize(rn).cstr());
+      throwMatrixException(__TFUNCTION__
+                          ,_T("Cannot set subMatrix at offset (%s,%s) with dimension(%s,%s). RowCount=%s")
+                          ,formatSize(row).cstr()
+                          ,formatSize(column).cstr()
+                          ,formatSize(srcRowCount).cstr()
+                          ,formatSize(srcColCount).cstr()
+                          ,formatSize(rn).cstr());
     }
     if(column + srcColCount > cn) {
-      throwMatrixException(_T("setSubMatrix:Cannot set subMatrix at offset (%s,%s) with dimension(%s,%s). ColumnCount=%s")
-                          , formatSize(row).cstr()
-                          , formatSize(column).cstr()
-                          , formatSize(srcRowCount).cstr()
-                          , formatSize(srcColCount).cstr()
-                          , formatSize(cn).cstr());
+      throwMatrixException(__TFUNCTION__
+                          ,_T("Cannot set subMatrix at offset (%s,%s) with dimension(%s,%s). ColumnCount=%s")
+                          ,formatSize(row).cstr()
+                          ,formatSize(column).cstr()
+                          ,formatSize(srcRowCount).cstr()
+                          ,formatSize(srcColCount).cstr()
+                          ,formatSize(cn).cstr());
     }
 
     T       *dstLeftp = m_a + index(row,column), *dstRightp = dstLeftp + srcColCount;
@@ -453,57 +479,57 @@ public:
   }
 
   // Return dst
-  static MatrixTemplate<T> _1(size_t dim) {
-    MatrixTemplate<T> result(dim, dim);
+  static MatrixTemplate _1(size_t dim) {
+    MatrixTemplate result(dim, dim);
     for(size_t  i = 0; i < dim; i++) {
       result.m_a[result.index(i,i)] = 1;
     }
     return result;
   }
 
-  static MatrixTemplate<T> _0(size_t rows, size_t columns) {
-    return MatrixTemplate<T>(rows, columns);
+  static MatrixTemplate _0(size_t rows, size_t columns) {
+    return MatrixTemplate(rows, columns);
   }
 
-  friend MatrixTemplate<T> operator+(const MatrixTemplate<T> &lts, const MatrixTemplate<T> &rhs) {
+  friend MatrixTemplate operator+(const MatrixTemplate &lts, const MatrixTemplate &rhs) {
     const size_t rows    = lts.getRowCount();
     const size_t columns = lts.getColumnCount();
 
-    lts.checkSameDimension(_T("operator+"), rhs);
+    lts.checkSameDimension(__TFUNCTION__, rhs);
 
-    MatrixTemplate<T> result(rows, columns);
+    MatrixTemplate result(rows, columns);
     const T *spl = lts.m_a, *last = spl + lts.m_dim.getElementCount(), *spr = rhs.m_a;
     T       *dp  = result.m_a;
     while(spl < last) *(dp++) = *(spl++) + *(spr++);
     return result;
   }
 
-  friend MatrixTemplate<T> operator-(const MatrixTemplate<T> &lts, const MatrixTemplate<T> &rhs) {
+  friend MatrixTemplate operator-(const MatrixTemplate &lts, const MatrixTemplate &rhs) {
     const size_t rows    = lts.getRowCount();
     const size_t columns = lts.getColumnCount();
 
-    lts.checkSameDimension(_T("operator-"), rhs);
+    lts.checkSameDimension(__TFUNCTION__, rhs);
 
-    MatrixTemplate<T> result(rows, columns);
+    MatrixTemplate result(rows, columns);
     const T *spl = lts.m_a, *last = spl + lts.m_dim.getElementCount(), *spr = rhs.m_a;
     T       *dp  = result.m_a;
     while(spl < last) *(dp++) = *(spl++) - *(spr++);
     return result;
   }
 
-  friend MatrixTemplate<T> operator-(const MatrixTemplate<T> &m) {
+  friend MatrixTemplate operator-(const MatrixTemplate &m) {
     const size_t rows    = m.getRowCount();
     const size_t columns = m.getColumnCount();
 
-    MatrixTemplate<T> result(rows, columns);
+    MatrixTemplate result(rows, columns);
     const T *sp = m.m_a, *last = sp + m.m_dim.getElementCount();
     T       *dp  = result.m_a;
     while(sp < last) *(dp++) = -*(sp++);
     return result;
   }
 
-  MatrixTemplate<T> &operator+=(const MatrixTemplate<T> &rhs) {
-    checkSameDimension(_T("operator+="), rhs);
+  MatrixTemplate &operator+=(const MatrixTemplate &rhs) {
+    checkSameDimension(__TFUNCTION__, rhs);
 
     const T *sp = rhs.m_a, *last = sp + rhs.m_dim.getElementCount();
     T       *dp = m_a;
@@ -511,8 +537,8 @@ public:
     return *this;
   }
 
-  MatrixTemplate<T> &operator-=(const MatrixTemplate<T> &rhs) {
-    checkSameDimension(_T("operator-="), rhs);
+  MatrixTemplate &operator-=(const MatrixTemplate &rhs) {
+    checkSameDimension(__TFUNCTION__, rhs);
 
     const T *sp = rhs.m_a, *last = sp + rhs.m_dim.getElementCount();
     T       *dp = m_a;
@@ -520,12 +546,13 @@ public:
     return *this;
   }
 
-  friend VectorTemplate<T> operator*(const MatrixTemplate<T> &lts, const VectorTemplate<T> &rhs) {
+  friend VectorTemplate<T> operator*(const MatrixTemplate &lts, const VectorTemplate<T> &rhs) {
     const size_t rows    = lts.getRowCount();
     const size_t columns = lts.getColumnCount();
 
     if(columns != rhs.getDimension()) {
-      throwMatrixException(_T("operator*(Matrix,Vector):Invalid dimension. Matrix.%s, Vector.%s")
+      throwMatrixException(__TFUNCTION__
+                          ,_T("Invalid dimension. Matrix.%s, Vector.%s")
                           ,lts.getDimensionString().cstr()
                           ,rhs.getDimensionString().cstr());
     }
@@ -548,7 +575,8 @@ public:
     const size_t columns = rhs.getColumnCount();
 
     if(lts.getDimension() != rows) {
-      throwMatrixException(_T("operator*(Vector,Matrix):Invalid dimension. Vector.%s. Matrix.%s")
+      throwMatrixException(__TFUNCTION__
+                          ,_T("Invalid dimension. Vector.%s. Matrix.%s")
                           ,lts.getDimensionString().cstr()
                           ,rhs.getDimensionString().cstr());
     }
@@ -566,15 +594,18 @@ public:
     return result;
   }
 
-  friend MatrixTemplate<T> operator*(const MatrixTemplate<T> &lts, const MatrixTemplate<T> &rhs) {
+  friend MatrixTemplate operator*(const MatrixTemplate &lts, const MatrixTemplate &rhs) {
     if(lts.getColumnCount() != rhs.getRowCount()) {
-      throwMatrixException(_T("operator*(Matrix,Matrix):Invalid dimension. Left.%s. Right.%s"), lts.getDimensionString().cstr(), rhs.getDimensionString().cstr());
+      throwMatrixException(__TFUNCTION__
+                          ,_T("Invalid dimension. Left.%s. Right.%s")
+                          ,lts.getDimensionString().cstr()
+                          ,rhs.getDimensionString().cstr());
     }
 
     const size_t rRows    = lts.getRowCount();
     const size_t rColumns = rhs.getColumnCount();
 
-    MatrixTemplate<T> result(rRows, rColumns);
+    MatrixTemplate result(rRows, rColumns);
 
     const size_t ltscn = lts.getColumnCount(); // == rhs.getRowCount()
 
@@ -593,15 +624,15 @@ public:
     return result;
   }
 
-  MatrixTemplate<T> &operator*=(const MatrixTemplate<T> &rhs) {
+  MatrixTemplate &operator*=(const MatrixTemplate &rhs) {
     *this = *this * rhs;
     return *this;
   }
 
-  friend MatrixTemplate<T> operator*(const T &d, const MatrixTemplate<T> &rhs) {
+  friend MatrixTemplate operator*(const T &d, const MatrixTemplate &rhs) {
     const size_t rows    = rhs.getRowCount();
     const size_t columns = rhs.getColumnCount();
-    MatrixTemplate<T> result(rows, columns);
+    MatrixTemplate result(rows, columns);
 
     const T *sp = rhs.m_a, *last = sp + rhs.m_dim.getElementCount();
     T       *dp = result.m_a;
@@ -609,10 +640,10 @@ public:
     return result;
   }
 
-  friend MatrixTemplate<T> operator*(const MatrixTemplate<T> &lts, const T &d) {
+  friend MatrixTemplate operator*(const MatrixTemplate &lts, const T &d) {
     const size_t rows    = lts.getRowCount();
     const size_t columns = lts.getColumnCount();
-    MatrixTemplate<T> result(rows, columns);
+    MatrixTemplate result(rows, columns);
 
     const T *sp = lts.m_a, *last = sp + lts.m_dim.getElementCount();
     T       *dp = result.m_a;
@@ -620,10 +651,10 @@ public:
     return result;
   }
 
-  friend MatrixTemplate<T> operator/(const MatrixTemplate<T> &lts, const T &d) {
+  friend MatrixTemplate operator/(const MatrixTemplate &lts, const T &d) {
     const size_t rows    = lts.getRowCount();
     const size_t columns = lts.getColumnCount();
-    MatrixTemplate<T> result(rows, columns);
+    MatrixTemplate result(rows, columns);
 
     const T *sp = lts.m_a, *last = sp + lts.m_dim.getElementCount();
     T       *dp = result.m_a;
@@ -631,19 +662,19 @@ public:
     return result;
   }
 
-  MatrixTemplate<T> &operator*=(const T &d) {
+  MatrixTemplate &operator*=(const T &d) {
     T *p = m_a, *last = p + m_dim.getElementCount();
     while(p < last) *(p++) *= d;
     return *this;
   }
 
-  MatrixTemplate<T> &operator/=(const T &d) {
+  MatrixTemplate &operator/=(const T &d) {
     T *p = m_a, *last = p + m_dim.getElementCount();
     while(p < last) *(p++) /= d;
     return *this;
   }
 
-  friend MatrixTemplate<T> kroneckerSum(const MatrixTemplate<T> &A, const MatrixTemplate<T> &B) {
+  friend MatrixTemplate kroneckerSum(const MatrixTemplate &A, const MatrixTemplate &B) {
     _VALIDATEISSQUAREMATRIX(A);
     _VALIDATEISSQUAREMATRIX(B);
     const size_t a = A.getRowCount();
@@ -651,12 +682,12 @@ public:
     return kroneckerProduct(A, _1(b)) + kroneckerProduct(_1(a), B);
   }
 
-  friend MatrixTemplate<T> kroneckerProduct(const MatrixTemplate<T> &A, const MatrixTemplate<T> &B) {
+  friend MatrixTemplate kroneckerProduct(const MatrixTemplate &A, const MatrixTemplate &B) {
     const size_t m = A.getRowCount();
     const size_t n = A.getColumnCount();
     const size_t p = B.getRowCount();
     const size_t q = B.getColumnCount();
-    MatrixTemplate<T> result(m*p, n*q);
+    MatrixTemplate result(m*p, n*q);
 
     for(size_t i = 0; i < m; i++) {
       for(size_t j = 0; j < n; j++) {
@@ -671,7 +702,7 @@ public:
     return result;
   }
 
-  friend bool operator==(const MatrixTemplate<T> &m1, const MatrixTemplate<T> &m2) {
+  friend bool operator==(const MatrixTemplate &m1, const MatrixTemplate &m2) {
     if(!m1.hasSameDimension(m2)) {
       return false;
     }
@@ -685,7 +716,7 @@ public:
     return true;
   }
 
-  friend bool operator!=(const MatrixTemplate<T> &m1, const MatrixTemplate<T> &m2) {
+  friend bool operator!=(const MatrixTemplate &m1, const MatrixTemplate &m2) {
     return !(m1 == m2);
   }
 
@@ -697,7 +728,7 @@ public:
     return result;
   }
 
-  template<typename OSTREAMTYPE> friend OSTREAMTYPE &operator<<(OSTREAMTYPE &out, const MatrixTemplate<T> &a) {
+  template<typename OSTREAMTYPE> friend OSTREAMTYPE &operator<<(OSTREAMTYPE &out, const MatrixTemplate &a) {
     const StreamSize w = out.width();
     for(size_t r = 0; r < a.getRowCount(); r++) {
       for(size_t c = 0; c < a.getColumnCount(); c++) {
@@ -709,7 +740,7 @@ public:
     return out;
   }
 
-  template<typename ISTREAMTYPE> friend ISTREAMTYPE &operator>>(ISTREAMTYPE &in, MatrixTemplate<T> &a) {
+  template<typename ISTREAMTYPE> friend ISTREAMTYPE &operator>>(ISTREAMTYPE &in, MatrixTemplate &a) {
     const FormatFlags flg = in.flags();
     in.flags(flg | std::ios::skipws);
     for(size_t r = 0; r < a.getRowCount(); r++) {
@@ -726,7 +757,11 @@ public:
   }
 
   void throwNotSquareMatrixException(const TCHAR *method, const TCHAR *name) const {
-    throwInvalidArgumentException(method, _T("Matrix %s not square. %s"), name, getDimensionString().cstr());
+    throwInvalidArgumentException(method
+                                 ,_T("Matrix %s not square. %s")
+                                 ,name
+                                 ,getDimensionString().cstr()
+                                 );
   }
 
 };

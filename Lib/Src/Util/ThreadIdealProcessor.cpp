@@ -4,6 +4,6 @@
 void setThreadIdealProcessor(DWORD cpu, HANDLE hThread) {
   if(hThread == INVALID_HANDLE_VALUE) hThread = GetCurrentThread();
   if(SetThreadIdealProcessor(hThread,cpu) == (DWORD)-1) {
-    throwLastErrorOnSysCallException(__TFUNCTION__);
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("SetThreadIdealProcessor"));
   }
 }

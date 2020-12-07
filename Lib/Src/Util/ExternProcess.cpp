@@ -166,7 +166,7 @@ void ExternProcess::startCreateProcess(const String &program, const String &comm
     setProcessHandle(processInfo.hProcess);
     CloseHandle(processInfo.hThread); // hProcess will be closed in destructor
   } else {
-    throwLastErrorOnSysCallException(__TFUNCTION__);
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("CreateProcess"));
   }
 }
 
@@ -267,7 +267,7 @@ int ExternProcess::runCreateProcess(const String &program, const String &command
     CloseHandle(processInfo.hProcess);
     CloseHandle(processInfo.hThread);
   } else {
-    throwLastErrorOnSysCallException(__TFUNCTION__);
+    throwLastErrorOnSysCallException(__TFUNCTION__,_T("CreateProcess"));
   }
   return exitCode;
 }

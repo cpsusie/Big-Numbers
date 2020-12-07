@@ -251,7 +251,7 @@ bool TextView::setFont(const LOGFONT &newValue, bool repaint) {
     m_font.DeleteObject();
   }
   if(!m_font.CreateFontIndirect(&newValue)) {
-    throwLastErrorOnSysCallException(_T("CreateFontIndirect"));
+    throwLastErrorOnSysCallException(__TFUNCTION__, _T("CreateFontIndirect"));
   }
   getOptions().m_logFont = newValue;
   if(hasPartner()) {

@@ -1,21 +1,18 @@
 #include "stdafx.h"
 #include "Iterator.h"
 
-void AbstractIterator::noNextElementError(const char *className) const {
-  throwMethodException(className, "next", "No such element");
+void AbstractIterator::noNextElementError(const char *method) const {
+  throwException("%s:No such element",method);
 }
 
-void AbstractIterator::concurrentModificationError(const char *className) const {
-  throwMethodException(className, "next", "Concurrent modification");
+void AbstractIterator::concurrentModificationError(const char *method) const {
+  throwException("%s:Concurrent modification", method);
 }
 
-void AbstractIterator::noCurrentElementError(const char *className) const {
-  throwMethodException(className, "remove", "No current element");
+void AbstractIterator::noCurrentElementError(const char *method) const {
+  throwException("%s:No current element", method);
 }
 
 void AbstractIterator::unsupportedOperationError(const char *method) const {
-  throwUnsupportedOperationException(method);
+  throwUnsupportedOperationException(method, method);
 }
-
-const char *_compactArrayIteratorClassName = "CompactArrayIterator";
-const char *_compactArrayClassName         = "CompactArray";

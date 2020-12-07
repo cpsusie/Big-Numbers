@@ -6,6 +6,8 @@
 #line 5 "C:\\Mytools2015\\ParserGen\\Olm637\\Olm637.y"
 #include "Olm637symbol.h"
 
+using namespace LRParsing;
+
 #define YYSTYPE int
 class Olm637Parser : public LRparser {
 private:
