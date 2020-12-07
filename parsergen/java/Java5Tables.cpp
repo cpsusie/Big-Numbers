@@ -3728,7 +3728,7 @@ static const ParserTablesTemplateTransShift<306,105,635,1191,29872,29968,253,104
                                           ,unsigned short
                                           ,unsigned char
                                           ,unsigned char
-                                          ,short
+                                          ,unsigned short
                                           ,unsigned short> Java5Tables_s(prodLengthArray   , leftSideArray
                                                                         ,rightSideTable    , symbolNames
                                                                         ,shiftCodeArray    , shiftFromStateArrayTable, shiftToStateArrayTable, shiftStateBitSetTable

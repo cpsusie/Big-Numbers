@@ -246,6 +246,9 @@
     <ClInclude Include="..\..\Lib\Include\AbstractSymbolNameContainer.h">
       <Filter>Source Files\GrammarOutput\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Lib\Include\ParserTablesTemplate.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

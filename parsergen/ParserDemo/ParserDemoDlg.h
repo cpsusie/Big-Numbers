@@ -5,31 +5,33 @@
 #include "TextBox.h"
 #include "TestParser.h"
 
+typedef CompactArray<SourcePosition> SourcePositionArray;
+
 class CParserDemoDlg : public CDialog, public TextContainer, public ParserHandler {
 private:
   HICON                 m_hIcon;
   CFont                 m_printFont;
   HACCEL                m_accelTable;
   FLAGTRAITS(CParserDemoDlg, BYTE, m_breakFlags);
-  CTextBox              m_textBox;
-  CString               m_input;
-  BOOL                  m_breakOnProduction;
-  BOOL                  m_breakOnError;
-  BOOL                  m_breakOnState;
-  BOOL                  m_breakOnSymbol;
-  SourcePosition        m_lastSourcePosition;
-  BitSet               *m_breakProductions;
-  BitSet               *m_breakStates;
-  BitSet               *m_breakSymbols;
-  bool                  m_inputHasChanged;
-  bool                  m_animateOn;
-  CSize                 m_charSize;
-  FindParameter         m_findParam;
-  Array<SourcePosition> m_errorPos, m_debugPos;
+  CTextBox            m_textBox;
+  CString             m_input;
+  BOOL                m_breakOnProduction;
+  BOOL                m_breakOnError;
+  BOOL                m_breakOnState;
+  BOOL                m_breakOnSymbol;
+  SourcePosition      m_lastSourcePosition;
+  BitSet             *m_breakProductions;
+  BitSet             *m_breakStates;
+  BitSet             *m_breakSymbols;
+  bool                m_inputHasChanged;
+  bool                m_animateOn;
+  CSize               m_charSize;
+  FindParameter       m_findParam;
+  SourcePositionArray m_errorPos, m_debugPos;
 
 public:
-  CWinThread           *m_showStateThread;
-  TestParser            m_parser;
+  CWinThread         *m_showStateThread;
+  TestParser          m_parser;
 
   CParserDemoDlg(CWnd *pParent = nullptr);
   ~CParserDemoDlg();
@@ -48,15 +50,15 @@ public:
   String           getCurrentWord();
 
   String           getInputString() {
-    return m_input.GetBuffer(m_input.GetLength());
+    return (LPCTSTR)m_input;
   }
 
   void             updateSourcePosition(const SourcePosition &pos);
-  int              findSourcePositionIndex(const Array<SourcePosition> &list, const SourcePosition &pos);
+  int              findSourcePositionIndex(const SourcePositionArray &list, const SourcePosition &pos);
   void             gotoTextPosition(const SourcePosition &pos);
-  void             gotoTextPosition(int id, const Array<SourcePosition> &list, const SourcePosition &pos);
+  void             gotoTextPosition(int id, const SourcePositionArray &list, const SourcePosition &pos);
   void             markSourcePosition(const TextPositionPair &pos);
-  TextPositionPair searchText(const FindParameter &m_param);                                    // virtual from textcontainer
+  TextPositionPair searchText(const FindParameter &m_param) final;                              // virtual from textcontainer
   void             find(const FindParameter &param);
   void             resetListBoxes();
   int              handleReduction(unsigned int prod);                                          // virtual from parserhandler

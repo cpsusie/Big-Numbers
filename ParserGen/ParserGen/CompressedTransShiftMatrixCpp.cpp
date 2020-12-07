@@ -611,7 +611,7 @@ void CompressedTransShiftMatrix::printTermAndReduceArrayTable(MarginFile &output
   { const ActionArrayIndexArray           reduceArrayTable  = m_reduceArrayMap.getEntryArray();
     UINT                                  tableSize         = 0;
     TCHAR                                 delim             = ' ';
-    outputBeginArrayDefinition(output, _T("reduceArrayTable") , types.getActionType(), reduceArrayTable.getElementCount(false));
+    outputBeginArrayDefinition(output, _T("reduceArrayTable") , types.getProductionType(), reduceArrayTable.getElementCount(false));
     for(auto it = reduceArrayTable.getIterator(); it.hasNext();) {
       const IndexArrayEntry<ActionArray> &e                 = it.next();
       String                              comment           = format(_T("%3u %s"), e.m_commentIndex, e.getUsedByComment().cstr());
@@ -626,7 +626,7 @@ void CompressedTransShiftMatrix::printTermAndReduceArrayTable(MarginFile &output
       newLine(output, comment, 108);
       tableSize += n;
     }
-    const ByteCount bc = outputEndArrayDefinition(output, types.getActionType(), tableSize);
+    const ByteCount bc = outputEndArrayDefinition(output, types.getProductionType(), tableSize);
     m_byteCountMap.add(BC_REDUCEARRAYTABLE, bc);
   }
 }

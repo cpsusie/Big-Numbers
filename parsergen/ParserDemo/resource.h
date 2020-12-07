@@ -31,7 +31,9 @@
 #define IDC_LOOKAHEAD                   1010
 #define IDC_CYCLECOUNTLABEL             1011
 #define IDC_CYCLECOUNT                  1012
-#define IDC_SOURCEPOSITION              1013
+#define IDC_THREADTIMELABEL             1013
+#define IDC_THREADTIME                  1014
+#define IDC_SOURCEPOSITION              1015
 #define IDC_CHECKBREAKONPRODUCTION      1020
 #define IDC_BREAKPRODTEXT               1021
 #define IDC_CHECKBREAKONPOS             1022

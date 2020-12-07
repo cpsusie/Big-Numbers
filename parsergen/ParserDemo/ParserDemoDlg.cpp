@@ -633,10 +633,9 @@ SourcePosition CParserDemoDlg::getSourcePosition() {
   return findSourcePosition(getInputString().cstr(), getSourcePositionIndex());
 }
 
-int CParserDemoDlg::findSourcePositionIndex(const Array<SourcePosition> &list, const SourcePosition &pos) {
-  for(int i = (int)list.size() - 1; i >= 0; i--) {
-    const SourcePosition &s = list[i];
-    if(s.getLineNumber() == pos.getLineNumber() && s.getColumn() == pos.getColumn())  {
+int CParserDemoDlg::findSourcePositionIndex(const SourcePositionArray &list, const SourcePosition &pos) {
+  for(int i = (int)list.size(); i-- > 0;) {
+    if(list[i] == pos)  {
       return i;
     }
   }
@@ -649,7 +648,7 @@ void CParserDemoDlg::gotoTextPosition(const SourcePosition &pos) {
   updateSourcePosition(pos);
 }
 
-void CParserDemoDlg::gotoTextPosition(int id, const Array<SourcePosition> &list, const SourcePosition &pos) {
+void CParserDemoDlg::gotoTextPosition(int id, const SourcePositionArray &list, const SourcePosition &pos) {
   const int index = findSourcePositionIndex(list, pos);
   if(index >= 0) {
     ((CListBox*)GetDlgItem(id))->SetCurSel(index);

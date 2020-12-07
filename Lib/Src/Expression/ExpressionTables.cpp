@@ -653,7 +653,7 @@ static const ParserTablesTemplateTransShift<102,84,94,159,2564,2656,34,78,0,75,0
                                           ,unsigned char
                                           ,unsigned char
                                           ,unsigned char
-                                          ,short
+                                          ,unsigned char
                                           ,unsigned char> ExpressionTables_s(prodLengthArray   , leftSideArray
                                                                             ,rightSideTable    , symbolNames
                                                                             ,shiftCodeArray    , shiftFromStateArrayTable, shiftToStateArrayTable, shiftStateBitSetTable

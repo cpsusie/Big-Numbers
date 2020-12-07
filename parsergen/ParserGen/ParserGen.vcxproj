@@ -231,6 +231,7 @@
     <ClInclude Include="..\..\Lib\Include\AbstractParserTables.h" />
     <ClInclude Include="..\..\Lib\Include\AbstractSymbolNameContainer.h" />
     <ClInclude Include="..\..\Lib\Include\LRparser.h" />
+    <ClInclude Include="..\..\Lib\Include\ParserTablesTemplate.h" />
     <ClInclude Include="ActionArray.h" />
     <ClInclude Include="AllTemplateTypes.h" />
     <ClInclude Include="BasicTypes.h" />

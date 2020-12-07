@@ -276,11 +276,11 @@ ByteCount GrammarTables::printCppParserTablesTemplateTransShift(MarginFile &outp
                ,m_grammar.getTermBitSetCapacity()
                ,shiftStateBitSetInterval.getFrom(), shiftStateBitSetInterval.getCapacity()
                ,succStateBitSetInterval.getFrom() , succStateBitSetInterval.getCapacity()
-               ,getTypeName(m_types.getSymbolType() )
-               ,getTypeName(m_types.getTermType()   )
-               ,getTypeName(m_types.getNTIndexType())
-               ,getTypeName(m_types.getActionType() )
-               ,getTypeName(m_types.getStateType()  )
+               ,getTypeName(m_types.getSymbolType()    )
+               ,getTypeName(m_types.getTermType()      )
+               ,getTypeName(m_types.getNTIndexType()   )
+               ,getTypeName(m_types.getProductionType())
+               ,getTypeName(m_types.getStateType()     )
                ,tablesClassName.cstr()
                );
 

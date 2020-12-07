@@ -188,11 +188,11 @@ template<UINT     symbolCount
         ,UINT     termBitSetCapacity
         ,UINT     shiftStateIntervalFrom, UINT     shiftStateIntervalCapacity
         ,UINT     succStateIntervalFrom , UINT     succStateIntervalCapacity
-        ,typename SymbolType       /* unsigned, values:[0..symbolCount             [ */
-        ,typename TerminalType     /* unsigned, values:[0..termCount               [ */
-        ,typename NTIndexType      /* unsigned, values:[0..ntermCount              [ */
-        ,typename ActionType       /* signed  , values:[-maxproduction..stateCount [ */
-        ,typename StateType>       /* unsigned, values:[0..stateCount              [ */
+        ,typename SymbolType       /* unsigned, values:[0..symbolCount [ */
+        ,typename TerminalType     /* unsigned, values:[0..termCount   [ */
+        ,typename NTIndexType      /* unsigned, values:[0..ntermCount  [ */
+        ,typename ProductionType   /* unsigned, values:[0..prodCount   [ */
+        ,typename StateType>       /* unsigned, values:[0..stateCount  [ */
 class ParserTablesTemplateTransShift
 : public GenereratedTablesCommon<symbolCount
                                 ,termCount
@@ -210,7 +210,7 @@ private:
   const BYTE           *m_shiftStateBitSetTable;
   const UINT           *m_reduceCodeArray;
   const TerminalType   *m_termArrayTable;
-  const ActionType     *m_reduceArrayTable;
+  const ProductionType *m_reduceArrayTable;
   const BYTE           *m_termBitSetTable;
   const UINT           *m_successorCodeArray;
   const StateType      *m_stateArrayTable;
@@ -229,8 +229,8 @@ private:
     return (index >= 0) ? m_newStateArrayTable[(code >> 17) + index] : -1;
   }
   inline        int getSuccessorSplitNode(      UINT code, UINT state) const {
-    const int a = getSuccessorFromCode(leftChild(m_successorCodeArray, code), state);
-    return (a >= 0) ? a : getSuccessorFromCode(rightChild(m_successorCodeArray, code), state);
+    const int s = getSuccessorFromCode(leftChild(m_successorCodeArray, code), state);
+    return (s >= 0) ? s : getSuccessorFromCode(rightChild(m_successorCodeArray, code), state);
   }
   static inline int getSuccessorImmediate(      UINT code, UINT state) {
     const UINT fromState = code & 0x7fff;
@@ -297,8 +297,8 @@ private:
     return (index >= 0) ? m_reduceArrayTable[(code >> 17) + index] : -1;
   }
   inline        int getReduceSplitNode(          UINT code, UINT term) const {
-    const int a = getReduceFromCode(leftChild(m_reduceCodeArray, code), term);
-    return (a >= 0) ? a : getReduceFromCode(rightChild(m_reduceCodeArray, code), term);
+    const int p = getReduceFromCode(leftChild(m_reduceCodeArray, code), term);
+    return (p >= 0) ? p : getReduceFromCode(rightChild(m_reduceCodeArray, code), term);
   }
   static inline int getReduceImmediate(          UINT code, UINT term)       {
     return ((code & 0x7fff) == term)        ? (code >> 17) : -1;
@@ -347,22 +347,22 @@ public:
 #pragma warning(pop)
 
   ParserTablesTemplateTransShift(
-                       const BYTE          *prodLengthArray
-                      ,const NTIndexType   *leftSideArray
-                      ,const SymbolType    *rightSideTable
-                      ,const char          *nameString
-                      ,const UINT          *shiftCodeArray
-                      ,const StateType     *shiftFromStateArrayTable
-                      ,const StateType     *shiftToStateArrayTable
-                      ,const BYTE          *shiftStateBitSetTable
-                      ,const UINT          *reduceCodeArray
-                      ,const TerminalType  *termArrayTable
-                      ,const ActionType    *reduceArrayTable
-                      ,const BYTE          *termBitSetTable
-                      ,const UINT          *successorCodeArray
-                      ,const StateType     *stateArrayTable
-                      ,const StateType     *newStateArrayTable
-                      ,const BYTE          *stateBitSetTable
+                       const BYTE           *prodLengthArray
+                      ,const NTIndexType    *leftSideArray
+                      ,const SymbolType     *rightSideTable
+                      ,const char           *nameString
+                      ,const UINT           *shiftCodeArray
+                      ,const StateType      *shiftFromStateArrayTable
+                      ,const StateType      *shiftToStateArrayTable
+                      ,const BYTE           *shiftStateBitSetTable
+                      ,const UINT           *reduceCodeArray
+                      ,const TerminalType   *termArrayTable
+                      ,const ProductionType *reduceArrayTable
+                      ,const BYTE           *termBitSetTable
+                      ,const UINT           *successorCodeArray
+                      ,const StateType      *stateArrayTable
+                      ,const StateType      *newStateArrayTable
+                      ,const BYTE           *stateBitSetTable
                       )
     :GenereratedTablesCommon(prodLengthArray  , leftSideArray
                             ,rightSideTable   , nameString
