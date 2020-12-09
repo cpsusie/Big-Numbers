@@ -135,6 +135,7 @@ const String &TestParser::getStateItems(UINT state) {
 void TestParser::userStackInit() {
   m_cycleCount = 0;
   m_stacktop   = m_userStack;
+  memset(m_userStack, 0, sizeof(m_userStack[0]) * getStackSize());
   m_root       = nullptr;
   deleteNodeList();
 }
@@ -145,11 +146,12 @@ void TestParser::setStackSize(UINT newSize) {
   m_userStack = new SyntaxNodep[getStackSize()]; TRACE_NEW(m_userStack);
 }
 
-void TestParser::setNewInput(const TCHAR *string) {
+void TestParser::setNewInput(const TCHAR *string, bool makeDerivatonTree) {
   m_inputStream.open(string);
   m_scanner->newStream(&m_inputStream, 1);
-  m_ok   = true;
-  m_root = nullptr;
+  m_ok                 = true;
+  m_makeDerivationTree = makeDerivatonTree;
+  m_root               = nullptr;
 }
 
 void TestParser::verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) {
@@ -163,25 +165,32 @@ void TestParser::vdebug(const TCHAR *format, va_list argptr) {
 
 void TestParser::userStackShiftSymbol(UINT symbol) {
   m_cycleCount++;
-  SyntaxNode *p = new SyntaxNode(m_scanner->getText(), 0, true, this); TRACE_NEW(p);
-  push(p);
+  if(m_makeDerivationTree) {
+    SyntaxNode *p = new SyntaxNode(m_scanner->getText(), 0, true, this); TRACE_NEW(p);
+    push(p);
+  } else {
+    push(nullptr);
+  }
 }
 
 int TestParser::reduceAction(UINT prod) {
   m_cycleCount++;
-  const AbstractParserTables &tables  = getParserTables();
-  const UINT                  symbol  = tables.getLeftSymbol(prod);
-  const UINT                  prodlen = tables.getProductionLength(prod);
-  SyntaxNodep                 p       = new SyntaxNode(getSymbolName(symbol), prodlen, false, this);
-  for(UINT i = 0; i < prodlen; i++) {
-    SyntaxNodep child = getStackTop(prodlen - i - 1);
-    p->setChild(i, child);
+  if(!m_makeDerivationTree) {
+    m_leftSide = nullptr;
+  } else {
+    const AbstractParserTables &tables  = getParserTables();
+    const UINT                  symbol  = tables.getLeftSymbol(prod);
+    const UINT                  prodlen = tables.getProductionLength(prod);
+    SyntaxNodep                 p = new SyntaxNode(getSymbolName(symbol), prodlen, false, this); TRACE_NEW(p);
+    for(UINT i = 0; i < prodlen; i++) {
+      SyntaxNodep child = getStackTop(prodlen - i - 1);
+      p->setChild(i, child);
+    }
+    m_leftSide = p;
+    if(prod == 0) {
+      m_root = m_leftSide;
+    }
   }
-  m_leftSide = p;
-  if(prod == 0) {
-    m_root = m_leftSide;
-  }
-  m_handler->handleReduction(prod);
   return 0;
 }
 

@@ -108,7 +108,7 @@ static const ParserTablesTemplateTransShift<5,3,5,6,180,264,0,3,0,6,0,6
                                           ,unsigned char
                                           ,unsigned char
                                           ,unsigned char
-                                          ,char
+                                          ,unsigned char
                                           ,unsigned char> DummyTables_s(prodLengthArray   , leftSideArray
                                                                        ,rightSideTable    , symbolNames
                                                                        ,shiftCodeArray    , shiftFromStateArrayTable, shiftToStateArrayTable, shiftStateBitSetTable

@@ -93,6 +93,15 @@
     <ClCompile Include="..\ParserGen\SymbolDataPair.cpp">
       <Filter>Source Files\ParserGen Files</Filter>
     </ClCompile>
+    <ClCompile Include="Debugger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StackImage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GetWord.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ParserDemo.rc">
@@ -171,6 +180,12 @@
     </ClInclude>
     <ClInclude Include="..\ParserGen\StateResult.h">
       <Filter>Source Files\ParserGen Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Debugger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StackImage.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

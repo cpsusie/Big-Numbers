@@ -1152,7 +1152,7 @@ static const ParserTablesTemplateTransShift<126,74,165,301,5952,6040,130,53,0,12
                                           ,unsigned char
                                           ,unsigned char
                                           ,unsigned char
-                                          ,short
+                                          ,unsigned char
                                           ,unsigned short> CppTables_s(prodLengthArray   , leftSideArray
                                                                       ,rightSideTable    , symbolNames
                                                                       ,shiftCodeArray    , shiftFromStateArrayTable, shiftToStateArrayTable, shiftStateBitSetTable

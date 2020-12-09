@@ -132,7 +132,7 @@ static const ParserTablesTemplateTransShift<10,6,7,13,252,344,0,6,0,13,0,13
                                           ,unsigned char
                                           ,unsigned char
                                           ,unsigned char
-                                          ,char
+                                          ,unsigned char
                                           ,unsigned char> Olm637Tables_s(prodLengthArray   , leftSideArray
                                                                         ,rightSideTable    , symbolNames
                                                                         ,shiftCodeArray    , shiftFromStateArrayTable, shiftToStateArrayTable, shiftStateBitSetTable

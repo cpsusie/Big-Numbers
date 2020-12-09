@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "ResourceParser.h"
 
-#line 36 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 36 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
 #include <ParserTablesTemplate.h>
 
 using namespace LRParsing;
@@ -2501,7 +2501,7 @@ static const ParserTablesTemplateTransShift<446,328,475,635,14808,14904,0,68,0,1
                                           ,unsigned short
                                           ,unsigned short
                                           ,unsigned char
-                                          ,short
+                                          ,unsigned short
                                           ,unsigned short> ResourceTables_s(prodLengthArray   , leftSideArray
                                                                            ,rightSideTable    , symbolNames
                                                                            ,shiftCodeArray    , shiftFromStateArrayTable, shiftToStateArrayTable, shiftStateBitSetTable

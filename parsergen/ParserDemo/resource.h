@@ -34,6 +34,7 @@
 #define IDC_THREADTIMELABEL             1013
 #define IDC_THREADTIME                  1014
 #define IDC_SOURCEPOSITION              1015
+#define IDC_THREADTIMELABELMSEC         1016
 #define IDC_CHECKBREAKONPRODUCTION      1020
 #define IDC_BREAKPRODTEXT               1021
 #define IDC_CHECKBREAKONPOS             1022
@@ -96,10 +97,9 @@
 #define ID_OPTIONS_ANIMATE              32834
 #define ID_OPTIONS_STACKSIZE            32835
 #define ID_OPTIONS_SHOWSTATE            32836
+#define ID_OPTIONS_MAKEDERIVATIONTREE   32837
 #define ID_HELP_ABOUTPARSERDEMO         32850
-#define ID_CHECKBREAKONPRODUCTION       32900
 #define ID_CHECKBREAKONPOS              32901
-#define ID_CHECKBREAKONERROR            32902
 #define ID_GOTONEXTERROR                32903
 #define ID_GOTOPREVERROR                32904
 #define ID_PAGEUP                       32920
@@ -122,13 +122,14 @@
 #define ID_REGSYMBOLS_OR                33828
 #define ID_REGSYMBOLS_GROUP             33829
 #define ID_MSG_SHOWSTATE_UPDATE         33900
+#define ID_MSG_AUTOSTEP_DEBUGGER        33901
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        124
-#define _APS_NEXT_COMMAND_VALUE         33902
+#define _APS_NEXT_COMMAND_VALUE         33906
 #define _APS_NEXT_CONTROL_VALUE         1085
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

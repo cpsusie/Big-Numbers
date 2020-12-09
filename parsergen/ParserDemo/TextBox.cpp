@@ -102,7 +102,7 @@ void CTextBox::draw(CDC &dc) {
 }
 
 void CTextBox::OnPaint() {
-  CEdit::OnPaint();
+  __super::OnPaint();
   draw(CClientDC(this));
 }
 

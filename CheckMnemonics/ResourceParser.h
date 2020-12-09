@@ -32,4 +32,4 @@ private:
   int  reduceAction(        UINT prod  ) override;
   SyntaxNode       *newNode(const SourcePosition &pos, int symbol, ... );
 };
-#line 17 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 17 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"

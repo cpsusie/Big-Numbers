@@ -27,7 +27,6 @@ typedef SyntaxNode *SyntaxNodep;
 
 class ParserHandler {
 public:
-  virtual int  handleReduction(UINT prod) = 0;
   virtual void handleError(const SourcePosition &pos, const TCHAR *format, va_list argptr) = 0;
   virtual void handleDebug(const SourcePosition &pos, const TCHAR *format, va_list argptr) = 0;
 };
@@ -38,6 +37,7 @@ private:
   Scanner                  *m_scanner;
   Grammar                   m_grammar;
   ParserHandler            *m_handler;
+  bool                      m_makeDerivationTree;
   bool                      m_ok;
   UINT                      m_cycleCount;
   SyntaxNodep               m_leftSide,*m_stacktop;
@@ -57,7 +57,7 @@ public:
   ~TestParser() override;
   Grammar      &getGrammar()                        { return m_grammar;                     }
   void          setHandler(ParserHandler *handler)  { m_handler = handler;                  }
-  void          setNewInput(const TCHAR *String);
+  void          setNewInput(const TCHAR *String, bool makeDerivatonTree);
   inline bool   accept()                 const      { return m_ok && (getCycleCount() > 0); }
   inline UINT   getCycleCount()          const      { return m_cycleCount;                  }
   const String &getLegalInput()          const      { return m_legalLookahead[state()];     }
@@ -75,14 +75,19 @@ public:
   void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) override;
   void setDebugScanner(bool newvalue)               { m_scanner->setDebug(newvalue);    }
   void setStackSize(UINT newsize);
-  const SyntaxNodep  getStackTop(int fromtop) const { return m_stacktop[-fromtop];      }
-  const SyntaxNodep *getUserStack()           const { return m_userStack;               }
+  const SyntaxNodep  getStackTop(UINT fromTop) const {
+    assert(fromTop < getStackHeight());
+    return *(m_stacktop - fromTop);
+  }
+  const SyntaxNodep *getUserStack()      const {
+    return m_userStack;
+  }
   void buildStateArray();
-  void userStackInit()                   override;
-  int  reduceAction(        UINT prod  ) override;
-  void userStackShiftSymbol(UINT symbol) override;
-  void userStackPopSymbols( UINT count ) override   { m_stacktop -= count;              } // pop count symbols from userstack
-  void push(SyntaxNodep p)                          { *(++m_stacktop) = p;              } // push p onto userstack
-  void userStackShiftLeftSide()          override   { push(m_leftSide);                 } // push($$) onto userstack
-  void defaultReduce(       UINT prod  ) override   { m_leftSide = *m_stacktop;         } // $$ = $1
+  void userStackInit()                   final;
+  int  reduceAction(        UINT prod  ) final;
+  void userStackShiftSymbol(UINT symbol) final;
+  void userStackPopSymbols( UINT count ) final   { m_stacktop -= count;              } // pop count symbols from userstack
+  void push(SyntaxNodep p)                       { *(++m_stacktop) = p;              } // push p onto userstack
+  void userStackShiftLeftSide()          final   { push(m_leftSide);                 } // push($$) onto userstack
+  void defaultReduce(       UINT prod  ) final   { m_leftSide = *m_stacktop;         } // $$ = $1
 };

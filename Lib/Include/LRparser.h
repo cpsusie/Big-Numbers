@@ -114,29 +114,32 @@ public:
   LRparser(const AbstractParserTables &tables, Scanner *lex = nullptr, UINT stackSize = 256);
   virtual ~LRparser();
 
-  inline       int                   input()                            const { return m_input;                            }
-  inline       UINT                  state()                            const { return m_state;                            }
-  inline       bool                  stackEmpty()                       const { return m_stackTop == 0;                    }
-  inline       UINT                  getStackHeight()                   const { return m_stackTop;                         }
-  inline       UINT                  getStackSize()                     const { return m_stackSize;                        }
-  void                               setStackSize(       UINT newSize );
-  inline const ParserStackElement   &getStackElement(    UINT index   ) const { return m_parserStack[index];               }
-  inline       void                  setCascadeCount(    UINT value   )       { m_cascadeCount = value;                    }
-  inline       UINT                  getCascadeCount()                  const { return m_cascadeCount;                     }
-  inline       void                  setMaxErrorCount(   UINT value   )       { m_maxErrorCount = value;                   }
-  inline       UINT                  getMaxErrorCount()                 const { return m_maxErrorCount;                    }
-  inline       UINT                  getProductionLength(UINT prod    ) const { return m_tables.getProductionLength(prod); }
-  inline const String               &getSymbolName(      UINT symbol  ) const { return m_tables.getSymbolName(symbol);     }
-  inline const AbstractParserTables &getParserTables()                  const { return m_tables;                           }
-  inline       Scanner              *getScanner()                       const { return m_scanner;                          }
-  inline       void                  setDebug(           bool newValue)       { m_debug = newValue;                        }
-  inline       bool                  done()                             const { return m_done;                             }
-  inline       bool                  accept()                           const { return m_errorCount == 0;                  }
-  inline const TCHAR                *getText()                          const { return m_text;                             }
-  inline       int                   getTextLength()                    const { return m_textLength;                       }
-  inline       int                   getLineNumber()                    const { return m_pos.getLineNumber();              }
+  inline       int                   input()                             const { return m_input;                             }
+  inline       UINT                  state()                             const { return m_state;                             }
+  inline       bool                  stackEmpty()                        const { return m_stackTop == 0;                     }
+  inline       UINT                  getStackHeight()                    const { return m_stackTop;                          }
+  inline       UINT                  getStackSize()                      const { return m_stackSize;                         }
+  void                               setStackSize(       UINT newSize  );
+  inline const ParserStackElement   &getStackTopElement( UINT fromTop=0) const {
+    assert(fromTop < m_stackTop);
+    return m_parserStack[m_stackTop-1-fromTop];
+  }
+  inline       void                  setCascadeCount(    UINT value    )       { m_cascadeCount = value;                     }
+  inline       UINT                  getCascadeCount()                   const { return m_cascadeCount;                      }
+  inline       void                  setMaxErrorCount(   UINT value    )       { m_maxErrorCount = value;                    }
+  inline       UINT                  getMaxErrorCount()                  const { return m_maxErrorCount;                     }
+  inline       UINT                  getProductionLength(UINT prod     ) const { return m_tables.getProductionLength(prod);  }
+  inline const String               &getSymbolName(      UINT symbol   ) const { return m_tables.getSymbolName(symbol);      }
+  inline const AbstractParserTables &getParserTables()                   const { return m_tables;                            }
+  inline       Scanner              *getScanner()                        const { return m_scanner;                           }
+  inline       void                  setDebug(           bool newValue)        { m_debug = newValue;                         }
+  inline       bool                  done()                              const { return m_done;                              }
+  inline       bool                  accept()                            const { return m_errorCount == 0;                   }
+  inline const TCHAR                *getText()                           const { return m_text;                              }
+  inline       int                   getTextLength()                     const { return m_textLength;                        }
+  inline       int                   getLineNumber()                     const { return m_pos.getLineNumber();               }
   // Return current sourceposition
-  SourcePosition                     getPos()                           const;
+  SourcePosition                     getPos()                            const;
   // Return sourceposition of symbol number i in current production. i = [1..prodlen]
   const SourcePosition              &getPos(UINT i)                      const;
 

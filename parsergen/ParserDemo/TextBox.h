@@ -25,3 +25,5 @@ public:
   void OnPaint();
   void DoDataExchange(CDataExchange *pDX);
 };
+
+String getWord(const TCHAR *s, int pos);

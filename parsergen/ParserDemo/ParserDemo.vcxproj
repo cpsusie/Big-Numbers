@@ -296,8 +296,10 @@
     <ClCompile Include="..\ParserGen\StateResult.cpp" />
     <ClCompile Include="..\ParserGen\SymbolDataPair.cpp" />
     <ClCompile Include="..\ParserGen\TermActionPairArray.cpp" />
+    <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="ErrorsDlg.cpp" />
     <ClCompile Include="FindDlg.cpp" />
+    <ClCompile Include="GetWord.cpp" />
     <ClCompile Include="GotoDlg.cpp" />
     <ClCompile Include="ParserDemo.cpp" />
     <ClCompile Include="ParserDemoDlg.cpp" />
@@ -308,6 +310,7 @@
     <ClCompile Include="SelectBreakSymbolsDlg.cpp" />
     <ClCompile Include="ShowStateDlg.cpp" />
     <ClCompile Include="ShowStateThread.cpp" />
+    <ClCompile Include="StackImage.cpp" />
     <ClCompile Include="StackSizeDlg.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -332,6 +335,7 @@
     <ClInclude Include="..\ParserGen\GrammarResult.h" />
     <ClInclude Include="..\ParserGen\Options.h" />
     <ClInclude Include="..\ParserGen\StateResult.h" />
+    <ClInclude Include="Debugger.h" />
     <ClInclude Include="ErrorsDlg.h" />
     <ClInclude Include="FindDlg.h" />
     <ClInclude Include="GotoDlg.h" />
@@ -345,6 +349,7 @@
     <ClInclude Include="SelectBreakSymbolsDlg.h" />
     <ClInclude Include="ShowStateDlg.h" />
     <ClInclude Include="ShowStateThread.h" />
+    <ClInclude Include="StackImage.h" />
     <ClInclude Include="StackSizeDlg.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="targetver.h" />
