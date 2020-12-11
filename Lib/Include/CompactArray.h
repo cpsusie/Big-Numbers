@@ -559,13 +559,13 @@ public:
       m_current     = -1;
       m_updateCount = m_a.getUpdateCount();
     }
-    AbstractIterator *clone()          override {
+    AbstractIterator *clone()          final {
       return new CompactArrayIterator(*this);
     }
-    inline bool hasNext()        const override {
+    inline bool hasNext()        const final {
       return m_next < m_a.size();
     }
-    void *next()                       override {
+    void *next()                       final {
       if(m_next >= m_a.size()) {
         noNextElementError(__TFUNCTION__);
       }
@@ -573,7 +573,7 @@ public:
       m_current = m_next++;
       return &m_a[m_current];
     }
-    void remove()                      override {
+    void remove()                      final {
       if(m_current < 0) {
         noCurrentElementError(__TFUNCTION__);
       }
@@ -589,7 +589,7 @@ public:
   Iterator<T>      getIterator()       override {
     return Iterator<T>(new CompactArrayIterator(this));
   }
-  bool             hasOrder()    const override {
+  bool             hasOrder()    const final {
     return true;
   }
   inline T        *begin() {
