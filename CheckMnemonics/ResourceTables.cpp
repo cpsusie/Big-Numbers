@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "ResourceParser.h"
 
-#line 36 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+#line 36 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
 #include <ParserTablesTemplate.h>
 
 using namespace LRParsing;

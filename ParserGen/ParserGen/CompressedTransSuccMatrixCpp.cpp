@@ -67,10 +67,10 @@ void CompressedTransSuccMatrix::generateCompressedForm() {
 
 Macro CompressedTransSuccMatrix::doNTIndexNode(const SymbolNode &node) {
   switch(node.getCompressionMethod()) {
-  case AbstractParserTables::CompCodeBinSearch: return doBinSearchNode( node);
-  case AbstractParserTables::CompCodeSplitNode: return doSplitNode(     node);
-  case AbstractParserTables::CompCodeImmediate: return doImmediateNode( node);
-  case AbstractParserTables::CompCodeBitSet   : return doBitSetNode(    node);
+  case CompCodeBinSearch: return doBinSearchNode( node);
+  case CompCodeSplitNode: return doSplitNode(     node);
+  case CompCodeImmediate: return doImmediateNode( node);
+  case CompCodeBitSet   : return doBitSetNode(    node);
   default                                     :
     throwException(_T("%s:Unknown compressionMethod for state %u"), __TFUNCTION__, node.getNTIndex());
     break;

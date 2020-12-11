@@ -15,7 +15,7 @@ public:
     return getLength();
   }
   inline UINT getSizeofBitSet() const {
-    return ::getSizeofBitSet(getCapacity());
+    return SearchFunctions::getSizeofBitSet(getCapacity());
   }
   inline bool isEmpty() const {
     return getCapacity() == 0;

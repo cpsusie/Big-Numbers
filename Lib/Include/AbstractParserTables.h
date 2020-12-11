@@ -93,18 +93,6 @@ public:
   virtual UINT          getTableByteCount(   Platform platform        ) const = 0;
   virtual ~AbstractParserTables() {
   }
-
-  typedef BYTE CompressionMethod;
-
-  // 4 different compression-codes. Saved in bit 15-16 in m_actionCode[i] and m_successorCode[i]
-  // See generated parsertables for more info of encoding
-  static constexpr CompressionMethod CompCodeBinSearch = 0;
-  static constexpr CompressionMethod CompCodeSplitNode = 1;
-  static constexpr CompressionMethod CompCodeImmediate = 2;
-  static constexpr CompressionMethod CompCodeBitSet    = 3;
-
-  // special value for fromState, indicating always goto newState, no matter which state we come from
-  static constexpr UINT              _NoFromStateCheck = 0x7fff;
 };
 
 }; // namespace LRParsing

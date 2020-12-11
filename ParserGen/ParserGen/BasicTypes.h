@@ -3,7 +3,7 @@
 #include <CommonHashFunctions.h>
 #include <CompactArray.h>
 #include <CompactHashMap.h>
-#include <AbstractParserTables.h>
+#include <ParserTablesTemplate.h>
 #include "Options.h"
 
 using namespace LRParsing;
@@ -32,12 +32,6 @@ typedef BitSet    SymbolSet;
 typedef SymbolSet TermSet;    // capacity always #terminals
 typedef BitSet    StateSet;   // capacity always #states
 typedef BitSet    NTIndexSet; // capacity always #non-terminals
-
-// Return number of bytes neccessary to have a bitSet ranging from [0..capacity-1]
-// if capacity=0, return 0
-inline UINT getSizeofBitSet(UINT capacity) {
-  return (capacity) ? ((capacity - 1) / 8 + 1) : 0;
-}
 
 inline int stringCmp(const String &s1, const String &s2) {
   return _tcscmp(s1.cstr(), s2.cstr());

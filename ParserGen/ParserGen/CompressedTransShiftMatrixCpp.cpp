@@ -21,7 +21,7 @@ CompressedTransShiftMatrix::CompressedTransShiftMatrix(const Grammar &grammar)
   , m_shiftNodeArray(          TransposedShiftMatrix(grammar)                     )
   , m_reduceMacroMap(          grammar                                            )
   , m_reduceUsedByParam(       grammar.getBitSetParam(ETYPE_STATE)                )
-  , m_sizeofTermBitSet(        getSizeofBitSet(grammar.getTermBitSetCapacity())   )
+  , m_sizeofTermBitSet(        SearchFunctions::getSizeofBitSet(grammar.getTermBitSetCapacity())   )
   , m_termArraySize(           0                                                  )
   , m_reduceArraySize(         0                                                  )
   , m_reduceSplitNodeCount(    0                                                  )
@@ -110,10 +110,10 @@ void CompressedTransShiftMatrix::generateCompressedFormShift() {
 
 Macro CompressedTransShiftMatrix::doShiftNode(const SymbolNode &node) {
   switch(node.getCompressionMethod()) {
-  case AbstractParserTables::CompCodeBinSearch: return doShiftNodeBinSearch( node);
-  case AbstractParserTables::CompCodeSplitNode: return doShiftNodeSplit(     node);
-  case AbstractParserTables::CompCodeImmediate: return doShiftNodeImmediate( node);
-  case AbstractParserTables::CompCodeBitSet   : return doShiftNodeBitSet(    node);
+  case CompCodeBinSearch: return doShiftNodeBinSearch( node);
+  case CompCodeSplitNode: return doShiftNodeSplit(     node);
+  case CompCodeImmediate: return doShiftNodeImmediate( node);
+  case CompCodeBitSet   : return doShiftNodeBitSet(    node);
   default                                     :
     throwException(_T("%s:Unknown compressionMethod for state %u"), __TFUNCTION__, node.getTerm());
     break;
@@ -240,7 +240,7 @@ void CompressedTransShiftMatrix::generateCompressedFormReduce() {
       m_reduceMacroMap.addMacro(macro.setIndex(state).setName(format(_T("_rc%04u"), state)));
     }
   }
-  const String errorValue = encodeMacroValue(CompCodeImmediate, 1, AbstractParserTables::_NoFromStateCheck);
+  const String errorValue = encodeMacroValue(CompCodeImmediate, 1, SearchFunctions::_NoInputCheck);
   for(UINT state : undefinedTermEntries) {
     m_reduceMacroMap.addMacro(Macro(m_reduceUsedByParam, state, errorValue, _T("")).setIndex(state).setName(format(_T("_rc%04u"), state)));
   }
@@ -249,10 +249,10 @@ void CompressedTransShiftMatrix::generateCompressedFormReduce() {
 
 Macro CompressedTransShiftMatrix::doReduceNode(const ReduceNode &node) {
   switch(node.getCompressionMethod()) {
-  case AbstractParserTables::CompCodeBinSearch: return doReduceNodeBinSearch(node);
-  case AbstractParserTables::CompCodeSplitNode: return doReduceNodeSplit(    node);
-  case AbstractParserTables::CompCodeImmediate: return doReduceNodeImmediate(node);
-  case AbstractParserTables::CompCodeBitSet   : return doReduceNodeBitSet(   node);
+  case CompCodeBinSearch: return doReduceNodeBinSearch(node);
+  case CompCodeSplitNode: return doReduceNodeSplit(    node);
+  case CompCodeImmediate: return doReduceNodeImmediate(node);
+  case CompCodeBitSet   : return doReduceNodeBitSet(   node);
   default                                     :
     throwException(_T("%s:Unknown compressionMethod for state %u"), __TFUNCTION__, node.getState());
     break;

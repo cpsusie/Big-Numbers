@@ -2,7 +2,7 @@
 
 class StatePair {
 public:
-  static constexpr UINT NoFromStateCheck = AbstractParserTables::_NoFromStateCheck;
+  static constexpr UINT NoFromStateCheck = SearchFunctions::_NoInputCheck;
   UINT m_fromState;
   UINT m_newState;
   UINT m_fromStateCount;

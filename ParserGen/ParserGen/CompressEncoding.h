@@ -3,10 +3,10 @@
 #include "BitSetInterval.h"
 
 typedef enum {
-  CompCodeBinSearch = AbstractParserTables::CompCodeBinSearch
- ,CompCodeSplitNode = AbstractParserTables::CompCodeSplitNode
- ,CompCodeImmediate = AbstractParserTables::CompCodeImmediate
- ,CompCodeBitSet    = AbstractParserTables::CompCodeBitSet
+  CompCodeBinSearch = SearchFunctions::CompCodeBinSearch
+ ,CompCodeSplitNode = SearchFunctions::CompCodeSplitNode
+ ,CompCodeImmediate = SearchFunctions::CompCodeImmediate
+ ,CompCodeBitSet    = SearchFunctions::CompCodeBitSet
 } CompressionMethod;
 
 const TCHAR *compressMethodToString(CompressionMethod method);

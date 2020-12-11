@@ -5,6 +5,170 @@
 
 namespace LRParsing {
 
+class SearchFunctions {
+public:
+
+  typedef BYTE CompressionMethod;
+
+  // 4 different compression-codes. Saved in bit 15-16 in m_actionCode[i] and m_successorCode[i]
+  // See generated parsertables for more info of encoding
+  static constexpr CompressionMethod CompCodeBinSearch = 0;
+  static constexpr CompressionMethod CompCodeSplitNode = 1;
+  static constexpr CompressionMethod CompCodeImmediate = 2;
+  static constexpr CompressionMethod CompCodeBitSet    = 3;
+
+  // special value for CompCodeImmediate, indicating always return immediate-result, regardless of input
+  static constexpr UINT              _NoInputCheck = 0x7fff;
+
+  // ---------------------------------------- helper functions for ordered arrays -----------------------------------------
+
+  template<typename T> static inline UINT getArraySize(const T *a) {
+    const int n = *(a++);
+    return n;
+  }
+  // Assume a[0] contains the number of elements, n, in the array, followed by n distinct elements, in increasing order
+  // Copy all n elements to dst[0..n-1]
+  // Return n
+  template<typename T, typename D> static UINT getAllArrayElements(const T *a, D *dst) {
+    const int n = *(a++);
+    for(const T *endp = a+n; a < endp;) {
+      *(dst++) = (D)(*(a++));
+    }
+    return n;
+  }
+  // Binary search.
+  // Assume a[0] contains the number of elements, n, in the array, followed by n distinct elements, in increasing order
+  // Return index [0..n-1] of the searched element, if it exist, or -1 if not found
+  template<typename T> static int findArrayIndex(const T *a, int v) {
+    const int n = *(a++);
+    for(int l = 0, r = n - 1; l <= r;) { // binary search
+      const int m   = (l+r)>>1;
+      const int cmp = (int)a[m] - v;
+      if(cmp < 0) {
+        l = m + 1;
+      } else if(cmp > 0) {
+        r = m - 1;
+      } else {
+        return m;
+      }
+    }
+    return -1;
+  }
+
+  // ---------------------------------------- helper functions for bitsets -----------------------------------------
+
+  // Return number of bytes neccessary to have a bitSet ranging from [0..capacity-1]
+  // if capacity=0, return 0
+  static inline UINT getSizeofBitSet(UINT capacity) {
+    return (capacity - 1) / 8 + 1;
+  }
+
+  // bitset is a pointer to first BYTE in bitset, capacity = max value in bitset + 1. values in bitset=[0..capacity-1]
+  // Return number of 1-bits in bitset
+  static inline UINT getBitSetSize(const BYTE *bitset, UINT capacity) {
+    const UINT bytes = getSizeofBitSet(capacity);
+    UINT       sum   = 0;
+    for(const BYTE *endp = bitset + bytes; bitset < endp;) {
+      for(BYTE b = *(bitset++); b; b &= (b-1)) {
+        sum++;
+      }
+    }
+    return sum;
+  }
+  // bitset is a pointer to first BYTE in bitset, capacity = max value in bitset + 1. values in bitset=[0..capacity-1]
+  // Copy all integer-values with a 1-bit to dst[0..n-1], where n=getBitSetSize(bitset,bytes)
+  // Return n
+  template<typename T> static UINT getAllBitSetElements(const BYTE *bitset, UINT capacity, T *dst) {
+    const UINT bytes = getSizeofBitSet(capacity);
+    T         *dstp  = dst;
+    for(const BYTE *bp = bitset, *endp = bp + bytes; bp < endp; bp++) {
+      if(*bp) {
+        UINT bitIndex = ((UINT)(bp - bitset)) << 3;
+        for(BYTE b = *bp; b; bitIndex++, b >>= 1) {
+          if(b & 1) *(dstp++) = (T)bitIndex;
+        }
+      }
+    }
+    return (UINT)(dstp - dst);
+  }
+  // bitset is a pointer to first BYTE in bitset, capacity = max value in bitset + 1. values in bitset=[0..capacity-1]
+  // Return true, if v is present in bitset, ie, has a 1-bit at position indexed by v
+  static inline bool bitsetContains(const BYTE *bitset, UINT capacity, UINT v) {
+    return (v < capacity) && (bitset[v>>3]&(1<<(v&7))) != 0;
+  }
+
+  static inline CompressionMethod getCompressionCode(UINT code) {
+    return (code >> 15) & 3;
+  }
+  static inline UINT leftChild(  const UINT *codeArray, UINT code) { return codeArray[code >> 17   ]; }
+  static inline UINT rightChild( const UINT *codeArray, UINT code) { return codeArray[code & 0x7fff]; }
+};
+
+template<UINT     codeArraySize
+        ,UINT     bitSetIntervalFrom
+        ,UINT     bitSetIntervalCapacity
+        ,bool     alwaysCheckInput
+        ,typename InputType
+        ,typename OutputType>
+class CompressedMatrix {
+private:
+  const UINT           *m_codeArray;
+  const InputType      *m_inputArrayTable;
+  const OutputType     *m_outputArrayTable;
+  const BYTE           *m_bitSetTable;
+
+  inline const  InputType *getInputArray(           UINT code) const {
+    return m_inputArrayTable + (code & 0x7fff);
+  }
+  inline const  BYTE      *getBitSet(               UINT code) const {
+    return m_bitSetTable     + (code & 0x7fff);
+  }
+  inline        int        getBinSearchResult(      UINT code, InputType input) const {
+    const int index = SearchFunctions::findArrayIndex(getInputArray(code), input);
+    return (index >= 0) ? m_outputArrayTable[(code >> 17) + index] : -1;
+  }
+  inline        int        getSplitNodeResult(      UINT code, InputType input) const {
+    const int result = getResultFromCode(SearchFunctions::leftChild(m_codeArray, code), input);
+    return (result >= 0) ? result : getResultFromCode(SearchFunctions::rightChild(m_codeArray, code), input);
+  }
+  static inline int        getImmediateResult(      UINT code, InputType input) {
+    const UINT v = code & 0x7fff;
+    if(alwaysCheckInput) {
+      return (input == v) ? (code >> 17) : -1;
+    } else {
+      return ((v == SearchFunctions::_NoInputCheck) || (input == v)) ? (code >> 17) : -1;
+    }
+  }
+  inline        int        getBitSetResult(         UINT code, InputType input) const {
+    return SearchFunctions::bitsetContains(getBitSet(code), bitSetIntervalCapacity, input-bitSetIntervalFrom) ? (code >> 17) : -1;
+  }
+  int getResultFromCode(                            UINT code, InputType input) const {
+    switch(SearchFunctions::getCompressionCode(code)) {
+    case SearchFunctions::CompCodeBinSearch : return getBinSearchResult(code, input);
+    case SearchFunctions::CompCodeSplitNode : return getSplitNodeResult(code, input);
+    case SearchFunctions::CompCodeImmediate : return getImmediateResult(code, input);
+    case SearchFunctions::CompCodeBitSet    : return getBitSetResult(   code, input);
+    default                : __assume(0);
+    }
+    return -1;
+  }
+public:
+  CompressedMatrix(const UINT       *codeArray
+                  ,const InputType  *inputArrayTable
+                  ,const OutputType *outputArrayTable
+                  ,const BYTE       *bitSetTable
+  )
+  :m_codeArray(       codeArray       )
+  ,m_inputArrayTable( inputArrayTable )
+  ,m_outputArrayTable(outputArrayTable)
+  ,m_bitSetTable(     bitSetTable     )
+  {
+  }
+  int getResult(UINT index, InputType input) const {
+    return getResultFromCode(m_codeArray[index], input);
+  }
+};
+
 template<UINT     symbolCount
         ,UINT     termCount
         ,UINT     productionCount
@@ -58,87 +222,6 @@ protected:
     SAFEDELETEARRAY(m_rightSides);
   }
 
-  // ---------------------------------------- helper functions for ordered arrays -----------------------------------------
-
-  template<typename T> static inline UINT getArraySize(const T *a) {
-    const int n = *(a++);
-    return n;
-  }
-  // Assume a[0] contains the number of elements, n, in the array, followed by n distinct elements, in increasing order
-  // Copy all n elements to dst[0..n-1]
-  // Return n
-  template<typename T, typename D> static UINT getAllArrayElements(const T *a, D *dst) {
-    const int n = *(a++);
-    for(const T *endp = a+n; a < endp;) {
-      *(dst++) = (D)(*(a++));
-    }
-    return n;
-  }
-  // Binary search.
-  // Assume a[0] contains the number of elements, n, in the array, followed by n distinct elements, in increasing order
-  // Return index [0..n-1] of the searched element, if it exist, or -1 if not found
-  template<typename T> static int findArrayIndex(const T *a, int v) {
-    const int n = *(a++);
-    for(int l = 0, r = n - 1; l <= r;) { // binary search
-      const int m   = (l+r)>>1;
-      const int cmp = (int)a[m] - v;
-      if(cmp < 0) {
-        l = m + 1;
-      } else if(cmp > 0) {
-        r = m - 1;
-      } else {
-        return m;
-      }
-    }
-    return -1;
-  }
-
-  // ---------------------------------------- helper functions for bitsets -----------------------------------------
-
-  static inline UINT getSizeofBitSet(UINT capacity) {
-    return (capacity - 1) / 8 + 1;
-  }
-
-  // bitset is a pointer to first BYTE in bitset, capacity = max value in bitset + 1. values in bitset=[0..capacity-1]
-  // Return number of 1-bits in bitset
-  static inline UINT getBitSetSize(const BYTE *bitset, UINT capacity) {
-    const UINT bytes = getSizeofBitSet(capacity);
-    UINT       sum   = 0;
-    for(const BYTE *endp = bitset + bytes; bitset < endp;) {
-      for(BYTE b = *(bitset++); b; b &= (b-1)) {
-        sum++;
-      }
-    }
-    return sum;
-  }
-  // bitset is a pointer to first BYTE in bitset, capacity = max value in bitset + 1. values in bitset=[0..capacity-1]
-  // Copy all integer-values with a 1-bit to dst[0..n-1], where n=getBitSetSize(bitset,bytes)
-  // Return n
-  template<typename T> static UINT getAllBitSetElements(const BYTE *bitset, UINT capacity, T *dst) {
-    const UINT bytes = getSizeofBitSet(capacity);
-    T         *dstp  = dst;
-    for(const BYTE *bp = bitset, *endp = bp + bytes; bp < endp; bp++) {
-      if(*bp) {
-        UINT bitIndex = ((UINT)(bp - bitset)) << 3;
-        for(BYTE b = *bp; b; bitIndex++, b >>= 1) {
-          if(b & 1) *(dstp++) = (T)bitIndex;
-        }
-      }
-    }
-    return (UINT)(dstp - dst);
-  }
-  // bitset is a pointer to first BYTE in bitset, capacity = max value in bitset + 1. values in bitset=[0..capacity-1]
-  // Return true, if v is present in bitset, ie, has a 1-bit at position indexed by v
-  static inline bool bitsetContains(const BYTE *bitset, UINT capacity, UINT v) {
-    return (v < capacity) && (bitset[v>>3]&(1<<(v&7))) != 0;
-  }
-
-  static inline CompressionMethod getCompressionCode(UINT code) {
-    return (code >> 15) & 3;
-  }
-  static inline UINT leftChild(  const UINT *codeArray, UINT code) { return codeArray[code >> 17   ]; }
-  static inline UINT rightChild( const UINT *codeArray, UINT code) { return codeArray[code & 0x7fff]; }
-
 public:
   UINT getProductionLength(   UINT prod)            const final {
     assert(prod < productionCount);
@@ -187,7 +270,7 @@ template<UINT     symbolCount
         ,UINT     startState
         ,UINT     termBitSetCapacity
         ,UINT     shiftStateIntervalFrom, UINT     shiftStateIntervalCapacity
-        ,UINT     succStateIntervalFrom , UINT     succStateIntervalCapacity
+        ,UINT     newStateIntervalFrom  , UINT     newStateIntervalCapacity
         ,typename SymbolType       /* unsigned, values:[0..symbolCount [ */
         ,typename TerminalType     /* unsigned, values:[0..termCount   [ */
         ,typename NTIndexType      /* unsigned, values:[0..ntermCount  [ */
@@ -204,148 +287,10 @@ class ParserTablesTemplateTransShift
                                 ,NTIndexType>
 {
 private:
-  const UINT           *m_shiftCodeArray;
-  const StateType      *m_shiftFromStateArrayTable;
-  const StateType      *m_shiftToStateArrayTable;
-  const BYTE           *m_shiftStateBitSetTable;
-  const UINT           *m_reduceCodeArray;
-  const TerminalType   *m_termArrayTable;
-  const ProductionType *m_reduceArrayTable;
-  const BYTE           *m_termBitSetTable;
-  const UINT           *m_successorCodeArray;
-  const StateType      *m_stateArrayTable;
-  const StateType      *m_newStateArrayTable;
-  const BYTE           *m_stateBitSetTable;
-
-// ----------------------------- successor functions ---------------------------------------
-  inline const  StateType   *getStateArray(      UINT code) const {
-    return m_stateArrayTable + (code & 0x7fff);
-  }
-  inline const  BYTE        *getStateBitSet(     UINT code) const {
-    return m_stateBitSetTable  + (code & 0x7fff);
-  }
-  inline        int getSuccessorBinSearch(      UINT code, UINT state) const {
-    const int index = findArrayIndex(getStateArray(code), state);
-    return (index >= 0) ? m_newStateArrayTable[(code >> 17) + index] : -1;
-  }
-  inline        int getSuccessorSplitNode(      UINT code, UINT state) const {
-    const int s = getSuccessorFromCode(leftChild(m_successorCodeArray, code), state);
-    return (s >= 0) ? s : getSuccessorFromCode(rightChild(m_successorCodeArray, code), state);
-  }
-  static inline int getSuccessorImmediate(      UINT code, UINT state) {
-    const UINT fromState = code & 0x7fff;
-    return ((fromState == _NoFromStateCheck) || (state == fromState)) ? (code >> 17) : -1;
-  }
-  inline        int getSuccessorBitSet(         UINT code, UINT state) const {
-    return bitsetContains(getStateBitSet(code), succStateIntervalCapacity, state-succStateIntervalFrom) ? (code >> 17) : -1;
-  }
-  inline        int getSuccessorFromCode(       UINT code, UINT state) const {
-    switch(getCompressionCode(code)) {
-    case CompCodeBinSearch : return getSuccessorBinSearch(code, state);
-    case CompCodeSplitNode : return getSuccessorSplitNode(code, state);
-    case CompCodeImmediate : return getSuccessorImmediate(code, state);
-    case CompCodeBitSet    : return getSuccessorBitSet(   code, state);
-    default                : __assume(0);
-    }
-    return -1;
-  }
-
-// ----------------------------- shift functions ---------------------------------------
-  inline const  StateType   *getShiftFromStateArray(  UINT code) const {
-    return m_shiftFromStateArrayTable + (code & 0x7fff);
-  }
-  inline const  BYTE        *getShiftStateBitSet(     UINT code) const {
-    return m_shiftStateBitSetTable  + (code & 0x7fff);
-  }
-  inline        int getShiftBinSearch(      UINT code, UINT state) const {
-    const int index = findArrayIndex(getShiftFromStateArray(code), state);
-    return (index >= 0) ? m_shiftToStateArrayTable[(code >> 17) + index] : -1;
-  }
-  inline        int getShiftSplitNode(      UINT code, UINT state) const {
-    const int a = getShiftFromCode(leftChild(m_shiftCodeArray, code), state);
-    return (a >= 0) ? a : getShiftFromCode(rightChild(m_shiftCodeArray, code), state);
-  }
-  static inline int getShiftImmediate(      UINT code, UINT state) {
-    const UINT fromState = code & 0x7fff;
-    return ((fromState == _NoFromStateCheck) || (state == fromState)) ? (code >> 17) : -1;
-  }
-  inline        int getShiftBitSet(         UINT code, UINT state) const {
-    return bitsetContains(getShiftStateBitSet(code), shiftStateIntervalCapacity, state-shiftStateIntervalFrom) ? (code >> 17) : -1;
-  }
-  inline        int getShiftFromCode(       UINT code, UINT state) const {
-    switch(getCompressionCode(code)) {
-    case CompCodeBinSearch : return getShiftBinSearch(code, state);
-    case CompCodeSplitNode : return getShiftSplitNode(code, state);
-    case CompCodeImmediate : return getShiftImmediate(code, state);
-    case CompCodeBitSet    : return getShiftBitSet(   code, state);
-    default                : __assume(0);
-    }
-    return -1;
-  }
-
-  // ----------------------------------- reduce functions ---------------------------------
-  inline const TerminalType *getTermArray(       UINT code) const {
-    return m_termArrayTable  + (code & 0x7fff);
-  }
-  inline const  BYTE        *getTermBitSet(      UINT code) const {
-    return m_termBitSetTable + (code & 0x7fff);
-  }
-
-// --------------------------- getReduce -------------------------------------
-  inline        int getReduceBinSearch(          UINT code, UINT term) const {
-    const int index = findArrayIndex(getTermArray(code), term);
-    return (index >= 0) ? m_reduceArrayTable[(code >> 17) + index] : -1;
-  }
-  inline        int getReduceSplitNode(          UINT code, UINT term) const {
-    const int p = getReduceFromCode(leftChild(m_reduceCodeArray, code), term);
-    return (p >= 0) ? p : getReduceFromCode(rightChild(m_reduceCodeArray, code), term);
-  }
-  static inline int getReduceImmediate(          UINT code, UINT term)       {
-    return ((code & 0x7fff) == term)        ? (code >> 17) : -1;
-  }
-  inline        int getReduceBitSet(             UINT code, UINT term) const {
-    return bitsetContains(getTermBitSet(code), termBitSetCapacity, term) ? (code >> 17) : -1;
-  }
-  inline        int getReduceFromCode(           UINT code, UINT term) const {
-    switch(getCompressionCode(code)) {
-    case CompCodeBinSearch : return getReduceBinSearch(code, term);
-    case CompCodeSplitNode : return getReduceSplitNode(code, term);
-    case CompCodeImmediate : return getReduceImmediate(code, term);
-    case CompCodeBitSet    : return getReduceBitSet(   code, term);
-    default                : __assume(0);
-    }
-  }
-
+  CompressedMatrix<termCount , shiftStateIntervalFrom, shiftStateIntervalCapacity, true , StateType   , StateType     > m_shiftMatrix;
+  CompressedMatrix<stateCount, 0                     , termBitSetCapacity        , true , TerminalType, ProductionType> m_reduceMatrix;
+  CompressedMatrix<termCount , newStateIntervalFrom  , newStateIntervalCapacity  , false, StateType   , StateType     > m_newStateMatrix;
 public:
-#pragma warning(push)
-  UINT          getStartState() const {
-    return startState;
-  }
-  // term is a terminal-symbol.
-  // Return action
-  //   action.getType() = PA_SHIFT : Shift to state action.getNewState()
-  //   action.getType() = PA_REDUCE: Reduce by production action.getReduceProduction()
-  //   action.getType() = PA_ERROR : Unexpected term...Invalid input in the given state
-  //   if action.getType() = PA_REDUCE and reduceProduction() = 0, then Accept input, unless errors has been detected at some earlier stage
-  Action getAction(      UINT state, UINT term     ) const final {
-    assert(state < stateCount);
-    assert(isTerminal(term));
-    const int nextState = getShiftFromCode(m_shiftCodeArray[term], state);
-    if(nextState  >= 0) return Action(PA_SHIFT, nextState);
-    const int reduceProd = getReduceFromCode(m_reduceCodeArray[state], term);
-    if(reduceProd >= 0) return Action(PA_REDUCE, reduceProd);
-    return Action();
-  }
-
-  // nterm is nonterminal
-  int getSuccessor(      UINT state, UINT nterm    ) const final {
-    assert( state < stateCount);
-    assert(isNonTerminal(nterm));
-    return getSuccessorFromCode(m_successorCodeArray[NTermToNTIndex(nterm)], state);
-  }
-
-#pragma warning(pop)
-
   ParserTablesTemplateTransShift(
                        const BYTE           *prodLengthArray
                       ,const NTIndexType    *leftSideArray
@@ -359,28 +304,47 @@ public:
                       ,const TerminalType   *termArrayTable
                       ,const ProductionType *reduceArrayTable
                       ,const BYTE           *termBitSetTable
-                      ,const UINT           *successorCodeArray
+                      ,const UINT           *newStateCodeArray
                       ,const StateType      *stateArrayTable
                       ,const StateType      *newStateArrayTable
-                      ,const BYTE           *stateBitSetTable
+                      ,const BYTE           *newStateBitSetTable
                       )
-    :GenereratedTablesCommon(prodLengthArray  , leftSideArray
-                            ,rightSideTable   , nameString
-                            )
-    ,m_shiftCodeArray          (shiftCodeArray           )
-    ,m_shiftFromStateArrayTable(shiftFromStateArrayTable )
-    ,m_shiftToStateArrayTable  (shiftToStateArrayTable   )
-    ,m_shiftStateBitSetTable   (shiftStateBitSetTable    )
-    ,m_reduceCodeArray         (reduceCodeArray          )
-    ,m_termArrayTable          (termArrayTable           )
-    ,m_reduceArrayTable        (reduceArrayTable         )
-    ,m_termBitSetTable         (termBitSetTable          )
-    ,m_successorCodeArray      (successorCodeArray       )
-    ,m_stateArrayTable         (stateArrayTable          )
-    ,m_newStateArrayTable      (newStateArrayTable       )
-    ,m_stateBitSetTable        (stateBitSetTable         )
+    :GenereratedTablesCommon(prodLengthArray, leftSideArray           , rightSideTable        , nameString           )
+    ,m_shiftMatrix(   shiftCodeArray        , shiftFromStateArrayTable, shiftToStateArrayTable, shiftStateBitSetTable)
+    ,m_reduceMatrix(  reduceCodeArray       , termArrayTable          , reduceArrayTable      , termBitSetTable      )
+    ,m_newStateMatrix(newStateCodeArray     , stateArrayTable         , newStateArrayTable    , newStateBitSetTable  )
   {
   }
+
+#pragma warning(push)
+  UINT   getStartState() const final {
+    return startState;
+  }
+  // term is a terminal-symbol.
+  // Return action
+  //   action.getType() = PA_SHIFT : Shift to state action.getNewState()
+  //   action.getType() = PA_REDUCE: Reduce by production action.getReduceProduction()
+  //   action.getType() = PA_ERROR : Unexpected term...Invalid input in the given state
+  //   if action.getType() = PA_REDUCE and reduceProduction() = 0, then Accept input, unless errors has been detected at some earlier stage
+  Action getAction(UINT state, UINT term ) const final {
+    assert(state < stateCount);
+    assert(isTerminal(term));
+    const int nextState = m_shiftMatrix.getResult(term, state);
+    if(nextState  >= 0) return Action(PA_SHIFT, nextState);
+    const int reduceProd = m_reduceMatrix.getResult(state, term);
+    if(reduceProd >= 0) return Action(PA_REDUCE, reduceProd);
+    return Action();
+  }
+
+  // nterm is nonterminal-symbol
+  // Return newState (>= 0) if valid combination of state, nterm, or -1 if not
+  int    getSuccessor(UINT state, UINT nterm) const final {
+    assert( state < stateCount);
+    assert(isNonTerminal(nterm));
+    return m_newStateMatrix.getResult(NTermToNTIndex(nterm), state);
+  }
+#pragma warning(pop)
+
 };
 
 }; // namespace LRParsing
