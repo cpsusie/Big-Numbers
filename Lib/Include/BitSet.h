@@ -161,6 +161,8 @@ public:
   inline size_t getAtomIndex(size_t i) const {
     return _BS_ATOMINDEX(i);
   }
+  size_t getMin() const;
+  size_t getMax() const;
 
   // Iterates elements of bitset in ascending  order,
   // beginning from smallest element >= start

@@ -4,6 +4,22 @@
 #include <Random.h>
 #include "BitSetIterator.h"
 
+size_t BitSet::getMin() const {
+  auto it = getIterator();
+  if(!it.hasNext()) {
+    throwEmptySetException(__TFUNCTION__);
+  }
+  return it.next();
+}
+
+size_t BitSet::getMax() const {
+  auto it = getReverseIterator();
+  if(!it.hasNext()) {
+    throwEmptySetException(__TFUNCTION__);
+  }
+  return it.next();
+}
+
 ConstIterator<size_t> BitSet::getIterator(size_t start, size_t end) const {
   return ConstIterator<size_t>(new BitSetIterator(this, start, end));
 }
