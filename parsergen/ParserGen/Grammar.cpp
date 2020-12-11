@@ -148,7 +148,7 @@ Grammar::Grammar(const AbstractParserTables &src)
 , m_startState(               0)
 , m_termPermutationDone(   true)
 , m_termBitSetCapacity(       0)
-, m_statePermutationDone(  true)
+, m_statePermutationDone( false)
 , m_result(             nullptr)
 {
   m_result = new GrammarResult(); TRACE_NEW(m_result);

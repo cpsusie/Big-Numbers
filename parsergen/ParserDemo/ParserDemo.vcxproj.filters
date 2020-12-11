@@ -102,6 +102,15 @@
     <ClCompile Include="GetWord.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\ParserGen\GrammarPermutation.cpp">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ParserGen\OptimizedBitSetPermutation.cpp">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ParserGen\ByteCount.cpp">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ParserDemo.rc">

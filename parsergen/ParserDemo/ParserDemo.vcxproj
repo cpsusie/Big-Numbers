@@ -288,10 +288,13 @@
     </Xdcmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\ParserGen\ByteCount.cpp" />
     <ClCompile Include="..\parsergen\Grammar.cpp" />
     <ClCompile Include="..\ParserGen\GrammarDump.cpp" />
+    <ClCompile Include="..\ParserGen\GrammarPermutation.cpp" />
     <ClCompile Include="..\ParserGen\GrammarResult.cpp" />
     <ClCompile Include="..\ParserGen\NTermNewStatePairArray.cpp" />
+    <ClCompile Include="..\ParserGen\OptimizedBitSetPermutation.cpp" />
     <ClCompile Include="..\ParserGen\Options.cpp" />
     <ClCompile Include="..\ParserGen\StateResult.cpp" />
     <ClCompile Include="..\ParserGen\SymbolDataPair.cpp" />

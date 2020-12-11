@@ -13,7 +13,7 @@ FullActionMatrix::FullActionMatrix(const AbstractParserTables &tables)
       case PA_SHIFT  :
       case PA_REDUCE :
       case PA_ERROR  :
-        (*this)(state, term) = tables.getAction(state, term);
+        (*this)(state, term) = a;
         break;
       default:
         throwException(_T("%s:Invalid actiontype(=%u) returned from tables.getAction(state=%u,term=%u)"), __TFUNCTION__, a.getType(), state, term);
@@ -39,14 +39,19 @@ String FullActionMatrix::toString() const {
     for(UINT term = 0; term < m_termCount; term++) {
       const Action &a = (*this)(state, term);
       switch(a.getType()) {
-      case PA_ERROR : line += _T("   E "); break;
-      case PA_SHIFT : line += format(_T("%5s "), format(_T("S%u"), a.getNewState()).cstr());
+      case PA_SHIFT :
+        line += format(_T("%5s "), format(_T("S%u"), a.getNewState()).cstr());
+        break;
       case PA_REDUCE:
         if(a.isAcceptAction()) {
           line += _T("Accept");
         } else {
           line += format(_T("%5s "), format(_T("R%u"), a.getReduceProduction()).cstr());
         }
+        break;
+      case PA_ERROR :
+        line += _T("   E ");
+        break;
       }
     }
     result += line;
@@ -83,6 +88,74 @@ String FullSuccessorMatrix::toString() const {
         line += _T("   E ");
       } else {
         line += format(_T("%4u "), v);
+      }
+    }
+    result += line;
+    result += '\n';
+  }
+  return result;
+}
+
+FullTransitionMatrix::FullTransitionMatrix(const AbstractParserTables &tables)
+ : ParserTransitionMatrix(tables, MatrixDimension(tables.getStateCount(), tables.getSymbolCount()))
+{
+  for(UINT state = 0; state < m_stateCount; state++) {
+    for(UINT term = 0; term < m_termCount; term++) {
+      const Action a = tables.getAction(state, term);
+      switch(a.getType()) {
+      case PA_SHIFT  :
+      case PA_REDUCE :
+      case PA_ERROR  :
+        (*this)(state, term) = a;
+        break;
+      default:
+        throwException(_T("%s:Invalid actiontype(=%u) returned from tables.getAction(state=%u,term=%u)"), __TFUNCTION__, a.getType(), state, term);
+      }
+    }
+    for(UINT nterm = m_termCount; nterm < m_symbolCount; nterm++) {
+      const int newState = tables.getSuccessor(state, nterm);
+      if(newState >= 0) {
+        (*this)(state, nterm) = Action(PA_NEWSTATE, newState);
+      } else {
+        (*this)(state, nterm) = Action();
+      }
+    }
+  }
+}
+
+String FullTransitionMatrix::toString() const {
+  String              result;
+  result = _T("     | ");
+  for(UINT term = 0; term < m_symbolCount; term++) {
+    result += format(_T("%5u "), term);
+  }
+
+  result += '\n';
+  result += spaceString(result.length(), _T('_'));
+  result += '\n';
+
+  for(UINT state = 0; state < m_stateCount; state++) {
+    String line;
+    line = format(_T("%4u | "), state);
+    for(UINT sym = 0; sym < m_symbolCount; sym++) {
+      const Action &a = (*this)(state, sym);
+      switch(a.getType()) {
+      case PA_SHIFT   :
+        line += format(_T("%5s "), format(_T("S%u"), a.getNewState()).cstr());
+        break;
+      case PA_NEWSTATE:
+        line += format(_T("%5s "), format(_T("G%u"), a.getNewState()).cstr());
+        break;
+      case PA_REDUCE  :
+        if(a.isAcceptAction()) {
+          line += _T("Accept");
+        } else {
+          line += format(_T("%5s "), format(_T("R%u"), a.getReduceProduction()).cstr());
+        }
+        break;
+      case PA_ERROR   :
+        line += _T("   E ");
+        break;
       }
     }
     result += line;

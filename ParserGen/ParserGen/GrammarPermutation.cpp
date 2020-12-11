@@ -93,7 +93,7 @@ static int stateCmpByIndex(const LR1State &s1, const LR1State &s2) {
   return (int)s1.m_index - (int)s2.m_index;
 }
 
-void Grammar::reorderStates(const OptimizedBitSetPermutation2 &permutation) {
+void Grammar::reorderStates(const UIntPermutation &permutation) {
   if(getStateReorderingDone()) {
     return;
   }
@@ -102,8 +102,6 @@ void Grammar::reorderStates(const OptimizedBitSetPermutation2 &permutation) {
   }
   permutation.validate();
   disableReorderStates();
-  m_shiftStateSetInterval = permutation.getInterval(0);
-  m_succStateSetInterval  = permutation.getInterval(1);
 
 //  debugLog(_T("%s:shiftStateSetInterval:%s\n"), __TFUNCTION__, m_shiftStateSetInterval.toString().cstr());
 //  debugLog(_T("%s:succStateSetInterval :%s\n"), __TFUNCTION__, m_succStateSetInterval.toString().cstr());
@@ -139,4 +137,13 @@ void Grammar::reorderStates(const OptimizedBitSetPermutation2 &permutation) {
     }
   }
   m_result->sortStateResult();
+}
+
+void Grammar::reorderStates(const OptimizedBitSetPermutation2 &permutation) {
+  if(getStateReorderingDone()) {
+    return;
+  }
+  reorderStates((UIntPermutation&)permutation);
+  m_shiftStateSetInterval = permutation.getInterval(0);
+  m_succStateSetInterval  = permutation.getInterval(1);
 }

@@ -126,6 +126,7 @@ public:
   void sortItems();
 };
 
+class UIntPermutation;
 class OptimizedBitSetPermutation;
 class OptimizedBitSetPermutation2;
 
@@ -256,6 +257,7 @@ public:
 
   void                         reorderTerminals(const OptimizedBitSetPermutation  &permutation);
   void                         reorderStates(   const OptimizedBitSetPermutation2 &permutation);
+  void                         reorderStates(   const UIntPermutation             &permutation);
   void                         disableReorderTerminals()             { m_termPermutationDone  = true;   }
   void                         disableReorderStates()                { m_statePermutationDone = true;   }
   bool                         getTermReorderingDone()         const { return m_termPermutationDone;    }

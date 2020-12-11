@@ -56,6 +56,9 @@ public:
   inline bool operator!=(const Action &a) const {
     return !(*this == a);
   }
+  ULONG hashCode() const {
+    return *(int *)this;
+  }
   ACTIONRESULTTRAITS()
   String toString() const;
 };
@@ -76,14 +79,16 @@ public:
     return getSymbolName(getLeftSymbol(prod));
   }
           String        getRightString(      UINT prod                ) const;
-  virtual void          getRightSide(        UINT prod, UINT *dst     ) const = 0;
+  virtual void          getRightSide(        UINT prod , UINT *dst    ) const = 0;
   virtual UINT          getProductionCount()                            const = 0;
   virtual UINT          getStateCount()                                 const = 0;
   virtual UINT          getStartState()                                 const = 0;
+
+  // Assume state  < getStateCount() && symbol < getSymbolCount()
   // if symbol is a terminal     and (action=getAction(   state,symbol)).isShiftAction() then return action.nextState()
   // if symbol is a terminal     and        !getAction(   state,symbol).isShiftAction()  then return -1
   // if symbol is a nonterminal then return getSuccessor(state,symbol)
-  int                   getNewState(         UINT symbol, UINT state  ) const;
+  int                   getNewState(         UINT state, UINT symbol  ) const;
 
   virtual UINT          getTableByteCount(   Platform platform        ) const = 0;
   virtual ~AbstractParserTables() {

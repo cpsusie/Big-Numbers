@@ -41,9 +41,9 @@ String AbstractParserTables::getRightString(UINT prod) const {
   }
 }
 
-int AbstractParserTables::getNewState(UINT symbol, UINT state  ) const {
-  assert(symbol < getSymbolCount());
+int AbstractParserTables::getNewState(UINT state, UINT symbol) const {
   assert(state  < getStateCount());
+  assert(symbol < getSymbolCount());
 
   if(isTerminal(symbol)) {
     const Action action = getAction(state, symbol);

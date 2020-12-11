@@ -1,8 +1,14 @@
 #include "stdafx.h"
 #include <ThreadPool.h>
+#include <Semaphore.h>
+#include <Grammar.h>
+#include <OptimizedBitSetPermutation.h>
 #include <ParserTransitionMatrix.h>
+#include <GrammarResult.h>
 #include "TestParser.h"
 #include "GRAMMARS.h"
+
+using namespace LRParsing;
 
 SyntaxNode::SyntaxNode(const String &symbol, UINT childCount, bool terminal, TestParser *parser)
 : m_symbol(    symbol    )
@@ -29,46 +35,150 @@ SyntaxNode::~SyntaxNode() {
 class TestScanner : public ScannerToTest {
 private:
   LRparser &m_parser;
-
-  void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) override {
+  void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) final {
     m_parser.verror(pos, format, argptr);
   }
-
-  void vdebug(const TCHAR *format, va_list argptr) override {
+  void vdebug(const TCHAR *format, va_list argptr) final {
     m_parser.vdebug(format, argptr);
   }
-
 public:
-  TestScanner(LRparser &parser) : m_parser(parser) {}
+  TestScanner(LRparser &parser) : m_parser(parser) {
+  }
 };
 
 class YaccJob : public SafeRunnable {
 private:
-  TestParser &m_parser;
+  const AbstractParserTables &m_tables;
+  Grammar                     m_grammar;
+  mutable Semaphore           m_lock;
 public:
-  YaccJob(TestParser &parser);
-  UINT safeRun() override;
+  YaccJob(const AbstractParserTables &tables);
+  UINT safeRun() final;
+  const Grammar &getGrammar() const;
 };
 
-YaccJob::YaccJob(TestParser &parser) : m_parser(parser) {
+YaccJob::YaccJob(const AbstractParserTables &tables)
+  : m_tables(tables)
+  , m_grammar(tables)
+  , m_lock(0)
+{
+}
+
+const Grammar &YaccJob::getGrammar() const {
+  m_lock.wait();
+  return m_grammar;
+}
+
+class TablesFromGrammar : public AbstractParserTables {
+private:
+  const Grammar &m_grammar;
+public:
+  TablesFromGrammar(const Grammar &grammar) : m_grammar(grammar) {
+  }
+  UINT          getSymbolCount()                                const final {
+    return m_grammar.getSymbolCount();
+  }
+  UINT          getTermCount()                                  const final {
+    return m_grammar.getTermCount();
+  }
+  const String &getSymbolName(       UINT symbolIndex)          const final {
+    return m_grammar.getSymbolName(symbolIndex);
+  }
+  Action        getAction(           UINT state, UINT term    ) const final {
+    return m_grammar.getResult().m_stateResult[state].m_termActionArray.getAction(term);
+  }
+  // Return >= 0 if new state exist, or -1 if no next state with the given combination of state,nterm exist
+  int           getSuccessor(        UINT state, UINT nterm   ) const final {
+    return m_grammar.getResult().m_stateResult[state].m_ntermNewStateArray.getNewState(nterm);
+  }
+  UINT          getProductionLength( UINT prod                ) const final {
+    return m_grammar.getProduction(prod).getLength();
+  }
+  UINT          getLeftSymbol(       UINT prod                ) const final {
+    return m_grammar.getProduction(prod).m_leftSide;
+  }
+  void          getRightSide(        UINT prod, UINT *dst     ) const final;
+  UINT          getProductionCount()                            const final {
+    return m_grammar.getProductionCount();
+  }
+  UINT          getStateCount()                                 const final {
+    return m_grammar.getStateCount();
+  }
+  UINT          getStartState()                                 const final {
+    return m_grammar.getStartState();
+  }
+  UINT          getTableByteCount(Platform platform) const final {
+    return 0;
+  }
+};
+
+void TablesFromGrammar::getRightSide(UINT prod, UINT *dst) const {
+  const CompactArray<RightSideSymbol> &ra = m_grammar.getProduction(prod).m_rightSide;
+  for(auto s : ra) {
+    *(dst++) = s.m_index;
+  }
+}
+
+
+class StatePermutation: public UIntPermutation {
+public:
+  StatePermutation(const AbstractParserTables &fromTables, const AbstractParserTables &toTables);
+};
+
+StatePermutation::StatePermutation(const AbstractParserTables &fromTables, const AbstractParserTables &toTables) : UIntPermutation(fromTables.getStateCount()) {
+  const UINT symbolCount = toTables.getSymbolCount();
+  const UINT termCount   = toTables.getTermCount();
+
+  if(fromTables.getStateCount() != toTables.getStateCount()) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("fromTables.stateCount=%u, toTables.stateCount=%u"), fromTables.getStateCount(), toTables.getStateCount());
+  }
+  if(fromTables.getSymbolCount() != symbolCount) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("fromTables.getSymbolCount=%u, toTables.symbolCount=%u"), fromTables.getSymbolCount(), symbolCount);
+  }
+  if(fromTables.getTermCount() != termCount) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("fromTables.termCount=%u, toTables.termCount=%u"), fromTables.getTermCount(), termCount);
+  }
+  UIntPermutation &perm = *this;
+  CompactStack<StatePair> stack;
+  stack.push(StatePair(fromTables.getStartState(), toTables.getStartState()));
+  UINT count = 0;
+  while(!stack.isEmpty()) {
+    const StatePair p = stack.pop();
+    if(perm[p.m_state] == -1) {
+      perm[p.m_state] = p.m_newState;
+      count++;
+      for(UINT symbol = 0; symbol < symbolCount; symbol++) {
+        const int fromNewState = fromTables.getNewState(p.m_state, symbol);
+        if((fromNewState >= 0) && ((int)perm[fromNewState] < 0)) {
+          const int toNewState = toTables.getNewState(p.m_newState, symbol);
+          assert(toNewState >= 0);
+          stack.push(StatePair(fromNewState, toNewState));
+        }
+      }
+    }
+  }
+  assert(count == perm.size());
 }
 
 UINT YaccJob::safeRun() {
   SETTHREADDESCRIPTION(_T("YaccJob"));
-  m_parser.buildStateArray();
+  m_grammar.generateStates();
+  StatePermutation permutation(TablesFromGrammar(m_grammar), m_tables);
+  m_grammar.reorderStates(permutation);
+  m_lock.notify();
   return 0;
 }
 
 TestParser::TestParser()
-  : LRparser(*tablesToTest), m_grammar(*tablesToTest)
-  , m_ok(true)
+  : LRparser(*tablesToTest)
+  , m_ok(    true)
   , m_cycleCount(0)
   , m_root(nullptr)
 {
   m_scanner    = new TestScanner(*this);          TRACE_NEW(m_scanner  );
   setScanner(m_scanner);
   m_userStack  = new SyntaxNodep[getStackSize()]; TRACE_NEW(m_userStack);
-  m_yaccJob    = new YaccJob(*this);              TRACE_NEW(m_yaccJob  );
+  m_yaccJob    = new YaccJob(getParserTables());  TRACE_NEW(m_yaccJob  );
   ThreadPool::executeNoWait(*m_yaccJob);
   buildLegalTermStringArray();
   buildReduceActionArray();
@@ -113,22 +223,16 @@ void TestParser::buildReduceActionArray() {
   }
 }
 
-void TestParser::buildStateArray() {
-  m_grammar.generateStates();
-  Grammar   &g          = getGrammar();
-  const UINT stateCount = g.getStateCount();
-  m_stateStr.setCapacity(stateCount);
-  for(UINT i = 0; i < stateCount; i++) {
-    m_stateStr.add(g.stateToString(g.getState(i)).replace('\n', _T("\r\n")));
-  }
-}
-
-void TestParser::waitForYaccJob() {
-  SAFEDELETE(m_yaccJob);
-}
-
 const String &TestParser::getStateItems(UINT state) {
-  waitForYaccJob();
+  if(m_yaccJob) {
+    const Grammar &g = m_yaccJob->getGrammar();
+    const UINT stateCount = g.getStateCount();
+    m_stateStr.setCapacity(stateCount);
+    for(UINT i = 0; i < stateCount; i++) {
+      m_stateStr.add(g.stateToString(g.getState(i)).replace('\n', _T("\r\n")));
+    }
+    SAFEDELETE(m_yaccJob);
+  }
   return m_stateStr[state];
 }
 

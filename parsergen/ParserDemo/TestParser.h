@@ -31,11 +31,12 @@ public:
   virtual void handleDebug(const SourcePosition &pos, const TCHAR *format, va_list argptr) = 0;
 };
 
+class YaccJob;
+
 class TestParser : public LRparser {
 private:
   LexStringStream           m_inputStream;
   Scanner                  *m_scanner;
-  Grammar                   m_grammar;
   ParserHandler            *m_handler;
   bool                      m_makeDerivationTree;
   bool                      m_ok;
@@ -47,15 +48,13 @@ private:
   StringArray               m_legalLookahead;
   StringArray               m_reduceActionStr;
   StringArray               m_stateStr;
-  SafeRunnable             *m_yaccJob;
+  YaccJob                  *m_yaccJob;
   void deleteNodeList();
   void buildLegalTermStringArray();
   void buildReduceActionArray();
-  void waitForYaccJob();
 public:
   TestParser();
   ~TestParser() override;
-  Grammar      &getGrammar()                        { return m_grammar;                     }
   void          setHandler(ParserHandler *handler)  { m_handler = handler;                  }
   void          setNewInput(const TCHAR *String, bool makeDerivatonTree);
   inline bool   accept()                 const      { return m_ok && (getCycleCount() > 0); }
@@ -82,7 +81,6 @@ public:
   const SyntaxNodep *getUserStack()      const {
     return m_userStack;
   }
-  void buildStateArray();
   void userStackInit()                   final;
   int  reduceAction(        UINT prod  ) final;
   void userStackShiftSymbol(UINT symbol) final;

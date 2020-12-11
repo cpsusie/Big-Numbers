@@ -74,6 +74,18 @@ public:
   }
 };
 
+class FullTransitionMatrix : public ParserTransitionMatrix<Action> {
+public:
+  FullTransitionMatrix(const AbstractParserTables &tables);
+  String getLegalSymbolString(UINT state) const {
+    return m_nameContainer.symbolSetToString(getLegalColumns(state));
+  }
+  String toString() const override;
+  bool isValid(const Action &a) const final {
+    return !a.isParserError();
+  }
+};
+
 class StatePair {
 public:
   UINT m_state, m_newState;
