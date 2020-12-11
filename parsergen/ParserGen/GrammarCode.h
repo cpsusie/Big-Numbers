@@ -44,6 +44,7 @@ ByteArray    bitSetToByteArray(               const BitSet &bitSet, UINT capacit
 // and then only the bytes needed is added to byteArray (using function getSizeofBitSet(capacity) to calculate the size)
 // if this check fails, an exception is thrown
 ByteArray    bitSetToByteArray(               const BitSet &bitSet, const BitSetInterval &interval);
+ByteArray    dynamicBitSetToByteArray(        const BitSet &bitSet);
 // size = #elements in array
 void         outputBeginArrayDefinition(      MarginFile &output, const TCHAR *tableName, IntegerType elementType, UINT size);
 ByteCount    outputEndArrayDefinition(        MarginFile &output,                         IntegerType elementType, UINT size, bool addNewLine=false);

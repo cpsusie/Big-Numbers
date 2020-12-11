@@ -97,6 +97,15 @@ public:
     return (v < capacity) && (bitset[v>>3]&(1<<(v&7))) != 0;
   }
 
+  // bitset is a pointer to first BYTE in dynamic bitset, 1st and 2nd byte are start-offset,bytecount of byte-array containing bits
+  // capacity = max value in bitset + 1. values in bitset=[0..capacity-1]
+  // Return true, if v is present in bitset, ie, has a 1-bit at position indexed by v
+  static inline bool dynamicBitsetContains(const BYTE *bitset, UINT v) {
+    v -= ((UINT)*(bitset++)) << 3;
+    const UINT capacity = ((UINT)*(bitset++)) << 3;
+    return (v < capacity) && (bitset[v>>3]&(1<<(v&7))) != 0;
+  }
+
   static inline CompressionMethod getCompressionCode(UINT code) {
     return (code >> 15) & 3;
   }
@@ -160,6 +169,72 @@ public:
                   ,const InputType  *inputArrayTable
                   ,const OutputType *outputArrayTable
                   ,const BYTE       *bitSetTable
+  )
+  :m_codeArray(       codeArray       )
+  ,m_inputArrayTable( inputArrayTable )
+  ,m_outputArrayTable(outputArrayTable)
+  ,m_bitSetTable(     bitSetTable     )
+  {
+  }
+  int getResult(UINT index, InputType input) const {
+    return getResultFromCode(m_codeArray[index], input);
+  }
+};
+
+template<UINT     codeArraySize
+        ,bool     alwaysCheckInput
+        ,typename InputType
+        ,typename OutputType>
+class CompressedMatrixDynamicBitSet {
+private:
+  const UINT           *m_codeArray;
+  const InputType      *m_inputArrayTable;
+  const OutputType     *m_outputArrayTable;
+  const BYTE           *m_dynamicBitSetTable;
+
+  inline const  InputType *getInputArray(           UINT code) const {
+    return m_inputArrayTable + (code & 0x7fff);
+  }
+  inline const  BYTE      *getBitSet(               UINT code) const {
+    return m_bitSetTable     + (code & 0x7fff);
+  }
+  inline        int        getBinSearchResult(      UINT code, InputType input) const {
+    const int index = SearchFunctions::findArrayIndex(getInputArray(code), input);
+    return (index >= 0) ? m_outputArrayTable[(code >> 17) + index] : -1;
+  }
+  static inline int        getImmediateResult(      UINT code, InputType input) {
+    const UINT v = code & 0x7fff;
+    if(alwaysCheckInput) {
+      return (input == v) ? (code >> 17) : -1;
+    } else {
+      return ((v == SearchFunctions::_NoInputCheck) || (input == v)) ? (code >> 17) : -1;
+    }
+  }
+  inline        int        getBitSetResult(         UINT code, InputType input) const {
+    return SearchFunctions::dynamicBitsetContains(getBitSet(code), input) ? (code >> 17) : -1;
+  }
+  int getResultFromCode(                            UINT code, InputType input) const {
+    for(;;) {
+      switch(SearchFunctions::getCompressionCode(code)) {
+      case SearchFunctions::CompCodeBinSearch : return getBinSearchResult(code, input);
+      case SearchFunctions::CompCodeSplitNode :
+        { const int result = getResultFromCode(SearchFunctions::leftChild(m_codeArray, code), input);
+          if(result >= 0) return result;
+          code = SearchFunctions::rightChild(m_codeArray, code);
+        }
+        break;
+      case SearchFunctions::CompCodeImmediate : return getImmediateResult(code, input);
+      case SearchFunctions::CompCodeBitSet    : return getBitSetResult(   code, input);
+      default                                 : __assume(0);
+      }
+    }
+    return -1;
+  }
+public:
+  CompressedMatrixDynamicBitSet(const UINT       *codeArray
+                               ,const InputType  *inputArrayTable
+                               ,const OutputType *outputArrayTable
+                               ,const BYTE       *bitSetTable
   )
   :m_codeArray(       codeArray       )
   ,m_inputArrayTable( inputArrayTable )

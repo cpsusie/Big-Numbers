@@ -170,6 +170,9 @@ ByteArray bitSetToByteArray(const BitSet &bitSet, UINT capacity) {
 }
 
 ByteArray bitSetToByteArray(const BitSet &bitSet, const BitSetInterval &interval) {
+  if(bitSet.isEmpty()) {
+    throwEmptySetException(__TFUNCTION__);
+  }
   if(!interval.checkBitSetValues(bitSet)) {
     throwInvalidArgumentException(__TFUNCTION__, _T("BitSet:%s, interval=%s"), bitSet.toRangeString().cstr(), interval.toString().cstr());
   }
@@ -182,7 +185,38 @@ ByteArray bitSetToByteArray(const BitSet &bitSet, const BitSetInterval &interval
     const UINT v = (UINT)it.next() - base;
     b[v >> 3] |= (1 << (v & 7));
   }
+/*
+const ByteArray dba = dynamicBitSetToByteArray(bitSet);
+  debugLog(_T("interval:%s, bitSet:%s, byteArray:%s, dba:%s\n")
+           , interval.toString().cstr()
+           , bitSet.toRangeString().cstr()
+           , result.getIterator().toString(ByteFormater::hexFormater, _T(""), BT_BRACES).cstr()
+           , dba.getIterator().toString(ByteFormater::hexFormater, _T(""), BT_BRACES).cstr()
+           );
+*/
   return result;
+}
+
+ByteArray dynamicBitSetToByteArray(const BitSet &bitSet) {
+  if(bitSet.isEmpty()) {
+    throwEmptySetException(__TFUNCTION__);
+  }
+  const UINT low  = (UINT)bitSet.getMin(), high = (UINT)bitSet.getMax();
+  const UINT b0   = low >> 3;
+  UINT b1   = ((high >> 3) + ((high&7)?1:0)) - b0;
+  if(b1 == 0) b1++;
+
+  if((b0 > 255) || (b1 > 255)) {
+    throwException(_T("%s:Range of bitset (=[%u..%u]) requires b0=%u,b1=%u. must be < 256"), __TFUNCTION__, low, high, b0, b1);
+  }
+  ByteArray    bytes(b1);
+  bytes.addZeroes(b1);
+  const UINT base = b0 << 3;
+  for(auto it = bitSet.getIterator(); it.hasNext();) {
+    const UINT v = (UINT)it.next() - base;
+    bytes[v >> 3] |= (1 << (v & 7));
+  }
+  return ByteArray((size_t)b1+2).add(b0).add(b1).addAll(bytes);
 }
 
 void      outputBeginArrayDefinition(MarginFile &output, const TCHAR *tableName, IntegerType elementType, UINT size) {
