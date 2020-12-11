@@ -7,9 +7,10 @@ class ByteOutputStream;
 
 class ByteArray {
 private:
-  BYTE         *m_data;
-  size_t        m_capacity;
-  size_t        m_size;
+  BYTE    *m_data;
+  size_t   m_capacity;
+  size_t   m_size;
+  size_t   m_updateCount;
 
   void cleanup();
   void indexError(const TCHAR *method, size_t index) const;
@@ -93,41 +94,41 @@ public:
 
 
   // Return *this
-  inline ByteArray &add(BYTE b, size_t count = 1) {
+  inline ByteArray   &add(BYTE b, size_t count = 1) {
     return insert(size(), b, count);
   }
 
   // Append bp[0..count-1] to array, setting new arraysize to oldsize+size
   // Return *this
-  inline ByteArray &append(const BYTE *bp, size_t count) {
+  inline ByteArray   &append(const BYTE *bp, size_t count) {
     return insert(m_size, bp, count);
   }
 
-  inline ByteArray &addAll(const ByteArray &a) {
+  inline ByteArray   &addAll(const ByteArray &a) {
     return insert(size(), a.m_data, a.size());
   }
 
   // Return *this
-  ByteArray &remove(size_t index, size_t count);
+  ByteArray          &remove(size_t index, size_t count);
 
   // Insert count zeroes at position [index..index+ount-1]
   // Assume index <= size
   // Return *this
-  inline ByteArray &insertZeroes(size_t index, size_t count) {
+  inline ByteArray   &insertZeroes(size_t index, size_t count) {
     return insert(index, (BYTE)0, count);
   }
   // Append count zeroes
   // Return *this
-  inline ByteArray &addZeroes(size_t count) {
+  inline ByteArray   &addZeroes(size_t count) {
     return insertZeroes(size(), count);
   }
   // Set content array to data[0..size-1]. old content is discarded
   // Return *this
-  ByteArray &setData(const BYTE *data, size_t size);
+  ByteArray          &setData(const BYTE *data, size_t size);
   // Overwrite a[index..index+size-1] with data.
   // Assume index + count <= size
   // Return *this
-  ByteArray &setBytes(size_t index, const BYTE *data, size_t count);
+  ByteArray          &setBytes(size_t index, const BYTE *data, size_t count);
 
   ByteArray  operator+( const ByteArray &d) const;
   ByteArray &operator+=(const ByteArray &d);
@@ -135,26 +136,33 @@ public:
     return add(byte);
   }
 
-  inline const BYTE *getData() const {
+  inline const BYTE  *getData() const {
     return m_data;
   }
 
-  void save(ByteOutputStream &s) const;
-  void load(ByteInputStream  &s);
+  void                save(ByteOutputStream &s) const;
+  void                load(ByteInputStream  &s);
   // typeName cannot be String, because of MAKEINTRESOURCE
   // Return *this
-  ByteArray &loadFromResource(int resId, const TCHAR *typeName);
+  ByteArray          &loadFromResource(int resId, const TCHAR *typeName);
 
-  inline BYTE       *begin() {
+  inline size_t       getUpdateCount() const {
+    return m_updateCount;
+  }
+
+  Iterator<BYTE>      getIterator();
+  ConstIterator<BYTE> getIterator() const;
+
+  inline BYTE        *begin() {
     return isEmpty() ? nullptr : &first();
   }
-  inline BYTE       *end() {
+  inline BYTE        *end() {
     return isEmpty() ? nullptr : (&first() + size());
   }
-  inline const BYTE *begin() const {
+  inline const BYTE  *begin() const {
     return isEmpty() ? nullptr : &first();
   }
-  inline const BYTE *end() const {
+  inline const BYTE  *end() const {
     return isEmpty() ? nullptr : (&first() + size());
   }
 };

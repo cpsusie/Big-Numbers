@@ -427,6 +427,12 @@ public:
   virtual String toString(const T &e) = 0;
 };
 
+class ByteFormater : public AbstractStringifier<BYTE> {
+public:
+  static ByteFormater &stdAsciiFormater;
+  static ByteFormater &hexFormater;
+};
+
 class IntStringifier : public AbstractStringifier<INT> {
 public:
   String toString(const INT &e) override;

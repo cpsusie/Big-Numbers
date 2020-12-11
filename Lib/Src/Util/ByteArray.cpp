@@ -37,6 +37,7 @@ ByteArray &ByteArray::operator=(const ByteArray &src) {
   if(m_size) {
     memcpy(m_data,src.m_data,m_size);
   }
+  m_updateCount++;
   return *this;
 }
 
@@ -45,6 +46,9 @@ ByteArray::~ByteArray() {
 }
 
 ByteArray &ByteArray::clear(intptr_t newCapacity) {
+  if(m_size != 0) {
+    m_updateCount++;
+  }
   switch(newCapacity) {
   case 0 :
     cleanup();
@@ -92,6 +96,7 @@ ByteArray &ByteArray::insert(size_t index, const BYTE *data, size_t size) {
     m_capacity = newCapacity;
   }
   m_size = newSize;
+  m_updateCount++;
   return *this;
 }
 
@@ -122,6 +127,7 @@ ByteArray &ByteArray::insert(size_t index, BYTE b, size_t count) {
   }
   memset(m_data+index, b, count);
   m_size = newSize;
+  m_updateCount++;
   return *this;
 }
 
@@ -141,6 +147,7 @@ ByteArray &ByteArray::setData(const BYTE *data, size_t size) {
     m_size = size;
     memcpy(m_data, data, size);
   }
+  m_updateCount++;
   return *this;
 }
 
@@ -151,6 +158,7 @@ ByteArray &ByteArray::setBytes(size_t index, const BYTE *data, size_t count) {
     if(index + count > m_size) indexError(__TFUNCTION__, index, count);
     memcpy(m_data+index, data, count);
   }
+  m_updateCount++;
   return *this;
 }
 
@@ -167,6 +175,7 @@ ByteArray &ByteArray::remove(size_t index, size_t count) {
       setCapacity(m_size);
     }
   }
+  m_updateCount++;
   return *this;
 }
 
@@ -183,9 +192,11 @@ void ByteArray::emptyArrayError(const TCHAR *method) { // static
 }
 
 void ByteArray::init() {
-  m_data     = nullptr;
-  m_capacity = 0;
-  m_size     = 0;
+  m_data        = nullptr;
+  m_capacity    = 0;
+  m_size        = 0;
+  m_updateCount = 0;
+
 }
 
 BYTE *ByteArray::allocateBytes(size_t size) {
@@ -256,5 +267,6 @@ void ByteArray::load(ByteInputStream &s) {
     setCapacity(size);
     s.getBytesForced(m_data, size);
     m_size = size;
+    m_updateCount++;
   }
 }

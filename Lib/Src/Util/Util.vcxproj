@@ -963,6 +963,8 @@
     <ClCompile Include="BitSetToBitString.cpp" />
     <ClCompile Include="BitSetToString.cpp" />
     <ClCompile Include="BitSetXml.cpp" />
+    <ClCompile Include="ByteArrayIterator.cpp" />
+    <ClCompile Include="ByteFormaters.cpp" />
     <ClCompile Include="Date.cpp" />
     <ClCompile Include="DateEaster.cpp" />
     <ClCompile Include="DateaIO.cpp" />
