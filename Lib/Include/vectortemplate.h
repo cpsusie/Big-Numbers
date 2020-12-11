@@ -333,6 +333,16 @@ public:
     return !(*this == v);
   }
 
+  ULONG hashCode() const {
+    ULONG sum = 0;
+    if(m_dim) {
+      for(const T *vp = m_e, *endp = vp + m_dim; vp < endp;) {
+        sum = sum * 31 + (vp++)->hashCode();
+      }
+    }
+    return sum;
+  }
+
   inline T        *begin() {
     return m_e;
   }
