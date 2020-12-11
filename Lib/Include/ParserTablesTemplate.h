@@ -127,10 +127,6 @@ private:
     const int index = SearchFunctions::findArrayIndex(getInputArray(code), input);
     return (index >= 0) ? m_outputArrayTable[(code >> 17) + index] : -1;
   }
-  inline        int        getSplitNodeResult(      UINT code, InputType input) const {
-    const int result = getResultFromCode(SearchFunctions::leftChild(m_codeArray, code), input);
-    return (result >= 0) ? result : getResultFromCode(SearchFunctions::rightChild(m_codeArray, code), input);
-  }
   static inline int        getImmediateResult(      UINT code, InputType input) {
     const UINT v = code & 0x7fff;
     if(alwaysCheckInput) {
@@ -143,12 +139,19 @@ private:
     return SearchFunctions::bitsetContains(getBitSet(code), bitSetIntervalCapacity, input-bitSetIntervalFrom) ? (code >> 17) : -1;
   }
   int getResultFromCode(                            UINT code, InputType input) const {
-    switch(SearchFunctions::getCompressionCode(code)) {
-    case SearchFunctions::CompCodeBinSearch : return getBinSearchResult(code, input);
-    case SearchFunctions::CompCodeSplitNode : return getSplitNodeResult(code, input);
-    case SearchFunctions::CompCodeImmediate : return getImmediateResult(code, input);
-    case SearchFunctions::CompCodeBitSet    : return getBitSetResult(   code, input);
-    default                : __assume(0);
+    for(;;) {
+      switch(SearchFunctions::getCompressionCode(code)) {
+      case SearchFunctions::CompCodeBinSearch : return getBinSearchResult(code, input);
+      case SearchFunctions::CompCodeSplitNode :
+        { const int result = getResultFromCode(SearchFunctions::leftChild(m_codeArray, code), input);
+          if(result >= 0) return result;
+          code = SearchFunctions::rightChild(m_codeArray, code);
+        }
+        break;
+      case SearchFunctions::CompCodeImmediate : return getImmediateResult(code, input);
+      case SearchFunctions::CompCodeBitSet    : return getBitSetResult(   code, input);
+      default                                 : __assume(0);
+      }
     }
     return -1;
   }
