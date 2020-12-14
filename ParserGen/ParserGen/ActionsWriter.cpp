@@ -29,7 +29,7 @@ void ActionsWriter::handleKeyword(TemplateWriter &writer, String &line) const {
     if(!prod.m_actionBody.isDefined()) {
       continue;
     }
-    writer.printf(_T("case %d: /* %s */\n"), p, grammar.getProductionString(p).cstr());
+    writer.printf(_T("case %d: /* %s */\n"), p, prod.toString().cstr());
     writer.incrLeftMargin(2);
     writer.writeSourceText(prod.m_actionBody);
     if(options.m_generateBreaks) {

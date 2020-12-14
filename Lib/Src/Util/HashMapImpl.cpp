@@ -101,3 +101,15 @@ AbstractEntry *HashMapImpl::getMaxEntry() const {
   throwUnsupportedOperationException(__TFUNCTION__);
   return nullptr;
 }
+
+AbstractComparator *HashMapImpl::getComparator() const {
+  return HashSetImpl::getComparator();
+}
+
+bool HashMapImpl::hasOrder() const {
+  return HashSetImpl::hasOrder();
+}
+
+AbstractIterator *HashMapImpl::getKeyIterator() const {
+  return HashSetImpl::getIterator();
+}

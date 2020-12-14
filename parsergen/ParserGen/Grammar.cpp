@@ -43,11 +43,11 @@ const TCHAR *GrammarSymbol::getTypeString() const {
 
 const TCHAR *RightSideSymbol::getModifierString(SymbolModifier modifier) { // static
   switch(modifier) {
-  case NO_MODIFIER: return EMPTYSTRING;
-  case ZEROORONE  : return _T("?");
-  case ZEROORMANY : return _T("*");
-  case ONEORMANY  : return _T("+");
-  default         : throwInvalidArgumentException(__TFUNCTION__,_T("modifier=%u"), modifier);
+  case NO_MODIFIER         : return EMPTYSTRING;
+  case ZEROORONE           : return _T("?");
+  case ZEROORMANY          : return _T("*");
+  case ONEORMANY           : return _T("+");
+  default                  : throwInvalidArgumentException(__TFUNCTION__,_T("modifier=%u"), modifier);
   }
   return EMPTYSTRING;
 }
@@ -56,140 +56,98 @@ String RightSideSymbol::toString(const AbstractSymbolNameContainer &nameContaine
   return nameContainer.getSymbolName(m_index) + getModifierString();
 }
 
-static inline bool equalCore(const LR1Item &i1, const LR1Item &i2) {
-  return (i1.m_prod == i2.m_prod) && (i1.m_dot == i2.m_dot);
-}
-
-static int coreCmp(const LR1State &s1, const LR1State &s2) { // compare CORE(s1) with CORE(s2)
-  const BYTE n = s1.m_kernelItemCount;
-  if(n != s2.m_kernelItemCount) {
-    return false;
-  }
-  for(BYTE i = 0; i < n; i++) {
-    if(!equalCore(s1.m_items[i], s2.m_items[i])) {
-      return false;
-    }
-  }
-  return true;
-}
-
-// used by hashmap
-class StateCoreComparator : public Comparator<const LR1State *> {
-public:
-  int compare(const LR1State * const &s1, const LR1State * const &s2) override {
-    return coreCmp(*s1, *s2) ? 0 : 1;
-  }
-  AbstractComparator *clone() const override {
-    return new StateCoreComparator();
-  }
-};
-
-
-static ULONG stateCoreHashFunction(const LR1State * const &s) { // used by hashmap
-  const LR1State &state = *s;
-  const BYTE      n     = state.m_kernelItemCount;
-  ULONG           v     = n;
-  for(BYTE i = 0; i < n; i++) {
-    v ^= state.m_items[i].coreHashCode();
-    v *= 13;
-  }
-  return v;
-}
-
-StateHashMap::StateHashMap(size_t capacity)
-  : HashMap(stateCoreHashFunction, StateCoreComparator(), capacity)
-{
-}
-
-LR1Item *LR1State::findItemWithSameCore(const LR1Item &item) {
-  const UINT n = (UINT)m_items.size();
-  for(UINT i = 0; i < n; i++) {
-    if(equalCore(m_items[i], item)) {
-      return &m_items[i];
-    }
-  }
-  return nullptr;
-}
-
-static int itemCmp(const LR1Item &e1, const LR1Item &e2) {
-  int c = e2.m_kernelItem - e1.m_kernelItem; // used by sortItems. put kernelitems first
-  if(c) {
-    return c;
-  }
-  c = (int)e1.m_prod - (int)e2.m_prod;       // then sort by production
-  return c ? c : (e1.m_dot - e2.m_dot);      // and by dot
-}
-
-void LR1State::sortItems() {
-  m_items.sort(itemCmp);
-}
-
 Grammar::Grammar()
-: m_stateMap(              4001)
-, m_unfinishedSet(         1001)
-, m_symbolMap(             1001)
-, m_termCount(                0)
-, m_startSymbol(              0)
-, m_startState(               0)
-, m_termPermutationDone(  false)
+: m_termPermutationDone(  false)
 , m_termBitSetCapacity(       0)
 , m_statePermutationDone( false)
-, m_result(             nullptr)
 {
-  m_result = new GrammarResult(); TRACE_NEW(m_result);
+  init();
+}
+
+Grammar::Grammar(const Grammar &src)
+: m_termPermutationDone(   true)
+, m_termBitSetCapacity(       0)
+, m_statePermutationDone( false)
+, m_name(src.getName()         )
+{
+  init();
+  for(UINT symbolIndex = 0; symbolIndex < src.getSymbolCount(); symbolIndex++) {
+    addSymbol(src.getSymbol(symbolIndex));
+  }
+  for(UINT p = 0; p < src.getProductionCount(); p++) {
+    addProduction(Production(this, src.getProduction(p)));
+  }
+  for(auto statep : src.m_stateArray) {
+    addState(fetchState(statep));
+  }
+  *m_result     = *src.m_result;
+  m_driverHead  = src.m_driverHead;
+  m_driverTail  = src.m_driverTail;
+  m_header      = src.m_header;
+  m_startState  = src.m_startState;
+  m_startSymbol = src.m_startSymbol;
 }
 
 Grammar::Grammar(const AbstractParserTables &src)
-: m_stateMap(              4001)
-, m_unfinishedSet(         1001)
-, m_symbolMap(             1001)
-, m_termCount(                0)
-, m_startSymbol(              0)
-, m_startState(               0)
-, m_termPermutationDone(   true)
+: m_termPermutationDone(   true)
 , m_termBitSetCapacity(       0)
 , m_statePermutationDone( false)
-, m_result(             nullptr)
 {
-  m_result = new GrammarResult(); TRACE_NEW(m_result);
-
+  init();
   SourcePosition dummyPos;
-  for(UINT t = 0; t < src.getTermCount(); t++) {
-    addTerm(src.getSymbolName(t), TERMINAL, 0, dummyPos);
+  for(UINT term = 0; term < src.getTermCount(); term++) {
+    addTerm(src.getSymbolName(term), TERMINAL, 0, dummyPos);
   }
-  for(UINT nt = src.getTermCount(); nt < src.getSymbolCount(); nt++) {
-    addNTerm(src.getSymbolName(nt), dummyPos);
+  for(UINT nterm = src.getTermCount(); nterm < src.getSymbolCount(); nterm++) {
+    addNTerm(src.getSymbolName(nterm), dummyPos);
   }
+  CompactUIntArray rightSide(256);
+  rightSide.insert(0, (UINT)0, 256);
   for(UINT p = 0; p < src.getProductionCount(); p++) {
-    Production production(src.getLeftSymbol(p), dummyPos);
-    UINT rightSide[256]; // guess there is no more than 256 symbols on the rightside of any Production
-    src.getRightSide(p, rightSide);
-    for(UINT s = 0; s < src.getProductionLength(p); s++) {
-      production.m_rightSide.add(RightSideSymbol(rightSide[s], NO_MODIFIER));
+    Production production(this, src.getLeftSymbol(p), dummyPos);
+    const size_t length = src.getProductionLength(p);
+    if(length > rightSide.size()) {
+      rightSide.insert(rightSide.size(), (UINT)0, length - rightSide.size());
+    }
+    src.getRightSide(p, rightSide.begin());
+    for(size_t i = 0; i < length; i++) {
+      production.m_rightSide.add(RightSideSymbol(rightSide[i], NO_MODIFIER));
     }
     addProduction(production);
   }
 }
 
-Grammar::~Grammar() {
-  SAFEDELETE(m_result);
+void Grammar::init() {
+  m_termCount     = 0;
+  m_startSymbol   = 0;
+  m_startState    = 0;
+
+  initFreeLists();
+  m_result = new GrammarResult(); TRACE_NEW(m_result);
 }
 
-int Grammar::getSymbolIndex(const String &name) const {
-  const UINT *id = m_symbolMap.get(name.cstr());
-  return id != nullptr ? *id : -1;
+Grammar::~Grammar() {
+  SAFEDELETE(m_result);
+  for(auto statep : m_stateArray) {
+    releaseState(statep);
+  }
+  m_stateArray.clear();
+  clearStateList();
+  clearItemList();
 }
 
 UINT Grammar::addSymbol(const GrammarSymbol &symbol) {
   const UINT index = getSymbolCount();
   m_symbolArray.add(symbol);
   m_symbolMap.put(m_symbolArray.last().m_name.cstr(), index);
+  if(symbol.getType() != NONTERMINAL) {
+    m_termCount++;
+    m_termBitSetCapacity++;
+  }
   return index;
 }
 
 UINT Grammar::addTerm(const String &name, SymbolType type, int precedence, const SourcePosition &pos) {
-  m_termCount++;
-  m_termBitSetCapacity++;
   return addSymbol(GrammarSymbol(getSymbolCount(), name, type, precedence, pos, 1));
 }
 
@@ -203,7 +161,7 @@ void Grammar::addProduction(const Production &production) {
   }
 
   const UINT prodIndex = getProductionCount();
-  m_productions.add(production);
+  m_productionArray.add(production);
   getSymbol(production.m_leftSide).m_leftSideOf.add(prodIndex);
 }
 
@@ -212,8 +170,8 @@ void Grammar::addClosureProductions() {
   do {
     stable = true;
     for(UINT p = 0; p < getProductionCount(); p++) {
-      Production &prod = m_productions[p];
-      const UINT length = prod.getLength();
+      Production &prod   = m_productionArray[p];
+      const UINT  length = prod.getLength();
       for(UINT s = 0; s < length; s++) {
         RightSideSymbol &symbol = prod.m_rightSide[s];
         switch(symbol.m_modifier) {
@@ -229,16 +187,16 @@ void Grammar::addClosureProductions() {
           break;
         case ZEROORMANY : // *
         case ONEORMANY  : // +
-          { GrammarSymbol &m = getSymbol(symbol);
-            String ntName = m.m_name + _T("_plus");
-            int nt = getSymbolIndex(ntName);
+          { GrammarSymbol &m      = getSymbol(symbol);
+            const String   ntName = m.m_name + _T("_plus");
+            int            nt     = getSymbolIndex(ntName);
             if(nt < 0) {
               nt = addNTerm(ntName, prod.m_pos);
-              Production newProd1(nt, prod.m_pos);
+              Production newProd1(this, nt, prod.m_pos);
               newProd1.m_rightSide.add(RightSideSymbol(nt, NO_MODIFIER));
               newProd1.m_rightSide.add(RightSideSymbol(symbol, NO_MODIFIER));
               addProduction(newProd1);
-              Production newProd2(nt, prod.m_pos);
+              Production newProd2(this, nt, prod.m_pos);
               newProd2.m_rightSide.add(RightSideSymbol(symbol, NO_MODIFIER));
               addProduction(newProd2);
             }
@@ -248,7 +206,7 @@ void Grammar::addClosureProductions() {
           }
           break;
         default:
-          throwException(_T("Invalid modifier in production %s. (=%d)"), getProductionString(p).cstr(), symbol.m_modifier);
+          throwException(_T("Invalid modifier in production %s. (=%d)"), prod.toString().cstr(), symbol.m_modifier);
           break;
         } // end switch
       } // end for(s...
@@ -256,30 +214,10 @@ void Grammar::addClosureProductions() {
   } while(!stable);
 }
 
-bool Grammar::canTerminate(const Production &prod) const {
-  const UINT length = prod.getLength();
-  for(UINT s = 0; s < length; s++) {
-    if(!getSymbol(prod.m_rightSide[s]).m_terminate) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool Grammar::deriveEpsilon(const Production &prod) const {
-  const UINT length = prod.getLength();
-  for(UINT s = 0; s < length; s++) {
-    if(!getSymbol(prod.m_rightSide[s]).m_deriveEpsilon) {
-      return false;
-    }
-  }
-  return true;
-}
-
 void Grammar::findReachable() {
   getSymbol(getStartSymbol()).m_reachable = true;
   const UINT n = getProductionCount();
-  bool stable;
+  bool       stable;
   do {
 //    gotoxy(0, 0); dump(); pause();
     stable = true;
@@ -305,13 +243,13 @@ void Grammar::findTerminate() {
     getSymbol(s).m_terminate = true;
   }
   const UINT n = getProductionCount();
-  bool stable;
+  bool       stable;
   do {
 //    gotoxy(0, 0); dump(); pause();
     stable = true;
     for(UINT p = 0; p < n; p++) {
       const Production &prod = getProduction(p);
-      if(!getSymbol(prod.m_leftSide).m_terminate && canTerminate(prod)) {
+      if(!getSymbol(prod.m_leftSide).m_terminate && prod.canTerminate()) {
 //          _tprintf(_T("%s can terminate\n"), getSymbol(prod.m_leftSide).m_name.cstr());
         getSymbol(prod.m_leftSide).m_terminate = true;
         stable = false;
@@ -322,13 +260,13 @@ void Grammar::findTerminate() {
 
 void Grammar::findEpsilonSymbols() {
   const UINT n = getProductionCount();
-  bool stable;
+  bool       stable;
   do {
 //    gotoxy(0, 0); dump(); pause();
     stable = true;
     for(UINT p = 0; p < n; p++) {
       const Production &prod = getProduction(p);
-      if(!getSymbol(prod.m_leftSide).m_deriveEpsilon && deriveEpsilon(prod)) {
+      if(!getSymbol(prod.m_leftSide).m_deriveEpsilon && prod.deriveEpsilon()) {
         getSymbol(prod.m_leftSide).m_deriveEpsilon = true;
 //          _tprintf(_T("%s derive eps\n"), getSymbol(prod.m_leftSide).m_name.cstr());
         stable = false;
@@ -389,147 +327,95 @@ void Grammar::findFirst1Sets() {
   } while(!stable);
 }
 
-// assume item = A -> alfa . B beta [la]
-// computes first1(beta la)
-TermSet Grammar::first1(const LR1Item &item) const {
-  const Production &prod   = getProduction(item.m_prod);
-  const UINT        length = prod.getLength();
-  TermSet           result(getTermCount());
-  for(UINT k = item.m_dot+1; k < length; k++) {
-    const UINT symbol = prod.m_rightSide[k];
-    if(isTerminal(symbol)) {
-      result += symbol;
-      return result;
-    } else { // nonterminal
-      const GrammarSymbol &nt = getSymbol(symbol);
-      result += nt.m_first1;
-      if(!nt.m_deriveEpsilon) {
-        return result;
-      }
-    }
-  }
-  return result += item.m_la;
-}
-
-int Grammar::findStateWithSameCore(const LR1State &state) const {
-  const UINT *i = m_stateMap.get(&state);
-  return i ? *i : -1;
-}
-
-bool Grammar::isShiftItem(const LR1Item &item) const { // is item = "A -> alfa . a beta [la]"
-  const Production &prod = getProduction(item.m_prod);
-  return (item.m_dot < prod.getLength()) && isTerminal(prod.m_rightSide[item.m_dot]);
-}
-
-UINT Grammar::addState(const LR1State &state) {
-  const UINT stateIndex = getStateCount();
-  m_states.add(state);
-  m_stateMap.put(&m_states.last(), stateIndex);
-  m_succStateSetInterval.setTo(stateIndex + 1);
-  m_shiftStateSetInterval.setTo(stateIndex + 1);
-  return stateIndex;
-}
-
-void Grammar::computeClosure(LR1State &state, bool allowNewItems) {
+void Grammar::computeClosure(LR1State *state, bool allowNewItems) {
   bool changed;
   do {
     changed = false;
-    for(size_t i = 0; i < state.m_items.size(); i++) {
-      const LR1Item    &item = state.m_items[i];
-      const Production &prod = getProduction(item.m_prod);
-      if(item.m_dot < prod.getLength() && isNonTerminal(prod.m_rightSide[item.m_dot])) { // item is A -> alfa . B beta [la]
-        const GrammarSymbol &B = getSymbol(prod.m_rightSide[item.m_dot]);
-        const TermSet la(first1(item));
-        for(size_t p = 0; p < B.m_leftSideOf.size(); p++) {
-          const LR1Item newItem(false, B.m_leftSideOf[p], 0, la); // newItem is B -> . gamma [first1(beta la)] (nonkernelitem)
-          LR1Item *oldItem = state.findItemWithSameCore(newItem);
-          if(oldItem == nullptr) {
-            if(!allowNewItems) {
-              throwException(_T("Grammar::computeClosure:No new items allowed"));
-            }
-            state.addItem(newItem);
-            changed = true;
-          } else {
-            if(!(newItem.m_la - oldItem->m_la).isEmpty()) {
-              oldItem->m_la += newItem.m_la;
+    for(size_t i = 0; i < state->m_items.size(); i++) {
+      const LR1Item    *item = state->m_items[i];
+      const Production &prod = getProduction(item->m_prod);
+      if(item->m_dot < prod.getLength()) {
+        const UINT symbol = prod.m_rightSide[item->m_dot];
+        if(isNonTerminal(symbol)) { // item is A -> alfa . B beta [la]
+          const GrammarSymbol &B = getSymbol(symbol);
+          const TermSet        la(item->first1());
+          for(UINT p : B.m_leftSideOf) {
+            LR1Item *newItem = fetchItem(false, p, 0, la); // newItem is B -> . gamma [first1(beta la)] (nonkernelitem)
+            LR1Item *oldItem = state->findItemWithSameCore(newItem);
+            if(oldItem == nullptr) {
+              if(!allowNewItems) {
+                throwException(_T("%s:No new items allowed"), __TFUNCTION__);
+              }
+              state->addItem(newItem);
               changed = true;
+            } else {
+              if(!(newItem->m_la - oldItem->m_la).isEmpty()) {
+                oldItem->m_la += newItem->m_la;
+                changed = true;
+              }
+              releaseItem(newItem);
             }
-          }
-        }
-      }
-    }
+          } // for
+        } // if
+      } // if
+    } // for
   } while(changed);
-  state.sortItems();
-}
-
-bool Grammar::mergeLookahead(LR1State &dst, const LR1State &src) {
-  bool changed = false;
-  for(BYTE i = 0; i < src.m_kernelItemCount; i++) {
-    LR1Item &dstItem = dst.m_items[i];
-    const LR1Item &srcItem = src.m_items[i];
-
-    assert(equalCore(dstItem, srcItem));
-
-    if(!(srcItem.m_la - dstItem.m_la).isEmpty()) {
-      dstItem.m_la += srcItem.m_la;
-      changed  = true;
-    }
+  if(allowNewItems) {
+    state->sortItems();
   }
-  return changed;
 }
 
-void Grammar::computeSuccessors(LR1State &state) {
-//dump(state); pause();
-  const UINT itemCount = (UINT)state.m_items.size();
-  BitSet itemsDone(itemCount); // this is correct!
+void Grammar::computeSuccessors(LR1State *state) {
+  //dump(state); pause();
+  const UINT itemCount = (UINT)state->m_items.size();
+  BitSet     itemsDone(itemCount); // this is correct!
   for(UINT i = 0; i < itemCount; i++) {
     if(itemsDone.contains(i)) {
       continue;
     }
-    const LR1Item &origItem = state.m_items[i];
-    if(isAcceptItem(origItem)) {
+    const LR1Item &origItem = *state->m_items[i];
+    if(origItem.isAcceptItem()) {
       continue; // No successor, but accept
     }
     const Production &origProduction = getProduction(origItem.m_prod);
     if(origItem.m_dot < origProduction.getLength()) { // origItem is A -> alfa . X beta [la]
-      BitSet successorItems(itemCount);
+      BitSet    successorItems(itemCount);
       successorItems += i;
-      UINT symbolNr = origProduction.m_rightSide[origItem.m_dot];
-      LR1State newState(getStateCount());
+      UINT      symbolNr = origProduction.m_rightSide[origItem.m_dot];
+      LR1State *newState = fetchState();
 
       // newItem is A -> alfa X . beta [la] (kernelItem)
-      newState.addItem(LR1Item(true, origItem.m_prod, origItem.m_dot+1, origItem.m_la));
+      newState->addItem(fetchItem(true, origItem.m_prod, origItem.m_dot+1, origItem.m_la));
       itemsDone += i;
       for(UINT k = i+1; k < itemCount; k++) {
         if(itemsDone.contains(k)) {
           continue;
         }
-        const LR1Item    &sameSymbolItem = state.m_items[k];
+        const LR1Item    &sameSymbolItem = *state->m_items[k];
         const Production &sameSymbolProd = getProduction(sameSymbolItem.m_prod);
         if(sameSymbolItem.m_dot < sameSymbolProd.getLength()
           && sameSymbolProd.m_rightSide[sameSymbolItem.m_dot] == symbolNr) { // sameSymbolItem is C -> gamma . X zeta [la1]
           // newItem1 is C -> gamma X . zeta [la1] (kernelItem)
-          newState.addItem(LR1Item(true, sameSymbolItem.m_prod, sameSymbolItem.m_dot+1, sameSymbolItem.m_la));
+          newState->addItem(fetchItem(true, sameSymbolItem.m_prod, sameSymbolItem.m_dot+1, sameSymbolItem.m_la));
           itemsDone      += k;
           successorItems += k;
         }
       }
-      newState.sortItems();
-      int succStateIndex = findStateWithSameCore(newState);
+      newState->sortItems();
+      int succStateIndex = m_stateArray.getIndex(newState);
       if(succStateIndex < 0) {
         computeClosure(newState, true);
         succStateIndex = addState(newState);
       } else {
-        if(mergeLookahead(m_states[succStateIndex], newState)) {
+        if(m_stateArray[succStateIndex]->mergeLookahead(newState)) {
           m_unfinishedSet.add(succStateIndex);
 //          printf(_T(")%d ", succStateIndex);
         }
+        releaseState(newState);
       }
-
       assert(succStateIndex >= 0);
-
       for(auto it = successorItems.getIterator(); it.hasNext();) {
-        state.m_items[it.next()].m_succ = succStateIndex;
+        state->m_items[it.next()]->m_newState = succStateIndex;
       }
     }
   }
@@ -538,14 +424,13 @@ void Grammar::computeSuccessors(LR1State &state) {
 void Grammar::generateStates() {
   verbose(2, _T("Computing FIRST1 sets\n"));
   findFirst1Sets();
-  m_stateMap.clear();
+  m_stateArray.clear();
   m_unfinishedSet.clear();
 
   TermSet eoiset(getTermCount());
   eoiset.add(0); // EOI
-  LR1Item initialItem(true, 0, 0, eoiset);
-  LR1State initialState(0);
-  initialState.addItem(initialItem);
+  LR1State *initialState = fetchState();
+  initialState->addItem(fetchItem(true, 0, 0, eoiset));
 
   computeClosure(initialState, true);
   addState(initialState);
@@ -554,7 +439,7 @@ void Grammar::generateStates() {
 
   for(UINT i = 0; i < getStateCount(); i++) {
     verbose(2, _T("state %u\r"), i);
-    computeSuccessors(m_states[i]);
+    computeSuccessors(m_stateArray[i]);
   }
 
 /*
@@ -566,13 +451,12 @@ void Grammar::generateStates() {
   fclose(ff);
 */
   while(!m_unfinishedSet.isEmpty()) {
-    const int unfinishedState = m_unfinishedSet.select();
+    const UINT unfinishedState = m_unfinishedSet.select();
     m_unfinishedSet.remove(unfinishedState);
-    verbose(2, _T("Closing state %d.\r"), unfinishedState);
-    computeClosure(m_states[unfinishedState], false);
-    computeSuccessors(m_states[unfinishedState]);
+    verbose(2, _T("Closing state %u.\r"), unfinishedState);
+    computeClosure(   m_stateArray[unfinishedState], false);
+    computeSuccessors(m_stateArray[unfinishedState]);
   }
-
   checkAllStates();
 }
 
@@ -593,7 +477,7 @@ ConflictSolution Grammar::resolveShiftReduceConflict(const GrammarSymbol &termin
   }
 
   if( (terminalPrecedence < productionPrecedence)
-    || (productionPrecedence == terminalPrecedence && terminal.m_type != RIGHTASSOC_TERMINAL) ) {
+   || ((productionPrecedence == terminalPrecedence) && (terminal.m_type != RIGHTASSOC_TERMINAL)) ) {
     return CHOOSE_REDUCE;
   } else {
     return CHOOSE_SHIFT;
@@ -601,39 +485,39 @@ ConflictSolution Grammar::resolveShiftReduceConflict(const GrammarSymbol &termin
 }
 
 void Grammar::checkStateIsConsistent(UINT stateIndex) {
-  const LR1State &state = m_states[stateIndex];
+  const LR1State &state     = *m_stateArray[stateIndex];
   m_result->m_stateResult.add(StateResult(stateIndex));
-  StateResult &sr = m_result->m_stateResult[stateIndex];
+  StateResult    &sr        = m_result->m_stateResult.last();
 
-  TermSet symbolsDone(getSymbolCount());
-  const UINT itemCount = (UINT)state.m_items.size();
+  SymbolSet       symbolsDone(getSymbolCount());
+  const UINT      itemCount = (UINT)state.m_items.size();
 
   for(UINT i = 0; i < itemCount; i++) {
-    const LR1Item &item = state.m_items[i];
-    if(isShiftItem(item)) {
-      const UINT t = getShiftSymbol(item);
-      if(symbolsDone.contains(t)) {
+    const LR1Item &item = *state.m_items[i];
+    UINT           term;
+    if(item.isShiftItem(term)) {
+      if(symbolsDone.contains(term)) {
         continue;
       }
       for(UINT j = 0; j < itemCount; j++) {
         if(j == i) {
           continue;
         }
-        const LR1Item &item1 = state.m_items[j];
-        if(isReduceItem(item1) && item1.m_la.contains(t)) {
-          const GrammarSymbol &terminal = getSymbol(t);
+        const LR1Item &item1 = *state.m_items[j];
+        if(item1.isReduceItem() && item1.m_la.contains(term)) {
+          const GrammarSymbol &terminal = getSymbol(term);
           switch(resolveShiftReduceConflict(terminal, item1)) {
           case CONFLICT_NOT_RESOLVED:
             m_result->addSRError(_T("Shift/reduce conflict. Shift or reduce by prod %-3u (prec=%d) on '%s' (prec=%d, %s).")
                                 ,item1.m_prod
-                                 ,getProduction(item1.m_prod).m_precedence
-                                 ,terminal.m_name.cstr()
-                                 ,terminal.m_precedence
-                                 ,terminal.getTypeString());
+                                ,getProduction(item1.m_prod).m_precedence
+                                ,terminal.m_name.cstr()
+                                ,terminal.m_precedence
+                                ,terminal.getTypeString());
             break;
           case CHOOSE_SHIFT:
-            sr.m_termActionArray.add(TermActionPair(t, PA_SHIFT, item.getSuccessor()));
-            symbolsDone += t;
+            sr.m_termActionArray.add(TermActionPair(term, PA_SHIFT, item.getNewState()));
+            symbolsDone += term;
             m_result->addWarning(_T("Shift/reduce conflict on %s (prec=%d, %s). Choose shift instead of reduce by prod %u (prec=%d).")
                                 ,terminal.m_name.cstr()
                                 ,terminal.m_precedence
@@ -642,8 +526,8 @@ void Grammar::checkStateIsConsistent(UINT stateIndex) {
                                 ,getProduction(item1.m_prod).m_precedence);
             break;
           case CHOOSE_REDUCE:
-            sr.m_termActionArray.add(TermActionPair(t, PA_REDUCE, item1.m_prod));
-            symbolsDone += t;
+            sr.m_termActionArray.add(TermActionPair(term, PA_REDUCE, item1.m_prod));
+            symbolsDone += term;
             m_result->addWarning(_T("Shift/reduce conflict on %s (prec=%d, %s). Choose reduce by prod %u (prec=%d).")
                                 ,terminal.m_name.cstr()
                                 ,terminal.m_precedence
@@ -654,21 +538,21 @@ void Grammar::checkStateIsConsistent(UINT stateIndex) {
           }
         }
       }
-      if(!symbolsDone.contains(t)) {
-        if(item.m_succ >= 0) {
-          sr.m_termActionArray.add(TermActionPair(t, PA_SHIFT, item.getSuccessor()));
+      if(!symbolsDone.contains(term)) {
+        if(item.m_newState >= 0) {
+          sr.m_termActionArray.add(TermActionPair(term, PA_SHIFT, item.getNewState()));
         }
-        symbolsDone += t;
+        symbolsDone += term;
         continue;
       }
     }
   }
 
   for(UINT i = 0; i < itemCount; i++) {
-    const LR1Item &itemi = state.m_items[i];
-    if(isReduceItem(itemi)) {
+    const LR1Item &itemi = *state.m_items[i];
+    if(itemi.isReduceItem()) {
       TermSet tokensReducedByOtherItems(getTermCount());
-      if(isAcceptItem(itemi)) {  // check if this is start -> S . [EOI]
+      if(itemi.isAcceptItem()) {  // check if this is start -> S . [EOI]
         sr.m_termActionArray.add(TermActionPair(0, PA_REDUCE, 0));
         if(symbolsDone.contains(0)) {
           throwException(_T("Token EOI already done in state %u while generating Acceptitem"), state.m_index);
@@ -680,41 +564,39 @@ void Grammar::checkStateIsConsistent(UINT stateIndex) {
         if(j == i) {
           continue;
         }
-        const LR1Item &itemj = state.m_items[j];
-        if(isReduceItem(itemj)) {
+        const LR1Item &itemj = *state.m_items[j];
+        if(itemj.isReduceItem()) {
           const TermSet intersection(itemi.m_la & itemj.m_la);
           if(!intersection.isEmpty()) {
             if(itemj.m_prod < itemi.m_prod) {
               tokensReducedByOtherItems += intersection;
-              m_result->addWarning(_T("Reduce/reduce conflict on %s between prod %u and prod %u. Choose prod %u.")
-                                   ,symbolSetToString(intersection).cstr()
-                                   ,itemj.m_prod
-                                   ,itemi.m_prod
-                                   ,itemj.m_prod);
+              m_result->addWarning(_T("Reduce/reduce conflict on %s between prod %u and prod %u. Choose prod %u")
+                                  ,symbolSetToString(intersection).cstr()
+                                  ,itemj.m_prod
+                                  ,itemi.m_prod
+                                  ,itemj.m_prod);
             }
           }
         }
       }
       TermSet itemTokens(itemi.m_la - tokensReducedByOtherItems);
       for(auto it = itemTokens.getIterator(); it.hasNext(); ) {
-        const UINT t = (UINT)it.next();
-        if(!symbolsDone.contains(t)) {
-          sr.m_termActionArray.add(TermActionPair(t, PA_REDUCE, itemi.m_prod));
-          symbolsDone += t;
+        const UINT term = (UINT)it.next();
+        if(!symbolsDone.contains(term)) {
+          sr.m_termActionArray.add(TermActionPair(term, PA_REDUCE, itemi.m_prod));
+          symbolsDone += term;
         }
       }
     }
   }
-
-  for(UINT i = 0; i < itemCount; i++) {
-    const LR1Item &itemi = state.m_items[i];
-    if(!isShiftItem(itemi) && !isReduceItem(itemi)) {
-      const UINT nt = getShiftSymbol(itemi);
-      if(!symbolsDone.contains(nt)) {
-        if(itemi.getSuccessor() >= 0) {
-          sr.m_ntermNewStateArray.add(NTermNewStatePair((USHORT)nt, (USHORT)itemi.getSuccessor()));
+  for(auto itemp : state.m_items) {
+    if(!itemp->isShiftItem() && !itemp->isReduceItem()) {
+      const UINT nterm = itemp->getShiftSymbol();
+      if(!symbolsDone.contains(nterm)) {
+        if(itemp->getNewState() >= 0) {
+          sr.m_ntermNewStateArray.add(NTermNewStatePair((USHORT)nterm, (USHORT)itemp->getNewState()));
         }
-        symbolsDone += nt;
+        symbolsDone += nterm;
       }
     }
   } // for
@@ -722,9 +604,9 @@ void Grammar::checkStateIsConsistent(UINT stateIndex) {
 }
 
 UINT Grammar::getItemCount() const {
-  size_t count = 0;
-  for(auto it = m_states.getIterator(); it.hasNext();) {
-    count += it.next().m_items.size();
+  UINT count = 0;
+  for(auto statep : m_stateArray) {
+    count += statep->getItemCount();
   }
-  return (UINT)count;
+  return count;
 }

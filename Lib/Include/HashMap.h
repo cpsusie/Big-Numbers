@@ -18,33 +18,27 @@ private:
   }
 protected:
   HashSetNode           *allocateNode()                                 const override;
-  virtual HashMapNode   *createNode(const void *key, const void *value) const ;
+  virtual HashMapNode   *createNode(const void *key, const void *value) const;
   HashSetNode           *cloneNode( HashSetNode *n)                     const override;
   void                   deleteNode(HashSetNode *n)                     const override;
 public:
   HashMapImpl(const AbstractObjectManager &keyManager, const AbstractObjectManager &dataManager, HashFunction hash, const AbstractComparator &comparator, size_t capacity);
   // throw unsupported exception
-  AbstractCollection  *clone(   bool cloneData)                         const override;
-  AbstractMap         *cloneMap(bool cloneData)                         const override;
+  AbstractCollection    *clone(   bool cloneData)                       const override;
+  AbstractMap           *cloneMap(bool cloneData)                       const override;
   ~HashMapImpl()                                                              override;
-  void                 clear()                                                override;
-  size_t               size()                                           const override;
-  bool                 put(   const void *key, const void *value)             override;
-  void                *get(   const void *key)                          const override;
-  bool                 remove(const void *key)                                override;
-  AbstractEntry       *selectEntry(RandomGenerator &rnd)                const override;
-  AbstractEntry       *getMinEntry()                                    const override;
-  AbstractEntry       *getMaxEntry()                                    const override;
-  AbstractComparator  *getComparator()                                  const override {
-    return HashSetImpl::getComparator();
-  }
-  AbstractIterator    *getIterator()                                    const override;
-  bool                 hasOrder()                                       const override {
-    return HashSetImpl::hasOrder();
-  }
-  AbstractIterator    *getKeyIterator()                                 const override {
-    return HashSetImpl::getIterator();
-  }
+  void                   clear()                                              override;
+  size_t                 size()                                         const override;
+  bool                   put(   const void *key, const void *value)           override;
+  void                  *get(   const void *key)                        const override;
+  bool                   remove(const void *key)                              override;
+  AbstractEntry         *selectEntry(RandomGenerator &rnd)              const override;
+  AbstractEntry         *getMinEntry()                                  const override;
+  AbstractEntry         *getMaxEntry()                                  const override;
+  AbstractComparator    *getComparator()                                const override;
+  bool                   hasOrder()                                     const override;
+  AbstractIterator      *getIterator()                                  const override;
+  AbstractIterator      *getKeyIterator()                               const override;
 };
 
 template <typename K, typename V> class HashMap : public Map<K, V> {
@@ -61,16 +55,20 @@ public:
     : Map<K, V>(new HashMapImpl(ObjectManager<K>(), ObjectManager<V>(), (HashFunction)hash, comparator, capacity))
   {
   }
-  HashFunction getHashFunction() {
+  HashFunction     getHashFunction()   const {
     return ((HashMapImpl*)m_map)->getHashFunction();
   }
-  CompactUIntArray getLength() const {
+  CompactUIntArray getLength()         const {
     return ((HashMapImpl*)m_map)->getLength();
   }
-  size_t getCapacity() const {
+  HashMap         &setCapacity(size_t capacity) {
+    ((HashMapImpl*)m_map)->setCapacity(capacity);
+    return *this;
+  }
+  size_t           getCapacity()       const {
     return ((HashMapImpl*)m_map)->getCapacity();
   }
-  UINT getMaxChainLength() const {
+  UINT             getMaxChainLength() const {
     return ((HashMapImpl*)m_map)->getMaxChainLength();
   }
 };

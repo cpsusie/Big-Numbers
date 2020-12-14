@@ -43,3 +43,14 @@ inline int compactShortArrayCmp(const CompactShortArray &a1, const CompactShortA
   if(c) return c;
   return n ? memcmp(a1.begin(), a2.begin(), n * sizeof(short)) : 0;
 }
+
+#define DUMP_LOOKAHEAD  0x01
+#define DUMP_SUCC       0x02
+#define DUMP_SHIFTITEMS 0x04
+#define DUMP_ACTIONS    0x08
+#define DUMP_KERNELONLY 0x10
+#define DUMP_WARNINGS   0x20
+#define DUMP_ERRORS     0x40
+
+#define DUMP_ALL        DUMP_SHIFTITEMS | DUMP_LOOKAHEAD  | DUMP_SUCC
+#define DUMP_DOCFORMAT  DUMP_SHIFTITEMS | DUMP_ACTIONS    | DUMP_ERRORS | DUMP_WARNINGS

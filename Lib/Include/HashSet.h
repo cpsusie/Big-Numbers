@@ -24,10 +24,7 @@ protected:
   virtual bool                        insertNode(HashSetNode *n  );
    // return key*
   void                               *select(RandomGenerator &rnd)  const override;
-  void                                resize(size_t newCapacity);
-
   HashSetNode                        *findNode(const void    *key)  const;
-
   inline       AbstractObjectManager *getObjectManager()            const {
     return m_objectManager;
   }
@@ -42,27 +39,23 @@ public:
   AbstractCollection        *clone(bool cloneData)        const override;
   ~HashSetImpl()                                                override;
   void                       clear()                            override;
-  // return number of elements
+  // Return number of elements
   size_t                     size()                       const override;
   bool                       add(     const void *key)          override;
   bool                       remove(  const void *key)          override;
   bool                       contains(const void *key)    const override;
-  inline AbstractComparator *getComparator()              const override {
-    return m_comparator;
-  }
-  inline HashFunction        getHashFunction()            const {
-    return m_hash;
-  }
   void                      *getMin()                     const override;
   void                      *getMax()                     const override;
 
-  AbstractIterator          *getIterator()                const override;
-  bool                       hasOrder()                   const override {
-    return false;
+  inline HashFunction        getHashFunction()            const {
+    return m_hash;
   }
-
+  AbstractComparator        *getComparator()              const override;
+  bool                       hasOrder()                   const override;
+  AbstractIterator          *getIterator()                const override;
   CompactUIntArray           getLength()                  const;
-  // return capacity, NOT number of elements
+  void                       setCapacity(size_t newCapacity);
+  // Return capacity, NOT number of elements
   size_t                     getCapacity()                const;
   UINT                       getMaxChainLength()          const;
 };
@@ -85,20 +78,20 @@ public:
     __super::operator=(src);
     return *this;
   }
-
-  HashFunction getHashFunction() {
+  HashFunction      getHashFunction()   const {
     return ((HashSetImpl*)m_collection)->getHashFunction();
   }
-
-  CompactUIntArray getLength() const {
+  CompactUIntArray  getLength()         const {
     return ((HashSetImpl*)m_collection)->getLength();
   }
-
-  size_t getCapacity() const {
+  HashSet          &setCapacity(size_t capacity) {
+    ((HashSetImpl*)m_collection)->setCapacity(capacity);
+    return *this;
+  }
+  size_t            getCapacity()       const {
     return ((HashSetImpl*)m_collection)->getCapacity();
   }
-
-  UINT getMaxChainLength() const {
+  UINT              getMaxChainLength() const {
     return ((HashSetImpl*)m_collection)->getMaxChainLength();
   }
 };

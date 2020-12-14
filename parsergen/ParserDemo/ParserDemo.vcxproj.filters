@@ -105,10 +105,25 @@
     <ClCompile Include="..\ParserGen\GrammarPermutation.cpp">
       <Filter>Source Files\ParserGen Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ParserGen\OptimizedBitSetPermutation.cpp">
+    <ClCompile Include="..\ParserGen\ByteCount.cpp">
       <Filter>Source Files\ParserGen Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ParserGen\ByteCount.cpp">
+    <ClCompile Include="..\ParserGen\Production.cpp">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ParserGen\LR1Item.cpp">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ParserGen\LR1State.cpp">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ParserGen\GrammarFreeList.cpp">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ParserGen\StateMap.cpp">
+      <Filter>Source Files\ParserGen Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ParserGen\UIntPermutation.cpp">
       <Filter>Source Files\ParserGen Files</Filter>
     </ClCompile>
   </ItemGroup>

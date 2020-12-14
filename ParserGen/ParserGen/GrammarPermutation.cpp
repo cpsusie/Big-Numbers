@@ -44,15 +44,15 @@ void Grammar::reorderTerminals(const OptimizedBitSetPermutation &permutation) {
     if(newIndex == oldIndex) {
       continue;
     }
-    GrammarSymbol &gs       = m_symbolArray[oldIndex];
-    UINT          *indexp   = m_symbolMap.get(gs.m_name.cstr());
+    GrammarSymbol &gs     = m_symbolArray[oldIndex];
+    UINT          *indexp = m_symbolMap.get(gs.m_name.cstr());
     assert(newIndex < termCount);
     assert(indexp != nullptr   );
     gs.m_index = newIndex;
     *indexp    = newIndex;
   }
   m_symbolArray.sort(symbolCmpByIndex);
-  for(auto it = m_productions.getIterator(); it.hasNext();) {
+  for(auto it = m_productionArray.getIterator(); it.hasNext();) {
     Production                    &prod = it.next();
     CompactArray<RightSideSymbol> &rs   = prod.m_rightSide;
     const size_t                   len  = rs.size();
@@ -64,14 +64,12 @@ void Grammar::reorderTerminals(const OptimizedBitSetPermutation &permutation) {
     }
   }
   for(UINT nterm = termCount; nterm < symbolCount; nterm++) {
-    GrammarSymbol &gs       = m_symbolArray[nterm];
+    GrammarSymbol &gs = m_symbolArray[nterm];
     reorderTermSet(gs.m_first1, permutation);
   }
-  for(auto it = m_states.getIterator(); it.hasNext();) {
-    LR1State &state = it.next();
-    for(auto it1 = state.m_items.getIterator(); it1.hasNext();) {
-      LR1Item &item = it1.next();
-      reorderTermSet(item.m_la, permutation);
+  for(auto statep : m_stateArray) {
+    for(auto item : statep->m_items) {
+      reorderTermSet(item->m_la, permutation);
     }
   }
 
@@ -89,16 +87,12 @@ void Grammar::reorderTerminals(const OptimizedBitSetPermutation &permutation) {
   }
 }
 
-static int stateCmpByIndex(const LR1State &s1, const LR1State &s2) {
-  return (int)s1.m_index - (int)s2.m_index;
-}
-
 void Grammar::reorderStates(const UIntPermutation &permutation) {
   if(getStateReorderingDone()) {
     return;
   }
   if(permutation.size() != getStateCount()) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("permutaton.size=%zu, stateCount=%u"), permutation.size(), getStateCount());
+    throwInvalidArgumentException(__TFUNCTION__, _T("Permutation.size=%zu, stateCount=%u"), permutation.size(), getStateCount());
   }
   permutation.validate();
   disableReorderStates();
@@ -106,37 +100,9 @@ void Grammar::reorderStates(const UIntPermutation &permutation) {
 //  debugLog(_T("%s:shiftStateSetInterval:%s\n"), __TFUNCTION__, m_shiftStateSetInterval.toString().cstr());
 //  debugLog(_T("%s:succStateSetInterval :%s\n"), __TFUNCTION__, m_succStateSetInterval.toString().cstr());
 
-  for(auto it = m_states.getIterator(); it.hasNext();) {
-    LR1State &state = it.next();
-    const UINT oldIndex = state.m_index;
-    state.m_index   = permutation[state.m_index];
-    for(auto it1 = state.m_items.getIterator(); it1.hasNext();) {
-      LR1Item &item = it1.next();
-      if(item.m_succ >= 0) {
-        item.m_succ = permutation[item.m_succ];
-      }
-    }
-    UINT *indexp = m_stateMap.get(&state);
-    assert(*indexp == oldIndex);
-    *indexp = permutation[*indexp];
-  }
-  m_states.sort(stateCmpByIndex);
+  m_stateArray.reorderStates(permutation);
   m_startState = permutation[m_startState];
-  for(auto it = m_result->m_stateResult.getIterator(); it.hasNext();) {
-    StateResult &sr = it.next();
-    sr.m_index = permutation[sr.m_index];
-    for(auto it1 = sr.m_termActionArray.getIterator(); it1.hasNext();) {
-      TermActionPair &tap = it1.next();
-      if(tap.isShiftAction()) {
-        tap.setNewState(permutation[tap.getNewState()]);
-      }
-    }
-    for(auto it1 = sr.m_ntermNewStateArray.getIterator(); it1.hasNext();) {
-      NTermNewStatePair &ntns = it1.next();
-      ntns.setNewState(permutation[ntns.getNewState()]);
-    }
-  }
-  m_result->sortStateResult();
+  m_result->reorderStates(   permutation);
 }
 
 void Grammar::reorderStates(const OptimizedBitSetPermutation2 &permutation) {

@@ -249,6 +249,9 @@
     <ClInclude Include="..\..\Lib\Include\ParserTablesTemplate.h">
       <Filter>Source Files\GrammarOutput\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="UIntPermutation.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -441,6 +444,24 @@
       <Filter>Source Files\GrammarOutput</Filter>
     </ClCompile>
     <ClCompile Include="SymbolDataPair.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="LR1Item.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LR1State.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Production.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GrammarFreeList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StateMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIntPermutation.cpp">
       <Filter>Source Files\GrammarOutput</Filter>
     </ClCompile>
   </ItemGroup>

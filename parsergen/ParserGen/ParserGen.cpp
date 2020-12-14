@@ -48,7 +48,7 @@ static void usage() {
   exit(-1);
 }
 
-static UINT parseUINT(TCHAR *&cp) {
+static UINT parseUINT(const TCHAR * &cp) {
   TCHAR *endp = nullptr;
   const UINT v = _tcstoul(cp, &endp, 10);
   if(v) cp = endp;
@@ -56,7 +56,7 @@ static UINT parseUINT(TCHAR *&cp) {
 }
 
 int _tmain(int argc, TCHAR **argv) {
-  TCHAR    *cp;
+  const TCHAR    *cp;
   Options  &options = Options::getInstance();
   try {
     for(argv++; *argv && _tcschr(_T("-+"), *(cp = *argv)); argv++) {
@@ -72,8 +72,8 @@ int _tmain(int argc, TCHAR **argv) {
           { cp++;
             MatrixOptimizeParameters *optParam = nullptr;
             for(Tokenizer tok(cp, _T(",")); tok.hasNext();) {
-              String cs = tok.next();
-              for(TCHAR *cp1 = cs.cstr(); *cp1; cp1++) {
+              const String cs = tok.next();
+              for(const TCHAR *cp1 = cs.cstr(); *cp1; cp1++) {
 #define CHECKOPT() if(optParam == nullptr) usage(); (*optParam)
                 switch(*cp1) {
                 case 'R': optParam = &options.getOptimizeParameters(OPTPARAM_REDUCE); continue;
@@ -101,22 +101,22 @@ int _tmain(int argc, TCHAR **argv) {
           }
           break;
         case 'l':
-          options.m_lineDirectives         = false;
+          options.m_lineDirectives              = false;
           continue;
         case 'b':
-          options.m_generateBreaks         = false;
+          options.m_generateBreaks              = false;
           continue;
         case 'a':
-          options.m_generateActions        = false;
+          options.m_generateActions             = false;
           continue;
         case 'h':
-          options.m_generateLookahead      = true;
+          options.m_generateLookahead           = true;
           continue;
         case 'F':
           options.m_findOptimalTableCompression = true;
           continue;
         case 'n':
-          options.m_generateNonTerminals   = true;
+          options.m_generateNonTerminals        = true;
           continue;
         case 'f':
           options.m_first1File = cp+1;
@@ -175,11 +175,11 @@ int _tmain(int argc, TCHAR **argv) {
     String skeletonFileName = EMPTYSTRING;
     String wizardTemplate   = EMPTYSTRING;
     switch(options.m_language) {
-	  case CPP :
+	case CPP :
       skeletonFileName = _T("parsergencpp.par");
       wizardTemplate   = _T("parsergencpp.wzr");
       break;
-	  case JAVA:
+	case JAVA:
       skeletonFileName = _T("parsergenjava.par");
       wizardTemplate   = _T("parsergenjava.wzr");
 	  options.m_lineDirectives   = false;
@@ -201,8 +201,8 @@ int _tmain(int argc, TCHAR **argv) {
 
       options.checkTemplateExist(skeletonFileName);
 
-      String grammarFileName = FileNameSplitter(*argv).getAbsolutePath();
-      Grammar grammar;
+      String        grammarFileName = FileNameSplitter(*argv).getAbsolutePath();
+      Grammar       grammar;
       GrammarParser parser(grammarFileName, grammar);
       parser.readGrammar();
 
@@ -225,21 +225,21 @@ int _tmain(int argc, TCHAR **argv) {
         if(!grammar.getResult().allStatesConsistent()) {
           ok = false;
           code.generateDocFile();
-          verbose(1, _T("Time:%.3lf\n"), (getProcessTime() - starttime)/1000000);
-          verbose(1, _T("%4u\tterminals\n")     , grammar.getTermCount()       );
-          verbose(1, _T("%4u\tnonterminals\n")  , grammar.getNTermCount()      );
-          verbose(1, _T("%4u\tproductions\n")   , grammar.getProductionCount() );
+          verbose(1, _T("Time:%.3lf\n"         ), (getProcessTime() - starttime)/1000000);
+          verbose(1, _T("%4u\tterminals\n"     ), grammar.getTermCount()       );
+          verbose(1, _T("%4u\tnonterminals\n"  ), grammar.getNTermCount()      );
+          verbose(1, _T("%4u\tproductions\n"   ), grammar.getProductionCount() );
           _tprintf(_T("**** The grammar is NOT LALR(1) ****\n"));
         } else {
           verbose(2, _T("Generate skeletonparser\n"));
           code.generateParser();
           code.generateDocFile();
-          verbose(1, _T("Time:%.3lf\n"), (getProcessTime() - starttime)/1000000);
-          verbose(1, _T("%4u\tterminals\n")     , grammar.getTermCount()       );
-          verbose(1, _T("%4u\tnonterminals\n")  , grammar.getNTermCount()      );
-          verbose(1, _T("%4u\tproductions\n")   , grammar.getProductionCount() );
+          verbose(1, _T("Time:%.3lf\n"         ), (getProcessTime() - starttime)/1000000);
+          verbose(1, _T("%4u\tterminals\n"     ), grammar.getTermCount()       );
+          verbose(1, _T("%4u\tnonterminals\n"  ), grammar.getNTermCount()      );
+          verbose(1, _T("%4u\tproductions\n"   ), grammar.getProductionCount() );
           verbose(1, _T("%4u\tLALR(1) states\n"), grammar.getStateCount()      );
-          verbose(1, _T("%4u\titems\n")         , grammar.getItemCount()       );
+          verbose(1, _T("%4u\titems\n"         ), grammar.getItemCount()       );
           verbose(1, _T("**** The grammar is LALR(1) ****\n"));
   //      grammar.dump();
         }

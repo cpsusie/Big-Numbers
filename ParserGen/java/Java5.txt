@@ -17555,7 +17555,7 @@ State 372:
    Goto   718 on DimExpression
    Goto   148 on Dim_plus
 
-warning --- Reduce/reduce conflict on [LT GT] between prod 26 and prod 352. Choose prod 26.
+warning --- Reduce/reduce conflict on [LT GT] between prod 26 and prod 352. Choose prod 26
 State 373:
  ( 28)K Name            -> Identifier .
  (154)K LabeledStatement -> Identifier .COLON Statement

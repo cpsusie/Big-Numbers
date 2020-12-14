@@ -294,6 +294,7 @@
     <ClInclude Include="TermActionPairMatrix.h" />
     <ClInclude Include="TermSetReduction.h" />
     <ClInclude Include="TermSetReductionArray.h" />
+    <ClInclude Include="UIntPermutation.h" />
     <ClInclude Include="UsedByBitSet.h" />
     <ClInclude Include="Wizard.h" />
   </ItemGroup>
@@ -303,12 +304,17 @@
     <ClCompile Include="CompressedTransShiftMatrixCpp.cpp" />
     <ClCompile Include="CompressedTransSuccMatrixCpp.cpp" />
     <ClCompile Include="ElementName.cpp" />
+    <ClCompile Include="GrammarFreeList.cpp" />
     <ClCompile Include="GrammarPermutation.cpp" />
     <ClCompile Include="GrammarResult.cpp" />
     <ClCompile Include="IndexToSymbolConverter.cpp" />
+    <ClCompile Include="LR1Item.cpp" />
+    <ClCompile Include="LR1State.cpp" />
     <ClCompile Include="MixedReduceArray.cpp" />
     <ClCompile Include="MixedStatePairArray.cpp" />
     <ClCompile Include="OptimizedBitSetPermutation.cpp" />
+    <ClCompile Include="Production.cpp" />
+    <ClCompile Include="StateMap.cpp" />
     <ClCompile Include="SymbolDataPair.cpp" />
     <ClCompile Include="ReduceNodeBinSearch.cpp" />
     <ClCompile Include="ReduceNodeBitSet.cpp" />
@@ -365,6 +371,7 @@
     <ClCompile Include="SymbolNode.cpp" />
     <ClCompile Include="TransposedShiftMatrix.cpp" />
     <ClCompile Include="TermSetReduction.cpp" />
+    <ClCompile Include="UIntPermutation.cpp" />
     <ClCompile Include="UsedByBitSet.cpp" />
     <ClCompile Include="Wizard.cpp" />
   </ItemGroup>

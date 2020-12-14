@@ -2,23 +2,7 @@
 
 #include "ByteCount.h"
 #include "BitSetInterval.h"
-
-class UIntPermutation : public CompactUIntArray {
-protected:
-  UIntPermutation(size_t capacity);
-  UIntPermutation();
-  // Make an array, with size and capacity = capacity, all elements set to -1
-  void init(UINT capacity);
-public:
-  inline UINT getOldCapacity() const {
-    return (UINT)size();
-  }
-  // Find index of the specified element. throw exception if invalid argument or not found
-  UINT findIndex(UINT v) const;
-  // Check that all elements are distinct, and in range [0..size-1]
-  // throw exception, if not
-  virtual void validate() const;
-};
+#include "UIntPermutation.h"
 
 // find permutation of elements in this, so that all 1-bits will be put first in bitset
 class OptimizedBitSetPermutation : public UIntPermutation {

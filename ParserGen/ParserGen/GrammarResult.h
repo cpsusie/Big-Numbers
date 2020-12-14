@@ -2,6 +2,8 @@
 
 #include "StateResult.h"
 
+class UIntPermutation;
+
 class GrammarResult {
 public:
   Array<StateResult> m_stateResult;
@@ -25,6 +27,7 @@ public:
     return (UINT)m_stateResult.size();
   }
   void           sortStateResult();
+  void           reorderStates(const UIntPermutation &permutation);
   void           addSRError(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   void           addWarning(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   String         toString(const AbstractSymbolNameContainer &nameContainer) const;

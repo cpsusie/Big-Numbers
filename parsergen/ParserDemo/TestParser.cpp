@@ -229,7 +229,7 @@ const String &TestParser::getStateItems(UINT state) {
     const UINT stateCount = g.getStateCount();
     m_stateStr.setCapacity(stateCount);
     for(UINT i = 0; i < stateCount; i++) {
-      m_stateStr.add(g.stateToString(g.getState(i)).replace('\n', _T("\r\n")));
+      m_stateStr.add(g.getState(i).toString().replace('\n', _T("\r\n")));
     }
     SAFEDELETE(m_yaccJob);
   }

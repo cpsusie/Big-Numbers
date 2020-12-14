@@ -1,8 +1,29 @@
 #include "stdafx.h"
+#include "UIntPermutation.h"
 #include "GrammarResult.h"
 
 void GrammarResult::sortStateResult() {
   m_stateResult.sort(stateResultCmpByIndex);
+}
+
+void GrammarResult::reorderStates(const UIntPermutation &permutation) {
+  permutation.validate();
+  assert(permutation.size() == m_stateResult.size());
+  for(auto it = m_stateResult.getIterator(); it.hasNext();) {
+    StateResult &sr = it.next();
+    sr.m_index = permutation[sr.m_index];
+    for(auto it1 = sr.m_termActionArray.getIterator(); it1.hasNext();) {
+      TermActionPair &tap = it1.next();
+      if(tap.isShiftAction()) {
+        tap.setNewState(permutation[tap.getNewState()]);
+      }
+    }
+    for(auto it1 = sr.m_ntermNewStateArray.getIterator(); it1.hasNext();) {
+      NTermNewStatePair &ntns = it1.next();
+      ntns.setNewState(permutation[ntns.getNewState()]);
+    }
+  }
+  sortStateResult();
 }
 
 void GrammarResult::addSRError(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {

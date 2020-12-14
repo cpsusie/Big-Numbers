@@ -2,20 +2,20 @@
 #include "Grammar.h"
 #include "GrammarResult.h"
 
-void Grammar::dump(const SymbolSet &set, MarginFile *f) const {
+void Grammar::dump(const SymbolSet &set  , MarginFile *f) const {
   f->printf(_T("%s"), symbolSetToString(set).cstr());
 }
 
 void Grammar::dump(const Production &prod, MarginFile *f) const {
-  fprintf(f, _T("%s prec %d"), prod.toString(*this).cstr(), prod.m_precedence);
+  fprintf(f, _T("%s prec %d"), prod.toString().cstr(), prod.m_precedence);
 }
 
-void Grammar::dump(const LR1Item &item, int flags, MarginFile *f) const {
-  f->printf(_T("%s\n"), itemToString(item, flags).cstr());
+void Grammar::dump(const LR1Item &item   , UINT flags, MarginFile *f) const {
+  f->printf(_T("%s\n"), item.toString(flags).cstr());
 }
 
-void Grammar::dump(const LR1State &state, int flags, MarginFile *f) const {
-  f->printf(_T("%s\n"), stateToString(state, flags).cstr());
+void Grammar::dump(const LR1State &state , UINT flags, MarginFile *f) const {
+  f->printf(_T("%s\n"), state.toString(flags).cstr());
   const StateResult &sr = getResult().m_stateResult[state.m_index];
   if(flags & DUMP_ERRORS) {
     const StringArray &errors = sr.m_errors;
@@ -33,9 +33,9 @@ void Grammar::dump(const LR1State &state, int flags, MarginFile *f) const {
   }
 }
 
-void Grammar::dumpStates(int flags, MarginFile *f) const {
-  for(UINT i = 0; i < getStateCount(); i++) {
-    dump(m_states[i], flags, f);
+void Grammar::dumpStates(UINT flags, MarginFile *f) const {
+  for(auto statep : m_stateArray) {
+    dump(*statep, flags, f);
   }
 }
 
@@ -66,53 +66,6 @@ void Grammar::dumpFirst1Sets(FILE *f) const {
   }
 }
 
-String Grammar::itemToString(const LR1Item &item, int flags) const {
-  String result;
-  const Production &prod = getProduction(item.m_prod);
-  result = format(_T(" (%3u)%c %-15s -> "), item.m_prod, item.m_kernelItem?'K':' ', getSymbol(prod.m_leftSide).m_name.cstr());
-  for(UINT i = 0; i < item.m_dot; i++) {
-    result += getSymbol(prod.m_rightSide[i]).m_name;
-    result += ' ';
-  }
-  result += '.';
-  const UINT n     = prod.getLength();
-  TCHAR      delim = 0;
-  for(UINT i = item.m_dot; i < n; i++, delim = ' ') {
-    if(delim) result += delim;
-    result += getSymbol(prod.m_rightSide[i]).m_name;
-  }
-  if(flags & DUMP_LOOKAHEAD) {
-    result += symbolSetToString(item.m_la);
-  }
-
-  if((flags & DUMP_SUCC) && (item.m_succ >= 0)) {
-    result += format(_T(" -> %d"), item.getSuccessor()); // ie not reduce-item
-  }
-  return result;
-}
-
-String Grammar::stateToString(const LR1State &state, int flags) const {
-  String result;
-  result = format(_T("State %u:\n"), state.m_index);
-  const UINT itemstodump = (flags & DUMP_KERNELONLY) ? state.m_kernelItemCount : (UINT)state.m_items.size();
-  for(UINT i = 0; i < itemstodump; i++) {
-    const LR1Item &item = state.m_items[i];
-    if(isShiftItem(item) && !(flags & DUMP_SHIFTITEMS)) {
-      continue;
-    }
-    result += itemToString(state.m_items[i], flags) + _T("\n");
-  }
-  if(flags & DUMP_ACTIONS) {
-    result += _T("\n");
-    const StateResult            &sr                 = getResult().m_stateResult[state.m_index];
-    const TermActionPairArray    &termActionArray    = sr.m_termActionArray;
-    const NTermNewStatePairArray &ntermNewStateArray = sr.m_ntermNewStateArray;
-    result += termActionArray.toString(   *this);
-    result += ntermNewStateArray.toString(*this);
-  }
-  return result;
-}
-
 BitSetParameters Grammar::getBitSetParam(ElementType type) const {
   switch(type) {
   case ETYPE_SYMBOL    : return BitSetParameters(type, getSymbolCount()    );
@@ -123,28 +76,4 @@ BitSetParameters Grammar::getBitSetParam(ElementType type) const {
   default              : throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), type);
   }
   return BitSetParameters(type, 0); // should never come here
-}
-
-String Production::toString(const AbstractSymbolNameContainer &nameContainer) const {
-  return nameContainer.getSymbolName(m_leftSide)
-       + _T(" -> ")
-       + getRightSideString(nameContainer);
-}
-
-String Production::getRightSideString(const AbstractSymbolNameContainer &nameContainer) const {
-  const UINT n = getLength();
-
-  if(n == 0) {
-    return _T("epsilon");
-  }
-
-  String result;
-  for(UINT i = 0; i < n; i++) {
-    const UINT s = m_rightSide[i];
-    if(i > 0) {
-      result += ' ';
-    }
-    result += m_rightSide[i].toString(nameContainer);
-  }
-  return result;
 }

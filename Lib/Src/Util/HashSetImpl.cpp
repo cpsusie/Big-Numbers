@@ -79,10 +79,10 @@ void HashSetImpl::deleteNode(HashSetNode *n) const {
   SAFEDELETE(n);
 }
 
-void HashSetImpl::resize(size_t newCapacity) {
+void HashSetImpl::setCapacity(size_t newCapacity) {
   HashSetTable *newTable = new HashSetTable(*this, newCapacity); TRACE_NEW(newTable);
   try {
-    size_t capacity = newTable->getCapacity();
+    const size_t capacity = newTable->getCapacity();
     for(auto p = m_table->m_firstLink; p; p = p->m_nextLink) {
       ULONG hashIndex = m_hash(p->m_key) % capacity;
       newTable->insert(hashIndex, cloneNode(p));
@@ -108,7 +108,7 @@ bool HashSetImpl::insertNode(HashSetNode *n) {
     if(newCapacity % 2 == 0) {
       newCapacity++;
     }
-    resize(newCapacity);
+    setCapacity(newCapacity);
     hashIndex = m_hash(n->m_key) % getCapacity();
   }
   m_table->insert(hashIndex, n);
@@ -153,6 +153,14 @@ void *HashSetImpl::getMin() const {
 void *HashSetImpl::getMax() const {
   throwUnsupportedOperationException(__TFUNCTION__);
   return nullptr;
+}
+
+AbstractComparator *HashSetImpl::getComparator() const {
+  return m_comparator;
+}
+
+bool HashSetImpl::hasOrder() const {
+  return false;
 }
 
 HashSetNode *HashSetImpl::findNode(const void *key) const {

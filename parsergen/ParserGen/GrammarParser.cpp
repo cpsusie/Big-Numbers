@@ -4,8 +4,9 @@
 #include "GrammarParser.h"
 
 GrammarParser::GrammarParser(const String &fileName, Grammar &g)
-: m_lex(fileName)
-, m_grammar(g)
+: m_lex(    fileName)
+, m_grammar(g       )
+, m_token(  UNKNOWN )
 {
   m_currentPrecedence = 0;
   m_grammar.addTerm(_T("EOI"), TERMINAL, m_currentPrecedence, SourcePosition(0, 0)); /* always make EOI symbol no. 0, see skeletonparser parser.cpp */
@@ -19,7 +20,7 @@ void GrammarParser::readGrammar() {
     switch(m_token) {
     case PERCENTLCURL:
       if(section > 1) {
-        m_lex.error(_T("Only 2 sections allowed."));
+        m_lex.error(_T("Only 2 sections allowed"));
       }
       parseHeadBody((section == 0) ? m_grammar.m_header : m_grammar.m_driverHead);
       section++;
@@ -36,7 +37,7 @@ void GrammarParser::readGrammar() {
       break;
 
     default          :
-      m_lex.error(_T("Unexpected symbol:'%s'."), m_lex.getText().cstr());
+      m_lex.error(_T("Unexpected symbol:'%s'"), m_lex.getText().cstr());
       next();
       break;
     }
@@ -48,7 +49,7 @@ void GrammarParser::readGrammar() {
       parseProduction();
     }
     if(m_token != PERCENTPERCENT) {
-      m_lex.error(_T("Expected %%%%."));
+      m_lex.error(_T("Expected %%%%"));
     } else {
       next();
     }
@@ -80,7 +81,7 @@ void GrammarParser::parseHeadBody(SourceText &source) {
   m_lex.collectBegin();
   while(m_token != PERCENTRCURL) {
     if(m_token == EOI) {
-      m_lex.error(_T("Unexpected EOF."));
+      m_lex.error(_T("Unexpected EOF"));
       return;
     }
     next();
@@ -103,7 +104,7 @@ void GrammarParser::parseTermDef() {
     String name = m_lex.getText();
     bool ok = true;
     if(m_grammar.getSymbolIndex(name) >= 0) {
-      m_lex.error(_T("Terminal %s already defined."), name.cstr());
+      m_lex.error(_T("Terminal %s already defined"), name.cstr());
       ok = false;
     }
     if(ok) {
@@ -118,14 +119,14 @@ void GrammarParser::parseProduction() { // m_token == NAME (=leftside of product
   if(leftIndex >= 0) {
     const GrammarSymbol &sym = m_grammar.getSymbol(leftIndex);
     if(sym.m_type != NONTERMINAL) {
-      m_lex.error(_T("Symbol %s is a terminal and cannot be on the leftside of a production."), leftName.cstr());
+      m_lex.error(_T("Symbol %s is a terminal and cannot be on the leftside of a production"), leftName.cstr());
     }
   } else {
     leftIndex = m_grammar.addNTerm(leftName, m_lex.getSourcePos());
   }
   next();
   if(m_token != COLON) {
-    m_lex.error(_T("Expected ':'."));
+    m_lex.error(_T("Expected ':'"));
   } else {
     next();
   }
@@ -142,11 +143,11 @@ void GrammarParser::parseProduction() { // m_token == NAME (=leftside of product
       break;
 
     case EOI:
-      m_lex.error(_T("Unexpected EOI."));
+      m_lex.error(_T("Unexpected EOI"));
       rightSideDone = true;
 
     default:
-      m_lex.error(_T("Unexpected symbol:'%s'."), m_lex.getText().cstr());
+      m_lex.error(_T("Unexpected symbol:'%s'"), m_lex.getText().cstr());
       next();
       break;
 
@@ -155,7 +156,7 @@ void GrammarParser::parseProduction() { // m_token == NAME (=leftside of product
 }
 
 void GrammarParser::parseRightSide(int leftSide) {
-  Production prod(leftSide, m_lex.getSourcePos());
+  Production prod(&m_grammar, leftSide, m_lex.getSourcePos());
   while(m_token == NAME) {
     const String         name = m_lex.getText();
     const SourcePosition pos  = m_lex.getSourcePos();
@@ -185,10 +186,10 @@ void GrammarParser::parseRightSide(int leftSide) {
         int tokenIndex = m_grammar.getSymbolIndex(name);
         bool ok = true;
         if(tokenIndex < 0) {
-          m_lex.error(_T("Unknown symbol in %%prec-clause:%s."), name.cstr());
+          m_lex.error(_T("Unknown symbol in %%prec-clause:%s"), name.cstr());
           ok = false;
         } else if(!m_grammar.isTerminal(tokenIndex)) {
-          m_lex.error(_T("Symbol %s must be terminal in %%prec-clause."), name.cstr());
+          m_lex.error(_T("Symbol %s must be terminal in %%prec-clause"), name.cstr());
           ok = false;
         }
         if(ok) {
@@ -198,7 +199,7 @@ void GrammarParser::parseRightSide(int leftSide) {
       break;
 
     default:
-      m_lex.error(_T("Expected NAME of NUMBER."));
+      m_lex.error(_T("Expected NAME or NUMBER"));
     }
   }
 
@@ -210,7 +211,7 @@ void GrammarParser::parseRightSide(int leftSide) {
     next();
     parseActionBody(sourcePos, usedDollar, prod);
     if(m_token != RCURL) {
-      m_lex.error(_T("Expected '}'."));
+      m_lex.error(_T("Expected '}'"));
     } else {
       next();
     }
@@ -225,7 +226,6 @@ void GrammarParser::parseRightSide(int leftSide) {
       prod.m_actionBody.m_lineno);
 */
   }
-
   m_grammar.addProduction(prod);
 }
 
@@ -245,7 +245,7 @@ void GrammarParser::parseActionBody(const SourcePosition &sourcePos, CompactShor
       next();
       parseActionBody(sourcePos, usedDollar, prod);
       if(m_token != RCURL) {
-        m_lex.error(_T("Expected '}'."));
+        m_lex.error(_T("Expected '}'"));
       } else {
         next();
       }
@@ -255,7 +255,7 @@ void GrammarParser::parseActionBody(const SourcePosition &sourcePos, CompactShor
       return;
 
     case EOI:
-      m_lex.error(sourcePos, _T("This codeblock has no end."));
+      m_lex.error(sourcePos, _T("This codeblock has no end"));
       return;
 
     case DOLLARDOLLAR:
@@ -274,18 +274,18 @@ void GrammarParser::parseActionBody(const SourcePosition &sourcePos, CompactShor
         m_lex.collectEnd();
         next();
         if(m_token != NUMBER) {
-          m_lex.error(_T("Expected number."));
+          m_lex.error(_T("Expected number"));
           m_actionBody += _T("$ ");
         } else {
           const int prodLength  = prod.getLength();
           const int symbolIndex = (int)m_lex.getNumber();
           const int fromTop = prodLength - symbolIndex;
           if(symbolIndex < 1 || symbolIndex > prodLength) {
-            m_lex.warning(m_lex.getSourcePos(), _T("$%d is not in range [1..%d]."), symbolIndex, prodLength);
+            m_lex.warning(m_lex.getSourcePos(), _T("$%d is not in range [1..%d]"), symbolIndex, prodLength);
             m_grammar.m_result->m_warningCount++;
           } else {
-            if(m_grammar.isTerminal(prod.m_rightSide[symbolIndex-1])) {
-              m_lex.warning(m_lex.getSourcePos(), _T("$%d is a terminal."), symbolIndex);
+            if(m_grammar.isTerminal(prod.m_rightSide[(intptr_t)symbolIndex-1])) {
+              m_lex.warning(m_lex.getSourcePos(), _T("$%d is a terminal"), symbolIndex);
               m_grammar.m_result->m_warningCount++;
             }
           }
@@ -300,7 +300,6 @@ void GrammarParser::parseActionBody(const SourcePosition &sourcePos, CompactShor
     default:
       next();
       break;
-
     }
   }
 }
@@ -315,7 +314,7 @@ void GrammarParser::checkGrammar() {
     }
   }
   if(m_grammar.getProductionCount() == 0) {
-    m_lex.error(_T("No productions in grammar."));
+    m_lex.error(_T("No productions in grammar"));
   } else {
     checkDuplicateProd();
     checkReachability();
@@ -349,10 +348,10 @@ void GrammarParser::checkNonTerminal(UINT nt) { // check, that nonterminal occur
     }
     const GrammarSymbol &nonterminal = m_grammar.getSymbol(nt);
     if(!leftsideFound) {
-      m_lex.error(nonterminal.m_pos, _T("Nonterminal %s is not found on the leftside of any production."), nonterminal.m_name.cstr());
+      m_lex.error(nonterminal.m_pos, _T("Nonterminal %s is not found on the leftside of any production"), nonterminal.m_name.cstr());
     }
     if(!rightsideFound) {
-      m_lex.error(nonterminal.m_pos, _T("Nonterminal %s is not found on the rightside of any production."), nonterminal.m_name.cstr());
+      m_lex.error(nonterminal.m_pos, _T("Nonterminal %s is not found on the rightside of any production"), nonterminal.m_name.cstr());
     }
   }
 }
@@ -364,17 +363,17 @@ void GrammarParser::checkStartSymbol() { // check, that startsymbol exists on on
     if(prod.m_leftSide == m_grammar.getStartSymbol()) {
       countStartProd++;
       if(countStartProd > 1) {
-        m_lex.error(prod.m_pos, _T("Only 1 startproduction allowed."));
+        m_lex.error(prod.m_pos, _T("Only 1 startproduction allowed"));
       }
     }
     for(UINT j = 0; j < prod.getLength(); j++) {
       if(prod.m_rightSide[j] == m_grammar.getStartSymbol()) {
-        m_lex.error(prod.m_pos, _T("Startsymbol not allowed on rightside of production."));
+        m_lex.error(prod.m_pos, _T("Startsymbol not allowed on rightside of production"));
       }
     }
   }
   if(countStartProd < 1) {
-    m_lex.error(_T("No startproduction specified."));
+    m_lex.error(_T("No startproduction specified"));
   }
 }
 
@@ -389,7 +388,7 @@ void GrammarParser::checkTerminal(UINT t) { // check, that terminal-symbol is us
   }
   if(Options::getInstance().m_verboseLevel >= 2) {
     const GrammarSymbol &terminal = m_grammar.getSymbol(t);
-    m_lex.warning(terminal.m_pos, _T("Terminal %s is not used."), terminal.m_name.cstr());
+    m_lex.warning(terminal.m_pos, _T("Terminal %s is not used"), terminal.m_name.cstr());
   }
   m_grammar.m_result->m_warningCount++;
 }
@@ -403,7 +402,7 @@ void GrammarParser::checkDuplicateProd() {
       for(UINT j = 0; j < i; j++) {
         const Production &prodj = m_grammar.getProduction(prodlist[j]);
         if(prodi.m_rightSide == prodj.m_rightSide) {
-          m_lex.error(prodi.m_pos, _T("This production equals another."));
+          m_lex.error(prodi.m_pos, _T("This production equals another"));
         }
       }
     }
@@ -415,7 +414,7 @@ void GrammarParser::checkReachability() {
   for(UINT i = m_grammar.getTermCount(); i < m_grammar.getSymbolCount(); i++) {
     const GrammarSymbol &sym = m_grammar.getSymbol(i);
     if(!sym.m_reachable) {
-      m_lex.error(sym.m_pos, _T("%s is not reachable from startsymbol."), sym.m_name.cstr());
+      m_lex.error(sym.m_pos, _T("%s is not reachable from startsymbol"), sym.m_name.cstr());
     }
   }
 }
@@ -425,7 +424,7 @@ void GrammarParser::checkTermination() {
   for(UINT i = 0; i < m_grammar.getSymbolCount(); i++) {
     const GrammarSymbol &sym = m_grammar.getSymbol(i);
     if(!sym.m_terminate) {
-      m_lex.error(sym.m_pos, _T("Nonterminal %s does not terminate."), sym.m_name.cstr());
+      m_lex.error(sym.m_pos, _T("Nonterminal %s does not terminate"), sym.m_name.cstr());
     }
   }
 }
