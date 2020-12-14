@@ -230,7 +230,7 @@ void Debugger::createJob(BYTE breakFlags) {
   if(hasJob()) {
     throwException(_T("%s:job not null"), __TFUNCTION__);
   }
-  m_job = new DebuggerJob(m_dialog, breakFlags); TRACE_NEW(m_debugger);
+  m_job = new DebuggerJob(m_dialog, breakFlags); TRACE_NEW(m_job);
 }
 
 // no lock
