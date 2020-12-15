@@ -289,10 +289,10 @@ protected:
                          ,const SymbolType    *rightSideTable
                          ,const char          *nameString
                          )
-   :m_prodLengthArray        ( prodLengthArray        )
-   ,m_leftSideArray          ( leftSideArray          )
-   ,m_rightSideTable         ( rightSideTable         )
-   ,m_nameString             ( nameString             )
+   :m_prodLengthArray( prodLengthArray )
+   ,m_leftSideArray  ( leftSideArray   )
+   ,m_rightSideTable ( rightSideTable  )
+   ,m_nameString     ( nameString      )
   {
     m_rightSides = nullptr;
   }
