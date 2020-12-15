@@ -5,6 +5,13 @@
 #include "CollectionBase.h"
 #include "Random.h"
 
+
+  // https://help.sap.com/doc/43e4215eb12c497daaa58382a0411b17/7.51.4/en-US/96cdf717d7e54aaea8c78e6440eff838.html#:~:text=Flat%20structures%20contain%20only%20elementary,contained%20in%20any%20nesting%20level.
+
+// Use only Flat data type as T
+// Flat structures contain only elementary data types of fixed length (no internal tables, reference types, or strings).
+// The term flat structure can apply regardless of whether the structure is nested or not.
+// Nested structures are flat so long as none of the specified types is contained in any nesting level.
 template <typename T> class CompactArray : public CollectionBase<T> {
 private:
   size_t  m_capacity;
