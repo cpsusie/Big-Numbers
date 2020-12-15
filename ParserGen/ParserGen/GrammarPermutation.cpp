@@ -4,6 +4,7 @@
 #include "StateResult.h"
 #include "IndexMap.h"
 #include "OptimizedBitSetPermutation.h"
+#include "OptimizedBitSetPermutation2.h"
 
 static int symbolCmpByIndex(const GrammarSymbol &s1, const GrammarSymbol &s2) {
   return (int)s1.m_index - (int)s2.m_index;

@@ -5,6 +5,7 @@
 #include "ReduceNodeArray.h"
 #include "IndexMap.h"
 #include "MacroMap.h"
+#include "OptimizedBitSetPermutation2.h"
 #include "CompressedTransSuccMatrixCpp.h"
 
 class CompressedTransShiftMatrix {

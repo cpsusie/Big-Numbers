@@ -249,6 +249,7 @@
     <ClInclude Include="MixedReduceArray.h" />
     <ClInclude Include="MixedStatePairArray.h" />
     <ClInclude Include="OptimizedBitSetPermutation.h" />
+    <ClInclude Include="OptimizedBitSetPermutation2.h" />
     <ClInclude Include="Options.h" />
     <ClInclude Include="CompressEncoding.h" />
     <ClInclude Include="Grammar.h" />
@@ -313,6 +314,7 @@
     <ClCompile Include="MixedReduceArray.cpp" />
     <ClCompile Include="MixedStatePairArray.cpp" />
     <ClCompile Include="OptimizedBitSetPermutation.cpp" />
+    <ClCompile Include="OptimizedBitSetPermutation2.cpp" />
     <ClCompile Include="Production.cpp" />
     <ClCompile Include="StateMap.cpp" />
     <ClCompile Include="SymbolDataPair.cpp" />
