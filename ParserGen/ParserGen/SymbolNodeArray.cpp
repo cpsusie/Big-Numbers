@@ -31,6 +31,15 @@ void SymbolNodeArray::clear() {
   __super::clear();
 }
 
+BitSetArray &SymbolNodeArray::getBitSetArray(BitSetArray &a) const {
+  a.clear();
+  for(auto np : *this) {
+    if(np == nullptr) continue;
+    np->addAllBitSets(a);
+  }
+  return a;
+}
+
 String SymbolNodeArray::getElementName(UINT index) const {
   return m_grammar.getSymbolName(indexToSymbol(index));
 }

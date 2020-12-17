@@ -12,8 +12,11 @@ public:
     , m_termSetReduction(termSetReduction)
   {
   }
-  const TermSetReduction &getTermSetReduction() const override {
+  const TermSetReduction &getTermSetReduction() const final {
     return m_termSetReduction;
   }
-  String toString() const override;
+  void addAllBitSets(BitSetArray &a) const final {
+    a.add(m_termSetReduction.getTermSet());
+  }
+  String toString() const final;
 };

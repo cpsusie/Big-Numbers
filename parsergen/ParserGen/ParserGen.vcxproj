@@ -250,6 +250,7 @@
     <ClInclude Include="MixedStatePairArray.h" />
     <ClInclude Include="OptimizedBitSetPermutation.h" />
     <ClInclude Include="OptimizedBitSetPermutation2.h" />
+    <ClInclude Include="OptimizedBitSetPermutation3.h" />
     <ClInclude Include="Options.h" />
     <ClInclude Include="CompressEncoding.h" />
     <ClInclude Include="Grammar.h" />
@@ -301,6 +302,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AllTemplateTypes.cpp" />
+    <ClCompile Include="BitSetArray.cpp" />
     <ClCompile Include="BitSetInterval.cpp" />
     <ClCompile Include="CompressedTransShiftMatrixCpp.cpp" />
     <ClCompile Include="CompressedTransSuccMatrixCpp.cpp" />
@@ -315,6 +317,7 @@
     <ClCompile Include="MixedStatePairArray.cpp" />
     <ClCompile Include="OptimizedBitSetPermutation.cpp" />
     <ClCompile Include="OptimizedBitSetPermutation2.cpp" />
+    <ClCompile Include="OptimizedBitSetPermutation3.cpp" />
     <ClCompile Include="Production.cpp" />
     <ClCompile Include="StateMap.cpp" />
     <ClCompile Include="SymbolDataPair.cpp" />

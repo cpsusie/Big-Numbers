@@ -11,11 +11,13 @@ public:
   {
     m_child[0] = m_child[1] = nullptr;
   }
-  ~SymbolNodeSplit() override;
+  ~SymbolNodeSplit() final;
   SymbolNodeSplit &setChild(BYTE index, SymbolNode *child);
-  const SymbolNode &getChild(BYTE index) const override {
+  const SymbolNode &getChild(BYTE index) const final {
     assert(index < 2);
     return *m_child[index];
   }
-  String toString() const override;
+  void addAllBitSets(BitSetArray &a) const final;
+
+  String toString() const final;
 };

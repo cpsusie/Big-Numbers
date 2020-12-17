@@ -12,8 +12,11 @@ public:
     , m_statePairBitSet(statePairBitSet)
   {
   }
-  const StatePairBitSet &getStatePairBitSet() const override {
+  const StatePairBitSet &getStatePairBitSet() const final {
     return m_statePairBitSet;
   }
-  String toString() const override;
+  void addAllBitSets(BitSetArray &a) const final {
+    a.add(m_statePairBitSet.getFromStateSet());
+  }
+  String toString() const final;
 };

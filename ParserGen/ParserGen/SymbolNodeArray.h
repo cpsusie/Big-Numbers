@@ -15,6 +15,7 @@ public:
     return m_grammar;
   }
   void clear() override;
+  BitSetArray &getBitSetArray(BitSetArray &a) const;
   String getElementName(UINT index) const;
   String getNullString(UINT index) const;
   String toString() const;

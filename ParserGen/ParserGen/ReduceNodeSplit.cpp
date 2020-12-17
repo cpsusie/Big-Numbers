@@ -13,6 +13,11 @@ ReduceNodeSplit &ReduceNodeSplit::setChild(BYTE index, ReduceNode *child) {
   return *this;
 }
 
+void ReduceNodeSplit::addAllBitSets(BitSetArray &a) const {
+  getChild(0).addAllBitSets(a);
+  getChild(1).addAllBitSets(a);
+}
+
 String ReduceNodeSplit::toString() const {
   const String cstr0  = indentString(getChild(0).toString(),2);
   const String cstr1  = indentString(getChild(1).toString(),2);

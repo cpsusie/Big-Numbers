@@ -11,11 +11,12 @@ public:
   {
     m_child[0] = m_child[1] = nullptr;
   }
-  ~ReduceNodeSplit() override;
+  ~ReduceNodeSplit() final;
   ReduceNodeSplit &setChild(BYTE index, ReduceNode *child);
-  const ReduceNode &getChild(BYTE index) const override {
+  const ReduceNode &getChild(BYTE index) const final {
     assert(index < 2);
     return *m_child[index];
   }
-  String toString() const override;
+  void addAllBitSets(BitSetArray &a) const final;
+  String toString() const final;
 };

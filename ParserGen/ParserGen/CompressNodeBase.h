@@ -18,4 +18,6 @@ public:
   inline const MatrixOptimizeParameters &getOptimizeParam() const {
     return m_opt;
   }
+  virtual void addAllBitSets(BitSetArray &a) const {
+  };
 };

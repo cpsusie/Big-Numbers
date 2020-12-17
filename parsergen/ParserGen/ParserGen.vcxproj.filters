@@ -255,6 +255,9 @@
     <ClInclude Include="OptimizedBitSetPermutation2.h">
       <Filter>Source Files\GrammarOutput\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OptimizedBitSetPermutation3.h">
+      <Filter>Source Files\GrammarOutput\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -468,6 +471,12 @@
       <Filter>Source Files\GrammarOutput</Filter>
     </ClCompile>
     <ClCompile Include="OptimizedBitSetPermutation2.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="OptimizedBitSetPermutation3.cpp">
+      <Filter>Source Files\GrammarOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="BitSetArray.cpp">
       <Filter>Source Files\GrammarOutput</Filter>
     </ClCompile>
   </ItemGroup>
